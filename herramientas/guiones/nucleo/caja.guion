@@ -1,0 +1,7 @@
+# La caja camina a la derecha durante 60 cuadros y despues salta.
+# El estado se revisa en el cuadro 100, con la caja todavia en el aire.
+10 mover_derecha press
+70 mover_derecha release
+80 saltar press
+82 saltar release
+fin 100

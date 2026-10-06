@@ -1,0 +1,4 @@
+# 60 cuadros a 300 px/s desde x=200 son 300 px. Si el salto no ocurre, la caja sigue en el suelo.
+x 500 1
+en_suelo false
+escena res://nucleo/caja_gris.tscn

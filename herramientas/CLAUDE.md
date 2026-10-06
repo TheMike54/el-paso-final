@@ -10,8 +10,8 @@ Leer `funciones.json` de esta carpeta: la primera funcionalidad con `"pasa": fal
 | Pieza | Contrato |
 |---|---|
 | `validar.ps1` + `validar.tscn` | La lógica vive en `validar.gd`; el `.ps1` y el CI solo corren la escena y revisan la salida. Pasa solo si aparece `VALIDACION archivos=N fallos=0` y ninguna línea `SCRIPT ERROR`, `ERROR:` o `FALLO` |
-| `puerto_depuracion.gd` | No es autoload: lo carga el arranque del núcleo solo en builds de depuración. Modo guion (`--guion=`): compara el resultado con el `.esperado`, imprime `GUION OK` o `GUION FALLA` y sale con 0 o 1. Modo en vivo (`--puerto=`): escucha solo en 127.0.0.1 |
-| `guiones/<bloque>/<nombre>.guion` y `.esperado` | Líneas `cuadro acción press|release` y una línea `fin <cuadro>` |
+| `puerto_depuracion.gd` | No es autoload: lo carga el arranque del núcleo solo en builds de depuración. Modo guion (`--guion=`): compara el resultado con el `.esperado`, imprime `GUION OK` o `GUION FALLA` y sale con 0 o 1. Sin ese argumento no hace nada |
+| `guiones/<bloque>/<nombre>.guion` y `.esperado` | Guion: líneas `cuadro acción press|release` y una línea `fin <cuadro>`. Esperado: líneas `clave valor [tolerancia]` con las claves `x`, `y`, `en_suelo` y `escena`. El estado se lee al empezar el cuadro `fin`, del primer nodo del grupo `jugador`. En los dos se ignoran las líneas vacías y las que empiezan con `#` |
 | `githooks/commit-msg` | Rechaza mensajes de commit con líneas de coautoría de asistentes; lo activa `verificar-entorno.ps1` |
 | `verificar-entorno.ps1` | Comprueba Godot 4.7.2, `GODOT_PATH`, versión de Claude Code, identidad de git, hook de git y archivos locales ignorados |
 
