@@ -1,0 +1,80 @@
+[
+  {
+    "id": "arranque",
+    "que": "El autoload Arranque carga el puerto de depuracion solo en un build de depuracion y si el archivo viaja en el paquete",
+    "comprobacion": "herramientas/guiones/nucleo/caja.guion",
+    "pasa": true
+  },
+  {
+    "id": "caja-gris",
+    "que": "La escena principal es una caja gris que camina y salta con las acciones mover_izquierda, mover_derecha y saltar",
+    "comprobacion": "herramientas/guiones/nucleo/caja.guion",
+    "pasa": true
+  },
+  {
+    "id": "entrada-acciones",
+    "que": "El InputMap tiene todas las acciones del juego con su teclado inicial y la logica solo lee acciones con nombre",
+    "comprobacion": "manual: project.godot lista las acciones de docs/contrato.md y ningun .gd de nucleo/ lee teclas ni toques",
+    "pasa": false
+  },
+  {
+    "id": "jugador-movimiento",
+    "que": "El jugador camina y salta en una sala de prueba, con toda su logica en _physics_process",
+    "comprobacion": "herramientas/guiones/nucleo/jugador_movimiento.guion",
+    "pasa": false
+  },
+  {
+    "id": "camara-sala",
+    "que": "La camara sigue al jugador y no muestra nada fuera de los limites de la sala",
+    "comprobacion": "manual: en ventana, la camara sigue al jugador y se detiene en los cuatro bordes de la sala de prueba",
+    "pasa": false
+  },
+  {
+    "id": "capas-fondo",
+    "que": "Una sala lleva capas de fondo y de frente que se desplazan a distinta velocidad que el plano de juego al mover la camara",
+    "comprobacion": "manual: en ventana, al caminar por la sala de prueba las capas lejanas se mueven mas lento que el plano de juego y la de frente mas rapido, sin huecos en los bordes de la sala",
+    "pasa": false
+  },
+  {
+    "id": "cambio-de-sala",
+    "que": "Al cruzar una puerta el jugador aparece en la puerta destino de la otra sala",
+    "comprobacion": "herramientas/guiones/nucleo/cambio_de_sala.guion",
+    "pasa": false
+  },
+  {
+    "id": "bus-eventos",
+    "que": "El bus de eventos emite las senales de la lista de docs/contrato.md y ningun bloque se conecta a otro sin pasar por el",
+    "comprobacion": "herramientas/guiones/nucleo/bus_eventos.guion",
+    "pasa": false
+  },
+  {
+    "id": "jugador-ataque-y-vida",
+    "que": "El jugador ataca, recibe dano, pierde vidas y muere al quedarse sin ninguna",
+    "comprobacion": "herramientas/guiones/nucleo/jugador_ataque_y_vida.guion",
+    "pasa": false
+  },
+  {
+    "id": "guardado",
+    "que": "El guardado escribe JSON con version en un archivo temporal y lo renombra; al cargar distingue partida valida, archivo danado y version incompatible",
+    "comprobacion": "herramientas/guiones/nucleo/guardado.guion",
+    "pasa": false
+  },
+  {
+    "id": "controles-tactiles",
+    "que": "Los controles tactiles traducen el toque a las mismas acciones del InputMap",
+    "comprobacion": "manual: en el telefono de prueba, el joystick y los botones mueven al jugador igual que el teclado",
+    "pasa": false
+  },
+  {
+    "id": "menu-desarrollo",
+    "que": "Un menu sencillo permite empezar, continuar y, solo en builds de depuracion, entrar a la zona de pruebas",
+    "comprobacion": "manual: en ventana, cada opcion del menu lleva a su escena y la entrada a la zona de pruebas no aparece en el paquete de publicacion",
+    "pasa": false
+  },
+  {
+    "id": "pausa-y-atras",
+    "que": "La accion de pausa y el boton Atras de Android abren la pausa durante el juego y piden confirmacion en el menu; pausar no guarda y la app no se cierra sola",
+    "comprobacion": "manual: en el telefono de prueba, Atras durante el juego abre la pausa y no cierra la app; en el menu pide confirmacion antes de salir; en ventana, la tecla de pausa abre y cierra la pausa",
+    "pasa": false
+  }
+]
