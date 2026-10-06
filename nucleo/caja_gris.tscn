@@ -1,0 +1,33 @@
+[gd_scene format=3 uid="uid://3iwfnbuv3g63"]
+
+[ext_resource type="Script" uid="uid://1e610o6iknhb" path="res://nucleo/caja_gris.gd" id="1_caja"]
+
+[sub_resource type="RectangleShape2D" id="forma_suelo"]
+size = Vector2(2560, 80)
+
+[sub_resource type="RectangleShape2D" id="forma_caja"]
+size = Vector2(80, 160)
+
+[node name="CajaGris" type="Node2D"]
+
+[node name="Suelo" type="StaticBody2D" parent="."]
+position = Vector2(640, 680)
+
+[node name="Forma" type="CollisionShape2D" parent="Suelo"]
+shape = SubResource("forma_suelo")
+
+[node name="Dibujo" type="ColorRect" parent="Suelo"]
+offset_left = -1280.0
+offset_top = -40.0
+offset_right = 1280.0
+offset_bottom = 40.0
+mouse_filter = 2
+color = Color(0.25, 0.25, 0.25, 1)
+
+[node name="Caja" type="CharacterBody2D" parent="." groups=["jugador"]]
+position = Vector2(200, 640)
+script = ExtResource("1_caja")
+
+[node name="Forma" type="CollisionShape2D" parent="Caja"]
+position = Vector2(0, -80)
+shape = SubResource("forma_caja")
