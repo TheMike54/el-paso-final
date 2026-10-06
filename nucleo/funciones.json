@@ -76,5 +76,11 @@
     "que": "La accion de pausa y el boton Atras de Android abren la pausa durante el juego y piden confirmacion en el menu; pausar no guarda y la app no se cierra sola",
     "comprobacion": "manual: en el telefono de prueba, Atras durante el juego abre la pausa y no cierra la app; en el menu pide confirmacion antes de salir; en ventana, la tecla de pausa abre y cierra la pausa",
     "pasa": false
+  },
+  {
+    "id": "entrada-control",
+    "que": "El control (Xbox / PlayStation) emite las mismas acciones del InputMap, con su mapeo en docs/contrato.md",
+    "comprobacion": "manual: con un control conectado, el stick izquierdo y cada boton disparan la accion que dice docs/contrato.md",
+    "pasa": false
   }
 ]
