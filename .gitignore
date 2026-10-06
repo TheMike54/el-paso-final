@@ -1,0 +1,20 @@
+# Godot: cache de importacion y plantilla de Android (se regeneran)
+.godot/
+/android/
+
+# Paquetes exportados
+build/*
+!build/.gdignore
+*.apk
+*.aab
+*.idsig
+
+# Firma y credenciales
+*.keystore
+*.jks
+export_credentials.cfg
+.env*
+
+# Configuracion local de cada persona
+CLAUDE.local.md
+.claude/settings.local.json
