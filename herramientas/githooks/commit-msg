@@ -1,0 +1,6 @@
+#!/bin/sh
+# Rechaza mensajes de commit con lineas de atribucion de asistentes de IA.
+if grep -qiE '^(Co-Authored-By:.*(claude|anthropic|copilot|codex|gemini|cursor)|Claude-Session:|.*Generated with \[?Claude)' "$1"; then
+  echo "commit-msg: el mensaje trae una linea de atribucion de IA; quitala y repite el commit." >&2
+  exit 1
+fi

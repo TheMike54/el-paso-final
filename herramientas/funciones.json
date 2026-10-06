@@ -1,0 +1,56 @@
+[
+  {
+    "id": "hook-sin-commit",
+    "que": "El hook de Claude Code bloquea las ordenes de git y gh que publican o reescriben el historial, y deja pasar las de lectura",
+    "comprobacion": "herramientas/probar-sin-commit.ps1",
+    "pasa": true
+  },
+  {
+    "id": "githook-commit-msg",
+    "que": "El hook de git rechaza un mensaje de commit con lineas de atribucion de asistentes y acepta un coautor humano",
+    "comprobacion": "manual: con core.hooksPath activo, un commit vacio cuyo mensaje lleva 'Co-Authored-By: Claude' termina con salida 1 y no crea commit",
+    "pasa": true
+  },
+  {
+    "id": "verificar-entorno",
+    "que": "verificar-entorno.ps1 revisa Godot, identidad de git, hook de git, archivos locales y Claude Code, y termina con ENTORNO OK o ENTORNO FALLA",
+    "comprobacion": "manual: con GODOT_PATH definido la ultima linea es ENTORNO OK y la salida 0; sin GODOT_PATH, ENTORNO FALLA y salida 1; igual en powershell.exe 5.1 y pwsh 7",
+    "pasa": true
+  },
+  {
+    "id": "validador",
+    "que": "validar.ps1 sale con 1 si un script no compila o falta un recurso, con 0 en el arbol limpio, y termina solo si la escena validadora esta rota",
+    "comprobacion": "manual: en una copia del proyecto, un .gd con error de sintaxis y una escena con un ext_resource inexistente dan salida 1; el arbol limpio imprime OK  VALIDACION ... fallos=0",
+    "pasa": true
+  },
+  {
+    "id": "ci-validar",
+    "que": "El job validar del CI falla con un script roto o un mensaje de commit con atribucion, y pasa con el arbol limpio",
+    "comprobacion": "manual: un PR con un .gd roto muestra el check validar en rojo; al quitarlo, en verde",
+    "pasa": false
+  },
+  {
+    "id": "etiqueta-qa-pending",
+    "que": "La etiqueta qa-pending se pone al abrir el PR y se quita cuando lo aprueba un integrante",
+    "comprobacion": "manual: gh pr view muestra la etiqueta tras abrir el PR y deja de mostrarla tras la aprobacion",
+    "pasa": false
+  },
+  {
+    "id": "puerto-guion",
+    "que": "El puerto de depuracion corre un guion de entradas, lo compara con su .esperado e imprime GUION OK o GUION FALLA; falla si falta el guion o la accion",
+    "comprobacion": "herramientas/guiones/nucleo/caja.guion",
+    "pasa": false
+  },
+  {
+    "id": "paquete-sin-herramientas",
+    "que": "El paquete de publicacion no contiene herramientas/ y arranca sin el puerto de depuracion",
+    "comprobacion": "manual: el paquete exportado con el preset de publicacion arranca en headless e imprime que el puerto no existe, sin errores",
+    "pasa": false
+  },
+  {
+    "id": "validar-funciones-json",
+    "que": "El validador revisa cada funciones.json: JSON valido, campos id, que, comprobacion y pasa, y archivo de comprobacion presente en toda entrada con pasa true",
+    "comprobacion": "manual: una entrada con pasa true cuyo archivo de comprobacion no existe hace salir a validar.ps1 con 1",
+    "pasa": false
+  }
+]
