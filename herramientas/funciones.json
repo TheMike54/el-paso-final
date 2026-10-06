@@ -27,7 +27,7 @@
     "id": "ci-validar",
     "que": "El job validar del CI falla con un script roto o un mensaje de commit con atribucion, y pasa con el arbol limpio",
     "comprobacion": "manual: un PR con un .gd roto muestra el check validar en rojo; al quitarlo, en verde",
-    "pasa": false
+    "pasa": true
   },
   {
     "id": "etiqueta-qa-pending",

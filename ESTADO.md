@@ -5,7 +5,7 @@ Se sobrescribe; máximo 60 líneas. Rama y PR en curso, bloqueos y decisiones ab
 ## Ahora
 
 - Etapa: preparación del repositorio, antes del primer código del núcleo.
-- Rama: `chore/setup` (pasos 2 a 4). PR en curso: el primero, de `chore/setup` a `main`, por abrir.
+- Rama: `chore/setup` (pasos 2 a 4). PR en curso: #1, de `chore/setup` a `main`, con los tres checks en verde.
 - Bloqueos: ninguno. El primer PR necesita la aprobación de un integrante distinto de quien lo abre.
 
 ## Preparación del repositorio
@@ -15,7 +15,7 @@ Se sobrescribe; máximo 60 líneas. Rama y PR en curso, bloqueos y decisiones ab
 | 1 | Repositorio, `project.godot`, licencia y README | En un clon nuevo, `--import` deja `git status --porcelain` vacío | Cumplida el 06-oct-2026 en un clon de GitHub (`2a73fbc`) |
 | 2 | Configuración de Claude Code y de git, los `CLAUDE.md` y las skills (rama `chore/setup`) | El asistente no puede hacer `git commit` ni `git -C . commit`; git rechaza un commit con atribución de un asistente | Cumplida: las dos órdenes quedan bloqueadas en PowerShell y en Git Bash; `probar-sin-commit.ps1` da 64 de 64 en 5.1 y en 7 |
 | 3 | Validador: `validar.gd`, `validar.tscn`, `validar.ps1` | Un `.gd` roto o un recurso faltante dan salida 1; el árbol limpio da 0 en PowerShell 5.1 y 7; con el validador roto termina solo y falla | Cumplida en una copia del proyecto; árbol limpio: `OK  VALIDACION archivos=2 fallos=0` en 5.1 y en 7 |
-| 4 | GitHub: etiqueta, plantillas, CODEOWNERS, workflows, ajustes y primer PR | El PR sale en rojo con un `.gd` roto y en verde al quitarlo; `qa-pending` se pone al abrir y se quita al aprobar; después, ruleset activo y push directo a `main` rechazado | En curso: archivos escritos; falta correrlos en GitHub |
+| 4 | GitHub: etiqueta, plantillas, CODEOWNERS, workflows, ajustes y primer PR | El PR sale en rojo con un `.gd` roto y en verde al quitarlo; `qa-pending` se pone al abrir y se quita al aprobar; después, ruleset activo y push directo a `main` rechazado | En curso. Visto el 06-oct-2026: `validar` en verde en el PR #1 y en rojo en el PR #2 (mismo árbol más un `.gd` roto); `qa-pending` puesta al abrir. Falta: aprobación, fusión, ruleset y push directo rechazado |
 | 5 | Puerto de depuración y primer guion (segundo PR) | `GUION OK` en 3 corridas; guion o acción inexistente dan salida 1; el paquete de publicación arranca sin el puerto | Sin empezar |
 | 6 | Documentos: `docs/contrato.md`, `licencias.md`, `pruebas.md`, `idea.md` y los dos `funciones.json` (segundo PR) | El validador acepta los dos JSON; todo lo que citan los `CLAUDE.md` existe | Sin empezar |
 | 7 | Clon limpio y las tres máquinas | Solo con el README pasan `verificar-entorno.ps1` y `validar.ps1` en cada máquina | Sin empezar |
