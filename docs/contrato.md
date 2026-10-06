@@ -52,10 +52,27 @@ La lógica lee acciones con nombre (`Input.is_action_pressed(&"saltar")`), nunca
 |---|---|
 | `mover_izquierda` | A |
 | `mover_derecha` | D |
+| `mover_arriba` | Flecha arriba |
+| `mover_abajo` | Flecha abajo |
 | `saltar` | W |
+| `atacar` | Espacio |
+| `curar` | Q |
+| `impulso` | Flecha derecha |
+| `interactuar` | Flecha arriba |
+| `mapa_rapido` | Tab |
+| `mapa` | M |
+| `mochila` | I |
+| `pausa` | Esc |
 
 Las teclas se guardan como tecla física (`physical_keycode`): valen por su posición en el teclado, no por la
 letra de la distribución. Una acción nueva se agrega a `project.godot` y a esta tabla en el mismo cambio.
+
+- `interactuar` y `mover_arriba` comparten tecla y las dos se activan juntas. Son acciones aparte para
+  reasignarlas por separado; junto a algo con que interactuar, la lógica del jugador decide cuál vale.
+- La caída en picada (`mover_abajo` + `atacar` en el aire) y el salto en pared (empujar hacia la pared en el
+  aire) son combinaciones de acciones, no acciones propias.
+- Por ahora solo hay teclado. Los controles táctiles y el control (Xbox / PlayStation) emiten estas mismas
+  acciones cuando entren.
 
 ## Jugador
 

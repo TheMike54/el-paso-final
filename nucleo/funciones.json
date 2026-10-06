@@ -15,7 +15,7 @@
     "id": "entrada-acciones",
     "que": "El InputMap tiene todas las acciones del juego con su teclado inicial y la logica solo lee acciones con nombre",
     "comprobacion": "manual: project.godot lista las acciones de docs/contrato.md y ningun .gd de nucleo/ lee teclas ni toques",
-    "pasa": false
+    "pasa": true
   },
   {
     "id": "jugador-movimiento",

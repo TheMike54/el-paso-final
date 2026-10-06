@@ -4,10 +4,12 @@ Se sobrescribe; máximo 60 líneas. Rama y PR en curso, bloqueos y decisiones ab
 
 ## Ahora
 
-- Etapa: preparación del repositorio, antes del primer código del núcleo.
-- Rama: `feature/herramientas-puerto-guion` (pasos 5 y 6, teclado y subagentes), local y apilada sobre
-  `chore/setup`; se sube cuando el PR #1 esté fusionado. El paso 8 va en su propia rama, `chore/android-export`,
-  que sale de esta.
+- Etapa: núcleo en curso; la preparación del repositorio sigue abierta solo en los pasos 4, 7 y 8.
+- Ramas locales, sin subir hasta que el PR #1 esté fusionado:
+  - `feature/herramientas-puerto-guion` (pasos 5 y 6, teclado y subagentes), apilada sobre `chore/setup`.
+  - `chore/android-export` (paso 8), que sale de `feature/herramientas-puerto-guion`.
+  - `feature/nucleo-entrada-acciones` (núcleo: acciones de entrada), que también sale de
+    `feature/herramientas-puerto-guion`.
 - PR en curso: #1, de `chore/setup` a `main`, con los checks en verde.
 - Bloqueos: el PR #1 necesita la aprobación de un integrante distinto de quien lo abre.
 
@@ -21,10 +23,10 @@ Se sobrescribe; máximo 60 líneas. Rama y PR en curso, bloqueos y decisiones ab
 | 4 | GitHub: etiqueta, plantillas, CODEOWNERS, workflows, ajustes y primer PR | El PR sale en rojo con un `.gd` roto y en verde al quitarlo; `qa-pending` se pone al abrir y se quita al aprobar; después, ruleset activo y push directo a `main` rechazado | En curso. Visto el 06-oct-2026: `validar` en verde en el PR #1 y en rojo en el PR #2 (mismo árbol más un `.gd` roto); `qa-pending` puesta al abrir. Falta: aprobación, fusión, ruleset y push directo rechazado |
 | 5 | Puerto de depuración y primer guion (segundo PR) | `GUION OK` en 3 corridas; guion o acción inexistente dan salida 1; el paquete de publicación arranca sin el puerto | Cumplida en local el 06-oct-2026: `GUION OK` en 3 corridas, también con el teclado nuevo; guion inexistente, acción inexistente y estado distinto dan salida 1; el paquete arranca con `puerto=false`. Falta ver el guion en el CI |
 | 6 | Documentos: `docs/contrato.md`, `licencias.md`, `pruebas.md`, `idea.md` y los dos `funciones.json` (segundo PR) | El validador acepta los dos JSON; todo lo que citan los `CLAUDE.md` existe | Cumplida en local el 06-oct-2026: `OK  VALIDACION archivos=8 fallos=0`; una entrada con `"pasa": true` sin su archivo, un JSON ilegible, un campo faltante y un id repetido dan salida 1 |
-| 7 | Clon limpio y las tres máquinas | Solo con el README pasan `verificar-entorno.ps1` y `validar.ps1` en cada máquina | En curso: pasa en un clon nuevo en una máquina (06-oct-2026). Faltan las otras dos, con el PR #1 ya fusionado |
+| 7 | Clon limpio y las tres máquinas | Solo con el README pasan `verificar-entorno.ps1` y `validar.ps1` en cada máquina | En curso, en paralelo y sin bloquear el núcleo: pasa en un clon nuevo en una máquina (06-oct-2026). Faltan las de los otros dos integrantes, con el PR #1 ya fusionado |
 | 8 | Android (tercer PR): preset, APK de depuración, instalación con `adb` | La caja gris corre en el teléfono de prueba; modelo, Android, RAM y FPS en `docs/pruebas.md` | En curso: el APK de depuración sale por línea de comandos con el preset «Desarrollo» (26,95 MB, `arm64-v8a`, firmado). Falta instalarlo y medir en el teléfono |
 
-El núcleo empieza al cerrar el paso 7. El paso 8 puede correr en paralelo.
+El núcleo empezó el 06-oct-2026 sin esperar el paso 7; los pasos 7 y 8 siguen en paralelo.
 
 ## Decisiones técnicas
 
@@ -40,7 +42,8 @@ El núcleo empieza al cerrar el paso 7. El paso 8 puede correr en paralelo.
 - El puerto de depuración solo tiene modo guion; el modo en vivo por TCP se agrega cuando un guion no alcance.
 - El `.esperado` compara con tolerancia (0,5 px por omisión) y el guion de la caja revisa el estado en el aire:
   un salto que no ocurre hace fallar el guion sin atarlo a cada ajuste del salto.
-- Teclado inicial: A y D para moverse y W para saltar, como teclas físicas. El guion no cambió: usa acciones.
+- Teclado inicial: las 13 acciones de `docs/contrato.md` («Entrada»), como teclas físicas; `interactuar` comparte
+  la flecha arriba con `mover_arriba`. El control (Xbox / PlayStation) entra como funcionalidad aparte.
 - `import_etc2_astc=true`: sin esa clave Godot rechaza la exportación a Android. Va en el segundo PR porque
   comparte `project.godot` con el cambio de teclado.
 - Paso 8: dos presets de Android con el id `com.themike54.elpasofinal`. «Publicacion» excluye `herramientas/*` y
