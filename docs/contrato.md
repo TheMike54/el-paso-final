@@ -57,6 +57,22 @@ La lógica lee acciones con nombre (`Input.is_action_pressed(&"saltar")`), nunca
 Las teclas se guardan como tecla física (`physical_keycode`): valen por su posición en el teclado, no por la
 letra de la distribución. Una acción nueva se agrega a `project.godot` y a esta tabla en el mismo cambio.
 
+## Jugador
+
+Reglas del salto, como en Hollow Knight. Entran con la funcionalidad `jugador-movimiento`; la caja gris de la
+escena principal no las lleva. Todos los valores son constantes del jugador y se ajustan en la zona de pruebas.
+
+| Regla | Qué hace |
+|---|---|
+| Salto variable | Mientras `saltar` sigue presionada, el jugador sube hasta una altura máxima. Al soltarla antes, la velocidad vertical se corta y el salto queda más bajo. Hay un mínimo de cuadros de subida: un toque corto da un salto bajo, no nulo |
+| Tiempo coyote | `saltar` todavía funciona unos ticks después de salir caminando de una orilla |
+| Salto en cola | `saltar` presionada unos ticks antes de aterrizar hace que el jugador salte al tocar el suelo |
+
+- El tiempo coyote y el salto en cola son cortos: de 2 a 3 ticks, a 60 por segundo.
+- Comprobación del salto variable: dos guiones revisan la altura en el mismo cuadro.
+  `jugador_movimiento.guion` mantiene `saltar` y `jugador_salto_corto.guion` la suelta enseguida; el segundo
+  debe quedar más bajo.
+
 ## Grupos
 
 | Grupo | Quién lo lleva | Quién lo usa |

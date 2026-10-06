@@ -46,9 +46,12 @@ El núcleo empieza al cerrar el paso 7. El paso 8 puede correr en paralelo.
 - Paso 8: dos presets de Android con el id `com.themike54.elpasofinal`. «Publicacion» excluye `herramientas/*` y
   `*funciones.json` (Godot exporta los JSON como recursos). «Desarrollo» lleva todo y arranca con `--print-fps`
   para leer los FPS con `adb logcat`. La sección de opciones de un preset no puede ir vacía: Godot imprime `ERROR:`.
+- Salto del jugador: altura variable, tiempo coyote y salto en cola (`docs/contrato.md`, «Jugador»). Entra con
+  `jugador-movimiento`; el salto variable se comprueba con dos guiones que miran la altura en el mismo cuadro.
 - Subagentes en `.claude/agents/`: `revisor` en un contexto nuevo solo en los puntos críticos del `CLAUDE.md`
   raíz; `investigador` y `Explore` en un modelo más barato, sin editar.
 
 ## Decisiones abiertas
 
-- Ícono del proyecto: no hay. La exportación imprime `ERROR: No project icon specified` y genera el APK igual.
+- Ícono del proyecto: abierta hasta tener arte. Sin ícono, la exportación imprime `ERROR: No project icon
+  specified` y genera el APK igual.

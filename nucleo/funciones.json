@@ -19,7 +19,7 @@
   },
   {
     "id": "jugador-movimiento",
-    "que": "El jugador camina y salta en una sala de prueba, con toda su logica en _physics_process",
+    "que": "El jugador camina y salta en una sala de prueba, con toda su logica en _physics_process. Salto de altura variable: mantener saltar sube hasta una altura maxima y soltar antes corta la velocidad vertical, con un minimo de cuadros para que un toque corto de un salto bajo. Tiempo coyote (saltar unos ticks despues de salir de una orilla) y salto en cola (presionar unos ticks antes de aterrizar salta al tocar el suelo), de 2 a 3 ticks, ajustables. Dos guiones miran la altura en el mismo cuadro: jugador_movimiento.guion mantiene saltar y jugador_salto_corto.guion la suelta enseguida y debe quedar mas bajo",
     "comprobacion": "herramientas/guiones/nucleo/jugador_movimiento.guion",
     "pasa": false
   },
