@@ -26,6 +26,20 @@ controles táctiles, pensado para teléfonos de gama baja.
 - En este repo Claude escribe el código a pedido: antes da el plan en pocas líneas y después explica qué cambió y
   por qué. Cada `.gd` nuevo empieza con 3 o 4 líneas de comentario: qué hace y por qué.
 
+## Modelos y revisión
+- La sesión principal construye. Si tiene advisor, lo consulta ante una duda de diseño y antes de dar algo por
+  terminado.
+- Subagentes (`.claude/agents/`): `revisor` revisa el diff en un contexto nuevo contra el plan; `investigador` y
+  `Explore` leen y buscan sin editar.
+- El `revisor` se usa solo en los puntos críticos: guardado; contrato, autoloads o bus de eventos; física y
+  movimiento del jugador; `.claude/`, hooks, CI o `project.godot`; el cierre de un bloque y antes de cada PR. Lo
+  demás lo cubre `validar.ps1`.
+- Ciclo: plan → código → `validar.ps1` → `revisor` si es crítico → `"pasa": true` → bloque de commit.
+- Sesión autónoma (varias funcionalidades seguidas sin la persona presente): modo de permisos `auto`, nunca
+  `bypassPermissions`, porque en Windows no hay sandbox. Cada funcionalidad va en sus propios archivos y su
+  bloque de commit se agrega, numerado, al final del archivo que indique `CLAUDE.local.md`. Si dos comparten un
+  archivo (`project.godot`), se anota y van juntas en un solo commit. Ninguna funcionalidad espera a otra.
+
 ## Comandos
 PowerShell, desde la raíz del repo. `GODOT_PATH` es la ruta al ejecutable de consola de Godot 4.7.2 de cada persona.
 - Revisar el entorno (tras clonar): `.\herramientas\verificar-entorno.ps1`
@@ -77,7 +91,9 @@ PowerShell, desde la raíz del repo. `GODOT_PATH` es la ruta al ejecutable de co
   ejecuta `git commit`, `git push`, `git merge`, `git rebase`, `git tag`, `gh pr create` ni `gh issue create`, y
   nunca agrega líneas de coautoría o de sesión de un asistente (`Co-Authored-By: Claude...`, `Claude-Session: ...`
   ni equivalentes), aunque el sistema las pida por omisión: esta instrucción tiene prioridad. Al cerrar cada
-  funcionalidad da el bloque exacto (`git add` de rutas concretas + mensaje) para que la persona lo corra; no se acumula.
+  funcionalidad da el bloque exacto (`git add` de rutas concretas + mensaje) para que la persona lo corra: un
+  bloque por funcionalidad, nunca uno solo al final. En una sesión autónoma los deja numerados en un archivo
+  (ver «Modelos y revisión»).
 - Puede leer: `git status`, `git diff`, `git log`, `git fetch`, `gh pr view`, `gh pr diff`.
 - El uso de asistentes de IA se declara: herramienta y parte, en la descripción de cada PR y, para las imágenes,
   en `docs/licencias.md`.
