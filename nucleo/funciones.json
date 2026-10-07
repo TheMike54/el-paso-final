@@ -75,7 +75,7 @@
     "id": "controles-tactiles",
     "que": "Los controles tactiles traducen el toque a las mismas acciones del InputMap",
     "comprobacion": "manual: en el telefono de prueba, el joystick y los botones mueven al jugador igual que el teclado",
-    "pasa": false
+    "pasa": true
   },
   {
     "id": "menu-desarrollo",
@@ -157,8 +157,32 @@
   },
   {
     "id": "vibracion",
-    "que": "El telefono vibra corto al pegar, al recibir dano, al curarse y al descansar en un banco, cada uno con su duracion y su fuerza y con un minimo de ticks entre vibraciones; nada mas vibra. El ajuste vibracion (archivo de ajustes propio, activado por omision) la apaga. El banco lo comprueba vibracion_banco.guion, y el ajuste y el limite, guardado.guion",
-    "comprobacion": "herramientas/guiones/nucleo/vibracion.guion",
+    "que": "El telefono vibra corto al pegar, al recibir dano, al curarse, al descansar en un banco y al aterrizar duro o de la picada, cada uno con su duracion y su fuerza y con un minimo de ticks entre vibraciones; nada mas vibra. El ajuste vibracion (archivo de ajustes propio, activado por omision) la apaga. El banco lo comprueba banco_sentarse.guion; el aterrizaje, vibracion_aterrizaje.guion; y el ajuste y el limite, guardado.guion",
+    "comprobacion": "herramientas/guiones/nucleo/jugador_curar.guion",
+    "pasa": true
+  },
+  {
+    "id": "camara-caida-sin-tiron",
+    "que": "Al caer, la camara no se frena en su limite antes del aterrizaje: la velocidad del jugador en pantalla no sube mas de 100 px/s de un tick al siguiente",
+    "comprobacion": "herramientas/guiones/nucleo/camara_caida.guion",
+    "pasa": true
+  },
+  {
+    "id": "temblor-al-aterrizar",
+    "que": "Al aterrizar tras ticks_caida_dura ticks cayendo a velocidad_caida_max, o al aterrizar de la picada, el jugador calcula el temblor (propiedades temblor_x y temblor_y) durante temblor_ticks ticks; una caida corta y un salto normal no tiemblan. Que el temblor pase al offset de la camara y el interruptor de la pausa se comprueban a mano en el S20",
+    "comprobacion": "herramientas/guiones/nucleo/camara_temblor.guion",
+    "pasa": true
+  },
+  {
+    "id": "aterrizaje-duro",
+    "que": "Al aterrizar tras ticks_caida_dura ticks cayendo a velocidad_caida_max, el jugador se queda quieto ticks_aterrizaje_duro ticks: la gravedad y los golpes siguen, lo tocado durante el bloqueo (saltar, atacar, curar) se pierde y lo mantenido cuenta al terminar. Lo cortan un golpe, un peligro, morir y sentarse; la picada no lo empieza",
+    "comprobacion": "herramientas/guiones/nucleo/jugador_aterrizaje_duro.guion",
+    "pasa": true
+  },
+  {
+    "id": "vibracion-al-aterrizar",
+    "que": "El aterrizaje duro y el aterrizaje de la picada emiten Eventos.jugador_aterrizo y el telefono vibra 80 ms con fuerza 0,9; con el ajuste vibracion apagado no vibra",
+    "comprobacion": "herramientas/guiones/nucleo/vibracion_aterrizaje.guion",
     "pasa": true
   }
 ]

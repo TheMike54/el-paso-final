@@ -5,16 +5,14 @@ Se sobrescribe; máximo 60 líneas. Rama y PR en curso, bloqueos y decisiones ab
 ## Ahora
 
 - Etapa: núcleo programado y probado en el teléfono; ajustes tras esa prueba, vibración y primer bloque de
-  interfaz. Esperan prueba manual las entradas con `"pasa": false` de `nucleo/` e `interfaz/`. La preparación del
-  repositorio sigue abierta en los pasos 4, 7 y 8.
-- Rama en curso: `feature/nucleo-movimiento-camara-sala`, que sale de `f302dc6`
-  (`feature/nucleo-entrada-acciones`) y lleva también el hook al compactar. Planes cerrados:
-  `planes/cerrados/nucleo-movimiento-camara-sala.md`, `nucleo-partida-y-habilidades.md`,
-  `nucleo-poderes-y-enemigo.md` y `nucleo-ajustes-interfaz-vibracion.md`.
+  interfaz. Esperan prueba manual las entradas con `"pasa": false`: cinco de `nucleo/` y `etiqueta-qa-pending` de
+  `herramientas/`; `interfaz/` no tiene ninguna. La preparación del repositorio sigue abierta en los pasos 4, 7 y 8.
+- Rama en curso: `feature/nucleo-movimiento-camara-sala`, que sale de `f302dc6` (`feature/nucleo-entrada-acciones`)
+  y lleva también el hook al compactar. Planes cerrados en `planes/cerrados/`: movimiento y cámara, partida,
+  poderes, ajustes e interfaz, temblor, aterrizaje duro y poda de pruebas.
 - Debajo, sin subir hasta que el PR #1 esté fusionado: `feature/herramientas-puerto-guion` (sobre `chore/setup`),
   `chore/android-export` y `feature/nucleo-entrada-acciones`, que salen de ella.
-- PR en curso: #1, de `chore/setup` a `main`, con los checks en verde.
-- Bloqueos: el PR #1 necesita la aprobación de un integrante distinto de quien lo abre.
+- PR en curso: #1, de `chore/setup` a `main`, checks en verde. Bloqueo: necesita la aprobación de otro integrante.
 
 ## Preparación del repositorio
 
@@ -34,15 +32,15 @@ Pasos 1, 2, 3, 5 y 6 cumplidos (06-oct-2026; detalle en git). Abiertos:
 - Paso 8: dos presets de Android con el id `com.themike54.elpasofinal`. «Publicacion» excluye `herramientas/*` y
   `*funciones.json`; «Desarrollo» lleva todo y arranca con `--print-fps`.
 - La escena principal es el menú (`nucleo/menu.tscn`); la caja gris queda como destino de Nueva partida hasta que
-  exista la primera sala del juego.
+  exista la primera sala del juego; tiene un botón para volver al menú (decidido el 06-oct-2026).
 - Guiones: línea `escena` y claves `valor` y `senal`; las pruebas sin jugador son escenas de `herramientas/salas/`
   que dejan `casos` y `fallos`. Lo que responde a un guion lee la acción, no el evento.
 - La sala crea al jugador, los controles, la pausa, la vibración y la interfaz. Al morir, el jugador reaparece en
   el último banco o en la `Entrada`; un peligro lo devuelve a su último suelo firme (aceptado el 06-oct-2026).
-- Autoloads `Eventos` (doce señales del contrato) y `Partida` (vidas, habilidades y enemigos fuertes vencidos,
+- Autoloads `Eventos` (trece señales del contrato) y `Partida` (vidas, habilidades y enemigos fuertes vencidos,
   que sobreviven al cambio de sala; avisa cada cambio de vidas e Inspiración), los dos antes de `Arranque`.
 - Interfaz en su bloque (`interfaz/`): escucha el bus y lee `Partida` al entrar; la sala la carga con `load()`.
-- Ajustes del teléfono (vibración) en `user://ajustes.json`, aparte de la partida; sin pantalla de Opciones.
+- Ajustes del teléfono (vibración y temblor) en `user://ajustes.json`, aparte de la partida; sin pantalla de Opciones.
 - `curar` es el botón de poderes: tocar lanza la bola, mantener cura, abajo en el aire es la caída en picada;
   abajo + atacar en el aire es el pogo. Enemigos débiles reaparecen al volver a entrar; fuertes, al descansar.
 - Guardado: funciones estáticas, sin autoload; esquema versión 2 (`banco`, `sala`, `vidas_maximas`, `habilidades`);
@@ -50,11 +48,13 @@ Pasos 1, 2, 3, 5 y 6 cumplidos (06-oct-2026; detalle en git). Abiertos:
 
 ## Decisiones abiertas
 
-- Valores iniciales del salto y del combate: los afina la persona en la zona de pruebas.
-- Plataformas atravesables desde abajo: solo en la sala de prueba de la cámara; sin decidir para el juego.
-- Qué es la bola en el mundo y dónde se obtiene (hoy, habilidad `proyectil` en la sala de prueba).
-- Si morir hace reaparecer a los fuertes (hoy no; sin fuente de Hollow Knight) y si un suelo frágil roto se guarda.
-- Vibración activada por omisión, y sus patrones; el preset de Android de `chore/android-export` todavía no pide el
-  permiso `VIBRATE`.
-- Valores nuevos sin fuente de Hollow Knight: caída en dos tramos, recarga de la bola, onda de la picada.
-- Ícono del proyecto: abierta hasta tener arte (sin ícono, la exportación imprime un `ERROR:` y genera el APK).
+- Salto y combate: los afina la persona en la zona de pruebas. Inspiración máxima 99, provisional (el diseño: 3 bloques).
+- Plataformas del juego: sólidas por todos lados (06-oct-2026); las atravesables solo quedan en la sala de la cámara.
+- Qué es la bola en el mundo y la vida de los enemigos: esperan a que existan (06-oct-2026). Hoy, `proyectil` en la sala.
+- Si morir hace reaparecer a los fuertes (hoy no; Hollow Knight sí: fila 6 de la auditoría). Suelo frágil roto: se queda roto y se
+  guarda (06-oct-2026); sin implementar, pide ID estable y subir el esquema del guardado.
+- Pruebas del 07-oct-2026: en el S20 pasan el temblor por tiempo, el aterrizaje duro (también sobre pinchos y banco), su
+  vibración, 120 px de suelo, la puerta y morir con el dedo puesto; en ventana, cámara, capas, caja gris, menú y pausa.
+  Sin probar: control y paquete de publicación. Onda de la picada de 3, provisional.
+- Por aprobar (07-oct-2026): `planes/activos/nucleo-pantalla-completa.md` y las filas 5 a 8 de `nucleo-auditoria-hollow-knight.md`.
+- Ícono del proyecto: se espera al arte, decidido 06-oct-2026 (sin ícono, la exportación imprime un `ERROR:` y genera el APK).

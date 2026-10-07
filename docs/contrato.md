@@ -29,8 +29,8 @@ Valores de `project.godot`. No se cambian sin actualizar esta tabla.
 - La lógica del juego corre en `_physics_process`, a 60 ticks por segundo. `_process` queda para lo visual.
 - Pausar no guarda. La partida se guarda solo en los bancos.
 - Pausa: `nucleo/pausa.tscn` (`class_name Pausa`), que crea cada sala. La acción `pausa` o el botón Atrás de
-  Android la abren y la cierran (`get_tree().paused`); tiene Continuar, el interruptor de vibración (mientras no
-  haya Opciones) y «Salir al menú». Se abre sola al perder el foco (`NOTIFICATION_APPLICATION_FOCUS_OUT` o
+  Android la abren y la cierran (`get_tree().paused`); tiene Continuar, los interruptores de vibración y de temblor de
+  cámara (mientras no haya Opciones) y «Salir al menú». Se abre sola al perder el foco (`NOTIFICATION_APPLICATION_FOCUS_OUT` o
   `NOTIFICATION_APPLICATION_PAUSED`: apps recientes, otra ventana) y no se cierra sola al volver. Corre con
   `PROCESS_MODE_ALWAYS`, igual que los controles táctiles. Su propiedad `abierta` dice si está abierta. La pausa
   lee la acción, no el evento: la abren igual la tecla, el botón táctil y un guion.
@@ -74,9 +74,10 @@ por omisión (`Ajustes.POR_OMISION`).
 
 | Ajuste | Por omisión | Qué es |
 |---|---|---|
-| `vibracion` | `true` | Vibrar al pegar, al recibir daño, al curarse y al descansar |
+| `vibracion` | `true` | Vibrar al pegar, al recibir daño, al curarse, al descansar y al aterrizar duro |
+| `temblor` | `true` | Temblor de la cámara al aterrizar de una caída (se apaga por mareo). Un archivo sin la clave la deja encendida |
 
-- `Ajustes.cargar_una_vez()` lo llaman la vibración y la pausa al crearse; `Ajustes.guardar()`, el interruptor de la
+- `Ajustes.cargar_una_vez()` lo llaman la vibración, la pausa y el jugador al crearse; `Ajustes.guardar()`, los interruptores de la
   pausa.
 - `nucleo/vibracion.gd` (`class_name Vibracion`, `Node`), que crea cada sala con el nombre `Vibracion`: escucha el
   bus y llama a `Input.vibrate_handheld(ms, fuerza)` con un patrón por evento (propiedades exportadas):
@@ -87,6 +88,7 @@ por omisión (`Ajustes.POR_OMISION`).
 | Recibir daño | `jugador_danado` | 60 ms | 0,8 |
 | Curarse | `jugador_curado` | 40 ms | 0,45 |
 | Descansar | `descanso_en_banco` | 70 ms | 0,5 |
+| Aterrizaje duro y aterrizaje de la picada | `jugador_aterrizo` | 80 ms | 0,9 |
 
 - Entre una vibración y la siguiente pasan al menos `ticks_entre_vibraciones` (4); recibir daño no espera. Nada más
   vibra: ni moverse, ni saltar, ni los menús. Cuenta en `pedidas` (con el ajuste encendido o no) y `enviadas`, y la
@@ -142,6 +144,7 @@ cambio.
 | `habilidad_obtenida` | `habilidad: StringName` | El objeto de habilidad al tocarlo (en el juego, lo darán los jefes) |
 | `jefe_vencido` | `jefe: StringName` (id del jefe) | El jefe (todavía no existe) |
 | `cambio_de_sala` | `sala: String` (ruta de la escena), `puerta: StringName` (por la que llegó) | La sala, ya con el jugador puesto, cuando se llega por una puerta |
+| `jugador_aterrizo` | `velocidad: float` (px/s al tocar el suelo) | El jugador vivo, en un aterrizaje duro y al aterrizar de la picada (antes de la onda, para que su vibración gane a la del golpe) |
 
 ## Entrada
 
@@ -175,7 +178,8 @@ letra de la distribución. Una acción nueva se agrega a `project.godot` y a est
   Traducen el toque a estas mismas acciones con `Input.action_press` y `action_release`; es el único script que
   lee toques. Joystick invisible en la zona de abajo a la izquierda (aparece donde se pone el dedo; da fuerza de 0
   a 1 a `mover_*`, con zona muerta de 0,2; hacia arriba también da `interactuar`, como la flecha arriba) y botones Saltar, Atacar, Curar, Impulso, Pausa, Mapa y Mochila en la
-  distribución inicial, anclados a su esquina y medidos en proporción del lado corto. Se ocultan con una tecla o
+  distribución inicial; Impulso solo mientras `Partida.tiene(&"impulso")` (sin la habilidad no se dibuja ni responde,
+  y un dedo encima se suelta al perderla; la tabla `HABILIDAD_DE_BOTON` dice qué botón pide qué habilidad). Anclados a su esquina y medidos en proporción del lado corto. Se ocultan con una tecla o
   el control y reaparecen al tocar la pantalla. Los dedos se recuerdan entre salas (variables estáticas): un dedo
   que sigue en la pantalla al cruzar una puerta o al reaparecer lo sueltan los controles de la sala nueva; si
   entre una sala y otra pasan más de `CUADROS_CAMBIO_DE_SALA` cuadros (el menú), al llegar se suelta todo. Mover y
@@ -222,7 +226,7 @@ Todos los valores son propiedades exportadas del jugador y se ajustan en la zona
 | `ticks_mantener_poder` | 10 | Ticks manteniendo `curar` a partir de los cuales es mantener (curar) y no un toque (poder) |
 | `costo_poder` | 33 | Inspiración que cuesta cada poder |
 | `salida_proyectil` | (60, −90) px | Dónde sale la bola, relativo a los pies del jugador mirando a la derecha |
-| `ticks_recarga_bola` | 24 | Ticks desde que sale una bola hasta poder lanzar otra (un amuleto podría reducirlo) |
+| `ticks_recarga_bola` | 18 | Ticks desde que sale una bola hasta poder lanzar otra (un amuleto podría reducirlo) |
 | `velocidad_impulso` | 1200 px/s | Velocidad horizontal del impulso |
 | `ticks_impulso` | 10 | Ticks que dura el impulso, sin gravedad (200 px) |
 | `ticks_recarga_impulso` | 36 | Ticks desde que empieza un impulso hasta poder hacer otro |
@@ -236,6 +240,13 @@ Todos los valores son propiedades exportadas del jugador y se ajustan en la zona
 | `ticks_invulnerable_picada` | 24 | Ticks sin recibir daño después de aterrizar de la picada |
 | `altura_saltito_picada` | 40 px | Picada desde el suelo: altura del saltito |
 | `ticks_carga_picada` | 15 | Picada desde el suelo: ticks quieto en la cima del saltito antes de bajar |
+| `ticks_caida_dura` | 18 | Aterrizaje duro, como en Hollow Knight: aterrizar tras 18 ticks seguidos (0,3 s) cayendo a `velocidad_caida_max` (unos 794 px; 650 con `distancia_caida_inicial` en 0). Pared, pogo, impulso o retroceso reinician la cuenta. La picada tiembla siempre al aterrizar (no al romper un `SueloFragil`). Sin fuente |
+| `temblor_px` | 20 px | Amplitud vertical inicial del temblor del aterrizaje duro y de la picada: el `offset` de la cámara, signo alterno cada 2 ticks, baja en línea recta a 0; aterrizar otra vez lo reinicia. `temblor_y` y `temblor_x` (públicas) son los valores de cada tick aunque el ajuste esté apagado. Provisional, sin fuente |
+| `temblor_fraccion_x` | 1/3 | Amplitud horizontal en fracción de `temblor_px`, signo alterno cada 3 ticks: con periodos distintos no da vueltas en círculo |
+| `temblor_ticks` | 18 | Ticks que dura el temblor (0,3 s). Provisional, sin fuente |
+| `ticks_aterrizaje_duro` | 21 | Ticks sin control tras un aterrizaje duro (0,35 s; no tras la picada). Sin fuente: el de Hollow Knight está en sus recursos |
+| `suavizado_camara_x` | 8 | Seguimiento horizontal de la cámara: fracción por segundo de lo que le falta (el cálculo de `position_smoothing_speed`) |
+| `tiempo_camara_y` | 0,15 s | Seguimiento vertical de la cámara, amortiguado crítico (como `SmoothDamp`): cayendo a 1200 px/s va 180 px por detrás. Con menos de 0,15 s el frenado en el límite inferior se siente como un jalón (medido el 07-oct-2026) |
 
 Combate:
 
@@ -257,7 +268,11 @@ Combate:
   Si toca un `Golpeable` (que recibe el golpe y da Inspiración) o un peligro, el jugador rebota hacia arriba
   `altura_pogo` sin recibir daño, una vez por ataque, y recupera el doble salto y el impulso en el aire. Soltar
   `saltar` no corta el rebote, y no hay empuje horizontal. Cuenta en `rebotes_pogo`.
-- `vidas`, `muerto`, `toques_poder`, `rebotes_pogo`, `en_picada`, `golpes_onda`, `descansando` e `invulnerable` (solo lectura) son propiedades
+- Aterrizaje duro: corta el ataque, el impulso y la curación a medias y deja al jugador quieto `ticks_aterrizaje_duro`
+  ticks; la gravedad y los golpes siguen. Las pulsaciones de saltar, atacar y curar hechas durante él se pierden; lo
+  mantenido (caminar) cuenta al terminar. Lo cortan un golpe, un peligro (siempre: vuelve al punto seguro), morir y
+  sentarse; el banco no sienta mientras dura. Emite `jugador_aterrizo`.
+- `vidas`, `muerto`, `toques_poder`, `rebotes_pogo`, `en_picada`, `golpes_onda`, `descansando`, `temblor_x`, `temblor_y`, `aterrizando` e `invulnerable` (solo lectura) son propiedades
   públicas: los guiones las leen con `valor Jugador vidas`.
 
 Curar y sensación del golpe:
@@ -314,7 +329,7 @@ Una sala es una escena cuya raíz es un `Node2D` con `nucleo/sala.gd` (`class_na
 | Pieza | Qué es |
 |---|---|
 | Nodo `Entrada` (`Marker2D`, hijo de la raíz) | Donde aparece el jugador. Sin él, aparece en el origen de la sala |
-| Propiedad `limites` (`Rect2`, exportada) | Rectángulo de la sala en sus coordenadas. La cámara del jugador sigue al jugador y no muestra nada fuera de él |
+| Propiedad `limites` (`Rect2`, exportada) | Rectángulo de la sala en sus coordenadas. La cámara del jugador sigue al jugador y no muestra nada fuera de él en cada eje donde la sala es al menos tan grande como la vista |
 | El jugador | No va dentro de la escena: la sala instancia `nucleo/jugador.tscn` en su `_ready` y le pasa `limites` |
 | Controles, pausa, vibración e interfaz | También los crea la sala en su `_ready`: `ControlesTactiles`, `Pausa`, `Vibracion` y, si existe, `interfaz/interfaz.tscn` (con `load()`, para que el núcleo no dependa del bloque `interfaz/`; ver «Interfaz») |
 | Puertas (opcionales) | Instancias de `nucleo/puerta.tscn` (`class_name Puerta`, `Area2D`), hijas directas de la raíz. Ver abajo |
@@ -324,6 +339,12 @@ Una sala es una escena cuya raíz es un `Node2D` con `nucleo/sala.gd` (`class_na
   (medido en un guion el 06-oct-2026). Para que no queden huecos, el contenido de una capa cubre, en cada eje,
   desde 0 hasta `(tamaño de la sala - tamaño de la pantalla) × scroll_scale + tamaño de la pantalla`. Con
   `aspect=expand` la pantalla puede ser más ancha que 1280: la sala de prueba deja 2560 px de margen de cada lado.
+- Cámara, como en Hollow Knight: el jugador la mueve a mano y recorta su objetivo a `limites` antes de suavizar, así
+  se frena sola al acercarse al borde. Bajo el suelo basta el margen de siempre (40 px): sin jalón al caer
+  (`camara_caida.guion`, 07-oct-2026); las salas de caída larga dejan 120 px (16,7 % de 720 de suelo a la vista).
+  El margen casi no cambia el jalón (89,8 px/s por tick con 40 px, 93,1 con 120; umbral 100); las salas de 720 de
+  alto no crecen, porque su cámara empezaría a moverse en vertical al saltar. Si la vista es mayor que la sala en un eje, la cámara se centra en ese eje y
+  lo que sobra se ve por igual a los dos lados, como ya hacía `Camera2D` (`camara_centrada.guion`); sus `limit_*` quedan como seguro.
 
 Cambio de sala:
 
@@ -454,6 +475,6 @@ pruebas» del menú, que solo aparece si el build es de depuración y `herramien
 
 `nucleo/menu.tscn` es la escena principal. Nueva partida (`Partida.reiniciar()`) y Continuar (carga el guardado en
 `Partida`) llevan a la escena de su propiedad `sala_inicial` (por ahora la caja gris, hasta que exista la primera
-sala del juego); Continuar con un banco guardado lleva a la sala de ese banco y pone al jugador en él. Continuar se habilita solo si el guardado es `VALIDA`; con `VACIA`, `DANADA` o
+sala del juego; la caja gris tiene un botón «Volver al menú», porque no es una sala y no tiene pausa); Continuar con un banco guardado lleva a la sala de ese banco y pone al jugador en él. Continuar se habilita solo si el guardado es `VALIDA`; con `VACIA`, `DANADA` o
 `INCOMPATIBLE`, el menú dice por qué. Atrás o la acción `pausa` en el menú piden confirmación antes de cerrar la
 app.

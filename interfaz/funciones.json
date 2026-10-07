@@ -1,8 +1,8 @@
 [
   {
     "id": "vidas-en-pantalla",
-    "que": "La interfaz dibuja un corazon gris por vida maxima, lleno o vacio segun las vidas, arriba a la izquierda (centro en el 17 %, 12 % de una pantalla 16:9, anclado a esa esquina). Empieza con lo que dice Partida al entrar a la sala (al_entrar.guion) y despues se actualiza solo con Eventos.vidas_cambiadas, sin leer al jugador",
-    "comprobacion": "herramientas/guiones/interfaz/curacion.guion",
+    "que": "La interfaz dibuja un corazon gris por vida maxima, lleno o vacio segun las vidas, arriba a la izquierda (centro en el 17 %, 12 % de una pantalla 16:9, anclado a esa esquina). Empieza con lo que dice Partida al entrar a la sala (estado_partida.guion) y despues se actualiza solo con Eventos.vidas_cambiadas, sin leer al jugador",
+    "comprobacion": "herramientas/guiones/nucleo/jugador_curar.guion",
     "pasa": true
   },
   {
@@ -14,13 +14,13 @@
   {
     "id": "aviso-partida-guardada",
     "que": "Cuando la partida se guarda bien (Eventos.partida_guardada, al descansar en un banco), la interfaz muestra «Partida guardada» bajo la barra durante 2 s. Que se quita lo comprueba aviso_guardado_se_quita.guion",
-    "comprobacion": "herramientas/guiones/interfaz/aviso_guardado.guion",
+    "comprobacion": "herramientas/guiones/nucleo/banco_sentarse.guion",
     "pasa": true
   },
   {
     "id": "interfaz-en-el-telefono",
     "que": "En el telefono, los corazones y la barra se ven en la esquina de arriba a la izquierda sin tapar el juego ni quedar bajo la camara frontal, y se leen sin esfuerzo",
     "comprobacion": "manual: en el S20, zona de pruebas, sala de curar: recibir un golpe, golpear al muneco y curarse; mirar los corazones y la barra, y descansar en la sala del banco para ver el aviso",
-    "pasa": false
+    "pasa": true
   }
 ]
