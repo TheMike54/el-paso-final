@@ -22,6 +22,10 @@ controles táctiles, pensado para teléfonos de gama baja.
   antes de ejecutarlo. Al cerrarlo pasa a `planes/cerrados/`. Cambio chico: sin plan.
 - `ESTADO.md` se sobrescribe, no se acumula; máximo 60 líneas: rama y PR en curso, bloqueos y decisiones
   abiertas. Qué funcionalidad sigue no se copia ahí: se lee de `funciones.json`. El historial está en git.
+- Cada error que se encuentra (un fallo del código, no un guion que falla a propósito) va a
+  `docs/errores/AAAA-MM-DD-tema.md`: síntoma, causa, cómo se arregló y qué guion lo cubre ahora. Se escribe en
+  el mismo cambio que el arreglo.
+- Lo que la persona decide en la conversación se escribe en el plan activo o en `ESTADO.md` antes de seguir.
 - Aquí `ESTADO.md`, `funciones.json` y `planes/` sí se versionan, redactados como documentos técnicos.
 - En este repo Claude escribe el código a pedido: antes da el plan en pocas líneas y después explica qué cambió y
   por qué. Cada `.gd` nuevo empieza con 3 o 4 líneas de comentario: qué hace y por qué.
@@ -39,6 +43,9 @@ controles táctiles, pensado para teléfonos de gama baja.
   `bypassPermissions`, porque en Windows no hay sandbox. Cada funcionalidad va en sus propios archivos y su
   bloque de commit se agrega, numerado, al final del archivo que indique `CLAUDE.local.md`. Si dos comparten un
   archivo (`project.godot`), se anota y van juntas en un solo commit. Ninguna funcionalidad espera a otra.
+  Los commits pendientes tampoco frenan la sesión: cambios sin commit que no son suyos se anotan como bloque
+  aparte, a correr primero, y se sigue. Solo se para al arrancar en `main`, ante una descarga o instalación, o
+  ante un cambio que rompa el contrato.
 
 ## Comandos
 PowerShell, desde la raíz del repo. `GODOT_PATH` es la ruta al ejecutable de consola de Godot 4.7.2 de cada persona.
@@ -116,9 +123,11 @@ PowerShell, desde la raíz del repo. `GODOT_PATH` es la ruta al ejecutable de co
 | Configuración del proyecto, ciclo de vida, autoloads y lo que un bloque ofrece a otro | `docs/contrato.md` | Antes de crear contenido, un autoload o tocar el guardado |
 | Idea y alcance de la v1 | `docs/idea.md` | Si la tarea toca qué entra en la v1 |
 | Casos de prueba y QA manual | `docs/pruebas.md` | Antes de pedir revisión de un PR |
+| Errores encontrados, su causa y su arreglo | `docs/errores/` | Antes de arreglar un fallo que se parezca a uno anterior |
 | Procedencia de recursos | `docs/licencias.md` | Al agregar cualquier asset |
 | Instalación desde clon limpio | `README.md` | Si falla el arranque |
 
 ## Al compactar
-Conservar el bloque y la funcionalidad en curso, la última salida de `validar.ps1` y la rama actual. Después de
-compactar, volver a leer el `CLAUDE.md` del bloque.
+El hook `al-compactar.ps1` ya reinyecta la rama, `git status --short`, `ESTADO.md` y los planes activos. Conservar
+solo lo que vive en el chat: la última salida de `validar.ps1`, las pruebas manuales que faltan pedir, el número
+del último bloque de commit pendiente y las decisiones recién tomadas que aún no estén escritas.
