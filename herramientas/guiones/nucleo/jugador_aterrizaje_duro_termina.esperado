@@ -1,0 +1,6 @@
+# Al terminar el aterrizaje duro vuelve a caminar (lo mantenido cuenta) pero no salta: la pulsacion
+# hecha durante el bloqueo se pierde. Sin descartarla, el salto en cola sale al terminar (y=1084).
+valor Jugador aterrizando false
+en_suelo true
+y 1160 1
+x 650 1

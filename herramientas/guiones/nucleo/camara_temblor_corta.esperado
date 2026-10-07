@@ -1,0 +1,4 @@
+# Unos 400 px de caida no son un aterrizaje duro: apenas llega a velocidad_caida_max, lejos de los
+# ticks_caida_dura (18) a ese tope. Con el disparo por velocidad (1000 px/s) si temblaba.
+en_suelo true
+valor Jugador temblor_y 0 0.01

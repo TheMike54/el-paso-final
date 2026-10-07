@@ -44,6 +44,12 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 32
 text = "Vibración"
 
+[node name="Temblor" type="CheckButton" parent="Panel/Opciones"]
+custom_minimum_size = Vector2(400, 72)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Temblor de cámara"
+
 [node name="SalirAlMenu" type="Button" parent="Panel/Opciones"]
 custom_minimum_size = Vector2(400, 72)
 layout_mode = 2

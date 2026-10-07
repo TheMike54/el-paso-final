@@ -1,0 +1,7 @@
+# Tercer tick del temblor: en vertical ya cambio de signo (20, 18,89 y -17,78 px); en horizontal
+# todavia no (6,67, 6,3 y 5,93), porque cambia cada 3 ticks. Se lee temblor_y
+# y no el offset de la camara: la camara lo recibe solo con el ajuste temblor encendido. Sin el
+# temblor seria 0.
+en_suelo true
+valor Jugador temblor_y -17.78 0.05
+valor Jugador temblor_x 5.93 0.05

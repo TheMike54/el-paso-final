@@ -2,8 +2,8 @@ class_name Pausa
 extends CanvasLayer
 # Pausa del juego: la accion pausa o el boton Atras de Android la abren y la cierran durante el
 # juego, y se abre sola al salir de la app o cambiar de ventana. Pausar detiene el arbol y no
-# guarda la partida (solo los bancos la guardan). Tiene el interruptor de vibracion mientras no
-# haya Opciones. La crea cada sala; corre siempre, aun con el arbol en pausa, para poder cerrarse.
+# guarda la partida (solo los bancos la guardan). Tiene los interruptores de vibracion y de temblor
+# de camara mientras no haya Opciones. La crea cada sala; corre siempre, aun con el arbol en pausa, para poder cerrarse.
 const MENU: String = "res://nucleo/menu.tscn"
 
 ## Si la pausa esta abierta. Publica para que un guion la lea con valor.
@@ -13,6 +13,7 @@ var abierta: bool = false
 @onready var _continuar: Button = $Panel/Opciones/Continuar as Button
 @onready var _salir: Button = $Panel/Opciones/SalirAlMenu as Button
 @onready var _vibracion: CheckButton = $Panel/Opciones/Vibracion as CheckButton
+@onready var _temblor: CheckButton = $Panel/Opciones/Temblor as CheckButton
 
 
 func _ready() -> void:
@@ -23,6 +24,8 @@ func _ready() -> void:
 	Ajustes.cargar_una_vez()
 	_vibracion.button_pressed = Ajustes.vibracion
 	_vibracion.toggled.connect(_al_cambiar_vibracion)
+	_temblor.button_pressed = Ajustes.temblor
+	_temblor.toggled.connect(_al_cambiar_temblor)
 
 
 # Se lee la accion y no el evento: asi la abren igual el teclado, el boton tactil y un guion.
@@ -61,6 +64,15 @@ func cerrar() -> void:
 
 func _al_cambiar_vibracion(encendida: bool) -> void:
 	Ajustes.vibracion = encendida
+	_guardar_ajustes()
+
+
+func _al_cambiar_temblor(encendido: bool) -> void:
+	Ajustes.temblor = encendido
+	_guardar_ajustes()
+
+
+func _guardar_ajustes() -> void:
 	var error: Error = Ajustes.guardar()
 	if error != OK:
 		push_error("Pausa: no se pudieron guardar los ajustes (error %d)" % error)

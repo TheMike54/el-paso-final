@@ -1,0 +1,5 @@
+# El aterrizaje duro avisa por el bus (jugador_aterrizo, una vez) y vibra con al_aterrizar. Caminar y
+# caer no vibran: es la unica vibracion pedida.
+senal /root/Eventos jugador_aterrizo 1
+valor Vibracion pedidas 1
+valor Vibracion ultima al_aterrizar

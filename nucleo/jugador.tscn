@@ -24,5 +24,4 @@ shape = SubResource("forma_ataque")
 
 [node name="Camara" type="Camera2D" parent="."]
 position = Vector2(0, -80)
-position_smoothing_enabled = true
-position_smoothing_speed = 8.0
+process_callback = 0

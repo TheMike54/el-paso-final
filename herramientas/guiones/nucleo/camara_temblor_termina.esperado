@@ -1,0 +1,7 @@
+# El temblor termino y la camara quedo sin desplazamiento. Si el temblor no bajara a 0 o se
+# repitiera, temblor_y o el offset seguirian movidos.
+en_suelo true
+valor Jugador temblor_y 0 0.01
+valor Jugador temblor_x 0 0.01
+valor Jugador/Camara offset:x 0 0.01
+valor Jugador/Camara offset:y 0 0.01

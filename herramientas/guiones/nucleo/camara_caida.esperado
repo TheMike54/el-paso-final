@@ -1,0 +1,6 @@
+# Una caida medida y sin jalon: la velocidad del jugador en pantalla no sube mas del umbral del
+# medidor (100 px/s) de un tick al siguiente, con 120 px bajo el suelo (93,1; con 40 px, 89,8). Con el suavizado de Camera2D
+# la camara se frenaba de golpe en su limite (subida de 776 px/s); recortando el objetivo antes de un
+# suavizado de primer orden (limit_smoothed), unos 140; con tiempo_camara_y menor de 0,15 s, mas de 100.
+valor MedidorCamara casos 1
+valor MedidorCamara fallos 0

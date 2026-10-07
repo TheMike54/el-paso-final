@@ -1,0 +1,5 @@
+# Dentro del aterrizaje duro (cuadros 122 a 142): quieto aunque mantenga mover_derecha. Sin el
+# bloqueo caminaria desde el cuadro 124.
+valor Jugador aterrizando true
+valor Jugador velocity:x 0 0.5
+x 608 1

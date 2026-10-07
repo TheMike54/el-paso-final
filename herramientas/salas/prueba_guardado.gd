@@ -79,6 +79,27 @@ func _ready() -> void:
 	Ajustes.cargar(ruta_ajustes)
 	_caso("un archivo de ajustes danado deja los valores por omision", Ajustes.vibracion)
 	DirAccess.remove_absolute(ruta_ajustes)
+	Ajustes.cargar(ruta_ajustes)
+	_caso("sin archivo de ajustes el temblor esta encendido", Ajustes.temblor)
+	Ajustes.temblor = false
+	_caso("guardar los ajustes con el temblor apagado devuelve OK", Ajustes.guardar(ruta_ajustes) == OK)
+	Ajustes.temblor = true
+	Ajustes.cargar(ruta_ajustes)
+	_caso("el temblor apagado vuelve apagado", not Ajustes.temblor)
+	_escribir(ruta_ajustes, '{"version": 1, "ajustes": {"vibracion": false}}')
+	Ajustes.cargar(ruta_ajustes)
+	_caso("un archivo de antes del temblor lo deja encendido y respeta la vibracion", Ajustes.temblor and not Ajustes.vibracion)
+	DirAccess.remove_absolute(ruta_ajustes)
+	Ajustes.temblor = Ajustes.POR_OMISION["temblor"]
+	# El jugador carga los ajustes al entrar (lee user://ajustes.json, sin escribirlo), sin esperar a
+	# que la pausa o la vibracion lo hagan antes.
+	Ajustes._cargados = false
+	var jugador: Node = (load("res://nucleo/jugador.tscn") as PackedScene).instantiate()
+	add_child(jugador)
+	_caso("el jugador carga los ajustes al entrar", Ajustes._cargados)
+	jugador.free()
+	Ajustes.vibracion = Ajustes.POR_OMISION["vibracion"]
+	Ajustes.temblor = Ajustes.POR_OMISION["temblor"]
 
 	# Vibracion: respeta el ajuste y no repite dentro de ticks_entre_vibraciones.
 	var vibracion: Vibracion = Vibracion.new()

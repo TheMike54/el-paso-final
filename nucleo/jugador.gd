@@ -86,7 +86,7 @@ const ESCENA_PROYECTIL: PackedScene = preload("res://nucleo/proyectil.tscn")
 ## Donde sale el proyectil, relativo a los pies del jugador cuando mira a la derecha.
 @export var salida_proyectil: Vector2 = Vector2(60.0, -90.0)
 ## Ticks desde que sale una bola hasta poder lanzar otra. Un amuleto podria reducirlo.
-@export var ticks_recarga_bola: int = 24
+@export var ticks_recarga_bola: int = 18
 
 @export_group("Caida en picada")
 ## Velocidad de la caida en picada, en px/s; no tiene el tope de velocidad_caida_max.
@@ -120,6 +120,32 @@ const ESCENA_PROYECTIL: PackedScene = preload("res://nucleo/proyectil.tscn")
 ## Ticks despues de dejar de tocar la pared en que saltar todavia es un salto en pared.
 @export var ticks_coyote_pared: int = 3
 
+@export_group("Temblor al aterrizar")
+## Ticks seguidos cayendo a velocidad_caida_max desde los que aterrizar es un aterrizaje duro (el
+## mecanismo de Hollow Knight: tiempo cayendo, no velocidad ni altura). 18 = 0,3 s: con la caida de
+## hoy, unos 794 px; con distancia_caida_inicial en 0, unos 650. La caida en picada tiembla siempre.
+@export var ticks_caida_dura: int = 18
+## Amplitud vertical inicial del temblor, en px; baja en linea recta hasta 0. Provisional y sin
+## fuente: con 8 px casi no se veia en el telefono (07-oct-2026).
+@export var temblor_px: float = 20.0
+## Amplitud horizontal, en fraccion de temblor_px.
+@export var temblor_fraccion_x: float = 1.0 / 3.0
+## Ticks que dura el temblor (0,3 s). Provisional y sin fuente, como temblor_px.
+@export var temblor_ticks: int = 18
+
+@export_group("Aterrizaje duro")
+## Ticks sin control tras un aterrizaje duro (el que hace temblar; no el de la picada). 21 = 0,35 s,
+## sin fuente: el valor de Hollow Knight esta en sus recursos.
+@export var ticks_aterrizaje_duro: int = 21
+
+@export_group("Camara")
+## Seguimiento horizontal: fraccion por segundo de lo que le falta a la camara (el mismo calculo
+## que position_smoothing_speed de Camera2D).
+@export var suavizado_camara_x: float = 8.0
+## Seguimiento vertical, en s: amortiguado critico (como SmoothDamp de Unity). Cayendo a velocidad
+## constante, la camara va tiempo_camara_y por detras; con menos, el frenado en el limite se nota.
+@export var tiempo_camara_y: float = 0.15
+
 ## Vidas que le quedan; viven en Partida para sobrevivir al cambio de sala. A 0, muere.
 var vidas: int:
 	get:
@@ -143,6 +169,15 @@ var toques_poder: int = 0
 var descansando: bool = false
 ## Golpes que dio la onda de la caida en picada desde que entro a la sala.
 var golpes_onda: int = 0
+## Desplazamiento vertical del temblor en este tick, en px. La camara lo recibe solo con el ajuste
+## temblor encendido; publico para que un guion lo lea aunque el ajuste este apagado.
+var temblor_y: float = 0.0
+## Desplazamiento horizontal del temblor en este tick, en px; como temblor_y.
+var temblor_x: float = 0.0
+## Quieto y sin control tras un aterrizaje duro (ver ticks_aterrizaje_duro).
+var aterrizando: bool:
+	get:
+		return _ticks_aterrizando > 0
 ## No recibe dano: tras un golpe, durante la picada (con su saltito y su carga) y justo despues.
 var invulnerable: bool:
 	get:
@@ -195,16 +230,39 @@ var _ticks_carga: int = 0
 # Ticks desde que estuvo contra una pared por ultima vez, y la normal de esa pared.
 var _ticks_sin_pared: int = NUNCA
 var _normal_pared: float = 0.0
+# Temblor al aterrizar: ticks que le quedan, si estaba en el suelo el tick anterior y la ultima
+# velocidad vertical que tuvo en el aire (al aterrizar, move_and_slide ya la dejo en 0).
+var _ticks_temblando: int = 0
+var _en_suelo_antes: bool = true
+# Ticks seguidos cayendo a velocidad_caida_max.
+var _ticks_a_tope: int = 0
+var _ticks_aterrizando: int = 0
+# Camara: limites de la sala, altura sobre los pies y velocidad vertical del suavizado.
+var _limites: Rect2 = Rect2(-10000000.0, -10000000.0, 20000000.0, 20000000.0)
+var _altura_camara: Vector2 = Vector2.ZERO
+var _velocidad_camara_y: float = 0.0
 
 
 func _ready() -> void:
+	# La camara se mueve a mano (_seguir_con_camara): deja de heredar la posicion del jugador.
+	_altura_camara = _camara.position
+	_camara.top_level = true
+	_colocar_camara()
+	# El temblor lee Ajustes.temblor cada tick: no depende de que la pausa o la vibracion lo carguen antes.
+	Ajustes.cargar_una_vez()
 	_ataque.monitoring = false
 	_posicion_ataque = _forma_ataque.position
 	_puntos_seguros = [global_position]
 
 
 func _physics_process(delta: float) -> void:
+	_mover(delta)
+	_seguir_con_camara(delta)
+
+
+func _mover(delta: float) -> void:
 	var en_suelo: bool = is_on_floor()
+	_aterrizar(en_suelo)
 	if _ticks_congelado > 0:
 		_ticks_congelado -= 1
 		return
@@ -229,6 +287,9 @@ func _physics_process(delta: float) -> void:
 	if en_suelo:
 		_impulso_en_el_aire = true
 		_doble_salto_disponible = true
+	if _ticks_aterrizando > 0:
+		_seguir_aterrizando()
+		return
 	if _preparando_picada:
 		_seguir_preparando_picada()
 		return
@@ -247,6 +308,64 @@ func _physics_process(delta: float) -> void:
 	_impulsar()
 	_atacar()
 	move_and_slide()
+
+
+# Aterrizaje: se mira al empezar el tick, tras el move_and_slide del anterior. Es duro (tiembla la
+# camara y deja sin control) si venia de ticks_caida_dura ticks cayendo a velocidad_caida_max.
+# El contador se reinicia en el suelo y con cualquier velocidad menor al tope (pared, pogo, impulso,
+# retroceso). Romper un suelo fragil en la picada no es aterrizar: sigue en_picada hasta el suelo.
+func _aterrizar(en_suelo: bool) -> void:
+	# La picada no pasa por aqui: tiembla y avisa en _seguir_picada, solo al aterrizar de verdad (romper
+	# un suelo fragil tambien deja en_suelo un tick, y una picada puede tocar el suelo en su primer tick).
+	if en_suelo and not _en_suelo_antes and not en_picada and _ticks_a_tope >= ticks_caida_dura:
+		_ticks_temblando = maxi(_ticks_temblando, temblor_ticks)
+		# Un golpe o un banco del mismo tick se procesan antes que el jugador: si ya lo empujaron o lo
+		# sentaron, no hay bloqueo (si no, el retroceso esperaria 21 ticks o se levantaria sin control).
+		if not muerto and not descansando and _ticks_retrocediendo == 0:
+			_empezar_aterrizaje_duro()
+			Eventos.jugador_aterrizo.emit(velocidad_caida_max)
+	if en_suelo or en_picada or velocity.y < velocidad_caida_max:
+		_ticks_a_tope = 0
+	else:
+		_ticks_a_tope += 1
+	_en_suelo_antes = en_suelo
+	_temblar()
+
+
+# Aterrizaje duro, como en Hollow Knight: corta lo que estaba haciendo y deja al jugador quieto
+# ticks_aterrizaje_duro ticks. Lo cancelan un golpe, un peligro, morir y sentarse.
+func _empezar_aterrizaje_duro() -> void:
+	_cortar_lo_que_empuja()
+	_cortar_curacion()
+	_ticks_poder = -1
+	velocity.x = 0.0
+	_ticks_aterrizando = ticks_aterrizaje_duro
+
+
+# Sin control: la gravedad (en _caer) y los golpes siguen. Las pulsaciones de saltar, atacar y curar
+# hechas durante el bloqueo se pierden (no quedan en la cola al terminar); lo que se mantiene
+# presionado (caminar) vuelve a contar en cuanto termina.
+func _seguir_aterrizando() -> void:
+	_ticks_aterrizando -= 1
+	_ticks_desde_pulsar = NUNCA
+	_ticks_poder = -1
+	velocity.x = 0.0
+	move_and_slide()
+
+
+# Temblor de la camara: patron fijo, sin azar, y la amplitud baja en linea recta. En vertical el signo
+# cambia cada 2 ticks; en horizontal, cada 3 y con un tercio de la amplitud: con periodos distintos
+# el punto no da vueltas en circulo. Aterrizar otra vez lo reinicia, no lo suma.
+func _temblar() -> void:
+	temblor_x = 0.0
+	temblor_y = 0.0
+	if _ticks_temblando > 0 and temblor_ticks > 0:
+		var transcurridos: int = temblor_ticks - _ticks_temblando
+		var queda: float = temblor_px * float(_ticks_temblando) / float(temblor_ticks)
+		temblor_y = queda if (transcurridos / 2) % 2 == 0 else -queda
+		temblor_x = queda * temblor_fraccion_x * (1.0 if (transcurridos / 3) % 2 == 0 else -1.0)
+		_ticks_temblando -= 1
+	_camara.offset = Vector2(temblor_x, temblor_y) if Ajustes.temblor else Vector2.ZERO
 
 
 # Gravedad. Al empezar a caer el tope es velocidad_caida_inicial; pasados distancia_caida_inicial
@@ -453,8 +572,12 @@ func _seguir_picada() -> void:
 			rompio = true
 	if is_on_floor() and not rompio:
 		en_picada = false
+		# La picada tiembla siempre al aterrizar, sin importar la altura, y no deja sin control.
+		_ticks_temblando = maxi(_ticks_temblando, temblor_ticks)
 		velocity = Vector2.ZERO
 		_ticks_sin_dano = maxi(_ticks_sin_dano, ticks_invulnerable_picada)
+		# Antes de la onda: si la onda golpea, la vibracion del aterrizaje (la fuerte) llega primero.
+		Eventos.jugador_aterrizo.emit(velocidad_picada)
 		_onda()
 
 
@@ -596,6 +719,7 @@ func recibir_dano(dano: int, origen_x: float, peligro: bool = false) -> void:
 			_volver_al_punto_seguro()
 		return
 	vidas = maxi(vidas - dano, 0)
+	_ticks_aterrizando = 0
 	_cortar_curacion()
 	# Un golpe tambien pierde la pulsacion de curar a medias (ni toque ni curacion) y levanta del banco.
 	_ticks_poder = -1
@@ -621,6 +745,7 @@ func recibir_dano(dano: int, origen_x: float, peligro: bool = false) -> void:
 
 func _morir() -> void:
 	muerto = true
+	_ticks_aterrizando = 0
 	_ticks_atacando = 0
 	_ticks_sin_dano = 0
 	_ataque.set_deferred(&"monitoring", false)
@@ -658,7 +783,15 @@ func _volver_al_punto_seguro() -> void:
 	_ticks_sin_suelo = NUNCA
 	_ticks_sin_pared = NUNCA
 	_ticks_congelado = ticks_reaparicion_peligro
-	_camara.reset_smoothing()
+	# Reaparecer no tiembla ni deja la camara movida.
+	_ticks_temblando = 0
+	_en_suelo_antes = true
+	_ticks_a_tope = 0
+	_ticks_aterrizando = 0
+	temblor_x = 0.0
+	temblor_y = 0.0
+	_camara.offset = Vector2.ZERO
+	_colocar_camara()
 
 
 ## Lo llama el banco al descansar: el jugador se acomoda sobre el (en su x) y se queda sentado.
@@ -669,6 +802,7 @@ func sentarse(x: float) -> void:
 	# Ni el hit-stop ni el retroceso de un golpe justo antes siguen al levantarse.
 	_ticks_retrocediendo = 0
 	_ticks_congelado = 0
+	_ticks_aterrizando = 0
 	descansando = true
 	_recien_sentado = true
 	global_position.x = x
@@ -693,11 +827,65 @@ func _seguir_descansando() -> void:
 
 # La sala le pasa sus limites: la camara sigue al jugador sin mostrar nada fuera de ellos.
 func fijar_limites(limites: Rect2) -> void:
+	_limites = limites
 	_camara.limit_left = floori(limites.position.x)
 	_camara.limit_top = floori(limites.position.y)
 	_camara.limit_right = ceili(limites.end.x)
 	_camara.limit_bottom = ceili(limites.end.y)
+	_colocar_camara()
+
+
+# Seguimiento a mano, como Hollow Knight: el objetivo se recorta a los limites ANTES de suavizar, asi
+# la camara se frena sola al acercarse al borde en vez de chocar con el limite. En Y el suavizado es
+# de segundo orden: su velocidad no cambia de golpe cuando el objetivo se detiene. Corre en todos los
+# ticks, tambien congelado, muerto o sentado. Los limit_* de la Camera2D quedan como seguro.
+func _seguir_con_camara(delta: float) -> void:
+	var objetivo: Vector2 = _objetivo_camara()
+	var actual: Vector2 = _camara.global_position
+	actual.x += (objetivo.x - actual.x) * minf(suavizado_camara_x * delta, 1.0)
+	actual.y = _amortiguar_y(actual.y, objetivo.y, delta)
+	_camara.global_position = actual
+
+
+# Pone la camara en su objetivo, sin suavizado: al entrar a la sala y al reaparecer.
+func _colocar_camara() -> void:
+	_camara.global_position = _objetivo_camara()
+	_velocidad_camara_y = 0.0
 	_camara.reset_smoothing()
+
+
+# Centro de la camara al que se quiere llegar: sobre el jugador, recortado para que la vista no salga
+# de la sala. Si la vista es mayor que la sala en un eje, se centra en ese eje, como hace Camera2D con
+# sus limites (medido el 07-oct-2026); si no, el recorte con los bordes invertidos daria otro punto.
+func _objetivo_camara() -> Vector2:
+	var media: Vector2 = get_viewport_rect().size / _camara.zoom / 2.0
+	var centro: Vector2 = _limites.get_center()
+	var objetivo: Vector2 = global_position + _altura_camara
+	if _limites.size.x <= media.x * 2.0:
+		objetivo.x = centro.x
+	else:
+		objetivo.x = clampf(objetivo.x, _limites.position.x + media.x, _limites.end.x - media.x)
+	if _limites.size.y <= media.y * 2.0:
+		objetivo.y = centro.y
+	else:
+		objetivo.y = clampf(objetivo.y, _limites.position.y + media.y, _limites.end.y - media.y)
+	return objetivo
+
+
+# Amortiguado critico hacia el objetivo (la formula de SmoothDamp de Unity, sin tope de velocidad).
+func _amortiguar_y(actual: float, objetivo: float, delta: float) -> float:
+	var omega: float = 2.0 / maxf(tiempo_camara_y, 0.0001)
+	var x: float = omega * delta
+	var factor: float = 1.0 / (1.0 + x + 0.48 * x * x + 0.235 * x * x * x)
+	var diferencia: float = actual - objetivo
+	var empuje: float = (_velocidad_camara_y + omega * diferencia) * delta
+	_velocidad_camara_y = (_velocidad_camara_y - omega * empuje) * factor
+	var nuevo: float = objetivo + (diferencia + empuje) * factor
+	# No se pasa del objetivo.
+	if (objetivo - actual > 0.0) == (nuevo > objetivo):
+		nuevo = objetivo
+		_velocidad_camara_y = 0.0
+	return nuevo
 
 
 func _process(_delta: float) -> void:

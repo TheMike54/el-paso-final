@@ -1,0 +1,7 @@
+# La picada que toca el suelo en su primer tick tambien tiembla (segundo tick: 18,89 y 6,3 px), no
+# deja sin control y avisa una sola vez. Antes de moverla a _seguir_picada no temblaba.
+en_suelo true
+valor Jugador temblor_y 18.89 0.05
+valor Jugador temblor_x 6.3 0.05
+valor Jugador aterrizando false
+senal /root/Eventos jugador_aterrizo 1
