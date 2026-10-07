@@ -1,7 +1,0 @@
-# Las mismas entradas que estado_partida.guion: con 3 vidas, el jugador pasa a la sala de puertas A.
-escena res://herramientas/salas/sala_combate.tscn
-2 mover_derecha press
-62 mover_derecha release
-80 mover_izquierda press
-240 mover_izquierda release
-fin 260

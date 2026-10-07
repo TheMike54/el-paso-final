@@ -3,3 +3,18 @@
 valor Jugador vidas 4
 valor /root/Partida inspiracion 0
 valor Jugador curando false
+
+# Antes en vibracion.guion:
+# Una vibracion por golpe dado (3), una por el dano recibido y una por la curacion: 5, la ultima la
+# de curarse. Moverse, saltar y soltar curar no vibran. Los golpes van a 24 cuadros uno de otro,
+# mas que ticks_entre_vibraciones.
+valor Vibracion pedidas 5
+valor Vibracion ultima al_curarse
+senal /root/Eventos jugador_curado 1
+
+# Antes en curacion.guion:
+# Tras curarse, otra vez 4 corazones llenos y la barra vacia. Si la interfaz solo oyera
+# jugador_danado, se quedaria en 3: la curacion le llega por vidas_cambiadas.
+valor Interfaz/Hud vidas 4
+valor Interfaz/Hud inspiracion 0
+valor Interfaz/Hud bloques_llenos 0

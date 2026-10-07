@@ -2,3 +2,8 @@
 escena res://herramientas/salas/sala_puerta_a.tscn
 valor Jugador vidas 3
 valor /root/Partida vidas 3
+
+# Antes en al_entrar.guion:
+# La interfaz de la sala nueva empieza con las 3 vidas que trae Partida, sin esperar un cambio.
+valor Interfaz/Hud vidas 3
+valor Interfaz/Hud vidas_maximas 4

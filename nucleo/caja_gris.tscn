@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://3iwfnbuv3g63"]
 
 [ext_resource type="Script" uid="uid://1e610o6iknhb" path="res://nucleo/caja_gris.gd" id="1_caja"]
+[ext_resource type="Script" uid="uid://df55eojkg1hgp" path="res://nucleo/boton_volver_menu.gd" id="2_volver"]
 
 [sub_resource type="RectangleShape2D" id="forma_suelo"]
 size = Vector2(2560, 80)
@@ -31,3 +32,18 @@ script = ExtResource("1_caja")
 [node name="Forma" type="CollisionShape2D" parent="Caja"]
 position = Vector2(0, -80)
 shape = SubResource("forma_caja")
+
+[node name="Interfaz" type="CanvasLayer" parent="."]
+
+[node name="VolverAlMenu" type="Button" parent="Interfaz"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -284.0
+offset_top = 24.0
+offset_right = -24.0
+offset_bottom = 96.0
+grow_horizontal = 0
+theme_override_font_sizes/font_size = 28
+text = "Volver al menú"
+script = ExtResource("2_volver")

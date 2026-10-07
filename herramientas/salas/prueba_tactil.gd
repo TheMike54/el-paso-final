@@ -56,6 +56,24 @@ func _ready() -> void:
 	c.procesar(atras)
 	_caso("el boton Atras de Android no oculta los controles", c.visible)
 
+	# El boton Impulso existe solo con la habilidad impulso; los controles la revisan cada cuadro.
+	Partida.reiniciar()
+	await get_tree().process_frame
+	_tocar(c, 10, c.centro(&"impulso"), true)
+	_caso("sin la habilidad, tocar Impulso no presiona impulso", not Input.is_action_pressed(&"impulso"))
+	_tocar(c, 10, c.centro(&"impulso"), false)
+	Partida.habilidades.append(&"impulso")
+	Eventos.habilidad_obtenida.emit(&"impulso")
+	await get_tree().process_frame
+	_tocar(c, 10, c.centro(&"impulso"), true)
+	_caso("con la habilidad, tocar Impulso presiona impulso", Input.is_action_pressed(&"impulso"))
+	Partida.reiniciar()
+	await get_tree().process_frame
+	_caso("al perder la habilidad con el dedo encima se suelta impulso", not Input.is_action_pressed(&"impulso"))
+	_tocar(c, 10, c.centro(&"impulso"), false)
+	Partida.habilidades.append(&"impulso")
+	await get_tree().process_frame
+
 	_tocar(c, 4, c.centro(&"impulso"), true)
 	var tecla: InputEventKey = InputEventKey.new()
 	tecla.physical_keycode = KEY_D

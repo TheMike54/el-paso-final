@@ -3,7 +3,8 @@ extends Control
 # Controles tactiles: traducen cada toque a las mismas acciones del InputMap que el teclado,
 # con Input.action_press y action_release, para que la logica nunca lea el toque. Joystick
 # invisible abajo a la izquierda y botones en la distribucion inicial del diseno, anclados a
-# su esquina. Se ocultan al usar teclado o control y reaparecen al tocar la pantalla.
+# su esquina. Se ocultan al usar teclado o control y reaparecen al tocar la pantalla. Un boton
+# que pide una habilidad solo se dibuja y responde mientras Partida la tiene.
 
 const ACCIONES: Array[StringName] = [&"saltar", &"atacar", &"curar", &"impulso", &"pausa", &"mapa", &"mochila"]
 const ETIQUETAS: PackedStringArray = ["Saltar", "Atacar", "Curar", "Impulso", "Pausa", "Mapa", "Mochila"]
@@ -29,6 +30,9 @@ const ZONA_MUERTA: float = 0.2
 const PROPORCION_REFERENCIA: float = 16.0 / 9.0
 const COLOR_BOTON: Color = Color(1.0, 1.0, 1.0, 0.5)
 const COLOR_PRESIONADO: Color = Color(1.0, 1.0, 1.0, 0.25)
+## Botones que solo existen con una habilidad: accion -> habilidad de Partida. Sin ella no se
+## dibujan ni responden, y los demas no se mueven.
+const HABILIDAD_DE_BOTON: Dictionary[StringName, StringName] = {&"impulso": &"impulso"}
 
 ## Cuadros entre que se van los controles de una sala y llegan los de la siguiente: con mas, ya
 ## no es un cambio de sala (se paso por el menu) y lo que quedo presionado se suelta.
@@ -48,16 +52,26 @@ static var _movimientos_propios: Array[StringName] = []
 # Cuadro en que salieron del arbol los ultimos controles; -1 si no hay dedos por heredar.
 static var _cuadro_salida: int = -1
 
+# Que botones estaban disponibles en la ultima revision, para redibujar solo si cambia.
+var _disponibles: Array[bool] = []
+
 
 func _ready() -> void:
 	visible = DisplayServer.is_touchscreen_available()
 	if _cuadro_salida >= 0 and Engine.get_process_frames() - _cuadro_salida > CUADROS_CAMBIO_DE_SALA:
 		_soltar_todo()
 	_cuadro_salida = -1
+	_revisar_habilidades()
 
 
 func _exit_tree() -> void:
 	_cuadro_salida = Engine.get_process_frames()
+
+
+# Cada cuadro, porque la habilidad llega al tomar el objeto y Partida.reiniciar() la borra sin
+# avisar: asi el boton aparece y desaparece sin recargar la sala.
+func _process(_delta: float) -> void:
+	_revisar_habilidades()
 
 
 func _input(evento: InputEvent) -> void:
@@ -96,8 +110,30 @@ func _radio(i: int) -> float:
 	return RADIOS[i] * minf(size.x, size.y)
 
 
-func _tocar(dedo: int, posicion: Vector2) -> void:
+func _disponible(i: int) -> bool:
+	var habilidad: StringName = HABILIDAD_DE_BOTON.get(ACCIONES[i], &"")
+	return habilidad.is_empty() or Partida.tiene(habilidad)
+
+
+# Un boton que deja de estar disponible con un dedo encima suelta su accion, como al levantar el dedo.
+func _revisar_habilidades() -> void:
+	var disponibles: Array[bool] = []
 	for i: int in range(ACCIONES.size()):
+		disponibles.append(_disponible(i))
+	if disponibles == _disponibles:
+		return
+	_disponibles = disponibles
+	for dedo: int in _dedos_en_botones.keys():
+		if not _disponibles[_dedos_en_botones[dedo]]:
+			_soltar(dedo)
+	queue_redraw()
+
+
+func _tocar(dedo: int, posicion: Vector2) -> void:
+	_revisar_habilidades()
+	for i: int in range(ACCIONES.size()):
+		if not _disponibles[i]:
+			continue
 		if posicion.distance_to(centro(ACCIONES[i])) <= _radio(i) * HOLGURA:
 			_dedos_en_botones[dedo] = i
 			Input.action_press(ACCIONES[i])
@@ -190,6 +226,8 @@ func _draw() -> void:
 	var presionados: Array[int] = []
 	presionados.assign(_dedos_en_botones.values())
 	for i: int in range(ACCIONES.size()):
+		if not _disponibles[i]:
+			continue
 		var c: Vector2 = centro(ACCIONES[i])
 		var r: float = _radio(i)
 		if presionados.has(i):

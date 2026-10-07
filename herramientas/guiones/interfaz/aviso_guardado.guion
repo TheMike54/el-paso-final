@@ -1,7 +1,0 @@
-# Las mismas entradas que banco_sentarse.guion: el jugador descansa en el banco y se guarda la partida.
-escena res://herramientas/salas/sala_banco.tscn
-2 mover_derecha press
-50 mover_derecha release
-55 interactuar press
-56 interactuar release
-fin 70
