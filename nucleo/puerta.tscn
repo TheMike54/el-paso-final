@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://cantrdqq1cwy8"]
+
+[ext_resource type="Script" uid="uid://ddely8nmmf8kq" path="res://nucleo/puerta.gd" id="1_puerta"]
+
+[sub_resource type="RectangleShape2D" id="forma_puerta"]
+size = Vector2(40, 160)
+
+[node name="Puerta" type="Area2D"]
+script = ExtResource("1_puerta")
+
+[node name="Forma" type="CollisionShape2D" parent="."]
+position = Vector2(0, -80)
+shape = SubResource("forma_puerta")
+
+[node name="Dibujo" type="ColorRect" parent="."]
+offset_left = -20.0
+offset_top = -160.0
+offset_right = 20.0
+mouse_filter = 2
+color = Color(0.6, 0.45, 0.2, 0.6)

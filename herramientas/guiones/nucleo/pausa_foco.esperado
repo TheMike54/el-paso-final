@@ -1,0 +1,5 @@
+# La pausa se abrio sola y el jugador se quedo donde estaba aunque siga presionada la derecha.
+# Sin abrirla al perder el foco, seguiria caminando (x cerca de 548).
+escena res://herramientas/salas/sala_foco.tscn
+x 308 2
+valor SalaMovimiento/Pausa abierta true

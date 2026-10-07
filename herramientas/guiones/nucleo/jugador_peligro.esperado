@@ -1,0 +1,9 @@
+# De vuelta en x=752 (todo el cuerpo sobre el suelo izquierdo, que acaba en 800), con 3 vidas, y
+# en el suelo: la pulsacion de saltar previa al peligro no lo hace saltar (sin el arreglo, y=608).
+# Sin el punto seguro, el jugador se quedaria en el foso recibiendo golpes; la Entrada esta en x=200.
+x 752 2
+y 680 1
+en_suelo true
+valor Jugador vidas 3
+valor Jugador muerto false
+senal /root/Eventos jugador_danado 1

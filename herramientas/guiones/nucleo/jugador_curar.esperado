@@ -1,0 +1,5 @@
+# Vidas llenas otra vez y los 33 de Inspiracion gastados (costo_curacion). Sin Inspiracion
+# suficiente, o soltando antes de ticks_curacion, seguiria con 3.
+valor Jugador vidas 4
+valor /root/Partida inspiracion 0
+valor Jugador curando false

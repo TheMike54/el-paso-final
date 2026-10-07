@@ -1,0 +1,8 @@
+# Un ataque dura varios ticks pero golpea una sola vez al muneco. Cuatro golpes del bloque rojo
+# quitan las cuatro vidas, con invulnerabilidad entre uno y otro, y el jugador muere una vez.
+valor Muneco/Golpeable golpes 1
+senal /root/Eventos enemigo_golpeado 1
+senal /root/Eventos jugador_danado 4
+senal /root/Eventos jugador_muerto 1
+valor Jugador vidas 0
+valor Jugador muerto true

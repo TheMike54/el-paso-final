@@ -1,0 +1,6 @@
+# El segundo impulso del aire lo lleva de x=304 a x=104 y el tercer salto a y=152. Sin recuperar el
+# impulso se quedaria en x=304; sin recuperar el doble salto, mas abajo.
+valor Jugador rebotes_pogo 1
+valor Muneco/Golpeable golpes 1
+x 104 2
+y 152 2

@@ -1,0 +1,69 @@
+[gd_scene format=3 uid="uid://bwymvoodu7ofl"]
+
+[ext_resource type="Script" uid="uid://k7a08bqsbqd0" path="res://nucleo/sala.gd" id="1_sala"]
+[ext_resource type="PackedScene" uid="uid://dljj3hd7ldowx" path="res://nucleo/banco.tscn" id="2_banco"]
+[ext_resource type="Script" uid="uid://jy2tkfmforul" path="res://nucleo/dano_contacto.gd" id="3_dano"]
+
+[sub_resource type="RectangleShape2D" id="forma_suelo"]
+size = Vector2(1600, 80)
+
+[sub_resource type="RectangleShape2D" id="forma_bloque"]
+size = Vector2(80, 160)
+
+[sub_resource type="RectangleShape2D" id="forma_pared"]
+size = Vector2(40, 720)
+
+[node name="SalaBanco" type="Node2D"]
+script = ExtResource("1_sala")
+limites = Rect2(0, 0, 1600, 720)
+
+[node name="Entrada" type="Marker2D" parent="."]
+position = Vector2(300, 680)
+
+[node name="Suelo" type="StaticBody2D" parent="."]
+position = Vector2(800, 720)
+
+[node name="Forma" type="CollisionShape2D" parent="Suelo"]
+shape = SubResource("forma_suelo")
+
+[node name="Dibujo" type="ColorRect" parent="Suelo"]
+offset_left = -800.0
+offset_top = -40.0
+offset_right = 800.0
+offset_bottom = 40.0
+mouse_filter = 2
+color = Color(0.25, 0.25, 0.25, 1)
+
+[node name="Banco" parent="." instance=ExtResource("2_banco")]
+position = Vector2(600, 680)
+id = "banco_prueba"
+ruta_guardado = "user://prueba_banco.json"
+
+[node name="BloqueDanino" type="Area2D" parent="."]
+position = Vector2(1200, 680)
+script = ExtResource("3_dano")
+
+[node name="Forma" type="CollisionShape2D" parent="BloqueDanino"]
+position = Vector2(0, -80)
+shape = SubResource("forma_bloque")
+
+[node name="Dibujo" type="ColorRect" parent="BloqueDanino"]
+offset_left = -40.0
+offset_top = -160.0
+offset_right = 40.0
+mouse_filter = 2
+color = Color(0.7, 0.2, 0.2, 1)
+
+[node name="Pared" type="StaticBody2D" parent="."]
+position = Vector2(1260, 360)
+
+[node name="Forma" type="CollisionShape2D" parent="Pared"]
+shape = SubResource("forma_pared")
+
+[node name="Dibujo" type="ColorRect" parent="Pared"]
+offset_left = -20.0
+offset_top = -360.0
+offset_right = 20.0
+offset_bottom = 360.0
+mouse_filter = 2
+color = Color(0.15, 0.15, 0.18, 1)

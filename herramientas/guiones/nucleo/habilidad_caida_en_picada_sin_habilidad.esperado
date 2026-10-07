@@ -1,0 +1,5 @@
+# Sigue en el piso de arriba, sobre el suelo fragil entero, y con los 33 de Inspiracion.
+y 680 1
+en_suelo true
+valor Jugador en_picada false
+valor /root/Partida inspiracion 33

@@ -1,0 +1,7 @@
+# El jugador salta en su sitio y, ya cayendo, presiona saltar otra vez antes de aterrizar
+# en la plataforma: el salto en cola lo hace saltar en cuanto toca el suelo.
+escena res://herramientas/salas/sala_movimiento.tscn
+10 saltar press
+40 saltar release
+60 saltar press
+fin 73

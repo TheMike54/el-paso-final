@@ -1,0 +1,3 @@
+# El juego arranca en el menu (escena principal, sin linea escena). En un build de depuracion
+# con las herramientas en el paquete, el boton de la zona de pruebas se ve.
+fin 3

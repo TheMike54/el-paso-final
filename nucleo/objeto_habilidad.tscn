@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://ru6ttknobjs5"]
+
+[ext_resource type="Script" uid="uid://d13bttx2usi5k" path="res://nucleo/objeto_habilidad.gd" id="1_objeto"]
+
+[sub_resource type="RectangleShape2D" id="forma_objeto"]
+size = Vector2(60, 60)
+
+[node name="ObjetoHabilidad" type="Area2D"]
+script = ExtResource("1_objeto")
+
+[node name="Forma" type="CollisionShape2D" parent="."]
+position = Vector2(0, -30)
+shape = SubResource("forma_objeto")
+
+[node name="Dibujo" type="ColorRect" parent="."]
+offset_left = -30.0
+offset_top = -60.0
+offset_right = 30.0
+mouse_filter = 2
+color = Color(0.4, 0.8, 0.9, 1)

@@ -1,0 +1,7 @@
+# El jugador camina a la derecha 20 cuadros y salta manteniendo saltar.
+# El estado se revisa en el cuadro 30, cerca de la cima del salto.
+escena res://herramientas/salas/sala_movimiento.tscn
+5 mover_derecha press
+25 mover_derecha release
+10 saltar press
+fin 30

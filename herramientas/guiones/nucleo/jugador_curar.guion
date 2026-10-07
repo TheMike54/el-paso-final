@@ -1,0 +1,18 @@
+# En la sala de curar el jugador golpea tres veces al muneco (33 de Inspiracion), recibe un golpe
+# del bloque rojo (3 vidas), se aleja y mantiene curar 75 cuadros: recupera la vida.
+escena res://herramientas/salas/sala_curar.tscn
+2 mover_izquierda press
+3 mover_izquierda release
+6 atacar press
+7 atacar release
+30 atacar press
+31 atacar release
+54 atacar press
+55 atacar release
+70 mover_derecha press
+115 mover_derecha release
+130 mover_izquierda press
+150 mover_izquierda release
+160 curar press
+235 curar release
+fin 240

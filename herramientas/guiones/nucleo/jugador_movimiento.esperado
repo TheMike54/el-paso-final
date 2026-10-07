@@ -1,0 +1,6 @@
+# Desde x=200: 20 cuadros a la derecha a 360 px/s (6 px por cuadro) dan 320.
+# Salto sostenido: en el cuadro 30 va unos 196 px sobre la plataforma (y=480), cerca de la cima.
+x 320 1
+y 284 2
+en_suelo false
+escena res://herramientas/salas/sala_movimiento.tscn

@@ -1,0 +1,8 @@
+# Al aterrizar, la onda (dano_picada 3) vence al enemigo, que tiene 2 de vida. El jugador lo toco
+# en los ultimos cuadros de la caida sin perder vida: la picada no recibe dano. Sin la onda el
+# enemigo seguiria ahi; sin la invulnerabilidad de la caida, el jugador tendria 3 vidas. La de
+# despues de aterrizar la comprueba habilidad_caida_en_picada_invulnerable.guion.
+senal /root/Eventos enemigo_vencido 1
+senal /root/Eventos jugador_danado 0
+valor Jugador golpes_onda 1
+valor Jugador vidas 4

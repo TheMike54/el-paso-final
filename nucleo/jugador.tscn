@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://dgvsn3dxmkpcl"]
+
+[ext_resource type="Script" uid="uid://c3ooqhaj3mao0" path="res://nucleo/jugador.gd" id="1_jugador"]
+
+[sub_resource type="RectangleShape2D" id="forma_jugador"]
+size = Vector2(80, 160)
+
+[sub_resource type="RectangleShape2D" id="forma_ataque"]
+size = Vector2(100, 100)
+
+[node name="Jugador" type="CharacterBody2D" groups=["jugador"]]
+script = ExtResource("1_jugador")
+
+[node name="Forma" type="CollisionShape2D" parent="."]
+position = Vector2(0, -80)
+shape = SubResource("forma_jugador")
+
+[node name="Ataque" type="Area2D" parent="."]
+monitorable = false
+
+[node name="Forma" type="CollisionShape2D" parent="Ataque"]
+position = Vector2(90, -90)
+shape = SubResource("forma_ataque")
+
+[node name="Camara" type="Camera2D" parent="."]
+position = Vector2(0, -80)
+position_smoothing_enabled = true
+position_smoothing_speed = 8.0

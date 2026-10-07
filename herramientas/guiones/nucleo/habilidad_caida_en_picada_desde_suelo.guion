@@ -1,0 +1,20 @@
+# En la sala de la picada, con 33 de Inspiracion y el objeto, el jugador se para sobre el suelo fragil
+# y, en el suelo, presiona abajo y curar.
+escena res://herramientas/salas/sala_picada.tscn
+2 mover_izquierda press
+3 mover_izquierda release
+6 atacar press
+7 atacar release
+30 atacar press
+31 atacar release
+54 atacar press
+55 atacar release
+60 mover_izquierda press
+95 mover_izquierda release
+100 mover_derecha press
+250 mover_derecha release
+260 mover_abajo press
+262 curar press
+266 curar release
+270 mover_abajo release
+fin 330

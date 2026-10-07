@@ -1,0 +1,6 @@
+# Primero el saltito (unos 44 px sobre el suelo, y=636) y ahi quieto, cargando: todavia no baja.
+# Sin el saltito seguiria en el suelo (y=680); sin la carga ya estaria cayendo.
+x 1038 2
+y 636 2
+valor Jugador velocity:y 0 1
+valor Jugador en_picada false

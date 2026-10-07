@@ -14,14 +14,14 @@
   {
     "id": "entrada-acciones",
     "que": "El InputMap tiene todas las acciones del juego con su teclado inicial y la logica solo lee acciones con nombre",
-    "comprobacion": "manual: project.godot lista las acciones de docs/contrato.md y ningun .gd de nucleo/ lee teclas ni toques",
+    "comprobacion": "manual: project.godot lista las acciones de docs/contrato.md y ningun .gd de nucleo/ lee teclas ni toques, salvo nucleo/controles_tactiles.gd, que traduce los toques a acciones",
     "pasa": true
   },
   {
     "id": "jugador-movimiento",
     "que": "El jugador camina y salta en una sala de prueba, con toda su logica en _physics_process. Salto de altura variable: mantener saltar sube hasta una altura maxima y soltar antes corta la velocidad vertical, con un minimo de cuadros para que un toque corto de un salto bajo. Tiempo coyote (saltar unos ticks despues de salir de una orilla) y salto en cola (presionar unos ticks antes de aterrizar salta al tocar el suelo), de 2 a 3 ticks, ajustables. Dos guiones miran la altura en el mismo cuadro: jugador_movimiento.guion mantiene saltar y jugador_salto_corto.guion la suelta enseguida y debe quedar mas bajo",
     "comprobacion": "herramientas/guiones/nucleo/jugador_movimiento.guion",
-    "pasa": false
+    "pasa": true
   },
   {
     "id": "camara-sala",
@@ -39,25 +39,37 @@
     "id": "cambio-de-sala",
     "que": "Al cruzar una puerta el jugador aparece en la puerta destino de la otra sala",
     "comprobacion": "herramientas/guiones/nucleo/cambio_de_sala.guion",
-    "pasa": false
+    "pasa": true
   },
   {
     "id": "bus-eventos",
     "que": "El bus de eventos emite las senales de la lista de docs/contrato.md y ningun bloque se conecta a otro sin pasar por el",
     "comprobacion": "herramientas/guiones/nucleo/bus_eventos.guion",
-    "pasa": false
+    "pasa": true
   },
   {
     "id": "jugador-ataque-y-vida",
     "que": "El jugador ataca, recibe dano, pierde vidas y muere al quedarse sin ninguna",
     "comprobacion": "herramientas/guiones/nucleo/jugador_ataque_y_vida.guion",
-    "pasa": false
+    "pasa": true
   },
   {
     "id": "guardado",
     "que": "El guardado escribe JSON con version en un archivo temporal y lo renombra; al cargar distingue partida valida, archivo danado y version incompatible",
     "comprobacion": "herramientas/guiones/nucleo/guardado.guion",
-    "pasa": false
+    "pasa": true
+  },
+  {
+    "id": "estado-partida",
+    "que": "El autoload Partida guarda las vidas, las vidas maximas, el ultimo banco y las habilidades; se conservan al cambiar de sala y el guardado los guarda y carga desde ahi",
+    "comprobacion": "herramientas/guiones/nucleo/estado_partida.guion",
+    "pasa": true
+  },
+  {
+    "id": "banco",
+    "que": "Descansar en un banco guarda la partida, llena las vidas, lo deja como punto de reaparicion y emite descanso_en_banco; al morir se reaparece en el ultimo banco",
+    "comprobacion": "herramientas/guiones/nucleo/banco.guion",
+    "pasa": true
   },
   {
     "id": "controles-tactiles",
@@ -82,5 +94,71 @@
     "que": "El control (Xbox / PlayStation) emite las mismas acciones del InputMap, con su mapeo en docs/contrato.md",
     "comprobacion": "manual: con un control conectado, el stick izquierdo y cada boton disparan la accion que dice docs/contrato.md",
     "pasa": false
+  },
+  {
+    "id": "jugador-curar",
+    "que": "Mantener curar en el suelo gasta Inspiracion, que se llena golpeando, y al terminar el tiempo de curacion devuelve una vida; si golpean al jugador a la mitad, la curacion se pierde. Duracion y costo como propiedades exportadas. El golpe a la mitad lo comprueba ademas jugador_curar_golpe.guion, la falta de Inspiracion jugador_curar_sin_inspiracion.guion y el impulso jugador_curar_tras_impulso.guion",
+    "comprobacion": "herramientas/guiones/nucleo/jugador_curar.guion",
+    "pasa": true
+  },
+  {
+    "id": "jugador-golpe-sensacion",
+    "que": "Al golpear, el jugador y lo golpeado salen empujados un poco; al recibir dano, el jugador se detiene unos ticks (hit-stop) con un contador propio, sin Engine.time_scale. Valores exportados. El hit-stop lo comprueba jugador_hit_stop.guion",
+    "comprobacion": "herramientas/guiones/nucleo/jugador_golpe_sensacion.guion",
+    "pasa": true
+  },
+  {
+    "id": "habilidad-impulso",
+    "que": "Con la habilidad impulso en Partida, la accion impulso lanza al jugador en horizontal hacia donde mira, sin gravedad unos ticks y con recarga; sin la habilidad no hace nada",
+    "comprobacion": "herramientas/guiones/nucleo/habilidad_impulso.guion",
+    "pasa": true
+  },
+  {
+    "id": "habilidad-salto-en-pared",
+    "que": "Con la habilidad salto_en_pared en Partida, empujar hacia una pared en el aire sostiene al jugador deslizando despacio, y saltar lo despega de la pared hacia el lado contrario; sin la habilidad cae normal. El despegue lo comprueba habilidad_salto_en_pared_despegue.guion",
+    "comprobacion": "herramientas/guiones/nucleo/habilidad_salto_en_pared.guion",
+    "pasa": true
+  },
+  {
+    "id": "habilidad-doble-salto",
+    "que": "Con la habilidad doble_salto en Partida, saltar en el aire da un segundo salto, que se recupera al tocar el suelo o al sostenerse en una pared; sin la habilidad no",
+    "comprobacion": "herramientas/guiones/nucleo/habilidad_doble_salto.guion",
+    "pasa": true
+  },
+  {
+    "id": "boton-poderes",
+    "que": "El boton curar es el de poderes: soltarlo antes de ticks_mantener_poder es un toque (cuenta en toques_poder y lanza el poder), mantenerlo empieza la curacion de jugador-curar, cuyos guiones siguen pasando",
+    "comprobacion": "herramientas/guiones/nucleo/boton_poderes.guion",
+    "pasa": true
+  },
+  {
+    "id": "poder-bola",
+    "que": "Con la habilidad proyectil en Partida, un toque de curar gasta Inspiracion y lanza un proyectil recto hacia donde mira el jugador, que golpea una vez a cada Golpeable que toca y desaparece contra un solido; sin la habilidad no sale. Sin la habilidad lo comprueba poder_bola_sin_habilidad.guion",
+    "comprobacion": "herramientas/guiones/nucleo/poder_bola.guion",
+    "pasa": true
+  },
+  {
+    "id": "jugador-pogo",
+    "que": "Atacar con mover_abajo mantenida en el aire golpea hacia abajo; al tocar un Golpeable o un peligro rebota hacia arriba sin recibir dano y recupera el doble salto y el impulso en el aire. La recuperacion la comprueba jugador_pogo_recupera.guion",
+    "comprobacion": "herramientas/guiones/nucleo/jugador_pogo.guion",
+    "pasa": true
+  },
+  {
+    "id": "habilidad-caida-en-picada",
+    "que": "Con la habilidad caida_en_picada en Partida, curar con mover_abajo en el aire gasta Inspiracion y hace caer al jugador recto y rapido hasta el suelo; un suelo fragil que toque se rompe y sigue cayendo; sin la habilidad no pasa nada, lo que comprueba habilidad_caida_en_picada_sin_habilidad.guion",
+    "comprobacion": "herramientas/guiones/nucleo/habilidad_caida_en_picada.guion",
+    "pasa": true
+  },
+  {
+    "id": "enemigo-base",
+    "que": "Un enemigo gris con ficha (vida, dano por contacto y grupo de reaparicion) pierde vida con cada golpe, emite enemigo_vencido al llegar a 0 y desaparece; el debil reaparece al salir y volver a entrar a la sala, el fuerte solo despues de descansar en un banco. Lo del banco lo comprueba enemigo_descanso.guion",
+    "comprobacion": "herramientas/guiones/nucleo/enemigo_base.guion",
+    "pasa": true
+  },
+  {
+    "id": "vibracion",
+    "que": "El telefono vibra corto al pegar, al recibir dano, al curarse y al descansar en un banco, cada uno con su duracion y su fuerza y con un minimo de ticks entre vibraciones; nada mas vibra. El ajuste vibracion (archivo de ajustes propio, activado por omision) la apaga. El banco lo comprueba vibracion_banco.guion, y el ajuste y el limite, guardado.guion",
+    "comprobacion": "herramientas/guiones/nucleo/vibracion.guion",
+    "pasa": true
   }
 ]

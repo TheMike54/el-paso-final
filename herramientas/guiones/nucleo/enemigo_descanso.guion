@@ -1,0 +1,30 @@
+# Como enemigo_base.guion hasta vencer a los dos y pasar a la sala del banco; ahi camina hasta el
+# banco, descansa (interactuar), se levanta caminando a la izquierda y vuelve a la sala de enemigos.
+escena res://herramientas/salas/sala_enemigos.tscn
+2 mover_derecha press
+52 mover_derecha release
+56 atacar press
+57 atacar release
+80 atacar press
+81 atacar release
+90 mover_derecha press
+160 mover_derecha release
+165 atacar press
+166 atacar release
+180 mover_derecha press
+184 mover_derecha release
+190 atacar press
+191 atacar release
+205 mover_derecha press
+209 mover_derecha release
+215 atacar press
+216 atacar release
+245 mover_derecha press
+460 mover_derecha release
+470 mover_derecha press
+563 mover_derecha release
+570 interactuar press
+571 interactuar release
+590 mover_izquierda press
+730 mover_izquierda release
+fin 740

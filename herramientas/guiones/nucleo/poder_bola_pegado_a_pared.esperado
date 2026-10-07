@@ -1,0 +1,5 @@
+# El toque se cobra, pero la bola se deshace en el pilar: el muneco de detras queda sin golpes.
+x 1110 2
+valor Jugador toques_poder 1
+valor /root/Partida inspiracion 0
+valor MunecoTras/Golpeable golpes 0

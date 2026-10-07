@@ -1,0 +1,61 @@
+class_name Vibracion
+extends Node
+# Vibracion del telefono: escucha el bus y vibra corto al pegar, al recibir dano, al curarse y al
+# descansar, cada uno con su duracion y su fuerza (docs/contrato.md, Vibracion). La crea cada sala.
+# Con el ajuste vibracion apagado no vibra. Nada mas vibra: moverse, saltar y los menus no.
+
+## Duracion en ms y fuerza (0 a 1) de cada vibracion. En un telefono sin control de fuerza solo
+## cuenta la duracion.
+@export var al_pegar: Vector2 = Vector2(25.0, 0.35)
+@export var al_recibir_dano: Vector2 = Vector2(60.0, 0.8)
+@export var al_curarse: Vector2 = Vector2(40.0, 0.45)
+@export var al_descansar: Vector2 = Vector2(70.0, 0.5)
+## Ticks minimos entre dos vibraciones: varios golpes seguidos no se vuelven un zumbido.
+@export var ticks_entre_vibraciones: int = 4
+
+## Vibraciones pedidas por los eventos (con el ajuste encendido o no) y las que se enviaron al
+## telefono, desde que entro a la sala. Publicas para los guiones.
+var pedidas: int = 0
+var enviadas: int = 0
+## Ultima vibracion pedida: al_pegar, al_recibir_dano, al_curarse o al_descansar.
+var ultima: StringName = &""
+
+var _tick_ultima: int = -1000000
+
+
+func _ready() -> void:
+	Ajustes.cargar_una_vez()
+	# Metodos y no funciones anonimas: al borrarse la sala, Godot desconecta solo los metodos.
+	Eventos.enemigo_golpeado.connect(_al_pegar)
+	Eventos.jugador_danado.connect(_al_recibir_dano)
+	Eventos.jugador_curado.connect(_al_curarse)
+	Eventos.descanso_en_banco.connect(_al_descansar)
+
+
+func _al_pegar(_enemigo: Node) -> void:
+	_vibrar(&"al_pegar", al_pegar)
+
+
+func _al_recibir_dano(_vidas: int) -> void:
+	_vibrar(&"al_recibir_dano", al_recibir_dano)
+
+
+func _al_curarse(_vidas: int) -> void:
+	_vibrar(&"al_curarse", al_curarse)
+
+
+func _al_descansar(_banco: StringName) -> void:
+	_vibrar(&"al_descansar", al_descansar)
+
+
+func _vibrar(cual: StringName, patron: Vector2) -> void:
+	var tick: int = Engine.get_physics_frames()
+	# Recibir dano manda sobre el limite: es la que no debe perderse.
+	if tick - _tick_ultima < ticks_entre_vibraciones and cual != &"al_recibir_dano":
+		return
+	_tick_ultima = tick
+	pedidas += 1
+	ultima = cual
+	if Ajustes.vibracion:
+		enviadas += 1
+		Input.vibrate_handheld(roundi(patron.x), patron.y)

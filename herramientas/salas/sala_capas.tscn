@@ -1,0 +1,43 @@
+[gd_scene format=3 uid="uid://8aom0iu80f7r"]
+
+[ext_resource type="PackedScene" uid="uid://fov77mxs87d6" path="res://herramientas/salas/sala_camara.tscn" id="1_base"]
+[ext_resource type="Script" uid="uid://hxki5pjykj50" path="res://herramientas/salas/franjas.gd" id="2_franjas"]
+
+[node name="SalaCapas" instance=ExtResource("1_base")]
+
+[node name="Fondo" parent="." index="0"]
+visible = false
+
+[node name="FondoLejano" type="Parallax2D" parent="." index="1"]
+z_index = -20
+scroll_scale = Vector2(0.3, 0.3)
+
+[node name="Franjas" type="Node2D" parent="FondoLejano"]
+script = ExtResource("2_franjas")
+area = Rect2(-2560, -1440, 8320, 4320)
+separacion = 320.0
+ancho = 120.0
+color_franja = Color(0.16, 0.18, 0.3, 1)
+color_base = Color(0.08, 0.09, 0.16, 1)
+
+[node name="FondoCercano" type="Parallax2D" parent="." index="2"]
+z_index = -10
+scroll_scale = Vector2(0.6, 0.6)
+
+[node name="Franjas" type="Node2D" parent="FondoCercano"]
+script = ExtResource("2_franjas")
+area = Rect2(-2560, -1440, 8320, 4320)
+separacion = 480.0
+ancho = 60.0
+color_franja = Color(0.25, 0.3, 0.45, 1)
+
+[node name="Frente" type="Parallax2D" parent="."]
+z_index = 10
+scroll_scale = Vector2(1.3, 1.3)
+
+[node name="Franjas" type="Node2D" parent="Frente"]
+script = ExtResource("2_franjas")
+area = Rect2(-2560, -1440, 8320, 4320)
+separacion = 960.0
+ancho = 50.0
+color_franja = Color(0.02, 0.02, 0.05, 0.6)

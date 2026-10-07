@@ -1,0 +1,9 @@
+# En la sala de peligro el jugador camina a la derecha y cae al foso de pinchos. Pierde una vida y
+# vuelve a suelo firme antes de la orilla (x=800), no al inicio de la sala ni dentro del foso.
+# Presiona saltar justo antes de tocar los pinchos: al reaparecer no debe saltar solo.
+escena res://herramientas/salas/sala_peligro.tscn
+2 mover_derecha press
+128 saltar press
+129 saltar release
+150 mover_derecha release
+fin 158

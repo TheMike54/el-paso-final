@@ -1,0 +1,17 @@
+# Las mismas entradas que jugador_curar.guion: golpes, un golpe recibido y una curacion completa.
+escena res://herramientas/salas/sala_curar.tscn
+2 mover_izquierda press
+3 mover_izquierda release
+6 atacar press
+7 atacar release
+30 atacar press
+31 atacar release
+54 atacar press
+55 atacar release
+70 mover_derecha press
+115 mover_derecha release
+130 mover_izquierda press
+150 mover_izquierda release
+160 curar press
+235 curar release
+fin 240

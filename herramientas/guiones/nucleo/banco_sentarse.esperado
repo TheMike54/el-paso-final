@@ -1,0 +1,5 @@
+# Se acomodo sobre el banco (x=600) y se quedo sentado; la partida se guardo una vez.
+x 600 1
+valor Jugador descansando true
+senal /root/Eventos partida_guardada 1
+senal /root/Eventos descanso_en_banco 1

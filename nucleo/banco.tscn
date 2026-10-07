@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://dljj3hd7ldowx"]
+
+[ext_resource type="Script" uid="uid://bc2y2bo7lsngh" path="res://nucleo/banco.gd" id="1_banco"]
+
+[sub_resource type="RectangleShape2D" id="forma_banco"]
+size = Vector2(120, 80)
+
+[node name="Banco" type="Area2D"]
+script = ExtResource("1_banco")
+
+[node name="Forma" type="CollisionShape2D" parent="."]
+position = Vector2(0, -40)
+shape = SubResource("forma_banco")
+
+[node name="Dibujo" type="ColorRect" parent="."]
+offset_left = -60.0
+offset_top = -40.0
+offset_right = 60.0
+mouse_filter = 2
+color = Color(0.5, 0.4, 0.25, 1)

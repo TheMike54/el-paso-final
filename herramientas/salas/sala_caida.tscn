@@ -1,0 +1,84 @@
+[gd_scene format=3 uid="uid://bocgbw5v63raf"]
+
+[ext_resource type="Script" uid="uid://k7a08bqsbqd0" path="res://nucleo/sala.gd" id="1_sala"]
+
+[sub_resource type="RectangleShape2D" id="forma_0"]
+size = Vector2(500, 40)
+
+[sub_resource type="RectangleShape2D" id="forma_1"]
+size = Vector2(1600, 40)
+
+[sub_resource type="RectangleShape2D" id="forma_2"]
+size = Vector2(40, 1200)
+
+[sub_resource type="RectangleShape2D" id="forma_3"]
+size = Vector2(40, 1200)
+
+[node name="SalaCaida" type="Node2D"]
+script = ExtResource("1_sala")
+limites = Rect2(0, 0, 1600, 1200)
+
+[node name="Fondo" type="ColorRect" parent="."]
+offset_right = 1600.0
+offset_bottom = 1200.0
+mouse_filter = 2
+color = Color(0.12, 0.12, 0.14, 1)
+
+[node name="Entrada" type="Marker2D" parent="."]
+position = Vector2(200, 300)
+
+[node name="Solido0" type="StaticBody2D" parent="."]
+position = Vector2(250, 320)
+
+[node name="Forma" type="CollisionShape2D" parent="Solido0"]
+shape = SubResource("forma_0")
+
+[node name="Dibujo" type="ColorRect" parent="Solido0"]
+offset_left = -250.0
+offset_top = -20.0
+offset_right = 250.0
+offset_bottom = 20.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="Solido1" type="StaticBody2D" parent="."]
+position = Vector2(800, 1180)
+
+[node name="Forma" type="CollisionShape2D" parent="Solido1"]
+shape = SubResource("forma_1")
+
+[node name="Dibujo" type="ColorRect" parent="Solido1"]
+offset_left = -800.0
+offset_top = -20.0
+offset_right = 800.0
+offset_bottom = 20.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="Solido2" type="StaticBody2D" parent="."]
+position = Vector2(20, 600)
+
+[node name="Forma" type="CollisionShape2D" parent="Solido2"]
+shape = SubResource("forma_2")
+
+[node name="Dibujo" type="ColorRect" parent="Solido2"]
+offset_left = -20.0
+offset_top = -600.0
+offset_right = 20.0
+offset_bottom = 600.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="Solido3" type="StaticBody2D" parent="."]
+position = Vector2(1580, 600)
+
+[node name="Forma" type="CollisionShape2D" parent="Solido3"]
+shape = SubResource("forma_3")
+
+[node name="Dibujo" type="ColorRect" parent="Solido3"]
+offset_left = -20.0
+offset_top = -600.0
+offset_right = 20.0
+offset_bottom = 600.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)

@@ -1,0 +1,3 @@
+# Lleva unos 200 px de caida: va al tope inicial, velocidad_caida_inicial (700 px/s), no mas rapido.
+y 507 2
+valor Jugador velocity:y 700 1

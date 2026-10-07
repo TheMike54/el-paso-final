@@ -1,0 +1,90 @@
+[gd_scene format=3 uid="uid://bd6lb84vj2a8w"]
+
+[ext_resource type="Script" uid="uid://k7a08bqsbqd0" path="res://nucleo/sala.gd" id="1_sala"]
+[ext_resource type="PackedScene" uid="uid://dgy2sncgkvcml" path="res://nucleo/enemigo.tscn" id="6_enemigo"]
+[ext_resource type="Resource" uid="uid://pf2peg5tc8o" path="res://herramientas/salas/fichas/enemigo_debil.tres" id="7_debil"]
+[ext_resource type="Resource" uid="uid://hxjvhbe3y1wc" path="res://herramientas/salas/fichas/enemigo_fuerte.tres" id="8_fuerte"]
+[ext_resource type="PackedScene" uid="uid://cantrdqq1cwy8" path="res://nucleo/puerta.tscn" id="10_puerta"]
+
+[sub_resource type="RectangleShape2D" id="forma_0"]
+size = Vector2(2400, 80)
+
+[sub_resource type="RectangleShape2D" id="forma_1"]
+size = Vector2(40, 680)
+
+[sub_resource type="RectangleShape2D" id="forma_2"]
+size = Vector2(40, 680)
+
+[node name="SalaEnemigos" type="Node2D"]
+script = ExtResource("1_sala")
+limites = Rect2(0, 0, 2400, 720)
+
+[node name="Fondo" type="ColorRect" parent="."]
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 2400.0
+offset_bottom = 720.0
+mouse_filter = 2
+color = Color(0.12, 0.12, 0.14, 1)
+
+[node name="Entrada" type="Marker2D" parent="."]
+position = Vector2(300, 680)
+
+[node name="Solido0" type="StaticBody2D" parent="."]
+position = Vector2(1200, 720)
+
+[node name="Forma" type="CollisionShape2D" parent="Solido0"]
+shape = SubResource("forma_0")
+
+[node name="Dibujo" type="ColorRect" parent="Solido0"]
+offset_left = -1200.0
+offset_top = -40.0
+offset_right = 1200.0
+offset_bottom = 40.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="Solido1" type="StaticBody2D" parent="."]
+position = Vector2(20, 340)
+
+[node name="Forma" type="CollisionShape2D" parent="Solido1"]
+shape = SubResource("forma_1")
+
+[node name="Dibujo" type="ColorRect" parent="Solido1"]
+offset_left = -20.0
+offset_top = -340.0
+offset_right = 20.0
+offset_bottom = 340.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="Solido2" type="StaticBody2D" parent="."]
+position = Vector2(2380, 340)
+
+[node name="Forma" type="CollisionShape2D" parent="Solido2"]
+shape = SubResource("forma_2")
+
+[node name="Dibujo" type="ColorRect" parent="Solido2"]
+offset_left = -20.0
+offset_top = -340.0
+offset_right = 20.0
+offset_bottom = 340.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="Debil" parent="." instance=ExtResource("6_enemigo")]
+position = Vector2(700, 680)
+ficha = ExtResource("7_debil")
+id = &"debil"
+
+[node name="Fuerte" parent="." instance=ExtResource("6_enemigo")]
+position = Vector2(1100, 680)
+ficha = ExtResource("8_fuerte")
+id = &"fuerte"
+
+[node name="PuertaDerecha" parent="." instance=ExtResource("10_puerta")]
+position = Vector2(2300, 680)
+id = &"derecha"
+sala_destino = "res://herramientas/salas/sala_enemigos_banco.tscn"
+puerta_destino = &"izquierda"
+llegada = Vector2(-160, 0)

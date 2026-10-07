@@ -1,0 +1,5 @@
+# Pegado a la pared (x=600) y cayendo a velocidad_deslizar_pared (150 px/s) en vez de caer libre.
+x 600 1
+valor Jugador en_pared true
+valor Jugador velocity:y 150 1
+senal /root/Eventos habilidad_obtenida 1

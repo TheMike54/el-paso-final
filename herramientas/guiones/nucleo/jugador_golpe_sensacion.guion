@@ -1,0 +1,6 @@
+# En la sala de golpe el jugador ataca al muneco que tiene a la derecha: los dos salen empujados,
+# el jugador hacia atras (izquierda) y el muneco hacia adelante (derecha).
+escena res://herramientas/salas/sala_golpe.tscn
+2 atacar press
+3 atacar release
+fin 20

@@ -1,0 +1,35 @@
+[gd_scene format=3 uid="uid://dufc4a8hbdhq2"]
+
+[ext_resource type="Script" uid="uid://k7a08bqsbqd0" path="res://nucleo/sala.gd" id="1_sala"]
+[ext_resource type="PackedScene" uid="uid://cantrdqq1cwy8" path="res://nucleo/puerta.tscn" id="2_puerta"]
+
+[sub_resource type="RectangleShape2D" id="forma_suelo"]
+size = Vector2(2400, 80)
+
+[node name="SalaPuertaA" type="Node2D"]
+script = ExtResource("1_sala")
+limites = Rect2(0, 0, 2400, 720)
+
+[node name="Entrada" type="Marker2D" parent="."]
+position = Vector2(2000, 680)
+
+[node name="Suelo" type="StaticBody2D" parent="."]
+position = Vector2(1200, 720)
+
+[node name="Forma" type="CollisionShape2D" parent="Suelo"]
+shape = SubResource("forma_suelo")
+
+[node name="Dibujo" type="ColorRect" parent="Suelo"]
+offset_left = -1200.0
+offset_top = -40.0
+offset_right = 1200.0
+offset_bottom = 40.0
+mouse_filter = 2
+color = Color(0.25, 0.25, 0.25, 1)
+
+[node name="PuertaDerecha" parent="." instance=ExtResource("2_puerta")]
+position = Vector2(2380, 680)
+id = &"derecha"
+sala_destino = "res://herramientas/salas/sala_puerta_b.tscn"
+puerta_destino = &"izquierda"
+llegada = Vector2(-200, 0)

@@ -1,0 +1,6 @@
+# Una vibracion por golpe dado (3), una por el dano recibido y una por la curacion: 5, la ultima la
+# de curarse. Moverse, saltar y soltar curar no vibran. Los golpes van a 24 cuadros uno de otro,
+# mas que ticks_entre_vibraciones.
+valor Vibracion pedidas 5
+valor Vibracion ultima al_curarse
+senal /root/Eventos jugador_curado 1

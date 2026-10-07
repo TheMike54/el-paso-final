@@ -1,0 +1,81 @@
+[gd_scene format=3 uid="uid://bmfus1pp7fs2w"]
+
+[ext_resource type="Script" uid="uid://k7a08bqsbqd0" path="res://nucleo/sala.gd" id="1_sala"]
+[ext_resource type="Script" uid="uid://jy2tkfmforul" path="res://nucleo/dano_contacto.gd" id="2_dano"]
+
+[sub_resource type="RectangleShape2D" id="forma_suelo_izquierdo"]
+size = Vector2(800, 80)
+
+[sub_resource type="RectangleShape2D" id="forma_suelo_derecho"]
+size = Vector2(900, 80)
+
+[sub_resource type="RectangleShape2D" id="forma_fondo_foso"]
+size = Vector2(300, 80)
+
+[sub_resource type="RectangleShape2D" id="forma_pinchos"]
+size = Vector2(300, 40)
+
+[node name="SalaPeligro" type="Node2D"]
+script = ExtResource("1_sala")
+limites = Rect2(0, 0, 2000, 940)
+
+[node name="Entrada" type="Marker2D" parent="."]
+position = Vector2(200, 680)
+
+[node name="SueloIzquierdo" type="StaticBody2D" parent="."]
+position = Vector2(400, 720)
+
+[node name="Forma" type="CollisionShape2D" parent="SueloIzquierdo"]
+shape = SubResource("forma_suelo_izquierdo")
+
+[node name="Dibujo" type="ColorRect" parent="SueloIzquierdo"]
+offset_left = -400.0
+offset_top = -40.0
+offset_right = 400.0
+offset_bottom = 220.0
+mouse_filter = 2
+color = Color(0.25, 0.25, 0.25, 1)
+
+[node name="SueloDerecho" type="StaticBody2D" parent="."]
+position = Vector2(1550, 720)
+
+[node name="Forma" type="CollisionShape2D" parent="SueloDerecho"]
+shape = SubResource("forma_suelo_derecho")
+
+[node name="Dibujo" type="ColorRect" parent="SueloDerecho"]
+offset_left = -450.0
+offset_top = -40.0
+offset_right = 450.0
+offset_bottom = 220.0
+mouse_filter = 2
+color = Color(0.25, 0.25, 0.25, 1)
+
+[node name="FondoFoso" type="StaticBody2D" parent="."]
+position = Vector2(950, 900)
+
+[node name="Forma" type="CollisionShape2D" parent="FondoFoso"]
+shape = SubResource("forma_fondo_foso")
+
+[node name="Dibujo" type="ColorRect" parent="FondoFoso"]
+offset_left = -150.0
+offset_top = -40.0
+offset_right = 150.0
+offset_bottom = 40.0
+mouse_filter = 2
+color = Color(0.25, 0.25, 0.25, 1)
+
+[node name="Pinchos" type="Area2D" parent="."]
+position = Vector2(950, 860)
+script = ExtResource("2_dano")
+peligro = true
+
+[node name="Forma" type="CollisionShape2D" parent="Pinchos"]
+position = Vector2(0, -20)
+shape = SubResource("forma_pinchos")
+
+[node name="Dibujo" type="ColorRect" parent="Pinchos"]
+offset_left = -150.0
+offset_top = -40.0
+offset_right = 150.0
+mouse_filter = 2
+color = Color(0.7, 0.2, 0.2, 1)

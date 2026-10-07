@@ -1,0 +1,5 @@
+# Un solo golpe: tocar el bloque rojo durante la invulnerabilidad no quita vidas.
+# Sin invulnerabilidad, el bloque rojo quitaria una vida por tick y el jugador ya estaria muerto.
+senal /root/Eventos jugador_danado 1
+valor Jugador vidas 3
+valor Jugador muerto false

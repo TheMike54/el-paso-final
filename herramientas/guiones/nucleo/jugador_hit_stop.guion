@@ -1,0 +1,5 @@
+# En la sala de golpe el jugador camina contra el bloque rojo. Justo despues del golpe sigue quieto
+# unos ticks (hit-stop) antes de que empiece el retroceso.
+escena res://herramientas/salas/sala_golpe.tscn
+2 mover_derecha press
+fin 124

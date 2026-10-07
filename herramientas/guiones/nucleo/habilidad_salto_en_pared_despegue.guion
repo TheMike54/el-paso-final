@@ -1,0 +1,8 @@
+# Como habilidad_salto_en_pared.guion, pero ya sostenido en la pared presiona saltar: el salto lo
+# despega de la pared hacia la izquierda y hacia arriba.
+escena res://herramientas/salas/sala_pared.tscn
+5 mover_derecha press
+10 saltar press
+40 saltar release
+60 saltar press
+fin 64

@@ -1,0 +1,7 @@
+# El suelo fragil se rompio y el jugador cayo recto (x=1038) hasta el piso de abajo (y=1160), con
+# la Inspiracion gastada. Sin romperlo, la picada terminaria sobre el piso de arriba (y=680).
+x 1038 2
+y 1160 1
+en_suelo true
+valor Jugador en_picada false
+valor /root/Partida inspiracion 0

@@ -1,0 +1,4 @@
+# La interfaz de la sala nueva empieza con las 3 vidas que trae Partida, sin esperar un cambio.
+escena res://herramientas/salas/sala_puerta_a.tscn
+valor Interfaz/Hud vidas 3
+valor Interfaz/Hud vidas_maximas 4

@@ -1,0 +1,9 @@
+# En el pozo de la sala de pared el jugador salta hacia la pared derecha y, todavia subiendo (antes de
+# poder deslizarse), presiona saltar otra vez: sale el salto en pared, como al llegar a la pared de
+# enfrente en un pozo.
+escena res://herramientas/salas/sala_pared.tscn
+1 mover_derecha press
+10 saltar press
+22 saltar release
+23 saltar press
+fin 30

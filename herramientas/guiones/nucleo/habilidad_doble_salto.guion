@@ -1,0 +1,10 @@
+# En la sala de doble salto el jugador camina a la derecha, toma la habilidad (x=420), salta y en
+# el aire salta otra vez: llega a la plataforma de 360 px de alto, que un solo salto no alcanza.
+escena res://herramientas/salas/sala_doble_salto.tscn
+2 mover_derecha press
+40 saltar press
+60 saltar release
+62 saltar press
+90 saltar release
+110 mover_derecha release
+fin 140

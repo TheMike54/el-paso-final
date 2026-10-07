@@ -1,0 +1,6 @@
+# La escena principal es el menu y muestra la entrada a la zona de pruebas. Que no aparezca en
+# el paquete de publicacion se comprueba a mano (docs/pruebas.md).
+escena res://nucleo/menu.tscn
+valor Centro/Opciones/ZonaPruebas visible true
+valor Centro/Opciones/NuevaPartida disabled false
+valor Confirmar visible false

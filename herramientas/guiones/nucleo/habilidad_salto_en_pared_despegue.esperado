@@ -1,0 +1,4 @@
+# Subiendo rapido (un salto completo, cerca de -900 px/s) y ya separado de la pared.
+x 586 2
+valor Jugador en_pared false
+valor Jugador velocity:y -900 5

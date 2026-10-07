@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://cer1rbye5tnkr"]
+
+[ext_resource type="Script" uid="uid://cokpgnxqjj2qn" path="res://herramientas/salas/prueba_guardado.gd" id="1_prueba"]
+
+[node name="SalaGuardado" type="Node"]
+script = ExtResource("1_prueba")

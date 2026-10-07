@@ -1,0 +1,6 @@
+# Ya en el piso de abajo y fuera de la picada, pero todavia invulnerable: ticks_invulnerable_picada
+# (24) cuenta desde que aterriza. Sin ese tiempo, invulnerable seria false.
+y 1160 1
+en_suelo true
+valor Jugador en_picada false
+valor Jugador invulnerable true

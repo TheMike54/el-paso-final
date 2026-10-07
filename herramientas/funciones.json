@@ -52,5 +52,17 @@
     "que": "El validador revisa cada funciones.json: JSON valido, campos id, que, comprobacion y pasa, y archivo de comprobacion presente en toda entrada con pasa true",
     "comprobacion": "manual: una entrada con pasa true cuyo archivo de comprobacion no existe hace salir a validar.ps1 con 1",
     "pasa": true
+  },
+  {
+    "id": "hook-al-compactar",
+    "que": "Tras compactar, el hook SessionStart reinyecta la rama, git status --short, ESTADO.md con acentos correctos y la lista de planes activos",
+    "comprobacion": "manual: tras reiniciar la sesion y correr /compact, Claude repite la rama y la primera linea de Ahora de ESTADO.md sin haberlos leido",
+    "pasa": true
+  },
+  {
+    "id": "puerto-guion-salas",
+    "que": "El guion puede pedir una escena con la linea escena, el .esperado lee propiedades con valor y cuenta senales con senal, y el puerto sigue contando con el juego en pausa; una escena, nodo o senal inexistentes hacen fallar el guion",
+    "comprobacion": "herramientas/guiones/nucleo/jugador_ataque_y_vida.guion",
+    "pasa": true
   }
 ]

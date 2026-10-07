@@ -1,0 +1,6 @@
+# El jugador camina a la derecha y sale de la orilla de la plataforma (x=640).
+# Presiona saltar en el ultimo cuadro del tiempo coyote: todavia salta.
+escena res://herramientas/salas/sala_movimiento.tscn
+10 mover_derecha press
+92 saltar press
+fin 110

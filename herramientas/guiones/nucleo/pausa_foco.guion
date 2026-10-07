@@ -1,0 +1,5 @@
+# La escena de prueba pone la sala de movimiento; el jugador camina a la derecha y en el cuadro 20 la
+# app pierde el foco (como al ir a las apps recientes), sin que nadie toque pausa.
+escena res://herramientas/salas/sala_foco.tscn
+2 mover_derecha press
+fin 60

@@ -1,0 +1,131 @@
+extends Node
+# Prueba del guardado (y de los ajustes y la vibracion, que tambien son datos del telefono): al
+# entrar, corre los casos sobre archivos propios en user:// y deja en "casos" y "fallos" el
+# resultado, que guardado.guion lee con la clave valor. Imprime el resumen y solo los que fallan.
+const RUTA: String = "user://prueba_guardado.json"
+const PARTIDA: Dictionary = {"banco": "raices_1", "sala": "res://raices/sala_1.tscn", "vidas_maximas": 4, "habilidades": ["impulso"]}
+
+var casos: int = 0
+var fallos: int = 0
+
+
+func _ready() -> void:
+	_borrar()
+	_caso("sin archivo da VACIA", Guardado.cargar(RUTA).estado == Guardado.Estado.VACIA)
+	_escribir(RUTA + ".tmp", JSON.stringify({"version": Guardado.VERSION, "partida": PARTIDA}))
+	_caso("un temporal sin partida da VACIA", Guardado.cargar(RUTA).estado == Guardado.Estado.VACIA)
+
+	_caso("guardar devuelve OK", Guardado.guardar(PARTIDA, RUTA) == OK)
+	var leida: Guardado.Resultado = Guardado.cargar(RUTA)
+	_caso("lo guardado se carga VALIDA", leida.estado == Guardado.Estado.VALIDA)
+	_caso("la partida cargada es la guardada", _igual(leida.partida, PARTIDA))
+	_caso("no queda el archivo temporal", not FileAccess.file_exists(RUTA + ".tmp"))
+
+	var segunda: Dictionary = PARTIDA.duplicate(true)
+	segunda["banco"] = "raices_2"
+	_caso("guardar sobre una partida existente devuelve OK", Guardado.guardar(segunda, RUTA) == OK)
+	_caso("se carga la ultima partida guardada", _igual(Guardado.cargar(RUTA).partida, segunda))
+
+	_escribir(RUTA + ".tmp", "{\"version\": 2, \"partida\": {\"ban")
+	_caso("un temporal sobrante no afecta la carga", _igual(Guardado.cargar(RUTA).partida, segunda))
+	_caso("guardar con un temporal sobrante devuelve OK", Guardado.guardar(PARTIDA, RUTA) == OK)
+
+	var texto: String = FileAccess.get_file_as_string(RUTA)
+	_danada("texto que no es JSON", "esto no es una partida")
+	_danada("archivo cortado a la mitad", texto.substr(0, floori(texto.length() / 2.0)))
+	_danada("archivo vacio", "")
+	_danada("JSON que no es un objeto", "[1, 2, 3]")
+	_danada("sin version", JSON.stringify({"partida": PARTIDA}))
+	_danada("version que no es numero", JSON.stringify({"version": "2", "partida": PARTIDA}))
+	_danada("partida que no es objeto", JSON.stringify({"version": Guardado.VERSION, "partida": "x"}))
+	var sin_campo: Dictionary = PARTIDA.duplicate(true)
+	sin_campo.erase("vidas_maximas")
+	_danada("falta un campo", JSON.stringify({"version": Guardado.VERSION, "partida": sin_campo}))
+	var otro_tipo: Dictionary = PARTIDA.duplicate(true)
+	otro_tipo["habilidades"] = "impulso"
+	_danada("campo con otro tipo", JSON.stringify({"version": Guardado.VERSION, "partida": otro_tipo}))
+
+	_escribir(RUTA, JSON.stringify({"version": Guardado.VERSION + 1, "partida": PARTIDA}))
+	_caso("version mas nueva da INCOMPATIBLE", Guardado.cargar(RUTA).estado == Guardado.Estado.INCOMPATIBLE)
+	_escribir(RUTA, JSON.stringify({"version": 0, "partida": PARTIDA}))
+	_caso("version mas vieja da INCOMPATIBLE", Guardado.cargar(RUTA).estado == Guardado.Estado.INCOMPATIBLE)
+
+	# El estado de la partida se guarda y se carga entero.
+	Partida.reiniciar()
+	Partida.vidas_maximas = 5
+	Partida.banco = "raices_2"
+	Partida.habilidades.append(&"impulso")
+	_caso("Partida.guardar devuelve OK", Partida.guardar(RUTA) == OK)
+	Partida.reiniciar()
+	var de_vuelta: Guardado.Resultado = Guardado.cargar(RUTA)
+	Partida.inspiracion = 50
+	Partida.vencer("res://sala.tscn#fuerte")
+	Partida.desde_diccionario(de_vuelta.partida)
+	_caso("Partida vuelve con su banco, vidas maximas, vidas llenas y habilidades", de_vuelta.estado == Guardado.Estado.VALIDA and Partida.banco == "raices_2" and Partida.vidas_maximas == 5 and Partida.vidas == 5 and Partida.habilidades == [&"impulso"])
+	_caso("continuar empieza sin Inspiracion y sin enemigos vencidos", Partida.inspiracion == 0 and Partida.enemigos_vencidos.is_empty())
+	Partida.reiniciar()
+
+	# Ajustes: archivo propio, valores por omision si falta o esta danado.
+	var ruta_ajustes: String = "user://prueba_ajustes.json"
+	DirAccess.remove_absolute(ruta_ajustes)
+	Ajustes.cargar(ruta_ajustes)
+	_caso("sin archivo de ajustes la vibracion esta encendida", Ajustes.vibracion)
+	Ajustes.vibracion = false
+	_caso("guardar los ajustes devuelve OK", Ajustes.guardar(ruta_ajustes) == OK)
+	Ajustes.vibracion = true
+	Ajustes.cargar(ruta_ajustes)
+	_caso("la vibracion apagada vuelve apagada", not Ajustes.vibracion)
+	_escribir(ruta_ajustes, "{ no es json")
+	Ajustes.cargar(ruta_ajustes)
+	_caso("un archivo de ajustes danado deja los valores por omision", Ajustes.vibracion)
+	DirAccess.remove_absolute(ruta_ajustes)
+
+	# Vibracion: respeta el ajuste y no repite dentro de ticks_entre_vibraciones.
+	var vibracion: Vibracion = Vibracion.new()
+	add_child(vibracion)
+	Ajustes.vibracion = false
+	Eventos.jugador_danado.emit(3)
+	_caso("con la vibracion apagada se pide pero no se envia", vibracion.pedidas == 1 and vibracion.enviadas == 0)
+	Eventos.enemigo_golpeado.emit(self)
+	_caso("dos vibraciones en el mismo tick: la segunda no sale", vibracion.pedidas == 1)
+	Eventos.jugador_danado.emit(2)
+	_caso("el dano vibra aunque la anterior sea reciente", vibracion.pedidas == 2)
+	vibracion.free()
+	Ajustes.vibracion = Ajustes.POR_OMISION["vibracion"]
+
+	_borrar()
+	print("PRUEBAS guardado casos=%d fallos=%d" % [casos, fallos])
+
+
+func _caso(nombre: String, bien: bool) -> void:
+	casos += 1
+	if not bien:
+		fallos += 1
+		print("FALLO guardado: %s" % nombre)
+
+
+func _danada(nombre: String, contenido: String) -> void:
+	_escribir(RUTA, contenido)
+	_caso(nombre + " da DANADA", Guardado.cargar(RUTA).estado == Guardado.Estado.DANADA)
+
+
+# Compara campo por campo: tras el JSON los enteros vuelven como float y 4 == 4.0.
+func _igual(a: Dictionary, b: Dictionary) -> bool:
+	if a.size() != b.size():
+		return false
+	for campo: Variant in b:
+		if not a.has(campo) or a[campo] != b[campo]:
+			return false
+	return true
+
+
+func _escribir(ruta: String, contenido: String) -> void:
+	var archivo: FileAccess = FileAccess.open(ruta, FileAccess.WRITE)
+	archivo.store_string(contenido)
+	archivo.close()
+
+
+func _borrar() -> void:
+	for ruta: String in [RUTA, RUTA + ".tmp"]:
+		if FileAccess.file_exists(ruta):
+			DirAccess.remove_absolute(ruta)

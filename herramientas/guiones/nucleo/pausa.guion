@@ -1,0 +1,7 @@
+# El jugador camina a la derecha sin soltar y en el cuadro 10 presiona pausa: el juego se
+# detiene con la pausa abierta y el jugador no avanza aunque siga presionada la derecha.
+escena res://herramientas/salas/sala_movimiento.tscn
+2 mover_derecha press
+10 pausa press
+11 pausa release
+fin 40

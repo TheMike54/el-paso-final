@@ -1,0 +1,7 @@
+# Como aviso_guardado.guion, unos 2,3 s despues de descansar.
+escena res://herramientas/salas/sala_banco.tscn
+2 mover_derecha press
+50 mover_derecha release
+55 interactuar press
+56 interactuar release
+fin 195

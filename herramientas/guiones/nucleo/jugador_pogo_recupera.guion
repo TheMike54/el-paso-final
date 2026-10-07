@@ -1,0 +1,21 @@
+# En la sala del pogo el jugador toma el impulso y el doble salto (en la Entrada), salta a la
+# izquierda, gasta el impulso del aire y el doble salto, y cae sobre el muneco haciendo pogo.
+# Despues del rebote, en el aire, se impulsa otra vez y vuelve a saltar.
+escena res://herramientas/salas/sala_pogo.tscn
+2 mover_izquierda press
+4 saltar press
+8 impulso press
+9 impulso release
+20 saltar release
+24 saltar press
+28 mover_izquierda release
+40 saltar release
+42 mover_abajo press
+44 atacar press
+45 atacar release
+50 mover_abajo release
+56 impulso press
+57 impulso release
+70 saltar press
+90 saltar release
+fin 91

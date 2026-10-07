@@ -1,0 +1,51 @@
+[gd_scene format=3 uid="uid://6exeeg8wro14"]
+
+[ext_resource type="Script" uid="uid://paepl5akkt14" path="res://nucleo/pausa.gd" id="1_pausa"]
+
+[node name="Pausa" type="CanvasLayer"]
+layer = 20
+script = ExtResource("1_pausa")
+
+[node name="Panel" type="ColorRect" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.7)
+
+[node name="Opciones" type="VBoxContainer" parent="Panel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 16
+
+[node name="Titulo" type="Label" parent="Panel/Opciones"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 48
+text = "Pausa"
+horizontal_alignment = 1
+
+[node name="Continuar" type="Button" parent="Panel/Opciones"]
+custom_minimum_size = Vector2(400, 72)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Continuar"
+
+[node name="Vibracion" type="CheckButton" parent="Panel/Opciones"]
+custom_minimum_size = Vector2(400, 72)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Vibración"
+
+[node name="SalirAlMenu" type="Button" parent="Panel/Opciones"]
+custom_minimum_size = Vector2(400, 72)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Salir al menú"

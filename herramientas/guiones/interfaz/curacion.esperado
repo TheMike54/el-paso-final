@@ -1,0 +1,5 @@
+# Tras curarse, otra vez 4 corazones llenos y la barra vacia. Si la interfaz solo oyera
+# jugador_danado, se quedaria en 3: la curacion le llega por vidas_cambiadas.
+valor Interfaz/Hud vidas 4
+valor Interfaz/Hud inspiracion 0
+valor Interfaz/Hud bloques_llenos 0

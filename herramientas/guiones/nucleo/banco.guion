@@ -1,0 +1,10 @@
+# En la sala del banco el jugador camina hasta el banco (x=600) y descansa con interactuar. Despues
+# empuja contra el bloque rojo hasta morir: debe reaparecer en el banco, no en la Entrada (x=300).
+escena res://herramientas/salas/sala_banco.tscn
+2 mover_derecha press
+50 mover_derecha release
+55 interactuar press
+56 interactuar release
+70 mover_derecha press
+400 mover_derecha release
+fin 470

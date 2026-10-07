@@ -1,0 +1,6 @@
+# Descansar borro la lista de vencidos: al volver estan los dos, con su vida entera.
+escena res://herramientas/salas/sala_enemigos.tscn
+valor Fuerte vida 3
+valor Debil vida 2
+senal /root/Eventos descanso_en_banco 1
+valor /root/Partida enemigos_vencidos []
