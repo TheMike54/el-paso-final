@@ -27,13 +27,13 @@
     "id": "camara-sala",
     "que": "La camara sigue al jugador y no muestra nada fuera de los limites de la sala",
     "comprobacion": "manual: en ventana, la camara sigue al jugador y se detiene en los cuatro bordes de la sala de prueba",
-    "pasa": false
+    "pasa": true
   },
   {
     "id": "capas-fondo",
     "que": "Una sala lleva capas de fondo y de frente que se desplazan a distinta velocidad que el plano de juego al mover la camara",
     "comprobacion": "manual: en ventana, al caminar por la sala de prueba las capas lejanas se mueven mas lento que el plano de juego y la de frente mas rapido, sin huecos en los bordes de la sala",
-    "pasa": false
+    "pasa": true
   },
   {
     "id": "cambio-de-sala",
@@ -87,7 +87,7 @@
     "id": "pausa-y-atras",
     "que": "La accion de pausa y el boton Atras de Android abren la pausa durante el juego y piden confirmacion en el menu; pausar no guarda y la app no se cierra sola",
     "comprobacion": "manual: en el telefono de prueba, Atras durante el juego abre la pausa y no cierra la app; en el menu pide confirmacion antes de salir; en ventana, la tecla de pausa abre y cierra la pausa",
-    "pasa": false
+    "pasa": true
   },
   {
     "id": "entrada-control",
