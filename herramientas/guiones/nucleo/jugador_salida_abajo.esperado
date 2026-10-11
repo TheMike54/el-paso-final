@@ -1,0 +1,8 @@
+# De vuelta en x=752 (todo el cuerpo sobre el suelo, que acaba en 800), con 3 vidas y en el suelo,
+# como tras un pincho (jugador_peligro). Sin la regla, el jugador seguiria cayendo: y muy por debajo de 720.
+x 752 2
+y 680 1
+en_suelo true
+valor Jugador vidas 3
+valor Jugador muerto false
+senal /root/Eventos jugador_danado 1

@@ -1,0 +1,4 @@
+# La escena de prueba del rango de la vista recorre su tabla de ventanas (de 4:3 a 32:9 y vertical)
+# y deja la cuenta en sus propiedades.
+escena res://herramientas/salas/sala_vista.tscn
+fin 2

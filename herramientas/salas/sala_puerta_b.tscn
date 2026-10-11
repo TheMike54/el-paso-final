@@ -6,6 +6,9 @@
 [sub_resource type="RectangleShape2D" id="forma_suelo"]
 size = Vector2(1280, 80)
 
+[sub_resource type="RectangleShape2D" id="forma_pared"]
+size = Vector2(40, 720)
+
 [node name="SalaPuertaB" type="Node2D"]
 script = ExtResource("1_sala")
 limites = Rect2(0, 0, 1280, 720)
@@ -30,6 +33,20 @@ offset_left = -640.0
 offset_top = -40.0
 offset_right = 640.0
 offset_bottom = 40.0
+mouse_filter = 2
+color = Color(0.25, 0.25, 0.25, 1)
+
+[node name="ParedDerecha" type="StaticBody2D" parent="."]
+position = Vector2(1260, 360)
+
+[node name="Forma" type="CollisionShape2D" parent="ParedDerecha"]
+shape = SubResource("forma_pared")
+
+[node name="Dibujo" type="ColorRect" parent="ParedDerecha"]
+offset_left = -20.0
+offset_top = -360.0
+offset_right = 20.0
+offset_bottom = 360.0
 mouse_filter = 2
 color = Color(0.25, 0.25, 0.25, 1)
 

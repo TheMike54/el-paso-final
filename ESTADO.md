@@ -5,8 +5,8 @@ Se sobrescribe; máximo 60 líneas. Rama y PR en curso, bloqueos y decisiones ab
 ## Ahora
 
 - Etapa: núcleo programado y probado en el teléfono; ajustes tras esa prueba, vibración y primer bloque de
-  interfaz. Esperan prueba manual las entradas con `"pasa": false`: cinco de `nucleo/` y `etiqueta-qa-pending` de
-  `herramientas/`; `interfaz/` no tiene ninguna. La preparación del repositorio sigue abierta en los pasos 4, 7 y 8.
+  interfaz. Con `"pasa": false` quedan `menu-desarrollo` (cambia con el modo desarrollador) y `entrada-control`
+  (la prueba otro integrante: la persona no tiene control) en `nucleo/`, y `etiqueta-qa-pending` en `herramientas/`. La preparación del repositorio sigue abierta en los pasos 4, 7 y 8.
 - Rama en curso: `feature/nucleo-movimiento-camara-sala`, que sale de `f302dc6` (`feature/nucleo-entrada-acciones`)
   y lleva también el hook al compactar. Planes cerrados en `planes/cerrados/`: movimiento y cámara, partida,
   poderes, ajustes e interfaz, temblor, aterrizaje duro y poda de pruebas.
@@ -48,13 +48,13 @@ Pasos 1, 2, 3, 5 y 6 cumplidos (06-oct-2026; detalle en git). Abiertos:
 
 ## Decisiones abiertas
 
-- Salto y combate: los afina la persona en la zona de pruebas. Inspiración máxima 99, provisional (el diseño: 3 bloques).
-- Plataformas del juego: sólidas por todos lados (06-oct-2026); las atravesables solo quedan en la sala de la cámara.
-- Qué es la bola en el mundo y la vida de los enemigos: esperan a que existan (06-oct-2026). Hoy, `proyectil` en la sala.
-- Si morir hace reaparecer a los fuertes (hoy no; Hollow Knight sí: fila 6 de la auditoría). Suelo frágil roto: se queda roto y se
-  guarda (06-oct-2026); sin implementar, pide ID estable y subir el esquema del guardado.
-- Pruebas del 07-oct-2026: en el S20 pasan el temblor por tiempo, el aterrizaje duro (también sobre pinchos y banco), su
-  vibración, 120 px de suelo, la puerta y morir con el dedo puesto; en ventana, cámara, capas, caja gris, menú y pausa.
-  Sin probar: control y paquete de publicación. Onda de la picada de 3, provisional.
-- Por aprobar (07-oct-2026): `planes/activos/nucleo-pantalla-completa.md` y las filas 5 a 8 de `nucleo-auditoria-hollow-knight.md`.
-- Ícono del proyecto: se espera al arte, decidido 06-oct-2026 (sin ícono, la exportación imprime un `ERROR:` y genera el APK).
+- Decidido por la persona el 07-oct-2026, sin programar: plataformas todas sólidas (las 5 atravesables de
+  `sala_camara`/`sala_capas`); pinchos con suelo firme + anti-bucle de Silksong (peligro antes de 0,5 s: a la
+  puerta, sin perder vida); morir repone a los fuertes; vibración y pausa al perder el foco, como están (filas 5 a 8
+  de la auditoría). Inspiración máxima 99, cerrada. Zona de pruebas en publicación tras «Modo desarrollador» (cambia
+  una decisión cerrada; pide plan). Siguiente: botones táctiles configurables (pide plan). Suelo frágil roto que se
+  guarda: pide ID estable y subir el esquema. Provisionales: salto, combate, onda de la picada y demás daños.
+- Pruebas: en el S20 pasan temblor, aterrizaje duro, vibración, puerta, morir, pausa y el fondo hasta los bordes;
+  en ventana, cámara, capas y pausa. Sin probar: control (otro integrante), paquete de publicación y maximizar la
+  ventana a mano. Fallo del S20 (caída sin fin en `sala_puerta_b`): arreglado, falta verlo en el S20.
+- Ícono del proyecto: se espera al arte (sin ícono, la exportación imprime un `ERROR:` y genera el APK).

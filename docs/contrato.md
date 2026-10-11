@@ -14,7 +14,7 @@ Valores de `project.godot`. No se cambian sin actualizar esta tabla.
 | Motor | Godot 4.7.2 estable, edición estándar | Un proyecto guardado con una versión más nueva no abre en una anterior |
 | Renderer | Compatibility en `rendering_method` y en `rendering_method.mobile` | Teléfonos de gama baja |
 | Resolución base | 1280×720 | Proporción 16:9; el arte se mide contra esta base |
-| Estiramiento | `canvas_items` con aspecto `expand` | La base se escala a la pantalla; en pantallas más anchas se ve más escenario, sin barras |
+| Estiramiento | `canvas_items` con aspecto `expand`, limitado al ejecutar a proporciones de 4:3 a 22:9 (`nucleo/vista.gd`, aplicado por `Arranque`, el mismo rango en escritorio, teléfono y tableta) | Dentro del rango la base se escala y se ve más escenario, sin barras; fuera, la vista se recorta a 1760×720 o 1280×960 y el motor pone barras negras. Sin pantalla (guiones) no se aplica. El color de borrado es negro (`Arranque`): fuera de una sala no se ve gris |
 | Escala | Cuadro de 40 px; el personaje mide 160 px de alto | Medida común para salas, colisiones y arte |
 | Orientación | Horizontal con giro (`window/handheld/orientation=4`, `SCREEN_SENSOR_LANDSCAPE`) | Se juega acostado, hacia cualquiera de los dos lados |
 | Botón Atrás | `quit_on_go_back=false` | Atrás no cierra la app: en el juego abre la pausa y en el menú pide confirmación |
@@ -117,7 +117,7 @@ Autoload `Partida` (`nucleo/partida.gd`): lo que sobrevive al cambio de sala. Un
 |---|---|---|
 | `Eventos` | `nucleo/eventos.gd` | Bus de eventos: solo declara las señales de «Bus de eventos». Va antes de `Arranque` para existir cuando arranca todo lo demás |
 | `Partida` | `nucleo/partida.gd` | Estado de la partida (ver «Estado de la partida»). Va después de `Eventos` y antes de `Arranque` |
-| `Arranque` | `nucleo/arranque.gd` | Imprime `ARRANQUE depuracion=<bool> puerto=<bool>` y, solo en un build de depuración y si el archivo viaja en el paquete, carga con `load()` el puerto de depuración como hijo suyo (`PuertoDepuracion`) |
+| `Arranque` | `nucleo/arranque.gd` | Pone el color de borrado en negro y, con pantalla, aplica el rango de la vista al arrancar y, diferido al final del cuadro, al cambiar el tamaño de la ventana (`proporcion_minima` y `proporcion_maxima`, exportadas). Imprime `ARRANQUE depuracion=<bool> puerto=<bool>` y, solo en un build de depuración y si el archivo viaja en el paquete, carga con `load()` el puerto de depuración como hijo suyo (`PuertoDepuracion`) |
 
 - Un autoload nuevo se agrega a esta tabla en el mismo cambio.
 - Nada de `herramientas/` es autoload ni se carga con `preload`: el preset de publicación excluye esa carpeta y el
@@ -217,6 +217,7 @@ Todos los valores son propiedades exportadas del jugador y se ajustan en la zona
 | `ticks_suelo_firme` | 6 | Ticks seguidos en el suelo para que una posición cuente como punto seguro |
 | `ticks_atras_punto_seguro` | 15 | Cuántas posiciones firmes atrás se reaparece tras un peligro: lejos de la orilla |
 | `ticks_reaparicion_peligro` | 20 | Ticks quieto tras volver al punto seguro |
+| `margen_fuera_de_sala` | 160 px | Px que los pies pasan del borde de abajo de `limites` para que salir por abajo cuente como peligro (el alto del cuerpo) |
 | `ticks_hit_stop` | 4 | Ticks que el jugador se detiene al recibir daño, antes del retroceso (contador propio, no `Engine.time_scale`) |
 | `ticks_rebote_al_golpear` | 4 | Ticks en que el jugador sale empujado hacia atrás al golpear algo |
 | `velocidad_rebote_al_golpear` | 240 px/s | Velocidad de ese empuje |
@@ -261,6 +262,9 @@ Combate:
   `ticks_reaparicion_peligro` e invulnerable. Invulnerable no pierde vida, pero un peligro igual lo regresa al
   punto seguro. El punto seguro es una posición con `ticks_suelo_firme` ticks seguidos en el suelo fuera de la
   invulnerabilidad, tomada `ticks_atras_punto_seguro` posiciones atrás.
+- Salir por abajo de `limites` (los pies a más de `margen_fuera_de_sala` del borde) es un peligro igual que un
+  pincho: `recibir_dano(1, x, true)`. Solo por abajo; por los lados y por arriba una sala se cierra con paredes
+  o puertas. Sin sala, los límites son enormes y no ocurre.
 - Muerto (`muerto = true`), el jugador se pinta oscuro y ya no responde a la entrada. 90 ticks (1,5 s) después, la
   sala llena las vidas (`Partida.llenar_vidas()`) y el jugador reaparece en el último banco donde descansó (cambia a
   `Partida.sala`); si no ha descansado, la sala recarga su escena y reaparece en su `Entrada`.
@@ -345,6 +349,9 @@ Una sala es una escena cuya raíz es un `Node2D` con `nucleo/sala.gd` (`class_na
   El margen casi no cambia el jalón (89,8 px/s por tick con 40 px, 93,1 con 120; umbral 100); las salas de 720 de
   alto no crecen, porque su cámara empezaría a moverse en vertical al saltar. Si la vista es mayor que la sala en un eje, la cámara se centra en ese eje y
   lo que sobra se ve por igual a los dos lados, como ya hacía `Camera2D` (`camara_centrada.guion`); sus `limit_*` quedan como seguro.
+- Fondo extendido: si la sala tiene un nodo `Fondo` (`ColorRect`) visible, al entrar crea detrás de todo
+  `FondoExtendido`, de su color y `MARGEN_FONDO` (280 px) más grande por lado: cubre el rango de la vista en una sala
+  mínima de 1280×720 (240) más el temblor de la cámara. Sin `Fondo` visible no crea nada y lo de fuera se ve negro, el color de borrado.
 
 Cambio de sala:
 

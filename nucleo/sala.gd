@@ -11,6 +11,11 @@ const ESCENA_PAUSA: PackedScene = preload("res://nucleo/pausa.tscn")
 const INTERFAZ: String = "res://interfaz/interfaz.tscn"
 ## Ticks que el jugador muerto se queda en pantalla (oscuro) antes de reaparecer: 1,5 s.
 const TICKS_PARA_REAPARECER: int = 90
+## Lo que el Fondo de la sala se extiende fuera de limites, en px. Cubre el rango de la vista (4:3 a
+## 22:9) con la camara centrada en una sala minima de 1280x720: (1760 - 1280) / 2 = 240 a lo ancho y
+## (960 - 720) / 2 = 120 a lo alto, mas 40 para el temblor de la camara (20 px). Asi lo que se ve fuera
+## de la sala es su fondo, no un borde.
+const MARGEN_FONDO: float = 280.0
 
 ## Id de la puerta por la que llega el jugador a la proxima sala; vacio al empezar una partida.
 ## Es estatica porque sobrevive al cambio de escena sin necesitar un autoload.
@@ -25,6 +30,7 @@ var _ticks_para_reaparecer: int = 0
 
 
 func _ready() -> void:
+	_extender_fondo()
 	var jugador: Jugador = ESCENA_JUGADOR.instantiate() as Jugador
 	jugador.position = _punto_de_llegada()
 	var puerta: StringName = puerta_llegada
@@ -43,6 +49,25 @@ func _ready() -> void:
 	Eventos.jugador_muerto.connect(_al_morir_el_jugador)
 	if not puerta.is_empty():
 		Eventos.cambio_de_sala.emit(scene_file_path, puerta)
+
+
+# Si la sala tiene un Fondo visible, crea detras de todo un rectangulo de su color MARGEN_FONDO px mas
+# grande por lado. Sin Fondo (o con el Fondo oculto, como la sala de capas), no hace nada: lo de fuera
+# se ve con el color de borrado, negro (nucleo/arranque.gd).
+func _extender_fondo() -> void:
+	var fondo: ColorRect = get_node_or_null(^"Fondo") as ColorRect
+	if fondo == null or not fondo.visible:
+		return
+	var extendido: ColorRect = ColorRect.new()
+	extendido.name = &"FondoExtendido"
+	extendido.color = fondo.color
+	extendido.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	extendido.z_index = RenderingServer.CANVAS_ITEM_Z_MIN
+	var area: Rect2 = limites.grow(MARGEN_FONDO)
+	extendido.position = area.position
+	extendido.size = area.size
+	add_child(extendido)
+	move_child(extendido, 0)
 
 
 # Se reaparece en el ultimo banco donde se descanso; si no hay, en la Entrada de esta sala.

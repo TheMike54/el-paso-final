@@ -61,6 +61,9 @@ const ESCENA_PROYECTIL: PackedScene = preload("res://nucleo/proyectil.tscn")
 @export var ticks_atras_punto_seguro: int = 15
 ## Ticks quieto tras volver al punto seguro por un peligro, antes de responder otra vez.
 @export var ticks_reaparicion_peligro: int = 20
+## Px que los pies pasan del borde de abajo de la sala para que salir por abajo cuente como un peligro.
+## El alto del cuerpo: el jugador ya no se ve.
+@export var margen_fuera_de_sala: float = 160.0
 
 @export_group("Sensacion del golpe")
 ## Ticks que el jugador se detiene al recibir dano (hit-stop), antes del retroceso.
@@ -257,7 +260,15 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	_mover(delta)
+	_revisar_salida_por_abajo()
 	_seguir_con_camara(delta)
+
+
+# Salir por abajo de los limites de la sala es un peligro, igual que un pincho: quita una vida y
+# vuelve al ultimo suelo firme. Sin sala, los limites son enormes y esto nunca ocurre.
+func _revisar_salida_por_abajo() -> void:
+	if global_position.y > _limites.end.y + margen_fuera_de_sala:
+		recibir_dano(1, global_position.x, true)
 
 
 func _mover(delta: float) -> void:

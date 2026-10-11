@@ -107,28 +107,29 @@ en milímetros físicos con un mínimo de 48 dp [18] (`DisplayServer.screen_get_
 las esquinas, y la interfaz dentro del área segura (`DisplayServer.get_display_safe_area()` [14], en coordenadas de la pantalla física). Solo se puede razonar:
 el S20 no simula otro DPI sin `wm density`, que no se usó.
 
-## 6. Recomendación (PROPUESTA, decide la persona)
+## 6. Decisión y lo aplicado (07-oct-2026)
 
-O4 + O2 para todas las pantallas, con O3 solo de respaldo fuera del rango: el área de diseño es 1280×720; cada sala
-pinta su fondo al menos 240 px fuera de sus límites a lo alto y 240 a lo ancho (cubre de 4:3 a 22:9 en las salas de
-720 de alto con la cámara centrada) y toda sala lleva `Fondo`. Así no se pierde campo visual en ninguna pantalla,
-no cambia la regla del margen bajo el suelo (que con la cámara nueva ya no depende del alto de la vista) y el
-«zoom» queda para lo que pase de 4:3. Botones en tamaño físico y dentro del área segura.
+La persona eligió la alternativa D (sección 9): el mismo rango, de 4:3 a 22:9, en escritorio, teléfono y tableta.
 
-## 7. Cómo se comprobaría
+| Qué | Estado | Medido |
+|---|---|---|
+| D: rango de la vista | Aplicado: `nucleo/vista.gd` (cuenta pura) y `nucleo/arranque.gd` (la aplica al arrancar y en `size_changed`, solo con pantalla) | En ventana: 20:9 y 22:9 sin barras; 32:9 → vista 1760×720 y 0,78:1 → 1280×960, con barras. Cambiar el tamaño en ejecución también recorta. Fuera del rango `size_changed` llega 3 veces y se detiene (sin bucle). Con la ventana real (maximizar, restaurar, ráfagas, con pausa), ajustar dentro de la señal dejaba la imagen con la vista anterior: ahora se ajusta diferido (`docs/errores/2026-10-07-vista-vieja-al-maximizar.md`) |
+| Color de las barras | Medido: las barras del motor son negras siempre; el gris era el color de borrado | Captura de la pantalla real con `DisplayServer.screen_get_image` |
+| Color de borrado negro | Aplicado en `Arranque` | El gris de fuera de las salas y el fondo de las salas sin `Fondo` pasan a negro; la caja gris y la sala de combate siguen legibles; la barra de Inspiración, oscura, se ve menos |
+| O2/O4: fondo extendido | Aplicado en `nucleo/sala.gd` (`FondoExtendido`, 280 px: 240 del rango más el temblor, observación del `revisor`) | `sala_puerta_b` a 20:9, 22:9 y 4:3: sin borde fuera de la sala; `sala_capas` (Fondo oculto): el parallax intacto |
+| Guiones | Sin cambios: 70 de 70 iguales; nuevo `vista.guion` | Sin pantalla la D no se aplica: la vista sigue en 1280×1280 y el medidor en 1600×720 |
+| Botones en tamaño físico y área segura | Reemplazado (persona, 07-oct-2026) por los botones táctiles configurables, con su propio plan; el área segura pasa a ese plan (posiciones por omisión dentro de ella) | — |
+| `min_size` de la ventana | No se hace: era opcional y la D ya evita la ventana ilegible por proporción | — |
+| S20 | La persona confirmó el 07-oct-2026 en `sala_puerta_b` que el fondo llega a los bordes, sin gris | A mano |
 
-Un guion por familia que fije el tamaño de la ventana sin pantalla (como hace `medidor_camara.gd`: 1760×720,
-1600×720, 1280×800, 1280×960) y recorra cada sala con un medidor que calcule, en cada tick, el rectángulo visible
-(centro de la cámara ± media vista) frente a `limites` más el fondo extendido: falla si queda un píxel de gris, o si
-el jugador, los corazones o un botón quedan fuera del área segura. Lo que solo se ve en un equipo real: el recorte
-de cámara y las esquinas redondeadas, el tamaño físico de los botones y si se alcanzan con los pulgares, y la
-bisagra de un plegable.
+Queda `ACTIVO` solo hasta que la persona maximice, restaure y arrastre la ventana de la PC a mano con el arreglo de
+`size_changed` (caso de `docs/pruebas.md`); con eso se cierra.
 
-## 8. Qué vería la persona para decidir
+## 7. Cómo se comprueba
 
-- En el S20, `sala_pared` y `sala_puerta_b` hoy (franjas a los lados) y con O2 (fondo extendido).
-- Con `wm size` en el S20 (4:3 y 22:9), lo mismo, y los botones: si a 4:3 siguen al alcance.
-- Por decidir: el rango (4:3 a 22:9), si el fondo extendido es color o arte, y si se acepta el zoom fuera del rango.
+`vista.guion` prueba la cuenta. Lo que se ve (barras, fondo extendido, botones dentro de la imagen) es manual, en el
+S20 con `wm size` y en la ventana de la PC (`docs/pruebas.md`). Solo en un equipo real: el recorte de cámara, las
+esquinas redondeadas, el tamaño físico de los botones y la bisagra de un plegable.
 
 ## 9. Ventana de escritorio
 
@@ -152,18 +153,17 @@ y `content_scale_size` de la ventana (fuera de un rango, con `KEEP` y el tamaño
 queda en 1760×720 y a 0,78:1 en 1280×960, con barras); `min_size` (limita el tamaño, no la proporción); asignar
 `size` a la ventana desde la señal `size_changed` (1920×540 pasa a 1320×540). El override por plataforma también
 funciona: `window/stretch/aspect.pc="keep"` deja la vista en 1280×720 en Windows. Sin probar: `max_size`, arrastrar el
-borde con la corrección de tamaño activa, y el color de las barras (negras o el color de borrado; la captura de la
-vista no las incluye).
+borde con la corrección de tamaño activa, y el color de las barras (medido después: negras, sección 6).
 
 | Alternativa | Qué hace | Costo y archivos | Riesgo |
 |---|---|---|---|
 | A. 16:9 fijo con barras | `aspect.pc="keep"` | Una línea en `project.godot` | Desperdicia pantalla en monitores anchos; distinta del teléfono |
 | B. Rango de la ventana (propuesta de la persona) | Corregir el tamaño de la ventana para que su proporción quede en el rango | ~15 líneas en un autoload | Solo existe en escritorio (el teléfono no se redimensiona); maximizada o a pantalla completa no se puede imponer; el arrastre, sin probar |
 | C. Ventana libre con fondo extendido o zoom | O2/O3 del plan | Ver la sección 5 | En 32:9 los corazones quedan lejos del juego; la vertical no se resuelve |
-| D. Rango de la vista | Dentro de 4:3 a 22:9, `expand`; fuera, la vista se recorta a la proporción límite con barras | ~15 líneas en un autoload existente, sin tocar `project.godot` | El color de las barras, sin confirmar |
+| D. Rango de la vista | Dentro de 4:3 a 22:9, `expand`; fuera, la vista se recorta a la proporción límite con barras | ~15 líneas en un autoload existente, sin tocar `project.godot` | Ninguno medido: las barras salen negras |
 
-Recomendación (decide la persona): **D**, con el mismo rango que el teléfono (4:3 a 22:9), y `min_size` opcional
-(p. ej. 640×360) para que la ventana no quede ilegible. Logra lo que busca la B (que esas dos capturas no se vean) con
+Recomendación, que la persona eligió el 07-oct-2026 (sección 6): **D**, con el mismo rango que el teléfono (4:3 a
+22:9), y `min_size` opcional (p. ej. 640×360) para que la ventana no quede ilegible. Logra lo que busca la B (que esas dos capturas no se vean) con
 una sola regla para escritorio, teléfono y tableta: también cubre la tableta que recibe una ventana vertical, y sigue
 valiendo con la ventana maximizada en un monitor 32:9 o a pantalla completa. El 21:9 de la propuesta era un ejemplo;
 si se elige B, su rango debe ser el mismo del plan.
@@ -172,8 +172,7 @@ Interfaz: los corazones y los botones se anclan a la vista. Con `expand` dentro 
 con D, fuera del rango, la vista es la zona recortada y las barras quedan fuera, así que la interfaz queda sobre el
 juego en las dos clases de pantalla. Que en una sala angosta los corazones caigan sobre gris es de la sala (O2/O4).
 
-Para decidir: abrir el juego en ventana con D y arrastrar los bordes hasta 32:9 y hasta vertical (barras y su color,
-y si la interfaz queda sobre el juego); en el S20 con `wm size`, lo mismo.
+Las barras resultaron negras (sección 6).
 
 ## 10. Fuentes (consultadas el 07-oct-2026; lo de Godot es de la documentación `latest` o de la rama 4.5, no de 4.7)
 
