@@ -7,10 +7,10 @@ Se sobrescribe; máximo 60 líneas. Rama y PR en curso, bloqueos y decisiones ab
 - Etapa: núcleo programado y probado en el teléfono; ajustes tras esa prueba, vibración y primer bloque de
   interfaz. Con `"pasa": false` quedan `menu-desarrollo` (cambia con el modo desarrollador) y `entrada-control`
   (la prueba otro integrante: la persona no tiene control) en `nucleo/`, y `etiqueta-qa-pending` en `herramientas/`. La preparación del repositorio sigue abierta en los pasos 4, 7 y 8.
-- Rama en curso: `feature/nucleo-controles-configurables`, que sale de `64775e5` (`feature/nucleo-movimiento-camara-sala`,
-  que sale de `f302dc6`, `feature/nucleo-entrada-acciones`, y lleva también el hook al compactar). Los planes terminados están en `planes/cerrados/`.
+- Rama en curso: `feature/nucleo-configuracion-menu`, que sale de `8649c73` (`feature/nucleo-controles-configurables`,
+  sobre `feature/nucleo-movimiento-camara-sala`, que sale de `f302dc6`, `feature/nucleo-entrada-acciones`). Los planes terminados están en `planes/cerrados/`.
 - Debajo, sin subir hasta que el PR #1 esté fusionado: `feature/herramientas-puerto-guion` (sobre `chore/setup`),
-  `chore/android-export` y `feature/nucleo-entrada-acciones`, que salen de ella, y `feature/nucleo-movimiento-camara-sala`.
+  `chore/android-export` y `feature/nucleo-entrada-acciones`, que salen de ella, y `feature/nucleo-movimiento-camara-sala` y `feature/nucleo-controles-configurables`.
 - PR en curso: #1, de `chore/setup` a `main`, checks en verde. Bloqueo: necesita la aprobación de otro integrante.
 
 ## Preparación del repositorio
@@ -51,10 +51,10 @@ Pasos 1, 2, 3, 5 y 6 cumplidos (06-oct-2026; detalle en git). Abiertos:
   `sala_camara`/`sala_capas`); pinchos con suelo firme + anti-bucle de Silksong (peligro antes de 0,5 s: a la
   puerta, sin perder vida); morir repone a los fuertes; vibración y pausa al perder el foco, como están (filas 5 a 8
   de la auditoría). Inspiración máxima 99, cerrada. Zona de pruebas en publicación tras «Modo desarrollador» (cambia
-  una decisión cerrada; plan sin aprobar). Botones táctiles configurables: aprobados y programados el 11-oct-2026. Suelo frágil roto que se
+  una decisión cerrada; plan sin aprobar). Botones táctiles configurables: hechos (11-oct-2026). Configuración en el menú principal, con Controles: hecha. Suelo frágil roto que se
   guarda: pide ID estable y subir el esquema. Provisionales: salto, combate, onda de la picada y demás daños.
 - Pruebas: en el S20 pasan temblor, aterrizaje duro, vibración, puerta, morir, pausa y el fondo hasta los bordes;
   en ventana, cámara, capas y pausa. Sin probar: control (otro integrante), paquete de publicación y maximizar la
   ventana a mano. Fallo del S20 (caída sin fin en `sala_puerta_b`): arreglado, falta verlo en el S20. Botones
-  configurables: pasan en el S50 con los pulgares (11-oct-2026); plan cerrado.
+  configurables: pasan en el S50 con los pulgares (11-oct-2026). Configuración del menú: pasa en el S50.
 - Ícono: se espera al arte (sin él, la exportación imprime un `ERROR:`). ¿«Publicacion» también con 32 bits?

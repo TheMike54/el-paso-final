@@ -52,6 +52,12 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 32
 text = "Continuar"
 
+[node name="Configuracion" type="Button" parent="Centro/Opciones"]
+custom_minimum_size = Vector2(400, 72)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Configuración"
+
 [node name="ZonaPruebas" type="Button" parent="Centro/Opciones"]
 custom_minimum_size = Vector2(400, 72)
 layout_mode = 2
@@ -64,6 +70,37 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 22
 horizontal_alignment = 1
 autowrap_mode = 3
+
+[node name="PanelConfiguracion" type="CenterContainer" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Opciones" type="VBoxContainer" parent="PanelConfiguracion"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Titulo" type="Label" parent="PanelConfiguracion/Opciones"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 48
+text = "Configuración"
+horizontal_alignment = 1
+
+[node name="Controles" type="Button" parent="PanelConfiguracion/Opciones"]
+custom_minimum_size = Vector2(400, 72)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Controles"
+
+[node name="Volver" type="Button" parent="PanelConfiguracion/Opciones"]
+custom_minimum_size = Vector2(400, 72)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Volver"
 
 [node name="Confirmar" type="ColorRect" parent="."]
 layout_mode = 1

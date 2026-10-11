@@ -190,5 +190,11 @@
     "que": "Desde la pausa se puede mover cada boton tactil, cambiar su tamano y la opacidad de todos, restaurar los valores por omision y guardarlo en user://ajustes.json",
     "comprobacion": "herramientas/guiones/nucleo/controles_configurables.guion",
     "pasa": true
+  },
+  {
+    "id": "configuracion-menu",
+    "que": "El menu principal tiene Configuracion con Controles, que abre el mismo editor de botones que la pausa; Atras vuelve un nivel a la vez",
+    "comprobacion": "herramientas/guiones/nucleo/menu_configuracion.guion",
+    "pasa": true
   }
 ]

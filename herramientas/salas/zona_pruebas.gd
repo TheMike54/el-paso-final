@@ -5,7 +5,7 @@ extends Control
 const CARPETA: String = "res://herramientas/salas/"
 const MENU: String = "res://nucleo/menu.tscn"
 ## Escenas de la carpeta que no son salas para recorrer: esta y las pruebas sin jugador.
-const EXCLUIDAS: PackedStringArray = ["zona_pruebas.tscn", "sala_guardado.tscn", "sala_tactil.tscn", "sala_control.tscn", "sala_foco.tscn", "sala_aterrizaje.tscn", "sala_vista.tscn", "sala_controles_configurables.tscn"]
+const EXCLUIDAS: PackedStringArray = ["zona_pruebas.tscn", "sala_guardado.tscn", "sala_tactil.tscn", "sala_control.tscn", "sala_foco.tscn", "sala_aterrizaje.tscn", "sala_vista.tscn", "sala_controles_configurables.tscn", "sala_menu_configuracion.tscn"]
 
 # En cuadricula de tres columnas: en una sola columna las salas ya no caben en la pantalla.
 @onready var _lista: GridContainer = $Centro/Lista as GridContainer

@@ -1,0 +1,5 @@
+# La escena de prueba de Configuracion instancia el menu principal y recorre menu, panel y editor de
+# controles con Atras y con la accion pausa, y deja la cuenta en sus propiedades. No sustituye la prueba
+# en el telefono.
+escena res://herramientas/salas/sala_menu_configuracion.tscn
+fin 30

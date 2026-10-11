@@ -194,8 +194,8 @@ letra de la distribución. Una acción nueva se agrega a `project.godot` y a est
   la vista) y no dejan achicar un botón por debajo de su tamaño por omisión ni de un objetivo de 48 dp (contando la holgura del
   toque), el que sea menor: el mínimo no agranda la distribución inicial. Las dos cosas solo en el teléfono (`OS.has_feature
   ("mobile")`): en la PC, toda la vista y sin mínimo. El joystick no se configura.
-- Editor de controles: `nucleo/editor_controles.tscn` (`class_name EditorControles` en su nodo `Lienzo`), que abre
-  la pausa (`Pausa.abrir_editor()`). Tocar un botón lo selecciona y arrastrarlo lo mueve (al soltar, se ancla a la
+- Editor de controles: `nucleo/editor_controles.tscn` (`class_name EditorControles` en su nodo `Lienzo`), que abren
+  la pausa (`Pausa.abrir_editor()`) y la Configuración del menú principal (ver «Menú»). Tocar un botón lo selecciona y arrastrarlo lo mueve (al soltar, se ancla a la
   esquina más cercana y entra en el área segura); un deslizador cambia el tamaño del seleccionado y otro la opacidad
   de todos; «Restaurar» pide un segundo toque. Edita una copia: «Listo» la pone en `Ajustes.disposicion` y la
   guarda, «Cancelar» la descarta. Lee el ratón (en el teléfono, emulado desde el toque). Mientras está abierto,
@@ -499,5 +499,8 @@ pruebas» del menú, que solo aparece si el build es de depuración y `herramien
 `nucleo/menu.tscn` es la escena principal. Nueva partida (`Partida.reiniciar()`) y Continuar (carga el guardado en
 `Partida`) llevan a la escena de su propiedad `sala_inicial` (por ahora la caja gris, hasta que exista la primera
 sala del juego; la caja gris tiene un botón «Volver al menú», porque no es una sala y no tiene pausa); Continuar con un banco guardado lleva a la sala de ese banco y pone al jugador en él. Continuar se habilita solo si el guardado es `VALIDA`; con `VACIA`, `DANADA` o
-`INCOMPATIBLE`, el menú dice por qué. Atrás o la acción `pausa` en el menú piden confirmación antes de cerrar la
-app.
+`INCOMPATIBLE`, el menú dice por qué. «Configuración» abre un panel en la misma escena (`PanelConfiguracion`, en
+lugar del panel central) con «Controles», que abre el mismo editor de botones que la pausa (ver «Entrada»), y
+«Volver». Atrás y la acción `pausa` vuelven un nivel a la vez (`atras()`): con el editor abierto lo cancelan, en el
+panel vuelven al menú y en el menú piden confirmación antes de cerrar la app. Las opciones nuevas de configuración
+se agregan como botones de ese panel.
