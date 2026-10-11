@@ -50,6 +50,12 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 32
 text = "Temblor de cámara"
 
+[node name="Controles" type="Button" parent="Panel/Opciones"]
+custom_minimum_size = Vector2(400, 72)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Controles"
+
 [node name="SalirAlMenu" type="Button" parent="Panel/Opciones"]
 custom_minimum_size = Vector2(400, 72)
 layout_mode = 2

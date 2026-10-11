@@ -1,11 +1,11 @@
-ACTIVO
+CERRADO
 
 # Núcleo: botones táctiles configurables
 
 Pedido por la persona el 07-oct-2026 como funcionalidad nueva de `nucleo/funciones.json`, al estilo del editor de
 controles de Call of Duty: Mobile: mover cada botón a cualquier lugar, cambiar su tamaño (y la opacidad si es
 barata), restaurar los valores por omisión y guardarlo en `user://ajustes.json`. Reemplaza a los «botones en tamaño
-físico» del plan de pantalla completa, y el área segura pasa a este plan. Plan por aprobar: no se programa antes.
+físico» del plan de pantalla completa, y el área segura pasa a este plan. Aprobado el 11-oct-2026.
 
 ## 1. Lo que hacen otros juegos (investigación del 07-oct-2026, con fuentes al final)
 
@@ -33,7 +33,7 @@ solo valores `bool` (vibración, temblor), con una pantalla en la pausa.
 |---|---|
 | Entrada al editor | Botón «Controles» en la pausa, junto a vibración y temblor. El juego queda en pausa debajo (vista previa real, como el HUD de muestra de CoD) |
 | Elegir y mover | Tocar un botón lo selecciona (se resalta); arrastrarlo lo mueve. Un solo dedo a la vez en el editor |
-| Tamaño | Un deslizador del botón seleccionado, de 50 % a 200 % del tamaño por omisión, con un mínimo de radio equivalente a 48 dp |
+| Tamaño | Un deslizador del botón seleccionado, de 50 % a 200 % del tamaño por omisión. Al achicar, un botón no baja de su tamaño por omisión ni de un objetivo de 48 dp contando la holgura del toque, el que sea menor: el mínimo no agranda la distribución inicial, y Pausa, Mapa y Mochila quedan por omisión bajo los 48 dp, como antes del editor (decisión de la persona, 11-oct-2026, tras verlos encimados en el S50 con el mínimo para todos) |
 | Opacidad | Un deslizador para todos los botones a la vez (como CoD), de 20 % a 100 %: un número que multiplica el alfa del dibujo. Por botón costaría una lista más y un deslizador que cambia de dueño; no se propone |
 | Restaurar | Un botón que vuelve todo a los valores por omisión, con confirmación |
 | Guardar y salir | «Listo» guarda en `user://ajustes.json`; «Cancelar» descarta lo editado |
@@ -77,10 +77,15 @@ la escena del editor en `nucleo/`, `nucleo/pausa.gd` y `.tscn` (botón «Control
 ## Avance
 
 - [x] Investigación (`investigador`, 07-oct-2026).
-- [ ] Plan aprobado por la persona; entrada nueva de `funciones.json` aprobada.
-- [ ] Cuenta y guion.
-- [ ] Editor.
-- [ ] Prueba en el S20 (persona).
+- [x] Plan aprobado por la persona tal como está, con la entrada nueva de `funciones.json` (11-oct-2026). Fuera de
+  esta funcionalidad, por decisión de la persona: opacidad por botón, joystick movible y varios diseños guardados.
+- [x] Cuenta y guion (`nucleo/disposicion_controles.gd`, `controles_configurables.guion`: 37 de 37; 11-oct-2026).
+- [x] Editor (`nucleo/editor_controles.tscn`, botón «Controles» de la pausa). El mínimo de 48 dp, como quedó en la
+  sección 3 (decisión de la persona del 11-oct-2026).
+- [x] En el S50 con `adb` (toques simulados, 11-oct-2026): mover, meter en la esquina, tamaño, opacidad, Listo,
+  conservar al reabrir la app, Atrás como Cancelar y Restaurar con confirmación; sin errores, a 59-60 FPS.
+- [x] Prueba con el dedo (persona, 11-oct-2026, Senwa S50): los nueve puntos del caso «Botones configurables» de
+  `docs/pruebas.md` pasan. Con eso se cierra el plan.
 
 ## Fuentes (consultadas el 07-oct-2026)
 

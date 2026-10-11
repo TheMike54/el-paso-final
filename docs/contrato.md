@@ -30,10 +30,11 @@ Valores de `project.godot`. No se cambian sin actualizar esta tabla.
 - Pausar no guarda. La partida se guarda solo en los bancos.
 - Pausa: `nucleo/pausa.tscn` (`class_name Pausa`), que crea cada sala. La acción `pausa` o el botón Atrás de
   Android la abren y la cierran (`get_tree().paused`); tiene Continuar, los interruptores de vibración y de temblor de
-  cámara (mientras no haya Opciones) y «Salir al menú». Se abre sola al perder el foco (`NOTIFICATION_APPLICATION_FOCUS_OUT` o
+  cámara (mientras no haya Opciones), «Controles» (abre el editor de los botones táctiles; ver «Entrada») y «Salir al menú». Se abre sola al perder el foco (`NOTIFICATION_APPLICATION_FOCUS_OUT` o
   `NOTIFICATION_APPLICATION_PAUSED`: apps recientes, otra ventana) y no se cierra sola al volver. Corre con
   `PROCESS_MODE_ALWAYS`, igual que los controles táctiles. Su propiedad `abierta` dice si está abierta. La pausa
-  lee la acción, no el evento: la abren igual la tecla, el botón táctil y un guion.
+  lee la acción, no el evento: la abren igual la tecla, el botón táctil y un guion. Con el editor abierto (`editor`
+  no es `null`), la acción `pausa` no hace nada y Atrás es Cancelar.
 - El guardado se escribe en un archivo temporal y después se renombra: un cierre a la mitad no daña la partida.
 - Los ajustes del jugador van en su propio archivo, no en la partida (ver «Ajustes y vibración»).
 - El guardado es JSON con número de versión. Al cargar se distinguen partida válida, archivo dañado y partida de
@@ -70,15 +71,17 @@ Valores de `project.godot`. No se cambian sin actualizar esta tabla.
 `nucleo/ajustes.gd` (`class_name Ajustes`): funciones estáticas, como `Guardado`. Archivo `user://ajustes.json`
 (`{"version": 1, "ajustes": {...}}`), escrito a un temporal y renombrado. Son del teléfono y no de la partida:
 agregar un ajuste no cambia `Guardado.VERSION`. Un archivo que falta, dañado o de otra versión deja los valores
-por omisión (`Ajustes.POR_OMISION`).
+por omisión: los interruptores en `Ajustes.POR_OMISION`; la disposición de los botones en
+`DisposicionControles.por_omision()`.
 
 | Ajuste | Por omisión | Qué es |
 |---|---|---|
 | `vibracion` | `true` | Vibrar al pegar, al recibir daño, al curarse, al descansar y al aterrizar duro |
 | `temblor` | `true` | Temblor de la cámara al aterrizar de una caída (se apaga por mareo). Un archivo sin la clave la deja encendida |
+| `controles` | La distribución inicial | `{"opacidad": n, "botones": {acción: {"ancla": [0|1, 0|1], "desplazamiento": [x, y], "escala": n}}}` (ver «Entrada»). Lo que falta o no es válido se queda en su valor por omisión, botón por botón; escala y opacidad fuera de rango se recortan |
 
-- `Ajustes.cargar_una_vez()` lo llaman la vibración, la pausa y el jugador al crearse; `Ajustes.guardar()`, los interruptores de la
-  pausa.
+- `Ajustes.cargar_una_vez()` lo llaman la vibración, la pausa, el jugador, los controles táctiles y el editor de controles al
+  crearse; `Ajustes.guardar()`, los interruptores de la pausa y «Listo» del editor de controles.
 - `nucleo/vibracion.gd` (`class_name Vibracion`, `Node`), que crea cada sala con el nombre `Vibracion`: escucha el
   bus y llama a `Input.vibrate_handheld(ms, fuerza)` con un patrón por evento (propiedades exportadas):
 
@@ -182,8 +185,21 @@ letra de la distribución. Una acción nueva se agrega a `project.godot` y a est
   y un dedo encima se suelta al perderla; la tabla `HABILIDAD_DE_BOTON` dice qué botón pide qué habilidad). Anclados a su esquina y medidos en proporción del lado corto. Se ocultan con una tecla o
   el control y reaparecen al tocar la pantalla. Los dedos se recuerdan entre salas (variables estáticas): un dedo
   que sigue en la pantalla al cruzar una puerta o al reaparecer lo sueltan los controles de la sala nueva; si
-  entre una sala y otra pasan más de `CUADROS_CAMBIO_DE_SALA` cuadros (el menú), al llegar se suelta todo. Mover y
-  cambiar el tamaño de los botones entra después.
+  entre una sala y otra pasan más de `CUADROS_CAMBIO_DE_SALA` cuadros (el menú), al llegar se suelta todo. Dónde va
+  cada botón y su tamaño los da `Ajustes.disposicion` (`nucleo/disposicion_controles.gd`, `class_name
+  DisposicionControles`, sin nodos): por botón, la esquina de ancla, el desplazamiento desde ella en fracción del lado
+  corto y la escala (de 0,5 a 2), más una opacidad para todos (de 0,2 a 1). La distribución inicial sale de
+  `CENTROS`, `ANCLAS` y `RADIOS`. Al crearse, al cambiar de tamaño y cuando `Ajustes.disposicion` cambia, los
+  controles meten cada botón dentro del área segura (`DisplayServer.get_display_safe_area()` pasada a coordenadas de
+  la vista) y no dejan achicar un botón por debajo de su tamaño por omisión ni de un objetivo de 48 dp (contando la holgura del
+  toque), el que sea menor: el mínimo no agranda la distribución inicial. Las dos cosas solo en el teléfono (`OS.has_feature
+  ("mobile")`): en la PC, toda la vista y sin mínimo. El joystick no se configura.
+- Editor de controles: `nucleo/editor_controles.tscn` (`class_name EditorControles` en su nodo `Lienzo`), que abre
+  la pausa (`Pausa.abrir_editor()`). Tocar un botón lo selecciona y arrastrarlo lo mueve (al soltar, se ancla a la
+  esquina más cercana y entra en el área segura); un deslizador cambia el tamaño del seleccionado y otro la opacidad
+  de todos; «Restaurar» pide un segundo toque. Edita una copia: «Listo» la pone en `Ajustes.disposicion` y la
+  guarda, «Cancelar» la descarta. Lee el ratón (en el teléfono, emulado desde el toque). Mientras está abierto,
+  `ControlesTactiles.editando` es verdadero: los toques no accionan nada y los botones del juego no se dibujan.
 - Control (Xbox / PlayStation): un evento del InputMap junto a cada tecla, para cualquier control (`device` -1).
   El stick usa la zona muerta de cada acción (0,2); RT es un eje que cuenta como presionado pasada esa zona.
   `interactuar` comparte el stick arriba con `mover_arriba`, igual que la tecla. RB y LT quedan libres.

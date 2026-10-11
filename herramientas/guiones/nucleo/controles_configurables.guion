@@ -1,0 +1,5 @@
+# La escena de prueba de los botones configurables recorre la cuenta de DisposicionControles, el archivo
+# de ajustes, los toques sobre un boton movido y el editor con clics simulados, y deja la cuenta en sus
+# propiedades. No sustituye la prueba en el telefono: area segura, 48 dp y el arrastre con el dedo.
+escena res://herramientas/salas/sala_controles_configurables.tscn
+fin 20

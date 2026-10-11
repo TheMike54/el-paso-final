@@ -4,11 +4,13 @@ extends Control
 # con Input.action_press y action_release, para que la logica nunca lea el toque. Joystick
 # invisible abajo a la izquierda y botones en la distribucion inicial del diseno, anclados a
 # su esquina. Se ocultan al usar teclado o control y reaparecen al tocar la pantalla. Un boton
-# que pide una habilidad solo se dibuja y responde mientras Partida la tiene.
+# que pide una habilidad solo se dibuja y responde mientras Partida la tiene. Donde va cada boton y su
+# tamano los da Ajustes.disposicion, que cambia el editor de controles de la pausa.
 
 const ACCIONES: Array[StringName] = [&"saltar", &"atacar", &"curar", &"impulso", &"pausa", &"mapa", &"mochila"]
 const ETIQUETAS: PackedStringArray = ["Saltar", "Atacar", "Curar", "Impulso", "Pausa", "Mapa", "Mochila"]
-## Centro de cada boton en la distribucion inicial: fraccion de una pantalla 16:9.
+## Centro de cada boton en la distribucion inicial: fraccion de una pantalla 16:9. De aqui salen los
+## valores por omision de DisposicionControles; en juego manda Ajustes.disposicion.
 const CENTROS: PackedVector2Array = [
 	Vector2(0.91, 0.81), Vector2(0.81, 0.81), Vector2(0.82, 0.63), Vector2(0.91, 0.60),
 	Vector2(0.94, 0.09), Vector2(0.94, 0.21), Vector2(0.94, 0.32),
@@ -51,9 +53,17 @@ static var _palanca: Vector2 = Vector2.ZERO
 static var _movimientos_propios: Array[StringName] = []
 # Cuadro en que salieron del arbol los ultimos controles; -1 si no hay dedos por heredar.
 static var _cuadro_salida: int = -1
+## Mientras el editor de controles esta abierto, los toques no presionan acciones y los botones no se dibujan.
+static var editando: bool = false
 
 # Que botones estaban disponibles en la ultima revision, para redibujar solo si cambia.
 var _disponibles: Array[bool] = []
+# La disposicion de Ajustes metida en el area segura de esta pantalla, y de cual salio, para notar
+# cuando el editor la reemplaza.
+var _disposicion: DisposicionControles = DisposicionControles.por_omision()
+var _disposicion_origen: DisposicionControles = null
+var _radio_minimo: float = 0.0
+var _editando_visto: bool = false
 
 
 func _ready() -> void:
@@ -61,6 +71,9 @@ func _ready() -> void:
 	if _cuadro_salida >= 0 and Engine.get_process_frames() - _cuadro_salida > CUADROS_CAMBIO_DE_SALA:
 		_soltar_todo()
 	_cuadro_salida = -1
+	Ajustes.cargar_una_vez()
+	aplicar_disposicion()
+	resized.connect(aplicar_disposicion)
 	_revisar_habilidades()
 
 
@@ -72,6 +85,22 @@ func _exit_tree() -> void:
 # avisar: asi el boton aparece y desaparece sin recargar la sala.
 func _process(_delta: float) -> void:
 	_revisar_habilidades()
+	if Ajustes.disposicion != _disposicion_origen:
+		aplicar_disposicion()
+	if editando != _editando_visto:
+		_editando_visto = editando
+		if editando:
+			_soltar_todo()
+		queue_redraw()
+
+
+## Toma Ajustes.disposicion y la ajusta al tamano y al area segura de esta pantalla.
+func aplicar_disposicion() -> void:
+	_disposicion_origen = Ajustes.disposicion
+	_disposicion = Ajustes.disposicion.copia()
+	_radio_minimo = DisposicionControles.radio_minimo(size)
+	_disposicion.ajustar(size, DisposicionControles.area_segura(size), _radio_minimo)
+	queue_redraw()
 
 
 func _input(evento: InputEvent) -> void:
@@ -80,6 +109,8 @@ func _input(evento: InputEvent) -> void:
 
 ## Traduce un evento de entrada. Publico para que la prueba le pase toques sin pantalla.
 func procesar(evento: InputEvent) -> void:
+	if editando:
+		return
 	var toque: InputEventScreenTouch = evento as InputEventScreenTouch
 	var arrastre: InputEventScreenDrag = evento as InputEventScreenDrag
 	if toque != null:
@@ -100,14 +131,11 @@ func procesar(evento: InputEvent) -> void:
 
 ## Centro de un boton en la pantalla actual. Para la prueba y para dibujar.
 func centro(accion: StringName) -> Vector2:
-	var i: int = ACCIONES.find(accion)
-	var corto: float = minf(size.x, size.y)
-	var desplazamiento: Vector2 = (CENTROS[i] - ANCLAS[i]) * Vector2(PROPORCION_REFERENCIA, 1.0) * corto
-	return ANCLAS[i] * size + desplazamiento
+	return _disposicion.centro(ACCIONES.find(accion), size)
 
 
 func _radio(i: int) -> float:
-	return RADIOS[i] * minf(size.x, size.y)
+	return _disposicion.radio(i, size, _radio_minimo)
 
 
 func _disponible(i: int) -> bool:
@@ -222,6 +250,10 @@ func _es_de_juego(evento: InputEvent) -> bool:
 
 
 func _draw() -> void:
+	if editando:
+		return
+	var color_boton: Color = Color(COLOR_BOTON, COLOR_BOTON.a * _disposicion.opacidad)
+	var color_presionado: Color = Color(COLOR_PRESIONADO, COLOR_PRESIONADO.a * _disposicion.opacidad)
 	var fuente: Font = ThemeDB.fallback_font
 	var presionados: Array[int] = []
 	presionados.assign(_dedos_en_botones.values())
@@ -231,11 +263,11 @@ func _draw() -> void:
 		var c: Vector2 = centro(ACCIONES[i])
 		var r: float = _radio(i)
 		if presionados.has(i):
-			draw_circle(c, r, COLOR_PRESIONADO)
-		draw_arc(c, r, 0.0, TAU, 48, COLOR_BOTON, 2.0)
+			draw_circle(c, r, color_presionado)
+		draw_arc(c, r, 0.0, TAU, 48, color_boton, 2.0)
 		var tamano_letra: int = maxi(12, roundi(r * 0.35))
 		var ancho: float = fuente.get_string_size(ETIQUETAS[i], HORIZONTAL_ALIGNMENT_LEFT, -1, tamano_letra).x
-		draw_string(fuente, c + Vector2(-ancho / 2.0, tamano_letra * 0.35), ETIQUETAS[i], HORIZONTAL_ALIGNMENT_LEFT, -1, tamano_letra, COLOR_BOTON)
+		draw_string(fuente, c + Vector2(-ancho / 2.0, tamano_letra * 0.35), ETIQUETAS[i], HORIZONTAL_ALIGNMENT_LEFT, -1, tamano_letra, color_boton)
 	if _dedo_joystick != -1:
 		var radio: float = RADIO_JOYSTICK * minf(size.x, size.y)
 		draw_arc(_origen_joystick, radio, 0.0, TAU, 48, COLOR_BOTON, 2.0)

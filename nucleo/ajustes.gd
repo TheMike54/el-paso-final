@@ -1,18 +1,21 @@
 class_name Ajustes
 extends RefCounted
-# Ajustes del jugador (vibracion y temblor de camara), en su propio archivo JSON: son del telefono y no de
-# la partida, y asi agregar uno no cambia la version del guardado. Funciones estaticas, como
-# Guardado; un archivo que falta o esta danado deja los valores por omision.
+# Ajustes del jugador (vibracion, temblor de camara y disposicion de los botones tactiles), en su propio
+# archivo JSON: son del telefono y no de la partida, y asi agregar uno no cambia la version del guardado.
+# Funciones estaticas, como Guardado; un archivo que falta o esta danado deja los valores por omision.
 
 const VERSION: int = 1
 const RUTA: String = "user://ajustes.json"
-## Valores por omision; tambien la lista de ajustes que existen.
+## Valores por omision de los interruptores; la disposicion de los botones tiene los suyos en
+## DisposicionControles.por_omision().
 const POR_OMISION: Dictionary[String, bool] = {"vibracion": true, "temblor": true}
 
 ## Vibrar al pegar, al recibir dano, al curarse y al descansar.
 static var vibracion: bool = POR_OMISION["vibracion"]
 ## Temblor de la camara al aterrizar de una caida; se apaga por mareo.
 static var temblor: bool = POR_OMISION["temblor"]
+## Donde va cada boton tactil, su tamano y la opacidad de todos. El editor de controles la reemplaza.
+static var disposicion: DisposicionControles = DisposicionControles.por_omision()
 static var _cargados: bool = false
 
 
@@ -26,6 +29,7 @@ static func cargar(ruta: String = RUTA) -> void:
 	_cargados = true
 	vibracion = POR_OMISION["vibracion"]
 	temblor = POR_OMISION["temblor"]
+	disposicion = DisposicionControles.por_omision()
 	if not FileAccess.file_exists(ruta):
 		return
 	var json: JSON = JSON.new()
@@ -47,6 +51,7 @@ static func cargar(ruta: String = RUTA) -> void:
 	valor = ajustes.get("temblor")
 	if typeof(valor) == TYPE_BOOL:
 		temblor = valor
+	disposicion = DisposicionControles.desde_diccionario(ajustes.get("controles"))
 
 
 ## Escribe a un temporal y lo renombra, como el guardado de la partida.
@@ -55,7 +60,7 @@ static func guardar(ruta: String = RUTA) -> Error:
 	var archivo: FileAccess = FileAccess.open(temporal, FileAccess.WRITE)
 	if archivo == null:
 		return FileAccess.get_open_error()
-	archivo.store_string(JSON.stringify({"version": VERSION, "ajustes": {"vibracion": vibracion, "temblor": temblor}}, "\t"))
+	archivo.store_string(JSON.stringify({"version": VERSION, "ajustes": {"vibracion": vibracion, "temblor": temblor, "controles": disposicion.a_diccionario()}}, "\t"))
 	var error: Error = archivo.get_error()
 	archivo.close()
 	if error != OK:

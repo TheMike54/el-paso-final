@@ -1,0 +1,89 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://nucleo/editor_controles.gd" id="1_editor"]
+
+[node name="EditorControles" type="CanvasLayer"]
+process_mode = 3
+layer = 21
+
+[node name="Lienzo" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_editor")
+
+[node name="Barra" type="PanelContainer" parent="Lienzo"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -400.0
+offset_top = 16.0
+offset_right = 400.0
+offset_bottom = 176.0
+grow_horizontal = 2
+
+[node name="Filas" type="VBoxContainer" parent="Lienzo/Barra"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Deslizadores" type="GridContainer" parent="Lienzo/Barra/Filas"]
+layout_mode = 2
+theme_override_constants/h_separation = 16
+columns = 2
+
+[node name="EtiquetaTamano" type="Label" parent="Lienzo/Barra/Filas/Deslizadores"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "Tamaño"
+
+[node name="Tamano" type="HSlider" parent="Lienzo/Barra/Filas/Deslizadores"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 50.0
+max_value = 200.0
+step = 5.0
+value = 100.0
+
+[node name="EtiquetaOpacidad" type="Label" parent="Lienzo/Barra/Filas/Deslizadores"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "Opacidad"
+
+[node name="Opacidad" type="HSlider" parent="Lienzo/Barra/Filas/Deslizadores"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 20.0
+step = 5.0
+value = 100.0
+
+[node name="Botones" type="HBoxContainer" parent="Lienzo/Barra/Filas"]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="Restaurar" type="Button" parent="Lienzo/Barra/Filas/Botones"]
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 28
+text = "Restaurar"
+
+[node name="Cancelar" type="Button" parent="Lienzo/Barra/Filas/Botones"]
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 28
+text = "Cancelar"
+
+[node name="Listo" type="Button" parent="Lienzo/Barra/Filas/Botones"]
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 28
+text = "Listo"

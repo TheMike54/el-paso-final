@@ -7,11 +7,10 @@ Se sobrescribe; máximo 60 líneas. Rama y PR en curso, bloqueos y decisiones ab
 - Etapa: núcleo programado y probado en el teléfono; ajustes tras esa prueba, vibración y primer bloque de
   interfaz. Con `"pasa": false` quedan `menu-desarrollo` (cambia con el modo desarrollador) y `entrada-control`
   (la prueba otro integrante: la persona no tiene control) en `nucleo/`, y `etiqueta-qa-pending` en `herramientas/`. La preparación del repositorio sigue abierta en los pasos 4, 7 y 8.
-- Rama en curso: `feature/nucleo-movimiento-camara-sala`, que sale de `f302dc6` (`feature/nucleo-entrada-acciones`)
-  y lleva también el hook al compactar. Planes cerrados en `planes/cerrados/`: movimiento y cámara, partida,
-  poderes, ajustes e interfaz, temblor, aterrizaje duro y poda de pruebas.
+- Rama en curso: `feature/nucleo-controles-configurables`, que sale de `64775e5` (`feature/nucleo-movimiento-camara-sala`,
+  que sale de `f302dc6`, `feature/nucleo-entrada-acciones`, y lleva también el hook al compactar). Los planes terminados están en `planes/cerrados/`.
 - Debajo, sin subir hasta que el PR #1 esté fusionado: `feature/herramientas-puerto-guion` (sobre `chore/setup`),
-  `chore/android-export` y `feature/nucleo-entrada-acciones`, que salen de ella.
+  `chore/android-export` y `feature/nucleo-entrada-acciones`, que salen de ella, y `feature/nucleo-movimiento-camara-sala`.
 - PR en curso: #1, de `chore/setup` a `main`, checks en verde. Bloqueo: necesita la aprobación de otro integrante.
 
 ## Preparación del repositorio
@@ -22,7 +21,7 @@ Pasos 1, 2, 3, 5 y 6 cumplidos (06-oct-2026; detalle en git). Abiertos:
 |---|---|---|---|
 | 4 | GitHub: etiqueta, plantillas, CODEOWNERS, workflows, ajustes y primer PR | El PR sale en rojo con un `.gd` roto y en verde al quitarlo; `qa-pending` se pone al abrir y se quita al aprobar; después, ruleset activo y push directo a `main` rechazado | En curso: rojo y verde vistos; `qa-pending` puesta al abrir. Falta: aprobación, fusión, ruleset y push directo rechazado. Falta ver los guiones en el CI de Linux |
 | 7 | Clon limpio y las tres máquinas | Solo con el README pasan `verificar-entorno.ps1` y `validar.ps1` en cada máquina | Pasa en una máquina; faltan las de los otros dos integrantes, con el PR #1 fusionado |
-| 8 | Android: preset, APK de depuración, instalación con `adb` | La caja gris corre en el teléfono de prueba; modelo, Android, RAM y FPS en `docs/pruebas.md` | Medido el 06-oct-2026 en un Galaxy S20 (SM-G980F, Android 13, 7,3 GB): la caja gris y las salas de prueba a 60 FPS (`docs/pruebas.md`). El preset «Desarrollo» sigue solo en `chore/android-export` |
+| 8 | Android: preset, APK de depuración, instalación con `adb` | La caja gris corre en el teléfono de prueba; modelo, Android, RAM y FPS en `docs/pruebas.md` | Medido el 06-oct-2026 en un Galaxy S20 (SM-G980F, Android 13, 7,3 GB): la caja gris y las salas de prueba a 60 FPS (`docs/pruebas.md`). El 09-oct-2026, en un Senwa S50 (Android 13 Go, solo 32 bits, 1,9 GB, Mali-T820), el APK de «Desarrollo» para 32 y 64 bits se instala y arranca a 59-60 FPS los primeros 6 s; falta jugar una sala. El preset «Desarrollo» sigue solo en `chore/android-export`, y el cambio de 32 bits, sin commit |
 
 ## Decisiones técnicas
 
@@ -30,7 +29,7 @@ Pasos 1, 2, 3, 5 y 6 cumplidos (06-oct-2026; detalle en git). Abiertos:
 - `LICENSE` lleva solo el texto MIT estándar para que GitHub lo reconozca; el arte queda fuera (README).
 - `ci.yml` usa `chickensoft-games/setup-godot@v2` sin plantillas; el check obligatorio del ruleset se llama `validar`.
 - Paso 8: dos presets de Android con el id `com.themike54.elpasofinal`. «Publicacion» excluye `herramientas/*` y
-  `*funciones.json`; «Desarrollo» lleva todo y arranca con `--print-fps`.
+  `*funciones.json`; «Desarrollo» lleva todo, arranca con `--print-fps` y compila para ARM de 32 y 64 bits.
 - La escena principal es el menú (`nucleo/menu.tscn`); la caja gris queda como destino de Nueva partida hasta que
   exista la primera sala del juego; tiene un botón para volver al menú (decidido el 06-oct-2026).
 - Guiones: línea `escena` y claves `valor` y `senal`; las pruebas sin jugador son escenas de `herramientas/salas/`
@@ -52,9 +51,10 @@ Pasos 1, 2, 3, 5 y 6 cumplidos (06-oct-2026; detalle en git). Abiertos:
   `sala_camara`/`sala_capas`); pinchos con suelo firme + anti-bucle de Silksong (peligro antes de 0,5 s: a la
   puerta, sin perder vida); morir repone a los fuertes; vibración y pausa al perder el foco, como están (filas 5 a 8
   de la auditoría). Inspiración máxima 99, cerrada. Zona de pruebas en publicación tras «Modo desarrollador» (cambia
-  una decisión cerrada; pide plan). Siguiente: botones táctiles configurables (pide plan). Suelo frágil roto que se
+  una decisión cerrada; plan sin aprobar). Botones táctiles configurables: aprobados y programados el 11-oct-2026. Suelo frágil roto que se
   guarda: pide ID estable y subir el esquema. Provisionales: salto, combate, onda de la picada y demás daños.
 - Pruebas: en el S20 pasan temblor, aterrizaje duro, vibración, puerta, morir, pausa y el fondo hasta los bordes;
   en ventana, cámara, capas y pausa. Sin probar: control (otro integrante), paquete de publicación y maximizar la
-  ventana a mano. Fallo del S20 (caída sin fin en `sala_puerta_b`): arreglado, falta verlo en el S20.
-- Ícono del proyecto: se espera al arte (sin ícono, la exportación imprime un `ERROR:` y genera el APK).
+  ventana a mano. Fallo del S20 (caída sin fin en `sala_puerta_b`): arreglado, falta verlo en el S20. Botones
+  configurables: pasan en el S50 con los pulgares (11-oct-2026); plan cerrado.
+- Ícono: se espera al arte (sin él, la exportación imprime un `ERROR:`). ¿«Publicacion» también con 32 bits?

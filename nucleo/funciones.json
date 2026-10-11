@@ -184,5 +184,11 @@
     "que": "El aterrizaje duro y el aterrizaje de la picada emiten Eventos.jugador_aterrizo y el telefono vibra 80 ms con fuerza 0,9; con el ajuste vibracion apagado no vibra",
     "comprobacion": "herramientas/guiones/nucleo/vibracion_aterrizaje.guion",
     "pasa": true
+  },
+  {
+    "id": "controles-configurables",
+    "que": "Desde la pausa se puede mover cada boton tactil, cambiar su tamano y la opacidad de todos, restaurar los valores por omision y guardarlo en user://ajustes.json",
+    "comprobacion": "herramientas/guiones/nucleo/controles_configurables.guion",
+    "pasa": true
   }
 ]
