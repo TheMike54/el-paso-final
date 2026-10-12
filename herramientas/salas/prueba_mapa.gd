@@ -64,6 +64,13 @@ func _ready() -> void:
 	await get_tree().physics_frame
 	await get_tree().physics_frame
 	_caso("mantener mapa_rapido lo muestra sin detener el juego", mapa.rapido and mapa.visible and not get_tree().paused)
+	# Con la brujula, el marcador sigue al jugador cada tick sin rehacer el mapa.
+	var jugador: Node2D = sala.get_node(^"Jugador") as Node2D
+	var antes: Vector2 = mapa.lienzo.marcador_en_pantalla
+	jugador.position += Vector2(200.0, 0.0)
+	await get_tree().physics_frame
+	await get_tree().physics_frame
+	_caso("con el mapa rapido y la brujula, el marcador sigue al jugador", mapa.lienzo.marcador_en_pantalla.x > antes.x + 1.0)
 	Input.action_release(&"mapa_rapido")
 	await get_tree().physics_frame
 	await get_tree().physics_frame

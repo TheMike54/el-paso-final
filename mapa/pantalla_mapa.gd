@@ -22,6 +22,8 @@ var _tick_cerrada: int = -10
 var _botones: HBoxContainer = null
 var _mas: Button = null
 var _menos: Button = null
+# Si la ultima vista se dibujo con la brujula equipada: equiparla o quitarla con el mapa rapido a la vista rehace todo.
+var _con_brujula: bool = false
 
 
 func _ready() -> void:
@@ -49,6 +51,7 @@ func _ready() -> void:
 	_mas = _boton("+", acercar)
 	_boton("Cerrar", cerrar)
 	visible = false
+	Eventos.descanso_en_banco.connect(_al_descansar)
 
 
 func _boton(texto: String, al_tocar: Callable) -> Button:
@@ -72,9 +75,8 @@ func _physics_process(_delta: float) -> void:
 		if mantiene != rapido:
 			rapido = mantiene
 			_mostrar()
-	# Con la brujula, el marcador sigue al jugador mientras el mapa rapido esta a la vista.
-	if rapido and Partida.amuletos_equipados.has(BRUJULA):
-		_mostrar()
+	if rapido:
+		_seguir_jugador()
 
 
 func _notification(que: int) -> void:
@@ -125,10 +127,34 @@ func bloquea_pausa() -> bool:
 	return abierta or Engine.get_physics_frames() == _tick_cerrada
 
 
+# Con el mapa rapido a la vista, cada tick solo se mueve el marcador: el mapa no se rehace ni se redibuja. Equipar o
+# quitar la brujula a la vista lo rehace una vez.
+func _seguir_jugador() -> void:
+	if Partida.amuletos_equipados.has(BRUJULA) != _con_brujula:
+		_mostrar()
+		return
+	if not _con_brujula:
+		return
+	var sala: Sala = get_parent() as Sala
+	if sala == null:
+		return
+	var jugador: Node2D = sala.get_node_or_null(^"Jugador") as Node2D
+	if jugador != null:
+		lienzo.mover_marcador(sala.posicion_mapa + jugador.position)
+
+
+# Descansar dibuja salas nuevas en el mapa: si se ve, se rehace despues de que Partida las anote con la misma senal.
+func _al_descansar(_banco: StringName) -> void:
+	if visible:
+		_mostrar.call_deferred()
+
+
 func _mostrar() -> void:
 	visible = abierta or rapido
 	_botones.visible = abierta
+	_con_brujula = Partida.amuletos_equipados.has(BRUJULA)
 	if not visible:
+		lienzo.soltar_texturas()
 		return
 	var sala: Sala = get_parent() as Sala
 	var zona_actual: String = Sala.zona_de(sala.id) if sala != null and not sala.id.is_empty() else ""

@@ -582,8 +582,10 @@ Bloque `mapa/`: no conoce ninguna zona; dibuja lo que hay y, si no hay nada, no 
   `<id>_mapa.png` junto a la sala, su dibujo (que reemplaza al rectángulo). Lo escribe
   `herramientas/generar_mapa.tscn` y el validador falla si no coincide con las salas: el paquete exportado no deja
   listar escenas con fiabilidad. No se edita a mano.
-- `abierta`, `rapido` y `acercado` de la pantalla, y `salas_dibujadas`, `zonas_dibujadas`, `marcador_visible` y
-  `quedo_acercado` de su `lienzo`, son públicas para las pruebas.
+- `abierta`, `rapido` y `acercado` de la pantalla, y `salas_dibujadas`, `zonas_dibujadas`, `marcador_visible`,
+  `quedo_acercado` y `marcador_en_pantalla` de su `lienzo`, son públicas para las pruebas. Con el mapa rápido a la vista,
+  cada tick solo se mueve el punto del jugador (un nodo aparte); el mapa se rehace al abrir, al cambiar de estado, al
+  equipar o quitar la brújula y al descansar. Los dibujos de las salas se cargan al preparar la vista, no al dibujar.
 
 ## Grupos
 

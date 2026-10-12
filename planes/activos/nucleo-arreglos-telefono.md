@@ -53,8 +53,9 @@ pasa por el `revisor`)
 - Si los controles visibles siguen costando: atlas de aro y disco hecho por código (O-02, paso 2).
 - Si con el teléfono caliente (10 min de juego) cae: tope de 30 FPS estables o resolución menor en bajo.
 
-**E. Mapa** (antes del primer `<id>_mapa.png`): O-03, el marcador como nodo aparte y las texturas cargadas en
-`dibujar()`, no en `_draw`.
+**E. Mapa** (hecha el 12-oct-2026): O-03, el marcador como nodo aparte y las texturas cargadas en `dibujar()`, no en
+`_draw`, y soltadas al ocultarse; los nombres y centros de zona se calculan al preparar la vista. Hito: `mapa_cuentas`
+con 19 casos (nuevo: el marcador sigue al jugador con el mapa rápido).
 
 **F. Fallos 2 a 4 y señales de `ESTADO.md`**
 - Multitoque: espera la prueba con `getevent` y dos decisiones (regla «joystick + un botón», salto alto + Atacar).
