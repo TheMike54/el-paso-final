@@ -1,0 +1,21 @@
+# En la sala de camara el jugador sube la escalera sin soltar la direccion: camina a la derecha,
+# salta al pedestal y, caminando a la izquierda, salta en la orilla de cada escalon. Termina en
+# el escalon mas alto. Falla si un escalon tapa el salto desde abajo (plataformas solidas).
+escena res://herramientas/salas/sala_camara.tscn
+2 mover_derecha press
+192 saltar press
+222 saltar release
+250 mover_derecha release
+260 mover_izquierda press
+303 saltar press
+333 saltar release
+383 saltar press
+413 saltar release
+463 saltar press
+493 saltar release
+543 saltar press
+573 saltar release
+623 saltar press
+653 saltar release
+690 mover_izquierda release
+fin 720

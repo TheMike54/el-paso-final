@@ -29,7 +29,8 @@ Una a la vez. No se empieza la siguiente hasta que esta tiene su evidencia y su 
    rama, el PR, un bloqueo o una decisión abierta. Plan terminado: `CERRADO` y a `planes/cerrados/`.
 10. **Releer.** Cada `.md` tocado, completo: sin texto dirigido a una persona ni avisos de trabajo sin terminar
     fuera de `ESTADO.md`, `funciones.json` y los planes.
-11. **Entregar.** El bloque exacto para la persona: `git add` de rutas concretas (con los `.gd.uid`) y
+11. **Entregar.** Con la funcionalidad terminada y probada, el bloque exacto para la persona: `git add` de rutas
+    concretas (con los `.gd.uid` y los documentos cambiados desde el último commit, como `ESTADO.md`) y
     `git commit -m "feat: ..."` en inglés, sin líneas de atribución. Si cierra el PR, también el título y la
     descripción en inglés con What changed? · Why? · QA evidence · Risk / rollback, y dentro de What changed?
     qué herramienta de IA se usó y en qué parte.

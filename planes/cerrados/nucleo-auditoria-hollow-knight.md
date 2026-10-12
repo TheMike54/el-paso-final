@@ -1,4 +1,4 @@
-ACTIVO
+CERRADO
 
 # Núcleo: auditoría de lo construido frente a Hollow Knight y Silksong
 
@@ -52,11 +52,15 @@ recursos del juego, no en su código).
 
 ## Avance
 
-- [x] Cámara (filas 1 y 2): aplicada, guiones `camara_caida` y `camara_centrada`; falta el S20.
-- [x] Temblor (fila 3): aplicado; falta el S20.
-- [x] Caída (fila 4): sin código; falta comparar en el S20.
+- [x] Cámara (filas 1 y 2): aplicada, guiones `camara_caida` y `camara_centrada`; pasa en el S20 (07-oct-2026, caso «Caída»).
+- [x] Temblor (fila 3): aplicado; pasa en el S20 (07-oct-2026, caso «Temblor al aterrizar»).
+- [x] Caída (fila 4): sin código; comparada en el S20 (07-oct-2026, caso «Caída»: «el punto perfecto»).
 - [x] Pinchos, enemigos, vibración y pausa (filas 5 a 8): decididas por la persona el 07-oct-2026. Por programar:
   el anti-bucle de la fila 5 y reponer a los fuertes al morir (fila 6). Observación del `revisor` (07-oct-2026)
   para el anti-bucle: si un punto seguro quedara más de `margen_fuera_de_sala` bajo los límites, salir por abajo
   congelaría al jugador sin fin (invulnerable → punto seguro → congelado otra vez); ninguna sala de hoy lo permite.
 - [x] Registro (filas 9 a 17).
+- [x] Fila 10: se queda lo nuestro; fila 15: como Hollow Knight (persona, 11-oct-2026).
+
+Cerrado el 11-oct-2026: lo decidido y sin programar (filas 5, 6 y 15 y plataformas sólidas) pasa a
+`planes/activos/nucleo-reglas-pendientes.md`.

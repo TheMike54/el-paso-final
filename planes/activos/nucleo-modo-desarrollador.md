@@ -7,6 +7,11 @@ publicación. En el menú, un botón «Modo desarrollador» que, al activarlo, m
 en depuración y en publicación. Cambia una decisión cerrada del `CLAUDE.md` raíz. Plan por aprobar: no se programa
 antes.
 
+Precisión de la persona, 11-oct-2026: el juego sale a producción con el modo desarrollador disponible, como lo hizo el
+profesor. El interruptor «Activar modo desarrollador» va en la Configuración del menú principal (que ya existe,
+`PanelConfiguracion`), no suelto en el menú, y al activarlo aparecen ahí las opciones de desarrollador (por ahora,
+la entrada a la zona de pruebas). La sección 2 se ajusta a esto al retomar el plan.
+
 ## 1. Lo que hay (leído el 07-oct-2026)
 
 - `nucleo/menu.gd`: el botón `ZonaPruebas` se ve solo si `OS.is_debug_build()` y existe

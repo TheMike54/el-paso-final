@@ -1,4 +1,4 @@
-ACTIVO
+CERRADO
 
 # Núcleo: pantalla completa, sin bordes grises, en cualquier teléfono o tableta
 
@@ -12,7 +12,7 @@ calculada al ejecutar con el tamaño real de la pantalla, no una lista de equipo
 - `project.godot`: vista base 1280×720, `stretch/mode = canvas_items`, `aspect = expand`, horizontal (`orientation=4`).
   Con `expand`, la vista crece en el eje que sobra: alto 720 si la pantalla es más ancha que 16:9 (ancho = 720 ×
   proporción) y ancho 1280 si es más cuadrada (alto = 1280 / proporción).
-- Cámara: desde el 07-oct-2026 el jugador la mueve a mano (`planes/activos/nucleo-auditoria-hollow-knight.md`). Si la
+- Cámara: desde el 07-oct-2026 el jugador la mueve a mano (`planes/cerrados/nucleo-auditoria-hollow-knight.md`). Si la
   vista es mayor que la sala en un eje, la centra; lo que sobra se ve por igual a los dos lados.
 - Salas: `limites` de cada `.tscn`. Sin nodo `Fondo` (toda la sala se ve con el color de borrado gris de Godot):
   `sala_banco`, `sala_combate`, `sala_movimiento`, `sala_peligro`, `sala_puerta_a`. La caja gris tampoco tiene fondo.
@@ -122,8 +122,9 @@ La persona eligió la alternativa D (sección 9): el mismo rango, de 4:3 a 22:9,
 | `min_size` de la ventana | No se hace: era opcional y la D ya evita la ventana ilegible por proporción | — |
 | S20 | La persona confirmó el 07-oct-2026 en `sala_puerta_b` que el fondo llega a los bordes, sin gris | A mano |
 
-Queda `ACTIVO` solo hasta que la persona maximice, restaure y arrastre la ventana de la PC a mano con el arreglo de
-`size_changed` (caso de `docs/pruebas.md`); con eso se cierra.
+Cerrado el 11-oct-2026: la persona maximizó, restauró y arrastró la ventana de la PC con el arreglo de `size_changed`
+el 07-oct-2026 y pasa (caso «Ventana en la PC» de `docs/pruebas.md`). La prueba con `wm size` en el S20 (caso
+«Pantalla completa en el teléfono») queda como opcional, fuera de este plan.
 
 ## 7. Cómo se comprueba
 

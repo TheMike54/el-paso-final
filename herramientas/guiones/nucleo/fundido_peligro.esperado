@@ -1,0 +1,6 @@
+# Todavia en el foso (x=974), con una vida menos y la capa a 8/9. Un cuadro despues esta en x=752 con la
+# capa en negro (jugador_peligro.guion comprueba que termina en el suelo firme). Si pasara al suelo firme
+# antes de oscurecer, aqui ya estaria en x=752 y se veria el salto; sin fundido, la opacidad seria 0.
+x 974 2
+valor Fundido opacidad 0.89 0.02
+valor Jugador vidas 3

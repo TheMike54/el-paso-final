@@ -196,5 +196,23 @@
     "que": "El menu principal tiene Configuracion con Controles, que abre el mismo editor de botones que la pausa; Atras vuelve un nivel a la vez",
     "comprobacion": "herramientas/guiones/nucleo/menu_configuracion.guion",
     "pasa": true
+  },
+  {
+    "id": "peligro-anti-bucle",
+    "que": "Un peligro que toca al jugador antes de 0,5 s de volver de otro lo lleva a su punto de llegada a la sala sin quitarle vida; los peligros quitan vida aunque el jugador sea invulnerable",
+    "comprobacion": "herramientas/guiones/nucleo/jugador_peligro_anti_bucle.guion",
+    "pasa": true
+  },
+  {
+    "id": "fuertes-al-morir",
+    "que": "Morir hace reaparecer a los enemigos fuertes vencidos, igual que descansar",
+    "comprobacion": "herramientas/guiones/nucleo/enemigo_al_morir.guion",
+    "pasa": true
+  },
+  {
+    "id": "fundido-a-negro",
+    "que": "Al tocar un peligro, al morir y al cruzar una puerta la pantalla funde a negro y vuelve con el jugador ya en su lugar",
+    "comprobacion": "herramientas/guiones/nucleo/fundido_peligro.guion",
+    "pasa": true
   }
 ]

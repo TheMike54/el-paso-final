@@ -97,11 +97,10 @@ offset_bottom = 80.0
 mouse_filter = 2
 color = Color(0.4, 0.4, 0.4, 1)
 [node name="Escalon2" type="StaticBody2D" parent="."]
-position = Vector2(2600, 1100)
+position = Vector2(2520, 1100)
 
 [node name="Forma" type="CollisionShape2D" parent="Escalon2"]
 shape = SubResource("forma_escalon")
-one_way_collision = true
 
 [node name="Dibujo" type="ColorRect" parent="Escalon2"]
 offset_left = -160.0
@@ -111,11 +110,10 @@ offset_bottom = 20.0
 mouse_filter = 2
 color = Color(0.4, 0.4, 0.4, 1)
 [node name="Escalon3" type="StaticBody2D" parent="."]
-position = Vector2(2200, 940)
+position = Vector2(2040, 940)
 
 [node name="Forma" type="CollisionShape2D" parent="Escalon3"]
 shape = SubResource("forma_escalon")
-one_way_collision = true
 
 [node name="Dibujo" type="ColorRect" parent="Escalon3"]
 offset_left = -160.0
@@ -125,11 +123,10 @@ offset_bottom = 20.0
 mouse_filter = 2
 color = Color(0.4, 0.4, 0.4, 1)
 [node name="Escalon4" type="StaticBody2D" parent="."]
-position = Vector2(1800, 780)
+position = Vector2(1560, 780)
 
 [node name="Forma" type="CollisionShape2D" parent="Escalon4"]
 shape = SubResource("forma_escalon")
-one_way_collision = true
 
 [node name="Dibujo" type="ColorRect" parent="Escalon4"]
 offset_left = -160.0
@@ -139,11 +136,10 @@ offset_bottom = 20.0
 mouse_filter = 2
 color = Color(0.4, 0.4, 0.4, 1)
 [node name="Escalon5" type="StaticBody2D" parent="."]
-position = Vector2(1400, 620)
+position = Vector2(1080, 620)
 
 [node name="Forma" type="CollisionShape2D" parent="Escalon5"]
 shape = SubResource("forma_escalon")
-one_way_collision = true
 
 [node name="Dibujo" type="ColorRect" parent="Escalon5"]
 offset_left = -160.0
@@ -153,11 +149,10 @@ offset_bottom = 20.0
 mouse_filter = 2
 color = Color(0.4, 0.4, 0.4, 1)
 [node name="Escalon6" type="StaticBody2D" parent="."]
-position = Vector2(1000, 460)
+position = Vector2(600, 460)
 
 [node name="Forma" type="CollisionShape2D" parent="Escalon6"]
 shape = SubResource("forma_escalon")
-one_way_collision = true
 
 [node name="Dibujo" type="ColorRect" parent="Escalon6"]
 offset_left = -160.0

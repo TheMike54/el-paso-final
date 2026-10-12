@@ -1,9 +1,9 @@
 class_name Sala
 extends Node2D
 # Raiz de toda sala: al entrar crea al jugador (en la puerta por la que llega o en Entrada), le
-# pasa los limites para la camara y pone los controles tactiles, la pausa, la vibracion y la
-# interfaz. Si el jugador muere, lo hace reaparecer en el ultimo banco (o en Entrada) con las
-# vidas llenas.
+# pasa los limites para la camara y pone los controles tactiles, la pausa, la vibracion, el fundido
+# a negro (empieza en negro y aclara) y la interfaz. Si el jugador muere, funde a negro y lo hace
+# reaparecer en el ultimo banco (o en Entrada) con las vidas llenas.
 const ESCENA_JUGADOR: PackedScene = preload("res://nucleo/jugador.tscn")
 const ESCENA_CONTROLES: PackedScene = preload("res://nucleo/controles_tactiles.tscn")
 const ESCENA_PAUSA: PackedScene = preload("res://nucleo/pausa.tscn")
@@ -40,6 +40,10 @@ func _ready() -> void:
 	jugador.fijar_limites(limites)
 	add_child(ESCENA_CONTROLES.instantiate())
 	add_child(ESCENA_PAUSA.instantiate())
+	var fundido: Fundido = Fundido.new()
+	fundido.name = &"Fundido"
+	add_child(fundido)
+	fundido.empezar_en_negro()
 	var vibracion: Vibracion = Vibracion.new()
 	vibracion.name = &"Vibracion"
 	add_child(vibracion)
@@ -79,6 +83,9 @@ func _physics_process(_delta: float) -> void:
 	if _ticks_para_reaparecer == 0:
 		return
 	_ticks_para_reaparecer -= 1
+	# Los ultimos ticks oscuro, la pantalla funde a negro; la sala siguiente (o esta, recargada) aclara.
+	if _ticks_para_reaparecer == Fundido.TICKS_OSCURECER:
+		Eventos.fundido_pedido.emit(Fundido.TICKS_OSCURECER, 0, 0)
 	if _ticks_para_reaparecer == 0:
 		Partida.llenar_vidas()
 		puerta_llegada = &""

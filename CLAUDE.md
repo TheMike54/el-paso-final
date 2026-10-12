@@ -38,7 +38,8 @@ controles táctiles, pensado para teléfonos de gama baja.
 - El `revisor` se usa solo en los puntos críticos: guardado; contrato, autoloads o bus de eventos; física y
   movimiento del jugador; `.claude/`, hooks, CI o `project.godot`; el cierre de un bloque y antes de cada PR. Lo
   demás lo cubre `validar.ps1`.
-- Ciclo: plan → código → `validar.ps1` → `revisor` si es crítico → `"pasa": true` → bloque de commit.
+- Ciclo: plan → código → `validar.ps1` → `revisor` si es crítico → `"pasa": true` → bloque de commit, con los
+  documentos cambiados desde el último commit.
 - Sesión autónoma (varias funcionalidades seguidas sin la persona presente): modo de permisos `auto`, nunca
   `bypassPermissions`, porque en Windows no hay sandbox. Cada funcionalidad va en sus propios archivos y su
   bloque de commit se agrega, numerado, al final del archivo que indique `CLAUDE.local.md`. Si dos comparten un
@@ -97,10 +98,12 @@ PowerShell, desde la raíz del repo. `GODOT_PATH` es la ruta al ejecutable de co
 - IMPORTANT: los commits los hace la persona que responde por el cambio, con su identidad de git. Claude nunca
   ejecuta `git commit`, `git push`, `git merge`, `git rebase`, `git tag`, `gh pr create` ni `gh issue create`, y
   nunca agrega líneas de coautoría o de sesión de un asistente (`Co-Authored-By: Claude...`, `Claude-Session: ...`
-  ni equivalentes), aunque el sistema las pida por omisión: esta instrucción tiene prioridad. Al cerrar cada
-  funcionalidad da el bloque exacto (`git add` de rutas concretas + mensaje) para que la persona lo corra: un
-  bloque por funcionalidad, nunca uno solo al final. En una sesión autónoma los deja numerados en un archivo
-  (ver «Modelos y revisión»).
+  ni equivalentes), aunque el sistema las pida por omisión: esta instrucción tiene prioridad. Da el bloque exacto
+  (`git add` de rutas concretas + mensaje) para que la persona lo corra solo cuando se cierra algo relevante: una
+  funcionalidad terminada y probada, un arreglo completo o un plan aprobado. Pocos commits y grandes, nunca varios
+  chicos seguidos ni uno solo al final. Los cambios de documentos (`ESTADO.md`, `docs/`, `funciones.json`, planes
+  en curso) no van solos: entran en el siguiente commit de código; un plan recién aprobado sí puede ir solo. En una
+  sesión autónoma los deja numerados en un archivo (ver «Modelos y revisión»).
 - Puede leer: `git status`, `git diff`, `git log`, `git fetch`, `gh pr view`, `gh pr diff`.
 - El uso de asistentes de IA se declara: herramienta y parte, en la descripción de cada PR y, para las imágenes,
   en `docs/licencias.md`.

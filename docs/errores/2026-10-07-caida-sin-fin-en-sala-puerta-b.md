@@ -5,7 +5,7 @@ sin fin. Nada lo devuelve: ni muere ni vuelve a un punto seguro.
 
 **Causa**: dos cosas juntas. La sala mide 1280 de ancho, su piso acaba en x=1280 y no tenía pared derecha. Y
 salir de los límites de una sala no tenía ninguna regla: el jugador seguía cayendo. Antes del fondo extendido
-(`planes/activos/nucleo-pantalla-completa.md`) el borde gris dejaba ver dónde acababa la sala; con el fondo
+(`planes/cerrados/nucleo-pantalla-completa.md`) el borde gris dejaba ver dónde acababa la sala; con el fondo
 extendido ya no se nota.
 
 **Arreglo**:

@@ -1,0 +1,6 @@
+# En la sala de peligro el jugador cae al foso (cuadro 131) y la pantalla queda en negro en el 140. Sigue en
+# negro Fundido.TICKS_EN_NEGRO_PELIGRO (18) cuadros: en el 158 todavia tapa todo y el jugador espera quieto
+# en el suelo firme; en el 159 empieza a aclarar.
+escena res://herramientas/salas/sala_peligro.tscn
+2 mover_derecha press
+fin 158

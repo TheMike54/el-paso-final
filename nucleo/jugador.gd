@@ -61,6 +61,9 @@ const ESCENA_PROYECTIL: PackedScene = preload("res://nucleo/proyectil.tscn")
 @export var ticks_atras_punto_seguro: int = 15
 ## Ticks quieto tras volver al punto seguro por un peligro, antes de responder otra vez.
 @export var ticks_reaparicion_peligro: int = 20
+## Anti-bucle (como Silksong): un peligro antes de estos ticks con control tras volver de otro lleva al punto
+## de llegada a la sala, sin quitar vida. Cuentan despues de ticks_reaparicion_peligro: 30 = 0,5 s.
+@export var ticks_anti_bucle: int = 30
 ## Px que los pies pasan del borde de abajo de la sala para que salir por abajo cuente como un peligro.
 ## El alto del cuerpo: el jugador ya no se ve.
 @export var margen_fuera_de_sala: float = 160.0
@@ -181,7 +184,8 @@ var temblor_x: float = 0.0
 var aterrizando: bool:
 	get:
 		return _ticks_aterrizando > 0
-## No recibe dano: tras un golpe, durante la picada (con su saltito y su carga) y justo despues.
+## No recibe dano de enemigos (los peligros si quitan vida): tras un golpe, durante la picada (con su saltito
+## y su carga) y justo despues.
 var invulnerable: bool:
 	get:
 		return _ticks_sin_dano > 0 or en_picada or _preparando_picada
@@ -206,6 +210,16 @@ var _ticks_rebote: int = 0
 var _sentido_rebote: float = 0.0
 var _ticks_en_suelo: int = 0
 var _puntos_seguros: PackedVector2Array = []
+# Donde aparecio el jugador al entrar a la sala (puerta, banco o Entrada): destino del anti-bucle.
+var _punto_llegada: Vector2 = Vector2.ZERO
+# Ticks con control desde la ultima vuelta por un peligro; NUNCA si no hubo o si ya actuo el anti-bucle.
+var _ticks_desde_peligro: int = NUNCA
+# Quieto tras reaparecer por un peligro: ningun peligro cuenta. DanoContacto revisa el contacto con la lista
+# del tick anterior y, sin esto, volveria a avisar del mismo peligro ya con el jugador en otro lugar.
+var _reapareciendo: bool = false
+# Fundido de un peligro: ticks quieto donde lo toco hasta que la pantalla esta en negro, y a donde va despues.
+var _ticks_hasta_reaparecer: int = 0
+var _punto_reaparicion: Vector2 = Vector2.ZERO
 var _ticks_congelado: int = 0
 var _inspiracion_al_empezar: int = 0
 var _ticks_impulsando: int = 0
@@ -256,11 +270,14 @@ func _ready() -> void:
 	_ataque.monitoring = false
 	_posicion_ataque = _forma_ataque.position
 	_puntos_seguros = [global_position]
+	_punto_llegada = global_position
 
 
 func _physics_process(delta: float) -> void:
-	_mover(delta)
+	# Antes de _mover, igual que un DanoContacto (que se procesa antes que el jugador): asi el fundido de un
+	# peligro cuenta sus ticks a la par del Fundido y el jugador pasa al punto con la pantalla en negro.
 	_revisar_salida_por_abajo()
+	_mover(delta)
 	_seguir_con_camara(delta)
 
 
@@ -272,11 +289,19 @@ func _revisar_salida_por_abajo() -> void:
 
 
 func _mover(delta: float) -> void:
+	if _ticks_hasta_reaparecer > 0:
+		_ticks_hasta_reaparecer -= 1
+		# Pasa al punto en cuanto el negro tapa todo; sigue quieto hasta que empieza a aclarar.
+		if _ticks_hasta_reaparecer == Fundido.TICKS_EN_NEGRO_PELIGRO:
+			_colocar_tras_peligro(_punto_reaparicion)
+		return
 	var en_suelo: bool = is_on_floor()
 	_aterrizar(en_suelo)
 	if _ticks_congelado > 0:
 		_ticks_congelado -= 1
 		return
+	_reapareciendo = false
+	_ticks_desde_peligro = mini(_ticks_desde_peligro + 1, NUNCA)
 	_caer(en_suelo, delta)
 	if muerto:
 		velocity.x = 0.0
@@ -720,14 +745,21 @@ func _rebotar_pogo() -> void:
 
 
 ## Lo llama lo que dana al jugador. origen_x: de donde viene el golpe, para el retroceso.
-## peligro: pinchos, acido, fosas. Quita vidas y lleva al ultimo punto seguro, sin retroceso.
+## peligro: pinchos, acido, fosas. Quita vidas aunque el jugador sea invulnerable (como Hollow Knight) y
+## lleva al ultimo punto seguro, sin retroceso; si llega antes de ticks_anti_bucle de volver de otro
+## peligro, lleva al punto de llegada a la sala sin quitar vida.
 func recibir_dano(dano: int, origen_x: float, peligro: bool = false) -> void:
-	if muerto:
+	# Mientras la pantalla funde a negro por un peligro, nada mas cuenta.
+	if muerto or _ticks_hasta_reaparecer > 0 or (peligro and _reapareciendo):
 		return
-	if invulnerable:
-		# Invulnerable no pierde vidas, pero un peligro igual lo saca de ahi.
-		if peligro:
-			_volver_al_punto_seguro()
+	if peligro and _ticks_desde_peligro < ticks_anti_bucle:
+		_reaparecer(_punto_llegada)
+		# El punto seguro pasa a ser la llegada, y el siguiente peligro ya cuesta una vida: si la llegada
+		# tambien fuera peligrosa, el bucle termina en vez de seguir sin fin.
+		_puntos_seguros = [_punto_llegada]
+		_ticks_desde_peligro = NUNCA
+		return
+	if invulnerable and not peligro:
 		return
 	vidas = maxi(vidas - dano, 0)
 	_ticks_aterrizando = 0
@@ -775,7 +807,31 @@ func _recordar_punto_seguro(en_suelo: bool) -> void:
 
 
 func _volver_al_punto_seguro() -> void:
-	global_position = _puntos_seguros[0]
+	_reaparecer(_puntos_seguros[0])
+	_ticks_desde_peligro = 0
+
+
+# Tras un peligro (como Hollow Knight): quieto donde lo toco mientras la pantalla funde a negro
+# (Fundido.TICKS_OSCURECER); ya en negro, pasa al punto y espera Fundido.TICKS_EN_NEGRO_PELIGRO; la imagen
+# aclara mientras sigue quieto.
+func _reaparecer(punto: Vector2) -> void:
+	_reapareciendo = true
+	velocity = Vector2.ZERO
+	_cortar_lo_que_empuja()
+	# Quieto bajo el negro no corre el temblor: la camara no se queda movida.
+	_ticks_temblando = 0
+	temblor_x = 0.0
+	temblor_y = 0.0
+	_camara.offset = Vector2.ZERO
+	_punto_reaparicion = punto
+	_ticks_hasta_reaparecer = Fundido.TICKS_OSCURECER + Fundido.TICKS_EN_NEGRO_PELIGRO
+	Eventos.fundido_pedido.emit(Fundido.TICKS_OSCURECER, Fundido.TICKS_EN_NEGRO_PELIGRO, Fundido.TICKS_ACLARAR)
+
+
+# Pone al jugador en el punto: quieto ticks_reaparicion_peligro ticks y sin nada a medias.
+func _colocar_tras_peligro(punto: Vector2) -> void:
+	global_position = punto
+	_reapareciendo = true
 	velocity = Vector2.ZERO
 	en_picada = false
 	_preparando_picada = false

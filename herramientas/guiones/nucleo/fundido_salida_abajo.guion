@@ -1,0 +1,6 @@
+# En la sala sin piso a la derecha el jugador camina y cae por debajo de los limites (un peligro). Al
+# empezar el cuadro 144 la pantalla esta en negro y el jugador ya en el suelo firme: la salida por abajo
+# cuenta sus ticks a la par del fundido, igual que un pincho.
+escena res://herramientas/salas/sala_salida_abajo.tscn
+2 mover_derecha press
+fin 144

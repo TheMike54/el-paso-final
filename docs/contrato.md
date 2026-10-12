@@ -108,7 +108,7 @@ Autoload `Partida` (`nucleo/partida.gd`): lo que sobrevive al cambio de sala. Un
 | `vidas`, `vidas_maximas` | Vidas actuales y máximas (4 al empezar). `Jugador.vidas` lee y escribe `Partida.vidas`. Cada cambio emite `vidas_cambiadas` |
 | `banco`, `sala` | Id del último banco donde se descansó y la escena de su sala; vacíos si no se ha descansado |
 | `habilidades`, `tiene(id)` | `Array[StringName]` con las habilidades obtenidas, y si una está |
-| `enemigos_vencidos`, `vencer(clave)`, `fue_vencido(clave)` | Claves (`"<escena de la sala>#<id>"`) de los enemigos fuertes vencidos desde el último descanso. Se borra al oír `descanso_en_banco` y en `reiniciar()`; no se guarda |
+| `enemigos_vencidos`, `vencer(clave)`, `fue_vencido(clave)` | Claves (`"<escena de la sala>#<id>"`) de los enemigos fuertes vencidos desde el último descanso o la última muerte. Se borra al oír `descanso_en_banco` o `jugador_muerto` y en `reiniciar()`; no se guarda |
 | `inspiracion`, `ganar_inspiracion(n)` | Recurso de curación (0 a `INSPIRACION_MAXIMA`, 99); no se guarda, se reinicia con la partida. Cada cambio emite `inspiracion_cambiada` |
 | `reiniciar()` | Partida nueva: la llaman Nueva partida y cada sala de la zona de pruebas |
 | `llenar_vidas()` | Vidas al máximo: al reaparecer después de morir |
@@ -148,6 +148,7 @@ cambio.
 | `jefe_vencido` | `jefe: StringName` (id del jefe) | El jefe (todavía no existe) |
 | `cambio_de_sala` | `sala: String` (ruta de la escena), `puerta: StringName` (por la que llegó) | La sala, ya con el jugador puesto, cuando se llega por una puerta |
 | `jugador_aterrizo` | `velocidad: float` (px/s al tocar el suelo) | El jugador vivo, en un aterrizaje duro y al aterrizar de la picada (antes de la onda, para que su vibración gane a la del golpe) |
+| `fundido_pedido` | `ticks_oscurecer: int`, `ticks_en_negro: int`, `ticks_aclarar: int` (0: se queda en negro) | El jugador al tocar un peligro, la sala al final de la muerte y la puerta al cruzarla; la escucha el `Fundido` de la sala |
 
 ## Entrada
 
@@ -233,6 +234,7 @@ Todos los valores son propiedades exportadas del jugador y se ajustan en la zona
 | `ticks_suelo_firme` | 6 | Ticks seguidos en el suelo para que una posición cuente como punto seguro |
 | `ticks_atras_punto_seguro` | 15 | Cuántas posiciones firmes atrás se reaparece tras un peligro: lejos de la orilla |
 | `ticks_reaparicion_peligro` | 20 | Ticks quieto tras volver al punto seguro |
+| `ticks_anti_bucle` | 30 | Ticks con control tras volver de un peligro durante los que otro peligro lleva al punto de llegada sin quitar vida |
 | `margen_fuera_de_sala` | 160 px | Px que los pies pasan del borde de abajo de `limites` para que salir por abajo cuente como peligro (el alto del cuerpo) |
 | `ticks_hit_stop` | 4 | Ticks que el jugador se detiene al recibir daño, antes del retroceso (contador propio, no `Engine.time_scale`) |
 | `ticks_rebote_al_golpear` | 4 | Ticks en que el jugador sale empujado hacia atrás al golpear algo |
@@ -270,13 +272,19 @@ Combate:
 - El ataque es el área `Ataque` del jugador, hacia donde mira (el último lado al que caminó). Golpea una sola vez
   a cada `Golpeable` que toca durante un ataque.
 - `recibir_dano(dano: int, origen_x: float, peligro := false)` es lo único que quita vidas. Durante la
-  invulnerabilidad y la caída en picada (con su saltito y su carga) no quita vidas. Emite `jugador_danado` con las vidas que quedan y, al llegar a 0,
+  invulnerabilidad y la caída en picada (con su saltito y su carga) un golpe no quita vidas; un peligro, sí. Emite `jugador_danado` con las vidas que quedan y, al llegar a 0,
   `jugador_muerto`.
 - Golpe normal (enemigo, cuerpo dañino): retroceso e invulnerabilidad. Durante el retroceso el jugador no camina
   ni salta: ni el tiempo coyote ni el salto en cola valen hasta que termina.
-- Peligro (pinchos, ácido, fosas): quita una vida y el jugador vuelve a su punto seguro, sin retroceso, quieto
-  `ticks_reaparicion_peligro` e invulnerable. Invulnerable no pierde vida, pero un peligro igual lo regresa al
-  punto seguro. El punto seguro es una posición con `ticks_suelo_firme` ticks seguidos en el suelo fuera de la
+- Peligro (pinchos, ácido, fosas): quita una vida aunque el jugador sea invulnerable (como Hollow Knight) y el
+  jugador vuelve a su punto seguro, sin retroceso, quieto `ticks_reaparicion_peligro` e invulnerable. Antes, como en
+  Hollow Knight, se queda quieto donde lo tocó mientras la pantalla funde a negro (`Fundido.TICKS_OSCURECER`, 9
+  ticks) y pasa al punto en el tick en que el negro tapa todo; sigue en negro `Fundido.TICKS_EN_NEGRO_PELIGRO` (18)
+  ticks y la imagen aclara (`Fundido.TICKS_ACLARAR`, 15) con el jugador ya quieto en el punto. Durante el fundido nada lo daña. La salida por abajo se revisa antes de mover al
+  jugador, como un `DanoContacto`, para contar los ticks a la par del fundido. Mientras está quieto tras reaparecer, ningún peligro cuenta (el contacto de un `DanoContacto` se revisa con la lista del tick
+  anterior). Anti-bucle (como Silksong): si otro peligro lo toca antes de `ticks_anti_bucle` ticks con control (30 =
+  0,5 s), vuelve al punto por el que entró a la sala (puerta, banco o `Entrada`) sin perder vida; ese punto pasa a
+  ser su punto seguro y el siguiente peligro ya quita vida. El punto seguro es una posición con `ticks_suelo_firme` ticks seguidos en el suelo fuera de la
   invulnerabilidad, tomada `ticks_atras_punto_seguro` posiciones atrás.
 - Salir por abajo de `limites` (los pies a más de `margen_fuera_de_sala` del borde) es un peligro igual que un
   pincho: `recibir_dano(1, x, true)`. Solo por abajo; por los lados y por arriba una sala se cierra con paredes
@@ -315,7 +323,7 @@ Habilidades (solo si `Partida.tiene(&"<id>")`):
 | `impulso` | La acción `impulso` lanza al jugador hacia donde mira, sin gravedad, `ticks_impulso` ticks; recarga `ticks_recarga_impulso`. En el aire, uno hasta tocar el suelo o una pared |
 | `salto_en_pared` | En el aire, cayendo y empujando hacia una pared, el jugador se sostiene y desliza a `velocidad_deslizar_pared` (`en_pared`). Tocándola y empujando hacia ella, suba o baje (y hasta `ticks_coyote_pared` después), `saltar` da un salto completo y lo despega hacia el lado contrario: así se sube por una sola pared o de una pared a la otra. Recupera el impulso y el doble salto |
 | `doble_salto` | `saltar` recién presionada en el aire, fuera del tiempo coyote, da un segundo salto con las mismas reglas; se recupera al tocar el suelo o sostenerse en una pared |
-| `caida_en_picada` | `curar` recién presionada con `mover_abajo`, con `Partida.inspiracion >= costo_poder`, gasta ese costo en el mismo tick (sin esperar a saber si es un toque). En el aire, el jugador cae enseguida recto a `velocidad_picada`, sin control, hasta tocar el suelo (`en_picada`, propiedad pública). En el suelo, primero un saltito de `altura_saltito_picada` y `ticks_carga_picada` quieto en su cima, y después la caída. Un `SueloFragil` que toca se rompe y la caída sigue. Corta un ataque a medias. No recibe daño desde que empieza hasta `ticks_invulnerable_picada` después de aterrizar (un peligro igual lo devuelve al punto seguro). Al aterrizar, una onda de `onda_picada` golpea con `dano_picada` a cada `Golpeable` que toca, sin dar Inspiración |
+| `caida_en_picada` | `curar` recién presionada con `mover_abajo`, con `Partida.inspiracion >= costo_poder`, gasta ese costo en el mismo tick (sin esperar a saber si es un toque). En el aire, el jugador cae enseguida recto a `velocidad_picada`, sin control, hasta tocar el suelo (`en_picada`, propiedad pública). En el suelo, primero un saltito de `altura_saltito_picada` y `ticks_carga_picada` quieto en su cima, y después la caída. Un `SueloFragil` que toca se rompe y la caída sigue. Corta un ataque a medias. No recibe daño desde que empieza hasta `ticks_invulnerable_picada` después de aterrizar (un peligro sí quita vida y lo devuelve al punto seguro). Al aterrizar, una onda de `onda_picada` golpea con `dano_picada` a cada `Golpeable` que toca, sin dar Inspiración |
 | `proyectil` | Un toque del botón de poderes, con `Partida.inspiracion >= costo_poder` y pasados `ticks_recarga_bola` desde la anterior, gasta ese costo y lanza la bola (`nucleo/proyectil.tscn`) hacia donde mira, en el suelo o en el aire. Nombre técnico neutro: qué es en el mundo y dónde se obtiene está por decidir |
 
 - `nucleo/objeto_habilidad.tscn` (`class_name ObjetoHabilidad`): al tocarlo, suma su `habilidad` a `Partida.habilidades`,
@@ -351,7 +359,8 @@ Una sala es una escena cuya raíz es un `Node2D` con `nucleo/sala.gd` (`class_na
 | Nodo `Entrada` (`Marker2D`, hijo de la raíz) | Donde aparece el jugador. Sin él, aparece en el origen de la sala |
 | Propiedad `limites` (`Rect2`, exportada) | Rectángulo de la sala en sus coordenadas. La cámara del jugador sigue al jugador y no muestra nada fuera de él en cada eje donde la sala es al menos tan grande como la vista |
 | El jugador | No va dentro de la escena: la sala instancia `nucleo/jugador.tscn` en su `_ready` y le pasa `limites` |
-| Controles, pausa, vibración e interfaz | También los crea la sala en su `_ready`: `ControlesTactiles`, `Pausa`, `Vibracion` y, si existe, `interfaz/interfaz.tscn` (con `load()`, para que el núcleo no dependa del bloque `interfaz/`; ver «Interfaz») |
+| Suelos y plataformas | `StaticBody2D` sólidos por todos lados: el núcleo no ofrece plataformas atravesables desde abajo (`one_way_collision`), decidido el 07-oct-2026 |
+| Controles, pausa, vibración, fundido e interfaz | También los crea la sala en su `_ready`: `ControlesTactiles`, `Pausa`, `Vibracion`, `Fundido` y, si existe, `interfaz/interfaz.tscn` (con `load()`, para que el núcleo no dependa del bloque `interfaz/`; ver «Interfaz») |
 | Puertas (opcionales) | Instancias de `nucleo/puerta.tscn` (`class_name Puerta`, `Area2D`), hijas directas de la raíz. Ver abajo |
 | Capas de fondo y de frente (opcionales) | Nodos `Parallax2D` hijos de la raíz. `scroll_scale` menor que 1 para el fondo (más lejos, más lento) y mayor que 1 para el frente; `z_index` negativo para el fondo y positivo para el frente |
 
@@ -368,6 +377,14 @@ Una sala es una escena cuya raíz es un `Node2D` con `nucleo/sala.gd` (`class_na
 - Fondo extendido: si la sala tiene un nodo `Fondo` (`ColorRect`) visible, al entrar crea detrás de todo
   `FondoExtendido`, de su color y `MARGEN_FONDO` (280 px) más grande por lado: cubre el rango de la vista en una sala
   mínima de 1280×720 (240) más el temblor de la cámara. Sin `Fondo` visible no crea nada y lo de fuera se ve negro, el color de borrado.
+- Fundido a negro (`nucleo/fundido.gd`, `class_name Fundido`, `CanvasLayer` capa 15: encima del juego, los controles y
+  la interfaz, que se oscurecen con él, y debajo de la pausa y el editor de botones): la sala lo crea en negro y aclara
+  en `TICKS_ACLARAR` ticks (0,25 s). Oscurece en `TICKS_OSCURECER` (0,15 s), sigue en negro los ticks que pida
+  (`TICKS_EN_NEGRO_PELIGRO`, 0,3 s; `TICKS_EN_NEGRO_PUERTA`, 0,1 s) y aclara cuando alguien emite `fundido_pedido`;
+  cuenta ticks de física, así los
+  guiones dan siempre lo mismo. Duraciones provisionales. Su `opacidad` (0 a 1) la leen los guiones
+  (`fundido_peligro`, `fundido_peligro_sostenido`, `fundido_puerta`). Muerte: en los últimos `TICKS_OSCURECER` de los 90 ticks oscuro, la sala
+  funde a negro y la sala siguiente (o la misma, recargada) aclara.
 
 Cambio de sala:
 
@@ -378,8 +395,10 @@ Cambio de sala:
 | `puerta_destino` | `id` de la puerta de la sala destino donde aparece el jugador |
 | `llegada` | Dónde aparece el jugador al llegar por esta puerta, relativo a ella; fuera de su área para no rebotar |
 
-- Cuando el jugador entra al área de una puerta, la puerta guarda `puerta_destino` en `Sala.puerta_llegada` (variable
-  estática) y cambia de escena en diferido. La sala nueva pone al jugador en `llegada` de esa puerta. Si no la
+- Cuando el jugador entra al área de una puerta, la pantalla funde a negro (`Fundido.TICKS_OSCURECER` ticks, con el
+  jugador todavía en la sala), sigue en negro `Fundido.TICKS_EN_NEGRO_PUERTA` ticks y después la puerta guarda `puerta_destino` en `Sala.puerta_llegada` (variable
+  estática) y cambia de escena en diferido; la sala nueva empieza en negro y aclara. Si el jugador muere mientras
+  funde, la puerta no cambia de sala: manda la muerte. La sala nueva pone al jugador en `llegada` de esa puerta. Si no la
   encuentra, imprime un `ERROR:` y lo pone en `Entrada`. Ese error ocurre al correr: lo atrapa un guion que cruza
   la puerta, no `validar.ps1`.
 - Lo que sobrevive al cambio de sala vive en `Partida` (ver «Estado de la partida»).
@@ -397,7 +416,7 @@ Bancos:
   tocar la partida real.
 - `Sala.llegada_a_banco` (estática): la sala nueva pone al jugador en el banco `Partida.banco`. La usan la
   reaparición y Continuar. Sin ese banco en la sala, imprime un `ERROR:` y usa `Entrada`.
-- Descansar hace reaparecer a los enemigos fuertes (ver «Enemigos»).
+- Descansar y morir hacen reaparecer a los enemigos fuertes (ver «Enemigos»).
 - El aviso «Partida guardada» lo muestra la interfaz al oír `partida_guardada`.
 
 Las salas de prueba viven en `herramientas/salas/` y no viajan en el paquete de publicación.
@@ -415,13 +434,13 @@ una ficha `.tres`, no código.
 | `dano_contacto` (1) | Vidas que le quita al jugador al tocarlo (golpe normal, con retroceso) |
 | `tamano` ((80, 80) px) | Su cuerpo, con los pies en el origen; las formas del golpe y del contacto se crean con él |
 | `color` | Color de la caja gris mientras no hay arte |
-| `reaparicion` | `AL_VOLVER_A_ENTRAR` (débil) o `AL_DESCANSAR` (fuerte) |
+| `reaparicion` | `AL_VOLVER_A_ENTRAR` (débil) o `AL_DESCANSAR` (fuerte: vuelve al descansar y al morir el jugador) |
 
 - El enemigo lleva un `Golpeable` (recibe los golpes) y un `DanoContacto` (daña al jugador). A vida 0 emite
   `Eventos.enemigo_vencido(ficha.id)` y desaparece. Por ahora no se mueve.
 - Débil: reaparece solo, porque la sala se instancia de nuevo cada vez que se entra. Fuerte: al vencerlo,
   `Partida.vencer(clave())` lo anota y, mientras siga anotado, no aparece al entrar a su sala. La lista se borra
-  al descansar en un banco. Morir no la borra.
+  al descansar en un banco y al morir el jugador (como los semipersistentes de Hollow Knight).
 
 ## Interfaz
 

@@ -1,7 +1,7 @@
 # El debil volvio con su vida entera; el fuerte sigue vencido: el jugador paso por su lugar sin
 # recibir dano (si hubiera reaparecido, tendria 3 vidas). Dos enemigo_vencido, uno por cada uno.
 escena res://herramientas/salas/sala_enemigos.tscn
-x 1018 2
+x 1078 2
 valor Jugador vidas 4
 valor Debil vida 2
 senal /root/Eventos enemigo_vencido 2

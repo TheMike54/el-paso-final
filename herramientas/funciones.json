@@ -33,7 +33,7 @@
     "id": "etiqueta-qa-pending",
     "que": "La etiqueta qa-pending se pone al abrir el PR y se quita cuando lo aprueba un integrante",
     "comprobacion": "manual: gh pr view muestra la etiqueta tras abrir el PR y deja de mostrarla tras la aprobacion",
-    "pasa": false
+    "pasa": true
   },
   {
     "id": "puerto-guion",

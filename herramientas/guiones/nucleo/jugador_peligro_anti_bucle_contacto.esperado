@@ -1,0 +1,6 @@
+# El segundo contacto lo lleva a la llegada (la Entrada, x=600) sin quitarle vida: una sola vida perdida y
+# un solo aviso de dano. Si el contacto avisara dos veces del mismo peligro, el segundo aviso le quitaria
+# otra vida (docs/errores/2026-10-11-peligro-avisado-dos-veces.md).
+x 600 2
+valor Jugador vidas 3
+senal /root/Eventos jugador_danado 1

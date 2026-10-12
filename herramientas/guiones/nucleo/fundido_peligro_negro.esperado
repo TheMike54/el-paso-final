@@ -1,0 +1,4 @@
+# Un cuadro antes seguia en el foso con la capa a 8/9 (fundido_peligro.guion). Si pasara al punto un tick
+# tarde, aqui seguiria en x=974. Despues sigue en negro 18 cuadros (fundido_peligro_sostenido.guion).
+x 752 2
+valor Fundido opacidad 1 0.01

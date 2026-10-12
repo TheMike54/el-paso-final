@@ -1,0 +1,8 @@
+# En la sala del pogo el jugador camina sin soltar hacia los pinchos: el primer contacto le quita una
+# vida y lo devuelve al punto seguro; al terminar de reaparecer sigue caminando y vuelve a tocarlos a los
+# 15 ticks con control, dentro del anti-bucle (cuadro 92); tras el fundido a negro (9 cuadros), en el 118 sigue
+# quieto en negro donde reaparecio. Es el
+# contacto de verdad (DanoContacto), no una llamada.
+escena res://herramientas/salas/sala_pogo.tscn
+2 mover_derecha press
+fin 118

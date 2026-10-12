@@ -28,12 +28,18 @@ func _ready() -> void:
 	jugador.global_position = PUNTO + Vector2(300.0, 0.0)
 	jugador._empezar_aterrizaje_duro()
 	jugador.recibir_dano(1, lejos, true)
+	_esperar_fundido(jugador)
 	_caso("un peligro corta el aterrizaje duro y lo devuelve al punto seguro", not jugador.aterrizando and jugador.global_position == PUNTO)
 
+	# Ya con control: un peligro durante la reaparicion no cuenta. Aqui la llegada y el punto seguro son PUNTO: el
+	# destino del anti-bucle lo prueba jugador_peligro_anti_bucle_contacto.guion.
+	jugador._ticks_congelado = 0
+	jugador._reapareciendo = false
 	jugador._empezar_aterrizaje_duro()
 	_caso("invulnerable, un peligro igual corta el aterrizaje duro", jugador.invulnerable)
 	jugador.recibir_dano(1, lejos, true)
-	_caso("y lo devuelve al punto seguro", not jugador.aterrizando)
+	_esperar_fundido(jugador)
+	_caso("y corta el aterrizaje duro tambien por el anti-bucle", not jugador.aterrizando and jugador.global_position == PUNTO)
 
 	jugador._empezar_aterrizaje_duro()
 	jugador.sentarse(PUNTO.x)
@@ -70,6 +76,13 @@ func _ready() -> void:
 	jugador.free()
 	Partida.llenar_vidas()
 	print("PRUEBAS aterrizaje casos=%d fallos=%d" % [casos, fallos])
+
+
+# Un peligro deja al jugador quieto donde lo toco mientras la pantalla funde a negro: los ticks del fundido
+# pasan por _mover, que al final lo pone en el punto seguro.
+func _esperar_fundido(jugador: Jugador) -> void:
+	while jugador._ticks_hasta_reaparecer > 0:
+		jugador._mover(1.0 / 60.0)
 
 
 # Deja al jugador como en el tick en que toca el suelo tras una caida larga.

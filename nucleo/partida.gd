@@ -29,12 +29,13 @@ var banco: String = ""
 var sala: String = ""
 var habilidades: Array[StringName] = []
 ## Enemigos fuertes vencidos desde el ultimo descanso, por su clave ("<escena de la sala>#<id>"):
-## no reaparecen hasta descansar en un banco. No se guarda: continuar empieza en un banco.
+## no reaparecen hasta descansar en un banco o morir. No se guarda: continuar empieza en un banco.
 var enemigos_vencidos: Array[String] = []
 
 
 func _ready() -> void:
 	Eventos.descanso_en_banco.connect(_al_descansar)
+	Eventos.jugador_muerto.connect(_al_morir)
 
 
 ## Partida nueva: vidas llenas, sin habilidades ni banco.
@@ -71,6 +72,11 @@ func fue_vencido(clave: String) -> bool:
 
 # Descansar en un banco hace reaparecer a los enemigos fuertes.
 func _al_descansar(_banco: StringName) -> void:
+	enemigos_vencidos.clear()
+
+
+# Morir tambien, como los semipersistentes de Hollow Knight.
+func _al_morir() -> void:
 	enemigos_vencidos.clear()
 
 
