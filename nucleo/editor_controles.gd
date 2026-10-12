@@ -122,6 +122,8 @@ func _al_cambiar_de_tamano() -> void:
 func _tocar(posicion: Vector2) -> void:
 	_quitar_confirmacion()
 	for i: int in range(ControlesTactiles.ACCIONES.size() - 1, -1, -1):
+		if not ControlesTactiles.en_uso(i):
+			continue
 		var c: Vector2 = copia.centro(i, size)
 		if posicion.distance_to(c) <= copia.radio(i, size, _radio_minimo) * ControlesTactiles.HOLGURA:
 			seleccion = i
@@ -170,6 +172,8 @@ func _draw() -> void:
 	var fuente: Font = ThemeDB.fallback_font
 	var color: Color = Color(COLOR_BOTON, COLOR_BOTON.a * copia.opacidad)
 	for i: int in range(ControlesTactiles.ACCIONES.size()):
+		if not ControlesTactiles.en_uso(i):
+			continue
 		var c: Vector2 = copia.centro(i, size)
 		var r: float = copia.radio(i, size, _radio_minimo)
 		if i == seleccion:

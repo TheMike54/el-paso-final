@@ -73,6 +73,10 @@ func _al_pedir(ticks_oscurecer: int, ticks_en_negro: int, ticks_aclarar: int) ->
 
 
 func _physics_process(_delta: float) -> void:
+	# Sin transicion en curso no cambia nada: no se vuelve a pintar. No se apaga el proceso porque, al
+	# reactivarlo a mitad de un tick, el motor lo corre hasta el siguiente y la transicion se atrasa uno.
+	if not (_oscureciendo or _en_negro or _aclarando):
+		return
 	if _oscureciendo:
 		_tick += 1
 		opacidad = lerpf(_opacidad_inicial, 1.0, minf(float(_tick) / float(_ticks_oscurecer), 1.0))

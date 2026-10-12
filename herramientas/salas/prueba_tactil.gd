@@ -59,6 +59,11 @@ func _ready() -> void:
 	c.procesar(atras)
 	_caso("el boton Atras de Android no oculta los controles", c.visible)
 
+	# Mochila sigue en ACCIONES (indices y disposicion guardada) pero no hace nada todavia: no responde.
+	_tocar(c, 12, c.centro(&"mochila"), true)
+	_caso("tocar donde estaba Mochila no presiona mochila", not Input.is_action_pressed(&"mochila"))
+	_tocar(c, 12, c.centro(&"mochila"), false)
+
 	# El boton Impulso existe solo con la habilidad impulso; los controles la revisan cada cuadro.
 	Partida.reiniciar()
 	await get_tree().process_frame

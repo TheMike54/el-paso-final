@@ -66,7 +66,7 @@ func _draw() -> void:
 			for valor: Variant in _zonas[zona]:
 				draw_rect(_en_pantalla(_indice.rectangulos[str(valor)], escala), color)
 			var centro: Vector2 = _transformacion * DatosMapa.abarca(_indice, _zonas[zona]).get_center()
-			draw_string(get_theme_default_font(), centro - Vector2(150.0, -10.0), DatosMapa.nombre_de_zona(zona, {}), HORIZONTAL_ALIGNMENT_CENTER, 300.0, 30)
+			draw_string(get_theme_default_font(), centro - Vector2(150.0, -10.0), DatosMapa.nombre_de_zona(zona), HORIZONTAL_ALIGNMENT_CENTER, 300.0, 30)
 	if marcador_visible:
 		draw_circle(_transformacion * _marcador, 10.0, COLOR_MARCADOR)
 

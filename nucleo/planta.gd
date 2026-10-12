@@ -18,6 +18,8 @@ var _quieta: bool = false
 func _ready() -> void:
 	_quieta = Recursos.bajos()
 	tiempo = desfase
+	# Quieta no hace nada cada cuadro: ni se llama a _process.
+	set_process(not _quieta)
 
 
 func _process(delta: float) -> void:

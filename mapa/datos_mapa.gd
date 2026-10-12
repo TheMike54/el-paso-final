@@ -45,8 +45,6 @@ static func encajar(mundo: Rect2, pantalla: Rect2, margen: float) -> Transform2D
 	return Transform2D(Vector2(escala, 0.0), Vector2(0.0, escala), origen)
 
 
-## Nombre visible de una zona: el de nombres, o el id con mayuscula.
-static func nombre_de_zona(zona: String, nombres: Dictionary[String, String]) -> String:
-	if nombres.has(zona):
-		return nombres[zona]
+## Nombre visible de una zona: el id con mayuscula.
+static func nombre_de_zona(zona: String) -> String:
 	return zona.capitalize()

@@ -15,6 +15,8 @@ var _inicio: Vector2 = Vector2.ZERO
 func _ready() -> void:
 	_quieta = Recursos.bajos()
 	_inicio = position
+	# Quieta no hace nada cada cuadro: ni se llama a _process.
+	set_process(not _quieta)
 
 
 func _process(delta: float) -> void:

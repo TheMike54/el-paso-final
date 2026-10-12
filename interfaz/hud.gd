@@ -1,7 +1,7 @@
 class_name Hud
 extends Control
 # Interfaz durante el juego: corazones de vida, la barra de bloques de Inspiracion y las PejeCoins, arriba
-# a la izquierda; y el icono de guardado abajo a la derecha. Se entera de todo por el bus de eventos y lee
+# a la izquierda, y debajo el icono de guardado. Se entera de todo por el bus de eventos y lee
 # Partida una sola vez al entrar a la sala: nunca lee al jugador. Todo en gris hasta tener arte.
 
 ## Centro del grupo en la distribucion inicial del diseno: fraccion de una pantalla 16:9, anclado
@@ -16,9 +16,8 @@ const INSPIRACION_POR_BLOQUE: int = 11
 const ALTO_BLOQUE: float = 0.022
 ## Ticks que se ve el icono de guardado: 2 s.
 const TICKS_AVISO: int = 120
-## Centro del icono de guardado: fraccion de una pantalla 16:9, anclado abajo a la derecha (provisional,
-## el diseno del icono va despues).
-const CENTRO_ICONO: Vector2 = Vector2(0.94, 0.9)
+## Lado del icono de guardado, en fraccion del lado corto. Va bajo las PejeCoins: abajo a la derecha lo tapaba
+## Saltar (prueba en el S50, 12-oct-2026). Provisional: el diseno del icono va despues.
 const LADO_ICONO: float = 0.05
 const COLOR_LLENO: Color = Color(0.85, 0.85, 0.9)
 const COLOR_VACIO: Color = Color(0.16, 0.16, 0.19, 0.9)
@@ -35,6 +34,8 @@ var monedas: int = 0
 var aviso_visible: bool = false
 
 var _ticks_aviso: int = 0
+# El icono es un nodo propio: girarlo cambia su rotation y no redibuja corazones, barra ni texto.
+var _icono: Node2D = null
 
 
 func _ready() -> void:
@@ -48,6 +49,12 @@ func _ready() -> void:
 	Eventos.monedas_cambiadas.connect(_al_cambiar_monedas)
 	Eventos.inspiracion_cambiada.connect(_al_cambiar_inspiracion)
 	Eventos.partida_guardada.connect(_al_guardar)
+	_icono = Node2D.new()
+	_icono.visible = false
+	_icono.draw.connect(_dibujar_icono)
+	add_child(_icono)
+	resized.connect(_colocar_icono)
+	_colocar_icono()
 
 
 func _al_cambiar_vidas(nuevas: int, maximas: int) -> void:
@@ -71,7 +78,8 @@ func _al_cambiar_monedas(nuevas: int) -> void:
 func _al_guardar() -> void:
 	_ticks_aviso = TICKS_AVISO
 	aviso_visible = true
-	queue_redraw()
+	_icono.visible = true
+	_icono.rotation = float(_ticks_aviso) * 0.1
 
 
 func _physics_process(_delta: float) -> void:
@@ -80,19 +88,17 @@ func _physics_process(_delta: float) -> void:
 	_ticks_aviso -= 1
 	if _ticks_aviso == 0:
 		aviso_visible = false
-	queue_redraw()
+		_icono.visible = false
+	_icono.rotation = float(_ticks_aviso) * 0.1
 
 
 func _draw() -> void:
 	var corto: float = minf(size.x, size.y)
 	var lado: float = LADO_CORAZON * corto
 	var paso: float = lado + SEPARACION * corto
-	# El borde izquierdo queda fijo con las vidas iniciales centradas en CENTRO: una vida mas crece
-	# hacia la derecha, como en el diseno.
-	var ancho_inicial: float = Partida.VIDAS_MAXIMAS_INICIALES * paso - SEPARACION * corto
-	var centro: Vector2 = CENTRO * Vector2(PROPORCION_REFERENCIA, 1.0) * corto
-	var izquierda: float = centro.x - ancho_inicial / 2.0
-	var arriba: float = centro.y - lado
+	var ancho_inicial: float = _ancho_inicial(corto)
+	var izquierda: float = _izquierda(corto)
+	var arriba: float = _arriba(corto)
 	for i: int in range(vidas_maximas):
 		_corazon(Vector2(izquierda + i * paso + lado / 2.0, arriba + lado / 2.0), lado, i < vidas)
 	var bloques: int = inspiracion_maxima / INSPIRACION_POR_BLOQUE
@@ -108,21 +114,46 @@ func _draw() -> void:
 			var lleno: float = clampf(float(inspiracion - i * INSPIRACION_POR_BLOQUE) / INSPIRACION_POR_BLOQUE, 0.0, 1.0)
 			if lleno > 0.0:
 				draw_rect(Rect2(x, y, ancho_bloque * lleno, ALTO_BLOQUE * corto), COLOR_LLENO)
-		draw_string(fuente, Vector2(izquierda, y + ALTO_BLOQUE * corto + tamano_letra * 1.4), "%d PejeCoins" % monedas,
+		draw_string(fuente, Vector2(izquierda, _base_monedas(corto)), "%d PejeCoins" % monedas,
 				HORIZONTAL_ALIGNMENT_LEFT, -1, tamano_letra, COLOR_LLENO)
-	if aviso_visible:
-		_icono_guardado(corto)
 
 
-# Icono provisional de guardado, abajo a la derecha: un rombo que gira mientras se ve.
-func _icono_guardado(corto: float) -> void:
-	var c: Vector2 = Vector2(size.x - (1.0 - CENTRO_ICONO.x) * PROPORCION_REFERENCIA * corto, CENTRO_ICONO.y * corto)
+# El borde izquierdo queda fijo con las vidas iniciales centradas en CENTRO: una vida mas crece
+# hacia la derecha, como en el diseno.
+func _ancho_inicial(corto: float) -> float:
+	var paso: float = (LADO_CORAZON + SEPARACION) * corto
+	return Partida.VIDAS_MAXIMAS_INICIALES * paso - SEPARACION * corto
+
+
+func _izquierda(corto: float) -> float:
+	return CENTRO.x * PROPORCION_REFERENCIA * corto - _ancho_inicial(corto) / 2.0
+
+
+func _arriba(corto: float) -> float:
+	return CENTRO.y * corto - LADO_CORAZON * corto
+
+
+# Linea base del texto de las PejeCoins, bajo la barra.
+func _base_monedas(corto: float) -> float:
+	var y_barra: float = _arriba(corto) + LADO_CORAZON * corto + SEPARACION * corto
+	return y_barra + ALTO_BLOQUE * corto + maxi(14, roundi(0.035 * corto)) * 1.4
+
+
+# Icono provisional de guardado bajo las PejeCoins, alineado a la izquierda del grupo.
+func _colocar_icono() -> void:
+	var corto: float = minf(size.x, size.y)
 	var r: float = LADO_ICONO * corto / 2.0
-	var giro: float = float(_ticks_aviso) * 0.1
+	_icono.position = Vector2(_izquierda(corto) + r, _base_monedas(corto) + SEPARACION * corto + r)
+	_icono.queue_redraw()
+
+
+# Un rombo centrado en el nodo: girarlo es cambiar su rotation.
+func _dibujar_icono() -> void:
+	var r: float = LADO_ICONO * minf(size.x, size.y) / 2.0
 	var puntos: PackedVector2Array = []
 	for i: int in range(4):
-		puntos.append(c + Vector2(r, 0.0).rotated(giro + i * PI / 2.0))
-	draw_colored_polygon(puntos, COLOR_LLENO)
+		puntos.append(Vector2(r, 0.0).rotated(i * PI / 2.0))
+	_icono.draw_colored_polygon(puntos, COLOR_LLENO)
 
 
 # Corazon gris: dos circulos y un triangulo. Vacio, oscuro.

@@ -245,7 +245,8 @@ letra de la distribución. Una acción nueva se agrega a `project.godot` y a est
   Traducen el toque a estas mismas acciones con `Input.action_press` y `action_release`; es el único script que
   lee toques. Joystick invisible en la zona de abajo a la izquierda (aparece donde se pone el dedo; da fuerza de 0
   a 1 a `mover_*`, con zona muerta de 0,2; hacia arriba también da `interactuar`, como la flecha arriba) y botones Saltar, Atacar, Curar, Impulso, Pausa, Mapa y Mochila en la
-  distribución inicial; Impulso solo mientras `Partida.tiene(&"impulso")` y Atacar mientras `Partida.tiene(&"pluma")` (sin la habilidad no se dibuja ni responde,
+  distribución inicial (Mochila está en la tabla, pero mientras siga en `BOTONES_SIN_USO` no se dibuja ni responde,
+  ni en el editor, porque todavía no hace nada); Impulso solo mientras `Partida.tiene(&"impulso")` y Atacar mientras `Partida.tiene(&"pluma")` (sin la habilidad no se dibuja ni responde,
   y un dedo encima se suelta al perderla; la tabla `HABILIDAD_DE_BOTON` dice qué botón pide qué habilidad). Anclados a su esquina y medidos en proporción del lado corto. Se ocultan con una tecla o
   el control y reaparecen al tocar la pantalla. Los dedos se recuerdan entre salas (variables estáticas): un dedo
   que sigue en la pantalla al cruzar una puerta o al reaparecer lo sueltan los controles de la sala nueva; si
@@ -556,8 +557,8 @@ con un `Control` `Hud` (`interfaz/hud.gd`, `class_name Hud`). La sala lo carga c
   en (17 %, 12 %) de una pantalla 16:9, anclado arriba a la izquierda y medido en el lado corto; una vida más crece
   hacia la derecha.
 - PejeCoins bajo la barra (`monedas_cambiadas`).
-- Ícono de guardado provisional (un rombo que gira) abajo a la derecha, centro en (94 %, 90 %) de una pantalla 16:9,
-  durante 2 s después de `partida_guardada`.
+- Ícono de guardado provisional (un rombo que gira) bajo las PejeCoins, alineado a la izquierda del grupo, durante
+  2 s después de `partida_guardada`. Es un nodo propio que gira con `rotation`: no redibuja el resto de la interfaz.
 - `vidas`, `vidas_maximas`, `inspiracion`, `inspiracion_maxima`, `bloques_llenos`, `monedas` y `aviso_visible` son públicas: los
   guiones las leen con `valor Interfaz/Hud`.
 

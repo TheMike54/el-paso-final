@@ -11,10 +11,6 @@ extends Area2D
 ## partida en curso; una sala de prueba puede fijar otro para no tocar la partida real.
 @export var ruta_guardado: String = Guardado.RUTA
 
-## Veces que se descanso aqui desde que entro a la sala.
-var descansos: int = 0
-
-
 func _physics_process(_delta: float) -> void:
 	if not Input.is_action_just_pressed(&"interactuar"):
 		return
@@ -25,7 +21,6 @@ func _physics_process(_delta: float) -> void:
 
 
 func descansar(jugador: Jugador = null) -> void:
-	descansos += 1
 	if jugador != null:
 		jugador.sentarse(global_position.x)
 	Partida.llenar_vidas()

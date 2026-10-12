@@ -35,10 +35,10 @@ func _ready() -> void:
 	body_entered.connect(_al_pasar)
 
 
-## Lo llama el ataque del jugador. Devuelve si lo corto (uno ya cortado no cuenta).
-func cortar() -> bool:
+## Lo llama el ataque del jugador. Uno ya cortado no cambia.
+func cortar() -> void:
 	if esta_cortado:
-		return false
+		return
 	esta_cortado = true
 	if _nodo_entero != null:
 		_nodo_entero.visible = false
@@ -48,7 +48,6 @@ func cortar() -> bool:
 	if trozos > 0:
 		_soltar_trozos()
 	cortado.emit()
-	return true
 
 
 func _al_pasar(cuerpo: Node2D) -> void:

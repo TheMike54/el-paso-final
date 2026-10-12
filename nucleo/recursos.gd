@@ -12,6 +12,9 @@ const MODOS: PackedStringArray = [AUTO, BAJO, ALTO]
 ## Memoria fisica por debajo de la cual el telefono cuenta como debil (el S50 tiene 1,9 GB; el S20, 8 GB).
 const UMBRAL_MEMORIA: int = 3 * 1024 * 1024 * 1024
 
+static var _debil_calculado: bool = false
+static var _debil: bool = false
+
 
 ## Regla de la deteccion, aparte para probarla: 32 bits o poca memoria (0: desconocida, no cuenta).
 static func debil_segun(es_de_32_bits: bool, memoria: int) -> bool:
@@ -23,9 +26,13 @@ static func avisar(modo: String, debil: bool) -> bool:
 	return modo == ALTO and debil
 
 
-## Si este telefono cuenta como debil.
+## Si este telefono cuenta como debil. Se calcula una vez: la memoria fisica no cambia, y cada adorno lo
+## consulta al entrar a la sala.
 static func es_debil() -> bool:
-	return debil_segun(OS.has_feature("32"), _memoria())
+	if not _debil_calculado:
+		_debil = debil_segun(OS.has_feature("32"), _memoria())
+		_debil_calculado = true
+	return _debil
 
 
 static func _memoria() -> int:
