@@ -1,4 +1,4 @@
-ACTIVO
+REEMPLAZADO POR nucleo-cierre-antes-de-la-sala.md
 
 # Núcleo: modo desarrollador y herramientas en el paquete de publicación
 

@@ -52,6 +52,16 @@ static func guardar(partida: Dictionary, ruta: String = RUTA) -> Error:
 	return DirAccess.rename_absolute(temporal, ruta)
 
 
+## Borra la partida y su temporal; sin archivo no es error.
+static func borrar(ruta: String = RUTA) -> Error:
+	for archivo: String in [ruta, ruta + ".tmp"]:
+		if FileAccess.file_exists(archivo):
+			var error: Error = DirAccess.remove_absolute(archivo)
+			if error != OK:
+				return error
+	return OK
+
+
 static func cargar(ruta: String = RUTA) -> Resultado:
 	if not FileAccess.file_exists(ruta):
 		return Resultado.new(Estado.VACIA)

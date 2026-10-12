@@ -8,7 +8,7 @@ escena res://herramientas/salas/sala_pogo.tscn
 9 impulso release
 20 saltar release
 24 saltar press
-28 mover_izquierda release
+24 mover_izquierda release
 40 saltar release
 42 mover_abajo press
 44 atacar press

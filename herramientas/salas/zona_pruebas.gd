@@ -1,11 +1,11 @@
 extends Control
 # Zona de pruebas: un boton por cada sala de prueba de esta carpeta, mas uno para volver al
-# menu. Lista la carpeta al entrar, asi una sala nueva aparece sin tocar este archivo. Solo se
-# llega desde el menu en builds de depuracion; no viaja en el paquete de publicacion.
+# menu. Lista la carpeta al entrar, asi una sala nueva aparece sin tocar este archivo. Se llega
+# desde la Configuracion del menu con el modo desarrollador encendido, en depuracion y en publicacion.
 const CARPETA: String = "res://herramientas/salas/"
 const MENU: String = "res://nucleo/menu.tscn"
 ## Escenas de la carpeta que no son salas para recorrer: esta y las pruebas sin jugador.
-const EXCLUIDAS: PackedStringArray = ["zona_pruebas.tscn", "sala_guardado.tscn", "sala_tactil.tscn", "sala_control.tscn", "sala_foco.tscn", "sala_aterrizaje.tscn", "sala_vista.tscn", "sala_controles_configurables.tscn", "sala_menu_configuracion.tscn", "sala_peligro_anti_bucle.tscn", "sala_enemigo_al_morir.tscn", "sala_sala_id.tscn", "sala_estado_sala.tscn", "sala_combate_chico_cuentas.tscn"]
+const EXCLUIDAS: PackedStringArray = ["zona_pruebas.tscn", "sala_guardado.tscn", "sala_tactil.tscn", "sala_control.tscn", "sala_foco.tscn", "sala_aterrizaje.tscn", "sala_vista.tscn", "sala_controles_configurables.tscn", "sala_menu_configuracion.tscn", "sala_peligro_anti_bucle.tscn", "sala_enemigo_al_morir.tscn", "sala_sala_id.tscn", "sala_estado_sala.tscn", "sala_combate_chico_cuentas.tscn", "sala_recursos_cuentas.tscn", "sala_mapa_cuentas.tscn"]
 
 # En cuadricula de tres columnas: en una sola columna las salas ya no caben en la pantalla.
 @onready var _lista: GridContainer = $Centro/Lista as GridContainer

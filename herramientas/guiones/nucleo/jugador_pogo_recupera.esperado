@@ -1,6 +1,7 @@
-# El segundo impulso del aire lo lleva de x=304 a x=104 y el tercer salto a y=152. Sin recuperar el
-# impulso se quedaria en x=304; sin recuperar el doble salto, mas abajo.
+# El primer impulso termina con la izquierda presionada y arranca la carrera hasta soltarla (tick 24, mas los 4 ticks que la carrera aguanta sin direccion). El
+# segundo impulso del aire lo lleva a x=80 y el tercer salto a y=152. Sin recuperar el impulso se quedaria
+# en x=251; sin recuperar el doble salto, mas abajo.
 valor Jugador rebotes_pogo 1
 valor Muneco/Golpeable golpes 1
-x 104 2
+x 80 2
 y 152 2

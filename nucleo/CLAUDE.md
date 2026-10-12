@@ -14,8 +14,9 @@ el contrato todavía no define se propone en un plan antes de programarlo.
 ## Qué no toca
 - No conoce zonas, enemigos ni NPC concretos: trabaja con fichas y señales.
 - No depende de ningún otro bloque. Excepciones: el autoload de arranque carga con `load()` las herramientas de
-  depuración si existen, el menú muestra la zona de pruebas solo si su escena existe y el build es de depuración
-  (ver `herramientas/CLAUDE.md`), y la sala carga con `load()` la interfaz (`interfaz/interfaz.tscn`) si existe.
+  depuración si existen, la Configuración del menú muestra la zona de pruebas solo con el modo desarrollador
+  encendido y si su escena existe, en depuración y en publicación (ver `herramientas/CLAUDE.md`), y la sala carga con `load()` la interfaz (`interfaz/interfaz.tscn`) y el
+  mapa (`mapa/pantalla_mapa.tscn`) si existen.
 
 ## Cómo se comprueba
 - Después de cada cambio: `.\herramientas\validar.ps1`, desde la raíz del repo.

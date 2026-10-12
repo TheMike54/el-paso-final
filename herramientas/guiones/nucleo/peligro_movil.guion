@@ -1,0 +1,6 @@
+# El jugador se queda quieto en la Entrada (x=300) y la sierra que va y viene (Vaiven, de x=800 a x=300 en 90
+# ticks) llega hasta el: es un golpe de enemigo, quita una vida con retroceso y el jugador no vuelve al suelo
+# seguro ni funde a negro. Con la sierra quieta no lo tocaria. Los pinchos fijos del fondo son el peligro de
+# siempre, para comparar en ventana y en el telefono.
+escena res://herramientas/salas/sala_peligro_movil.tscn
+fin 120

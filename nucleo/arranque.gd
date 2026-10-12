@@ -1,7 +1,7 @@
 extends Node
-# Autoload de arranque del nucleo. Carga las herramientas de desarrollo solo si el build es
-# de depuracion y el archivo viajo en el paquete: el preset de publicacion excluye
-# herramientas/, asi que el juego publicado arranca sin el puerto de depuracion.
+# Autoload de arranque del nucleo. Carga los ajustes y, solo si el build es de depuracion y el
+# archivo viajo en el paquete, el puerto de depuracion: herramientas/ viaja tambien en
+# publicacion (zona de pruebas con el modo desarrollador), pero el puerto nunca corre ahi.
 const RUTA_PUERTO: String = "res://herramientas/puerto_depuracion.gd"
 
 ## Rango de proporciones de la vista (ver nucleo/vista.gd): de 4:3 a 22:9, el mismo en escritorio,
@@ -13,6 +13,7 @@ const RUTA_PUERTO: String = "res://herramientas/puerto_depuracion.gd"
 func _ready() -> void:
 	# Lo que queda fuera de una sala (y la sala sin Fondo) se ve negro, como las barras, no gris.
 	RenderingServer.set_default_clear_color(Color.BLACK)
+	Ajustes.cargar_una_vez()
 	# Sin pantalla (guiones y validador) la vista se queda como esta: los guiones dependen de ella.
 	if DisplayServer.get_name() != "headless":
 		get_window().size_changed.connect(_al_cambiar_tamano)

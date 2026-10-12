@@ -42,10 +42,10 @@
     "pasa": true
   },
   {
-    "id": "paquete-sin-herramientas",
-    "que": "El paquete de publicacion no contiene herramientas/ y arranca sin el puerto de depuracion",
-    "comprobacion": "manual: el paquete exportado con el preset de publicacion arranca en headless e imprime que el puerto no existe, sin errores",
-    "pasa": true
+    "id": "paquete-publicacion",
+    "que": "El paquete de publicacion arranca sin el puerto de depuracion aunque herramientas/ viaje; la zona de pruebas solo aparece con el modo desarrollador",
+    "comprobacion": "manual: el paquete exportado en release con el preset de publicacion arranca sin el puerto (no responde a --guion=) y la zona aparece solo con el modo desarrollador encendido",
+    "pasa": false
   },
   {
     "id": "validar-funciones-json",
@@ -69,6 +69,18 @@
     "id": "validar-salas",
     "que": "El validador revisa cada sala con id (contenido/salas y herramientas/salas/zonas): id <zona>_<numero> igual al archivo y en la carpeta de su zona, sin repetir; limites con area; Entrada dentro; puertas con id unico, destino existente y de ida y vuelta; bancos con id banco_<id de la sala>",
     "comprobacion": "manual: en la zona de prueba, una puerta sin vuelta, un id distinto del archivo, un banco mal nombrado y una Entrada fuera de limites dan cada uno su linea FALLO y salida 1",
+    "pasa": true
+  },
+  {
+    "id": "validador-peligro-movil",
+    "que": "En cualquier escena, un DanoContacto con peligro dentro de un Vaiven, un Enemigo, un PathFollow2D o un cuerpo que se mueve da FALLO: lo que se mueve solo golpea",
+    "comprobacion": "manual: en una copia del proyecto, peligro = true en Sierra/Dano de sala_peligro_movil.tscn da FALLO (Dano se mueve con Sierra) y salida 1; un pincho fijo de la misma sala no falla",
+    "pasa": true
+  },
+  {
+    "id": "validador-presupuesto",
+    "que": "Cada sala respeta el presupuesto de decoracion: a lo mas 3 emisores de particulas con 60 particulas entre todos, 30 plantas y ninguna luz 2D; si no, FALLO",
+    "comprobacion": "manual: en una copia del proyecto, una planta 31 y un PointLight2D en sala_recursos.tscn dan cada uno su FALLO y salida 1; la sala tal cual pasa",
     "pasa": true
   }
 ]

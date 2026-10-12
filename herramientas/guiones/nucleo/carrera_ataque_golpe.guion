@@ -1,0 +1,9 @@
+# Atacar en carrera contra el muneco: lo golpea y el jugador sigue empujado hacia adelante, sin el rebote
+# hacia atras que da pegarle a algo caminando.
+escena res://herramientas/salas/sala_carrera.tscn
+2 mover_derecha press
+10 impulso press
+11 impulso release
+170 atacar press
+171 atacar release
+fin 176

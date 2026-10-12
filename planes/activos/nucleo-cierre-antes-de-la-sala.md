@@ -57,7 +57,7 @@ su porqué. Las entradas nuevas de `funciones.json` salen de este plan aprobado.
 Nadie tiene partidas que conservar: se fija el esquema de la v1 de una vez, con valores vacíos donde la mecánica
 todavía no existe. Modelo: Hollow Knight y Silksong guardan `playerData` (lo del jugador, con listas de ids) y
 `sceneData` (lo de cada sala, con clave sala + id); Silksong además guarda copias de seguridad al obtener algo
-(`identifier="GAINED_DOUBLE_JUMP"`). Detalle en la nota privada del guardado de Silksong.
+(`identifier="GAINED_DOUBLE_JUMP"`).
 
 | Campo | Qué guarda | Ejemplo |
 |---|---|---|
@@ -100,6 +100,8 @@ bloque de commit en su propia rama. Nunca se empieza una fase con algo en rojo.
 | 10 | La Celda 1 | Primera sala en `contenido/` (fuera de esta tanda) | — |
 
 Las salas de prueba se reorganizan en cada fase para que lo nuevo se pruebe en ventana y en el teléfono.
+Las ramas de la tabla no se crearon: las fases 0 a 3 y 4 a 8 entraron en dos commits en
+`feature/nucleo-cierre-antes-de-la-sala` (12-oct-2026).
 
 ## 6. Impulso (decidido por la persona, 11-oct-2026)
 
@@ -114,6 +116,10 @@ Las salas de prueba se reorganizan en cada fase para que lo nuevo se pruebe en v
 | Dash hacia abajo | Nunca |
 
 Todos los valores son nuestros y se ajustan en el teléfono.
+
+Soltar frente a cruzar el centro (decidido en la tanda, 11-oct-2026, a medir en el teléfono): la carrera aguanta
+`ticks_soltar_carrera` (4) ticks sin dirección a velocidad completa; más que eso es soltar. Sin esa ventana, todo
+giro con el joystick táctil o con un stick la apagaba al pasar por la zona muerta.
 
 ## 7. Peligros (decidido por la persona, 11-oct-2026)
 
@@ -144,13 +150,18 @@ Todos los valores son nuestros y se ajustan en el teléfono.
 
 ## 10. Mapa
 
-Bloque independiente `mapa/`: no conoce ninguna zona; dibuja lo que existe y, si no hay nada, no dibuja. Detalle de
-los dos estados en la sección de investigación de la tanda (se completa al llegar a la fase 8).
+Bloque independiente `mapa/`: no conoce ninguna zona; dibuja lo que existe y, si no hay nada, no dibuja. Dos vistas,
+como en Hollow Knight y Silksong: el mapa completo (acción `mapa`, detiene el juego) y el mapa rápido (`mapa_rapido`
+mantenida, encima mientras se camina). El completo tiene dos estados: alejado (cada zona como la silueta de sus
+salas, con su nombre) y acercado (las salas de la zona actual con borde); abre acercado y «−»/«+» cambian. Los dos
+estados se tomaron de la descripción de la persona: la wiki no los describe y no hubo capturas (queda para
+investigar con capturas reales).
 
 - Sin la Pluma no se dibuja nada; con ella, lo visitado se dibuja al descansar en un banco, solo en las zonas cuyo
   mapa se tiene.
-- El jugador se ve solo con la brújula (habilidad `brujula`); por ahora se activa a mano (sala de prueba o modo
-  desarrollador), sin tienda.
+- El jugador se ve solo con la brújula, que es un amuleto equipado (`brujula` en `amuletos_equipados`, como el Wayward
+  Compass; decidido con el advisor en la tanda); por ahora se activa a mano (interruptor de la zona de prueba), sin
+  tienda.
 - Dibujo de cada sala: una pieza reemplazable al lado de la sala; sin ella, un rectángulo generado de sus `limites`.
 - Índice de salas generado y comprobado por el validador: el paquete exportado no deja listar escenas con fiabilidad.
 
@@ -178,4 +189,9 @@ los dos estados en la sección de investigación de la tanda (se completa al lle
 | 1 | Hecha | `validar` 105/0; 90 guiones (guardado 40 casos, estado_sala 25, coleccionable, vitrina, banco de la zona). `revisor`: el banco guardaba antes de dibujar el mapa (corregido, con caso que falla si se invierte el orden), Continuar con una sala que ya no existe, validador solo con hijos directos, comprobaciones y documentos viejos; corregidos. Falta en el teléfono: `autoguardado-segundo-plano` y el ícono |
 | 2 | Hecha | `validar` 111/0; 93 guiones (`combate_chico`, `combate_chico_cuentas` 5 casos, `congelado_pulsacion`); `camara_temblor_picada` pasa a `fin 300` por el congelado al vencer (misma fase del temblor). Mutaciones: sin cola, sin pluma y sin guardar la pulsación en el congelado, el guion falla. `revisor`: pulsaciones perdidas en el congelado (corregido), el pasto se sacudía congelado, `ESTADO.md` y la comprobación de la Inspiración; corregidos. `pedir` cuenta el tick actual (como el contador que reemplaza) |
 | 3 | Hecha | `validar` 117/0; 95 guiones (`parry`: golpe parable, disparo y golpe no parable; `parry_ventana`: invulnerable, congelado y vibración tras la parada). Mutaciones: sin la marca, sin el congelado del parry y sin la excepción de la vibración, falla. El muñeco de prueba no retrocede (si no, se sale del alcance de su golpe). `revisor`, dos pasadas: la vibración de pegar tapaba la del parry (`al_parar` salta el límite, como el daño), faltaba medir la ventana y el congelado, y la comprobación de `parry`; corregidos. Falta en el teléfono: si la ventana del parry se siente justa |
+| 4 | Hecha | `validar` 118/0; 108 guiones (13 de `carrera_*` en `sala_carrera`, con muñeco); `jugador_pogo_recupera` cambia a propósito (el impulso del aire arranca la carrera: x=80, sin recuperar x=251; la izquierda se suelta en el 24). Mutaciones: sin parada en la pared, giro que apaga, ventana en 0, impulso hacia el lado viejo, giro pegado tras el impulso (dos caminos) y rebote en el ataque en carrera, falla. `revisor`, dos pasadas: el giro con el joystick apagaba la carrera al cruzar la zona muerta (ventana `ticks_soltar_carrera`, decidida en la tanda, sección 6), el impulso a mitad del giro salía al lado viejo y dejaba el giro pegado, el ataque en carrera sin probar contra algo; corregidos. Falta en el teléfono: reprobar el movimiento en S50 y S20 (sección 12) y la ventana de 4 ticks |
+| 5 | Hecha | `validar` 120/0; 109 guiones (`peligro_movil`: la sierra llega al jugador quieto, golpe sin fundido; con la sierra quieta falla). Regla del validador en cualquier escena (entrada `validador-peligro-movil`): en copias, peligro dentro de un `Vaiven`, como raíz y en una escena instanciada da `FALLO`; los peligros fijos actuales no. `revisor`, dos pasadas: la comprobación no cubría la regla, el guion pasaba con la sierra quieta y la sala no tenía el tipo fijo; corregidos |
+| 6 | Hecha | `validar` 123/0; 109 guiones (`menu_configuracion` 34 casos). Mutaciones: sin la guarda del Start y `aplicar` sin intercambio, falla. `revisor`, dos pasadas: impulso e interactuar (ejes) se quedaban sin botón al reasignar (fuera de los reasignables), valores inválidos del archivo pasaban al InputMap, asignar Start cerraba el panel, la prueba dependía del `ajustes.json` real, y textos que decían que `herramientas/` no viaja; corregidos. Los tres `CLAUDE.md` y la entrada, ya `paquete-publicacion` con `"pasa": false` hasta probarla con el keystore, los aprobó la persona y entraron en esta fase; el bloque del preset en `chore/android-export` va aparte. Falta: Configuración completa en el teléfono y con control; paquete de publicación con el modo desarrollador |
+| 7 | Hecha | `validar` 130/0; 110 guiones (`recursos_cuentas` 15 casos; `menu_configuracion` 35 con la opción Recursos). Mutaciones: detección sin la regla de memoria falla; en una copia, planta 31 y una luz 2D dan dos `FALLO`. `revisor`, dos pasadas: la sala de cuentas aparecía como botón en la zona de pruebas y la fila de medición prometía quitar todas las partículas; corregidos. Plantas y niebla siguen moviéndose en el congelado (decoración por tiempo). Falta en el teléfono: la detección real (paréntesis del automático) y los FPS de la sala de recursos en bajo y alto; la cantidad de cortables se decide con esa medición |
+| 8 | Hecha | `validar` 146/0; 111 guiones (`mapa_cuentas` 18 casos). Mutaciones: la pausa sin el grupo `pantalla_encima` y la pantalla sin exigir la pluma fallan; en una copia, mover `mapa_2` sin regenerar da `FALLO` del índice y, sin el bloque `mapa/`, el validador corre (solo falla la puerta a la zona quitada). `revisor`, dos pasadas: el caso de la pluma no probaba la pantalla, el validador nombraba `IndiceSalas` y no corría sin el bloque, `nucleo/CLAUDE.md` no nombraba el mapa; corregidos. Falta en el teléfono: la fila «Mapa» de `docs/pruebas.md`; el dibujo `<id>_mapa.png` no tiene prueba (no hay ninguno) |
 

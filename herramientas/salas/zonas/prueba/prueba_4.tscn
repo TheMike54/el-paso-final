@@ -33,6 +33,7 @@ monto = 1
 script = ExtResource("1_sala")
 habilidades_de_prueba = Array[StringName]([&"pluma"])
 id = "prueba_4"
+posicion_mapa = Vector2(5600, 0)
 limites = Rect2(0, 0, 1600, 720)
 
 [node name="Fondo" type="ColorRect" parent="."]
@@ -64,6 +65,13 @@ id = &"izquierda"
 sala_destino = "res://herramientas/salas/zonas/prueba/prueba_3.tscn"
 puerta_destino = &"derecha"
 llegada = Vector2(200, 0)
+
+[node name="PuertaDerecha" parent="." instance=ExtResource("2_puerta")]
+position = Vector2(1580, 680)
+id = &"derecha"
+sala_destino = "res://herramientas/salas/zonas/mapa/mapa_1.tscn"
+puerta_destino = &"izquierda"
+llegada = Vector2(-200, 0)
 
 [node name="Vitrina" type="Node2D" parent="."]
 position = Vector2(560, 200)

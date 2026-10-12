@@ -2,9 +2,9 @@ class_name Pausa
 extends CanvasLayer
 # Pausa del juego: la accion pausa o el boton Atras de Android la abren y la cierran durante el
 # juego, y se abre sola al salir de la app o cambiar de ventana. Pausar detiene el arbol y no
-# guarda la partida; salir al menu si guarda lo obtenido, y pasar a segundo plano lo guarda Partida. Tiene los interruptores de vibracion y de temblor
-# de camara mientras no haya Opciones, y el boton que abre el editor de los botones tactiles. La crea cada
-# sala; corre siempre, aun con el arbol en pausa, para poder cerrarse.
+# guarda la partida; salir al menu si guarda lo obtenido, y pasar a segundo plano lo guarda Partida. Tiene el
+# boton que abre el editor de los botones tactiles; vibracion, temblor y lo demas estan en la Configuracion del
+# menu. La crea cada sala; corre siempre, aun con el arbol en pausa, para poder cerrarse.
 const MENU: String = "res://nucleo/menu.tscn"
 const ESCENA_EDITOR: PackedScene = preload("res://nucleo/editor_controles.tscn")
 
@@ -16,8 +16,6 @@ var editor: EditorControles = null
 @onready var _panel: Control = $Panel as Control
 @onready var _continuar: Button = $Panel/Opciones/Continuar as Button
 @onready var _salir: Button = $Panel/Opciones/SalirAlMenu as Button
-@onready var _vibracion: CheckButton = $Panel/Opciones/Vibracion as CheckButton
-@onready var _temblor: CheckButton = $Panel/Opciones/Temblor as CheckButton
 @onready var _controles: Button = $Panel/Opciones/Controles as Button
 
 
@@ -26,18 +24,22 @@ func _ready() -> void:
 	_panel.visible = false
 	_continuar.pressed.connect(cerrar)
 	_salir.pressed.connect(_salir_al_menu)
-	Ajustes.cargar_una_vez()
-	_vibracion.button_pressed = Ajustes.vibracion
-	_vibracion.toggled.connect(_al_cambiar_vibracion)
-	_temblor.button_pressed = Ajustes.temblor
-	_temblor.toggled.connect(_al_cambiar_temblor)
 	_controles.pressed.connect(abrir_editor)
 
 
 # Se lee la accion y no el evento: asi la abren igual el teclado, el boton tactil y un guion.
 func _physics_process(_delta: float) -> void:
-	if Input.is_action_just_pressed(&"pausa") and editor == null:
+	if Input.is_action_just_pressed(&"pausa") and editor == null and not _pantalla_encima():
 		alternar()
+
+
+# Una pantalla de otro bloque abierta encima del juego (el mapa) se queda la pulsacion de pausa y Atras: se
+# encuentra por el grupo, sin conocerla, y dice si bloquea con bloquea_pausa().
+func _pantalla_encima() -> bool:
+	for nodo: Node in get_tree().get_nodes_in_group(&"pantalla_encima"):
+		if nodo.has_method(&"bloquea_pausa") and nodo.call(&"bloquea_pausa") == true:
+			return true
+	return false
 
 
 func _notification(que: int) -> void:
@@ -45,10 +47,10 @@ func _notification(que: int) -> void:
 		# Con el editor abierto, Atras es Cancelar y se vuelve a la pausa.
 		if editor != null:
 			editor.cancelar()
-		else:
+		elif not _pantalla_encima():
 			alternar()
 	# Al volver, el jugador encuentra el juego detenido donde lo dejo, no a medio caer.
-	elif (que == NOTIFICATION_APPLICATION_FOCUS_OUT or que == NOTIFICATION_APPLICATION_PAUSED) and not abierta:
+	elif (que == NOTIFICATION_APPLICATION_FOCUS_OUT or que == NOTIFICATION_APPLICATION_PAUSED) and not abierta and not _pantalla_encima():
 		abrir()
 
 
@@ -85,22 +87,6 @@ func _al_cerrar_editor() -> void:
 	editor = null
 	_panel.visible = abierta
 	_controles.grab_focus()
-
-
-func _al_cambiar_vibracion(encendida: bool) -> void:
-	Ajustes.vibracion = encendida
-	_guardar_ajustes()
-
-
-func _al_cambiar_temblor(encendido: bool) -> void:
-	Ajustes.temblor = encendido
-	_guardar_ajustes()
-
-
-func _guardar_ajustes() -> void:
-	var error: Error = Ajustes.guardar()
-	if error != OK:
-		push_error("Pausa: no se pudieron guardar los ajustes (error %d)" % error)
 
 
 # Salir al menu guarda lo obtenido (no la posicion): al continuar se aparece en el ultimo banco.

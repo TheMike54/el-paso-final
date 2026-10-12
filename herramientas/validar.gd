@@ -3,9 +3,11 @@ extends Node
 # y sale con 1 si alguno no carga. Imprime solo los fallos y un resumen.
 # Existe porque Godot sale con 0 aunque un script no compile. Ademas revisa las salas con id (contenido/salas y
 # las zonas de prueba): id igual al archivo, puertas de ida y vuelta, bancos con su id, Entrada dentro y
-# objetos recordados (suelo fragil, coleccionable) con id unico.
+# objetos recordados (suelo fragil, coleccionable) con id unico. En cualquier escena, un DanoContacto que se mueve
+# (dentro de un Vaiven, un enemigo o un cuerpo que se mueve) no puede ser peligro.
 const IGNORAR: PackedStringArray = ["addons", "build"]
 const CAMPOS_TEXTO: PackedStringArray = ["id", "que", "comprobacion"]
+const INDICE_MAPA: String = "res://mapa/indice_salas.gd"
 ## Carpetas donde cada sala lleva id y vive en <carpeta>/<zona>/<id>.tscn.
 const CARPETAS_SALAS: PackedStringArray = [Sala.CARPETA_CONTENIDO, Sala.CARPETA_PRUEBAS]
 var _fallos: PackedStringArray = []
@@ -17,6 +19,7 @@ var _salas: Dictionary[String, Dictionary] = {}
 func _ready() -> void:
 	_recorrer("res://")
 	_revisar_puertas()
+	_revisar_indice_mapa()
 	for fallo: String in _fallos:
 		print("FALLO ", fallo)
 	print("VALIDACION archivos=%d fallos=%d" % [_total, _fallos.size()])
@@ -60,7 +63,50 @@ func _revisar(ruta: String) -> void:
 			else:
 				if _es_carpeta_de_salas(ruta):
 					_revisar_sala(ruta, nodo)
+				if nodo is Sala:
+					_revisar_presupuesto(ruta, nodo)
+				_revisar_peligros(ruta, nodo)
 				nodo.free()
+
+
+# Presupuesto de una sala (seccion 8 del plan de cierre del nucleo, medido para el S50): a lo mas 3 emisores de
+# particulas con 60 particulas entre todos, 30 plantas y ninguna luz 2D.
+const MAXIMO_EMISORES: int = 3
+const MAXIMO_PARTICULAS: int = 60
+const MAXIMO_PLANTAS: int = 30
+
+
+func _revisar_presupuesto(ruta: String, sala: Node) -> void:
+	var emisores: int = 0
+	var particulas: int = 0
+	var plantas: int = 0
+	for nodo: Node in sala.find_children("*", "", true, false):
+		if nodo is CPUParticles2D or nodo is GPUParticles2D:
+			emisores += 1
+			particulas += (nodo as CPUParticles2D).amount if nodo is CPUParticles2D else (nodo as GPUParticles2D).amount
+		elif nodo is Planta:
+			plantas += 1
+		elif nodo is Light2D:
+			_fallos.append("%s (%s: sin luces 2D, el renderer Compatibility las cobra caras)" % [ruta, nodo.name])
+	if emisores > MAXIMO_EMISORES or particulas > MAXIMO_PARTICULAS:
+		_fallos.append("%s (%d emisores y %d particulas: el maximo es %d y %d)" % [ruta, emisores, particulas, MAXIMO_EMISORES, MAXIMO_PARTICULAS])
+	if plantas > MAXIMO_PLANTAS:
+		_fallos.append("%s (%d plantas: el maximo es %d)" % [ruta, plantas, MAXIMO_PLANTAS])
+
+
+# Regla de los peligros: lo fijo (pinchos, acido, lava, vacio) devuelve al suelo seguro; lo que se mueve solo
+# golpea, con retroceso. Un DanoContacto con peligro dentro de algo que se mueve es un error de la escena.
+func _revisar_peligros(ruta: String, raiz: Node) -> void:
+	for nodo: Node in raiz.find_children("*", "", true, false):
+		var contacto: DanoContacto = nodo as DanoContacto
+		if contacto == null or not contacto.peligro:
+			continue
+		var arriba: Node = contacto.get_parent()
+		while arriba != null and arriba != raiz.get_parent():
+			if arriba is Vaiven or arriba is Enemigo or arriba is PathFollow2D or arriba is AnimatableBody2D 					or arriba is CharacterBody2D or arriba is RigidBody2D:
+				_fallos.append("%s (%s se mueve con %s: no puede ser peligro, solo golpe)" % [ruta, contacto.name, arriba.name])
+				break
+			arriba = arriba.get_parent()
 
 
 # Una funciones.json es una lista de entradas con id, que, comprobacion y pasa.
@@ -172,6 +218,20 @@ func _id_recordado(nodo: Node) -> String:
 	if coleccionable != null:
 		return coleccionable.id if not coleccionable.id.is_empty() else "?"
 	return ""
+
+
+# El indice del mapa (mapa/indice_salas.tres) debe decir lo mismo que las salas: si una sala se agrega, se mueve o
+# cambia sus limites, posicion_mapa o su dibujo, hay que volver a generarlo. La clase se busca por ruta al correr,
+# no por nombre, para que el validador siga funcionando en un proyecto sin el bloque mapa/.
+func _revisar_indice_mapa() -> void:
+	if not ResourceLoader.exists(INDICE_MAPA):
+		return
+	var indice: Script = load(INDICE_MAPA) as Script
+	var nuevo: Resource = indice.call(&"construir")
+	var guardado: Resource = indice.call(&"cargar")
+	var coincide: bool = indice.call(&"iguales", nuevo, guardado)
+	if not coincide:
+		_fallos.append("res://mapa/indice_salas.tres (no coincide con las salas: correr herramientas/generar_mapa.tscn)")
 
 
 # Puertas de ida y vuelta entre salas con id: si A lleva a la puerta P de B, B tiene la puerta P y lleva de

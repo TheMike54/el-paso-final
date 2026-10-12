@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://cyl1hspxk3xqf"]
 
 [ext_resource type="Script" uid="uid://d12gi3fqe7rsh" path="res://nucleo/menu.gd" id="1_menu"]
+[ext_resource type="PackedScene" uid="uid://bfg53786ab33n" path="res://nucleo/configuracion.tscn" id="2_configuracion"]
 
 [node name="Menu" type="Control"]
 layout_mode = 3
@@ -58,12 +59,6 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 32
 text = "Configuración"
 
-[node name="ZonaPruebas" type="Button" parent="Centro/Opciones"]
-custom_minimum_size = Vector2(400, 72)
-layout_mode = 2
-theme_override_font_sizes/font_size = 32
-text = "Zona de pruebas"
-
 [node name="Estado" type="Label" parent="Centro/Opciones"]
 custom_minimum_size = Vector2(400, 0)
 layout_mode = 2
@@ -71,36 +66,8 @@ theme_override_font_sizes/font_size = 22
 horizontal_alignment = 1
 autowrap_mode = 3
 
-[node name="PanelConfiguracion" type="CenterContainer" parent="."]
-visible = false
+[node name="Configuracion" parent="." instance=ExtResource("2_configuracion")]
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="Opciones" type="VBoxContainer" parent="PanelConfiguracion"]
-layout_mode = 2
-theme_override_constants/separation = 16
-
-[node name="Titulo" type="Label" parent="PanelConfiguracion/Opciones"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 48
-text = "Configuración"
-horizontal_alignment = 1
-
-[node name="Controles" type="Button" parent="PanelConfiguracion/Opciones"]
-custom_minimum_size = Vector2(400, 72)
-layout_mode = 2
-theme_override_font_sizes/font_size = 32
-text = "Controles"
-
-[node name="Volver" type="Button" parent="PanelConfiguracion/Opciones"]
-custom_minimum_size = Vector2(400, 72)
-layout_mode = 2
-theme_override_font_sizes/font_size = 32
-text = "Volver"
 
 [node name="Confirmar" type="ColorRect" parent="."]
 layout_mode = 1

@@ -11,6 +11,7 @@ size = Vector2(2400, 80)
 script = ExtResource("1_sala")
 habilidades_de_prueba = Array[StringName]([&"pluma"])
 id = "prueba_2"
+posicion_mapa = Vector2(1600, 0)
 limites = Rect2(0, 0, 2400, 720)
 
 [node name="Fondo" type="ColorRect" parent="."]

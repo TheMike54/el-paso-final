@@ -1,0 +1,3 @@
+# Los casos de prueba_mapa.gd corrieron y ninguno fallo; cada fallo imprime "FALLO mapa: <caso>".
+valor . casos 18
+valor . fallos 0

@@ -13,6 +13,9 @@ const COLOR_DESCANSANDO: Color = Color(0.7, 0.75, 0.9)
 ## Alto del jugador sentado en un banco.
 const ALTO_SENTADO: float = 110.0
 const COLOR_ATAQUE: Color = Color(1.0, 0.9, 0.5, 0.5)
+## Dibujo de prueba de la carrera y de su giro mientras no hay arte.
+const COLOR_CORRIENDO: Color = Color(0.8, 0.9, 1.0)
+const ANCHO_GIRANDO: float = 40.0
 const NUNCA: int = 1000000
 const ESCENA_PROYECTIL: PackedScene = preload("res://nucleo/proyectil.tscn")
 
@@ -123,6 +126,16 @@ const ESCENA_PROYECTIL: PackedScene = preload("res://nucleo/proyectil.tscn")
 @export var ticks_impulso: int = 10
 ## Ticks desde que empieza un impulso hasta poder hacer otro.
 @export var ticks_recarga_impulso: int = 36
+## Carrera (sprint) que sigue al impulso si hay direccion al terminar: unas 2,1 veces caminar (Silksong: «112 %
+## mas rapido»). Lo que la apaga esta en el contrato (soltar mas de ticks_soltar_carrera, pared, dano, curar...).
+@export var velocidad_carrera: float = 756.0
+## Ticks del giro en carrera: la velocidad pasa de un sentido al otro, por 0, sin apagar la carrera.
+@export var ticks_giro_carrera: int = 8
+## Ticks sin direccion que la carrera aguanta: el pulgar o el stick cruzan el centro (zona muerta) al girar y eso no
+## es soltar. Mientras, sigue a velocidad completa hacia donde iba.
+@export var ticks_soltar_carrera: int = 4
+## Ataque en carrera: mientras dura, el jugador sale empujado hacia adelante a esta velocidad.
+@export var velocidad_ataque_carrera: float = 900.0
 
 @export_group("Pared")
 ## Velocidad maxima de caida sostenido en una pared, en px/s.
@@ -185,6 +198,12 @@ var descansando: bool = false
 var golpes_onda: int = 0
 ## Ataques enemigos parados desde que entro a la sala.
 var paradas: int = 0
+## En carrera (sprint), girando dentro de ella y si el ataque en curso es un ataque en carrera.
+var corriendo: bool = false
+var girando: bool:
+	get:
+		return _ticks_girando > 0
+var atacando_en_carrera: bool = false
 ## Desplazamiento vertical del temblor en este tick, en px. La camara lo recibe solo con el ajuste
 ## temblor encendido; publico para que un guion lo lea aunque el ajuste este apagado.
 var temblor_y: float = 0.0
@@ -234,6 +253,9 @@ var _punto_reaparicion: Vector2 = Vector2.ZERO
 var _ticks_congelado: int = 0
 var _inspiracion_al_empezar: int = 0
 var _ticks_impulsando: int = 0
+var _ticks_girando: int = 0
+var _ticks_sin_eje: int = 0
+var _sentido_carrera: float = 1.0
 var _ticks_hasta_impulso: int = 0
 var _impulso_en_el_aire: bool = true
 # Impulso presionado durante el congelado comun: sale en cuanto termina.
@@ -373,6 +395,8 @@ func _mover(delta: float) -> void:
 	_impulsar()
 	_atacar()
 	move_and_slide()
+	if corriendo and is_on_wall() and get_wall_normal().x * _sentido_carrera < 0.0:
+		_dejar_de_correr()
 
 
 # Aterrizaje: se mira al empezar el tick, tras el move_and_slide del anterior. Es duro (tiembla la
@@ -453,7 +477,8 @@ func _caer(en_suelo: bool, delta: float) -> void:
 
 
 # Prioridad del movimiento horizontal: retroceso del golpe recibido, impulso, despegue de la
-# pared, rebote al golpear y por ultimo la entrada.
+# pared, rebote al golpear, carrera y por ultimo la entrada. El giro de la carrera solo avanza en
+# _correr: una rama con prioridad lo cancela y, si al volver el eje se opone, empieza uno nuevo.
 func _mover_en_horizontal(eje: float) -> void:
 	if _ticks_retrocediendo > 0:
 		_ticks_retrocediendo -= 1
@@ -462,16 +487,63 @@ func _mover_en_horizontal(eje: float) -> void:
 		_ticks_impulsando -= 1
 		velocity.x = _mirando * velocidad_impulso
 		velocity.y = 0.0
+		_ticks_girando = 0
+		if _ticks_impulsando == 0 and eje != 0.0:
+			corriendo = true
+			_ticks_sin_eje = 0
+			_sentido_carrera = signf(eje)
+			_mirando = _sentido_carrera
 	elif _ticks_despegando > 0:
 		_ticks_despegando -= 1
 		velocity.x = _sentido_despegue * velocidad_despegue_pared
+		_ticks_girando = 0
 	elif _ticks_rebote > 0:
 		_ticks_rebote -= 1
 		velocity.x = _sentido_rebote * velocidad_rebote_al_golpear
+		_ticks_girando = 0
+	elif corriendo:
+		_correr(eje)
 	else:
 		velocity.x = eje * velocidad
 		if eje != 0.0:
 			_mirando = signf(eje)
+
+
+# Carrera: velocidad completa hacia donde va, sin importar cuanto se incline el joystick. Soltarlo mas de
+# ticks_soltar_carrera ticks la apaga; pedir el otro lado empieza el giro (ticks_giro_carrera de frenado y
+# arranque) y la carrera sigue.
+func _correr(eje: float) -> void:
+	if eje == 0.0:
+		_ticks_sin_eje += 1
+		if _ticks_sin_eje > ticks_soltar_carrera:
+			_dejar_de_correr()
+			velocity.x = 0.0
+			return
+		eje = _sentido_carrera
+	else:
+		_ticks_sin_eje = 0
+	if _ticks_girando == 0 and signf(eje) != _sentido_carrera:
+		_ticks_girando = ticks_giro_carrera
+		_sentido_carrera = signf(eje)
+	if _ticks_girando > 0:
+		_ticks_girando -= 1
+		# De la velocidad completa hacia el lado viejo (-1) a la completa hacia el nuevo (1), pasando por 0.
+		var avance: float = 1.0 - 2.0 * float(_ticks_girando) / float(ticks_giro_carrera)
+		velocity.x = _sentido_carrera * velocidad_carrera * avance
+		if avance > 0.0:
+			_mirando = _sentido_carrera
+	elif atacando_en_carrera:
+		velocity.x = _sentido_carrera * velocidad_ataque_carrera
+	else:
+		velocity.x = _sentido_carrera * velocidad_carrera
+		_mirando = _sentido_carrera
+
+
+func _dejar_de_correr() -> void:
+	corriendo = false
+	_ticks_girando = 0
+	_ticks_sin_eje = 0
+	atacando_en_carrera = false
 
 
 func _saltos(en_suelo: bool, eje: float) -> void:
@@ -540,6 +612,10 @@ func _impulsar() -> void:
 		return
 	if _ticks_hasta_impulso > 0 or _ticks_retrocediendo > 0 or not _impulso_en_el_aire:
 		return
+	# En carrera (tambien a mitad de un giro) el impulso sale hacia el joystick, como fuera de ella.
+	var eje: float = Input.get_axis(&"mover_izquierda", &"mover_derecha")
+	if corriendo and eje != 0.0:
+		_mirando = signf(eje)
 	_ticks_impulsando = ticks_impulso
 	_ticks_hasta_impulso = ticks_recarga_impulso
 	_subiendo = false
@@ -628,6 +704,7 @@ func _cortar_lo_que_empuja() -> void:
 	_ticks_impulsando = 0
 	_ticks_despegando = 0
 	_ticks_rebote = 0
+	_dejar_de_correr()
 
 
 func _seguir_picada() -> void:
@@ -698,6 +775,7 @@ func _empezar_curacion(en_suelo: bool) -> void:
 	if not puede or _ticks_retrocediendo > 0 or _ticks_impulsando > 0:
 		return
 	curando = true
+	_dejar_de_correr()
 	ticks_curados = 0
 	_inspiracion_al_empezar = Partida.inspiracion
 	# Quieto mientras se cura: nada de lo que empujaba al jugador sigue despues.
@@ -737,6 +815,7 @@ func _atacar() -> void:
 		_golpeados.clear()
 		_atacando_abajo = not is_on_floor() and Input.is_action_pressed(&"mover_abajo")
 		_atacando_arriba = not _atacando_abajo and Input.is_action_pressed(&"mover_arriba")
+		atacando_en_carrera = corriendo and _ticks_girando == 0 and not _atacando_abajo and not _atacando_arriba
 		_rebotado = false
 		if _atacando_abajo:
 			_forma_ataque.position = posicion_pogo
@@ -767,7 +846,7 @@ func _atacar() -> void:
 				Partida.ganar_inspiracion(inspiracion_por_golpe)
 				if _atacando_abajo:
 					_rebotar_pogo()
-				elif not _atacando_arriba:
+				elif not _atacando_arriba and not atacando_en_carrera:
 					_ticks_rebote = ticks_rebote_al_golpear
 					_sentido_rebote = -_mirando
 			elif _atacando_abajo:
@@ -776,6 +855,7 @@ func _atacar() -> void:
 					_rebotar_pogo()
 	if _ticks_atacando == 0:
 		_ataque.set_deferred(&"monitoring", false)
+		atacando_en_carrera = false
 
 
 ## Lo llama un AtaqueEnemigo que se puede parar antes de danar: si el ataque del jugador ya lo toca, lo para
@@ -846,6 +926,7 @@ func recibir_dano(dano: int, origen_x: float, peligro: bool = false) -> void:
 	_ticks_impulsando = 0
 	_ticks_despegando = 0
 	_ticks_rebote = 0
+	_dejar_de_correr()
 	Eventos.jugador_danado.emit(vidas)
 	if vidas == 0:
 		_morir()
@@ -1049,6 +1130,10 @@ func _draw() -> void:
 		color = COLOR_INVULNERABLE
 	elif curando:
 		color = COLOR_CURANDO
+	elif corriendo:
+		color = COLOR_CORRIENDO
+	if girando:
+		cuerpo = Rect2(-ANCHO_GIRANDO / 2.0, cuerpo.position.y, ANCHO_GIRANDO, cuerpo.size.y)
 	draw_rect(cuerpo, color)
 	if _ticks_atacando > 0:
 		var forma: RectangleShape2D = _forma_ataque.shape as RectangleShape2D

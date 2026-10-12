@@ -2,13 +2,14 @@ class_name Sala
 extends Node2D
 # Raiz de toda sala: al entrar crea al jugador (en la puerta por la que llega o en Entrada), le
 # pasa los limites para la camara y pone los controles tactiles, la pausa, la vibracion, el fundido
-# a negro (empieza en negro y aclara) y la interfaz. Si el jugador muere, funde a negro y lo hace
+# a negro (empieza en negro y aclara), la interfaz y el mapa. Si el jugador muere, funde a negro y lo hace
 # reaparecer en el ultimo banco (o en Entrada) con las vidas llenas.
 const ESCENA_JUGADOR: PackedScene = preload("res://nucleo/jugador.tscn")
 const ESCENA_CONTROLES: PackedScene = preload("res://nucleo/controles_tactiles.tscn")
 const ESCENA_PAUSA: PackedScene = preload("res://nucleo/pausa.tscn")
-## La interfaz es de otro bloque: se carga con load() solo si existe, asi el nucleo corre sin ella.
+## La interfaz y el mapa son de otros bloques: se cargan con load() solo si existen, asi el nucleo corre sin ellos.
 const INTERFAZ: String = "res://interfaz/interfaz.tscn"
+const MAPA: String = "res://mapa/pantalla_mapa.tscn"
 ## Ticks que el jugador muerto se queda en pantalla (oscuro) antes de reaparecer: 1,5 s.
 const TICKS_PARA_REAPARECER: int = 90
 ## Lo que el Fondo de la sala se extiende fuera de limites, en px. Cubre el rango de la vista (4:3 a
@@ -25,7 +26,7 @@ static var llegada_a_banco: bool = false
 
 ## Carpeta de las salas del juego: contenido/salas/<zona>/<id>.tscn.
 const CARPETA_CONTENIDO: String = "res://contenido/salas/"
-## Carpeta de las zonas de prueba, con la misma forma. No viaja en el paquete de publicacion: solo se usa si existe.
+## Carpeta de las zonas de prueba, con la misma forma. El juego no depende de ella: solo se usa si existe.
 const CARPETA_PRUEBAS: String = "res://herramientas/salas/zonas/"
 
 ## Id de la sala, `<zona>_<numero>` (celda_1), igual al nombre de su archivo: es lo que guardan la partida y el
@@ -36,6 +37,9 @@ const CARPETA_PRUEBAS: String = "res://herramientas/salas/zonas/"
 ## Solo salas de prueba: habilidades que la sala da en silencio al entrar (sin aviso ni autoguardado), para
 ## probar algo sin conseguirlo antes. Una sala del juego la deja vacia (lo revisa el validador).
 @export var habilidades_de_prueba: Array[StringName] = []
+## Esquina de la sala en el mapa del mundo, en px: el mapa la dibuja en posicion_mapa + limites. Las salas de una
+## zona se acomodan como se recorren (la de la derecha empieza donde acaba la otra).
+@export var posicion_mapa: Vector2 = Vector2.ZERO
 
 var _ticks_para_reaparecer: int = 0
 
@@ -99,9 +103,10 @@ func _ready() -> void:
 	var vibracion: Vibracion = Vibracion.new()
 	vibracion.name = &"Vibracion"
 	add_child(vibracion)
-	if ResourceLoader.exists(INTERFAZ):
-		var interfaz: PackedScene = load(INTERFAZ) as PackedScene
-		add_child(interfaz.instantiate())
+	for ruta: String in [INTERFAZ, MAPA]:
+		if ResourceLoader.exists(ruta):
+			var escena: PackedScene = load(ruta) as PackedScene
+			add_child(escena.instantiate())
 	Eventos.jugador_muerto.connect(_al_morir_el_jugador)
 	if not puerta.is_empty():
 		Eventos.cambio_de_sala.emit(clave(), puerta)

@@ -1,0 +1,71 @@
+[gd_scene format=3 uid="uid://b4qjpxi4n018a"]
+
+[ext_resource type="Script" uid="uid://k7a08bqsbqd0" path="res://nucleo/sala.gd" id="1_sala"]
+[ext_resource type="Script" uid="uid://jy2tkfmforul" path="res://nucleo/dano_contacto.gd" id="2_dano"]
+[ext_resource type="Script" uid="uid://c2i8bitphouxk" path="res://nucleo/vaiven.gd" id="3_vaiven"]
+
+[sub_resource type="RectangleShape2D" id="forma_suelo"]
+size = Vector2(2000, 80)
+
+[sub_resource type="RectangleShape2D" id="forma_pinchos"]
+size = Vector2(200, 40)
+
+[sub_resource type="RectangleShape2D" id="forma_sierra"]
+size = Vector2(60, 60)
+
+[node name="SalaPeligroMovil" type="Node2D"]
+script = ExtResource("1_sala")
+limites = Rect2(0, 0, 2000, 720)
+habilidades_de_prueba = Array[StringName]([&"pluma"])
+
+[node name="Entrada" type="Marker2D" parent="."]
+position = Vector2(300, 680)
+
+[node name="Suelo" type="StaticBody2D" parent="."]
+position = Vector2(1000, 720)
+
+[node name="Forma" type="CollisionShape2D" parent="Suelo"]
+shape = SubResource("forma_suelo")
+
+[node name="Dibujo" type="ColorRect" parent="Suelo"]
+offset_left = -1000.0
+offset_top = -40.0
+offset_right = 1000.0
+offset_bottom = 40.0
+mouse_filter = 2
+color = Color(0.25, 0.25, 0.25, 1)
+
+[node name="Sierra" type="Node2D" parent="."]
+position = Vector2(800, 680)
+script = ExtResource("3_vaiven")
+recorrido = Vector2(-500, 0)
+
+[node name="Dano" type="Area2D" parent="Sierra"]
+script = ExtResource("2_dano")
+
+[node name="Forma" type="CollisionShape2D" parent="Sierra/Dano"]
+position = Vector2(0, -30)
+shape = SubResource("forma_sierra")
+
+[node name="Dibujo" type="ColorRect" parent="Sierra/Dano"]
+offset_left = -30.0
+offset_top = -60.0
+offset_right = 30.0
+mouse_filter = 2
+color = Color(0.85, 0.45, 0.2, 1)
+
+[node name="Pinchos" type="Area2D" parent="."]
+position = Vector2(1500, 680)
+script = ExtResource("2_dano")
+peligro = true
+
+[node name="Forma" type="CollisionShape2D" parent="Pinchos"]
+position = Vector2(0, -20)
+shape = SubResource("forma_pinchos")
+
+[node name="Dibujo" type="ColorRect" parent="Pinchos"]
+offset_left = -100.0
+offset_top = -40.0
+offset_right = 100.0
+mouse_filter = 2
+color = Color(0.7, 0.2, 0.2, 1)

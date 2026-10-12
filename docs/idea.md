@@ -34,7 +34,7 @@ ese mismo banco con las mismas vidas y las mismas habilidades.
 | Sistemas | Cuatro vidas, curación, bancos y guardado, mochila, y un reto de preguntas para recuperar lo perdido al morir |
 | Personajes | Un personaje guía que entrega el arma y el mapa de la primera zona |
 | Teléfono | Controles táctiles personalizables y modo de bajo detalle para gama baja |
-| Desarrollo | Zona de pruebas básica: pasillo de mecánicas, arena de jefes y panel de trucos. No viaja en la versión publicada |
+| Desarrollo | Zona de pruebas básica: pasillo de mecánicas, arena de jefes y panel de trucos. Viaja también en la versión publicada y aparece con el modo desarrollador |
 
 ## Qué se aplaza a propósito
 

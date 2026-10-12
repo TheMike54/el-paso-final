@@ -1,0 +1,8 @@
+# Pedir el otro lado en carrera empieza el giro: frena y arranca hacia el otro lado sin apagarla.
+escena res://herramientas/salas/sala_carrera.tscn
+2 mover_derecha press
+10 impulso press
+11 impulso release
+40 mover_derecha release
+40 mover_izquierda press
+fin 44

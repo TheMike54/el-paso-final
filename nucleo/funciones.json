@@ -79,8 +79,8 @@
   },
   {
     "id": "menu-desarrollo",
-    "que": "Un menu sencillo permite empezar, continuar y, solo en builds de depuracion, entrar a la zona de pruebas",
-    "comprobacion": "manual: en ventana, cada opcion del menu lleva a su escena y la entrada a la zona de pruebas no aparece en el paquete de publicacion",
+    "que": "Un menu sencillo permite empezar, continuar y, con el modo desarrollador encendido, entrar a la zona de pruebas, en depuracion y en publicacion",
+    "comprobacion": "manual: en ventana y en el paquete de publicacion, cada opcion del menu lleva a su escena; la zona de pruebas aparece solo con el modo desarrollador encendido y el modo se recuerda al reabrir el juego",
     "pasa": false
   },
   {
@@ -97,14 +97,14 @@
   },
   {
     "id": "jugador-curar",
-    "que": "Mantener curar en el suelo gasta Inspiracion, que se llena golpeando, y al terminar el tiempo de curacion devuelve una vida; si golpean al jugador a la mitad, la curacion se pierde. Duracion y costo como propiedades exportadas. El golpe a la mitad lo comprueba ademas jugador_curar_golpe.guion, la falta de Inspiracion jugador_curar_sin_inspiracion.guion y el impulso jugador_curar_tras_impulso.guion",
-    "comprobacion": "herramientas/guiones/nucleo/jugador_curar.guion",
+    "que": "Mantener curar en el suelo gasta Inspiracion, que se llena golpeando, y al terminar el tiempo de curacion devuelve una vida; si golpean al jugador a la mitad, la curacion se pierde. Duracion y costo como propiedades exportadas",
+    "comprobacion": "herramientas/guiones/nucleo/jugador_curar.guion; herramientas/guiones/nucleo/jugador_curar_golpe.guion; herramientas/guiones/nucleo/jugador_curar_sin_inspiracion.guion; herramientas/guiones/nucleo/jugador_curar_tras_impulso.guion",
     "pasa": true
   },
   {
     "id": "jugador-golpe-sensacion",
-    "que": "Al golpear, el jugador y lo golpeado salen empujados un poco; al recibir dano, el jugador se detiene unos ticks (hit-stop) con el congelado comun (Congelado), sin Engine.time_scale. Valores exportados. El hit-stop lo comprueba jugador_hit_stop.guion",
-    "comprobacion": "herramientas/guiones/nucleo/jugador_golpe_sensacion.guion",
+    "que": "Al golpear, el jugador y lo golpeado salen empujados un poco; al recibir dano, el jugador se detiene unos ticks (hit-stop) con el congelado comun (Congelado), sin Engine.time_scale. Valores exportados",
+    "comprobacion": "herramientas/guiones/nucleo/jugador_golpe_sensacion.guion; herramientas/guiones/nucleo/jugador_hit_stop.guion",
     "pasa": true
   },
   {
@@ -115,8 +115,8 @@
   },
   {
     "id": "habilidad-salto-en-pared",
-    "que": "Con la habilidad salto_en_pared en Partida, empujar hacia una pared en el aire sostiene al jugador deslizando despacio, y saltar lo despega de la pared hacia el lado contrario; sin la habilidad cae normal. El despegue lo comprueba habilidad_salto_en_pared_despegue.guion",
-    "comprobacion": "herramientas/guiones/nucleo/habilidad_salto_en_pared.guion",
+    "que": "Con la habilidad salto_en_pared en Partida, empujar hacia una pared en el aire sostiene al jugador deslizando despacio, y saltar lo despega de la pared hacia el lado contrario; sin la habilidad cae normal",
+    "comprobacion": "herramientas/guiones/nucleo/habilidad_salto_en_pared.guion; herramientas/guiones/nucleo/habilidad_salto_en_pared_despegue.guion",
     "pasa": true
   },
   {
@@ -133,32 +133,32 @@
   },
   {
     "id": "poder-bola",
-    "que": "Con la habilidad proyectil en Partida, un toque de curar gasta Inspiracion y lanza un proyectil recto hacia donde mira el jugador, que golpea una vez a cada Golpeable que toca y desaparece contra un solido; sin la habilidad no sale. Sin la habilidad lo comprueba poder_bola_sin_habilidad.guion",
-    "comprobacion": "herramientas/guiones/nucleo/poder_bola.guion",
+    "que": "Con la habilidad proyectil en Partida, un toque de curar gasta Inspiracion y lanza un proyectil recto hacia donde mira el jugador, que golpea una vez a cada Golpeable que toca y desaparece contra un solido; sin la habilidad no sale",
+    "comprobacion": "herramientas/guiones/nucleo/poder_bola.guion; herramientas/guiones/nucleo/poder_bola_sin_habilidad.guion",
     "pasa": true
   },
   {
     "id": "jugador-pogo",
-    "que": "Atacar con mover_abajo mantenida en el aire golpea hacia abajo; al tocar un Golpeable o un peligro rebota hacia arriba sin recibir dano y recupera el doble salto y el impulso en el aire. La recuperacion la comprueba jugador_pogo_recupera.guion",
-    "comprobacion": "herramientas/guiones/nucleo/jugador_pogo.guion",
+    "que": "Atacar con mover_abajo mantenida en el aire golpea hacia abajo; al tocar un Golpeable o un peligro rebota hacia arriba sin recibir dano y recupera el doble salto y el impulso en el aire",
+    "comprobacion": "herramientas/guiones/nucleo/jugador_pogo.guion; herramientas/guiones/nucleo/jugador_pogo_recupera.guion",
     "pasa": true
   },
   {
     "id": "habilidad-caida-en-picada",
-    "que": "Con la habilidad caida_en_picada en Partida, curar con mover_abajo en el aire gasta Inspiracion y hace caer al jugador recto y rapido hasta el suelo; un suelo fragil que toque se rompe y sigue cayendo; sin la habilidad no pasa nada, lo que comprueba habilidad_caida_en_picada_sin_habilidad.guion",
-    "comprobacion": "herramientas/guiones/nucleo/habilidad_caida_en_picada.guion",
+    "que": "Con la habilidad caida_en_picada en Partida, curar con mover_abajo en el aire gasta Inspiracion y hace caer al jugador recto y rapido hasta el suelo; un suelo fragil que toque se rompe y sigue cayendo; sin la habilidad no pasa nada",
+    "comprobacion": "herramientas/guiones/nucleo/habilidad_caida_en_picada.guion; herramientas/guiones/nucleo/habilidad_caida_en_picada_sin_habilidad.guion",
     "pasa": true
   },
   {
     "id": "enemigo-base",
-    "que": "Un enemigo gris con ficha (vida, dano por contacto y grupo de reaparicion) pierde vida con cada golpe, emite enemigo_vencido al llegar a 0 y desaparece; el debil reaparece al salir y volver a entrar a la sala, el fuerte solo despues de descansar en un banco. Lo del banco lo comprueba enemigo_descanso.guion",
-    "comprobacion": "herramientas/guiones/nucleo/enemigo_base.guion",
+    "que": "Un enemigo gris con ficha (vida, dano por contacto y grupo de reaparicion) pierde vida con cada golpe, emite enemigo_vencido al llegar a 0 y desaparece; el debil reaparece al salir y volver a entrar a la sala, el fuerte solo despues de descansar en un banco",
+    "comprobacion": "herramientas/guiones/nucleo/enemigo_base.guion; herramientas/guiones/nucleo/enemigo_descanso.guion",
     "pasa": true
   },
   {
     "id": "vibracion",
-    "que": "El telefono vibra corto al pegar, al recibir dano, al curarse, al descansar en un banco y al aterrizar duro o de la picada, cada uno con su duracion y su fuerza y con un minimo de ticks entre vibraciones; nada mas vibra. El ajuste vibracion (archivo de ajustes propio, activado por omision) la apaga. El banco lo comprueba banco_sentarse.guion; el aterrizaje, vibracion_aterrizaje.guion; y el ajuste y el limite, guardado.guion",
-    "comprobacion": "herramientas/guiones/nucleo/jugador_curar.guion",
+    "que": "El telefono vibra corto al pegar, al recibir dano, al curarse, al descansar en un banco y al aterrizar duro o de la picada, cada uno con su duracion y su fuerza y con un minimo de ticks entre vibraciones; nada mas vibra. El ajuste vibracion (archivo de ajustes propio, activado por omision) la apaga",
+    "comprobacion": "herramientas/guiones/nucleo/jugador_curar.guion; herramientas/guiones/nucleo/banco_sentarse.guion; herramientas/guiones/nucleo/vibracion_aterrizaje.guion; herramientas/guiones/nucleo/guardado.guion",
     "pasa": true
   },
   {
@@ -235,8 +235,8 @@
   },
   {
     "id": "autoguardado",
-    "que": "Se autoguarda lo obtenido (no la posicion) al obtener una habilidad, vencer a un jefe, recoger un amuleto o un coleccionable, morir, salir al menu y pasar a segundo plano; las salas de prueba y los guiones guardan en Partida.RUTA_PRUEBAS (lo comprueba el guion). Los momentos con evento los comprueba estado_sala.guion",
-    "comprobacion": "herramientas/guiones/contenido/zona_prueba_coleccionable.guion",
+    "que": "Se autoguarda lo obtenido (no la posicion) al obtener una habilidad, vencer a un jefe, recoger un amuleto o un coleccionable, morir, salir al menu y pasar a segundo plano; las salas de prueba y los guiones guardan en Partida.RUTA_PRUEBAS",
+    "comprobacion": "herramientas/guiones/contenido/zona_prueba_coleccionable.guion; herramientas/guiones/nucleo/estado_sala.guion",
     "pasa": true
   },
   {
@@ -274,5 +274,47 @@
     "que": "El ataque normal del jugador para un ataque enemigo marcado se_puede_parar: no dana, deja al jugador 15 ticks sin dano de enemigos, congela 3 ticks, el dueno recibe el golpe y la vibracion es la del parry",
     "comprobacion": "herramientas/guiones/nucleo/parry_ventana.guion",
     "pasa": true
+  },
+  {
+    "id": "carrera",
+    "que": "Un impulso que termina con direccion empieza la carrera a 2,1 veces caminar; soltar la direccion o chocar con una pared la apaga y solo con el joystick nunca hay impulso ni carrera",
+    "comprobacion": "herramientas/guiones/nucleo/carrera_empieza.guion; herramientas/guiones/nucleo/carrera_suelta.guion; herramientas/guiones/nucleo/carrera_pared.guion; herramientas/guiones/nucleo/carrera_sin_impulso.guion",
+    "pasa": true
+  },
+  {
+    "id": "carrera-salto-giro",
+    "que": "Saltar en carrera conserva la velocidad; pedir el otro lado frena y la carrera sigue hacia alla sin apagarse",
+    "comprobacion": "herramientas/guiones/nucleo/carrera_giro.guion; herramientas/guiones/nucleo/carrera_salto.guion; herramientas/guiones/nucleo/carrera_giro_medio.guion",
+    "pasa": true
+  },
+  {
+    "id": "carrera-ataque",
+    "que": "Atacar al frente en carrera empuja al jugador hacia adelante mientras dura el ataque",
+    "comprobacion": "herramientas/guiones/nucleo/carrera_ataque.guion",
+    "pasa": true
+  },
+  {
+    "id": "peligro-movil",
+    "que": "Lo que dana y se mueve (Vaiven: sierras, trampas) es un golpe con retroceso, nunca un peligro que devuelve al suelo seguro; la sierra llega sola hasta el jugador quieto. La regla del validador es la entrada validador-peligro-movil de herramientas",
+    "comprobacion": "herramientas/guiones/nucleo/peligro_movil.guion",
+    "pasa": true
+  },
+  {
+    "id": "configuracion-opciones",
+    "que": "La Configuracion del menu tiene botones del control (reasignar intercambia con la accion que tenia el boton y se guarda; Por omision), vibracion, temblor, volumen, modo desarrollador (muestra la zona de pruebas y se recuerda), Borrar partida con confirmacion y Creditos; cada cambio se guarda al momento y Atras vuelve un nivel",
+    "comprobacion": "herramientas/guiones/nucleo/menu_configuracion.guion",
+    "pasa": true
+  },
+  {
+    "id": "recursos-modo",
+    "que": "El ajuste recursos (auto, bajo o alto) se guarda; en auto, un build de 32 bits o menos de 3 GB de memoria cuenta como debil; en bajo lo marcado Prescindible desaparece y las plantas y la niebla se quedan quietas; elegir alto en un telefono debil muestra un aviso",
+    "comprobacion": "herramientas/guiones/nucleo/recursos_cuentas.guion",
+    "pasa": true
+  },
+  {
+    "id": "recursos-medicion",
+    "que": "La sala de recursos de la zona de pruebas, con el presupuesto completo (30 plantas, 2 nieblas, emisores), corre a 60 FPS en alto en el S20 y en bajo en el S50",
+    "comprobacion": "manual: con el APK de desarrollo (arranca con --print-fps), sala de recursos en alto y en bajo en el S50 y en el S20; anotar los FPS en docs/pruebas.md",
+    "pasa": false
   }
 ]

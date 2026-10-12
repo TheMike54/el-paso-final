@@ -9,7 +9,7 @@ controles táctiles, pensado para teléfonos de gama baja.
 - Claude se abre siempre en la raíz del repo, nunca dentro de un bloque: los permisos, los hooks y el resto de
   `.claude/` solo cargan desde aquí.
 - Leer `ESTADO.md` y preguntar en qué bloque se trabaja. Antes de tocar un bloque (`nucleo/`, `contenido/`,
-  `herramientas/`), leer su `CLAUDE.md` y su `funciones.json`.
+  `herramientas/`, `mapa/`), leer su `CLAUDE.md` y su `funciones.json`.
 
 ## Cómo se trabaja
 - Una funcionalidad a la vez: la primera con `"pasa": false` de la `funciones.json` del bloque. Para hacerla,
@@ -88,8 +88,10 @@ PowerShell, desde la raíz del repo. `GODOT_PATH` es la ruta al ejecutable de co
 - La lógica lee acciones con nombre, nunca el toque ni la tecla. Lógica en `_physics_process` a 60 ticks.
 - Todo lo persistente tiene un ID de texto estable. El guardado es JSON con versión y detección de dañado.
 - Colisión con formas invisibles; el arte no colisiona.
-- `herramientas/` y la zona de pruebas no viajan en el paquete de publicación: el preset las excluye y el núcleo
-  las carga con `load()` solo si existen y el build es de depuración; nunca con `preload` ni como autoload directo.
+- `herramientas/` y la zona de pruebas viajan también en el paquete de publicación (cambiado el 07-oct-2026): la
+  zona aparece en la Configuración del menú solo con «Modo desarrollador» encendido, y el puerto de depuración solo
+  corre en builds de depuración. El núcleo las carga con `load()` solo si existen; nunca con `preload` ni como
+  autoload directo.
 - Pruebas solo donde la lógica puede romperse: guardado, cuentas (daño, amuletos), reglas y el validador de
   contenido, más un guion corto por sala. No se prueba que una escena se dibuje ni que exista un nodo.
 - Las pruebas, los guiones y el validador imprimen el resumen y los fallos, no cada caso que pasa.
@@ -123,6 +125,7 @@ PowerShell, desde la raíz del repo. `GODOT_PATH` es la ruta al ejecutable de co
 |---|---|---|
 | Jugador, cámara, sala, guardado, entrada, eventos | `nucleo/CLAUDE.md` | Antes de tocar `nucleo/` |
 | Salas, zonas y fichas del juego (contenido como datos) | `contenido/CLAUDE.md` | Antes de tocar `contenido/` |
+| Pantalla del mapa | `mapa/CLAUDE.md` | Antes de tocar `mapa/` |
 | Validador, puerto de depuración, guiones, hooks | `herramientas/CLAUDE.md` | Antes de tocar `herramientas/` o `.github/` |
 | Configuración del proyecto, ciclo de vida, autoloads y lo que un bloque ofrece a otro | `docs/contrato.md` | Antes de crear contenido, un autoload o tocar el guardado |
 | Idea y alcance de la v1 | `docs/idea.md` | Si la tarea toca qué entra en la v1 |

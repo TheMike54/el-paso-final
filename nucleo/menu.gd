@@ -1,9 +1,8 @@
 extends Control
-# Menu de desarrollo: Nueva partida, Continuar y, solo en depuracion y con las herramientas en
-# el paquete, la zona de pruebas. Dice el estado de la partida guardada (carga, sin partida,
-# danada u otra version) y pide confirmacion antes de cerrar la app con Atras o con pausa.
-# Configuracion abre un panel con Controles, que lleva al mismo editor de botones que la pausa;
-# Atras y pausa vuelven un nivel a la vez: del editor al panel, del panel al menu, y ahi piden salir.
+# Menu principal: Nueva partida, Continuar y Configuracion (nucleo/configuracion.tscn, que con el modo
+# desarrollador muestra la zona de pruebas). Dice el estado de la partida guardada (carga, sin partida,
+# danada u otra version) y pide confirmacion antes de cerrar la app con Atras o con pausa. Atras y pausa
+# vuelven un nivel a la vez: del editor de botones a Configuracion, de ahi al menu, y ahi piden salir.
 const ZONA_PRUEBAS: String = "res://herramientas/salas/zona_pruebas.tscn"
 const ESCENA_EDITOR: PackedScene = preload("res://nucleo/editor_controles.tscn")
 
@@ -15,11 +14,9 @@ var editor: EditorControles = null
 
 @onready var _nueva: Button = $Centro/Opciones/NuevaPartida as Button
 @onready var _continuar: Button = $Centro/Opciones/Continuar as Button
-@onready var _zona: Button = $Centro/Opciones/ZonaPruebas as Button
 @onready var _configuracion: Button = $Centro/Opciones/Configuracion as Button
-@onready var _panel_configuracion: Control = $PanelConfiguracion as Control
-@onready var _controles: Button = $PanelConfiguracion/Opciones/Controles as Button
-@onready var _volver: Button = $PanelConfiguracion/Opciones/Volver as Button
+## La pantalla de Configuracion; publica para que la prueba la maneje.
+@onready var configuracion: Configuracion = $Configuracion as Configuracion
 @onready var _estado: Label = $Centro/Opciones/Estado as Label
 @onready var _confirmar: Control = $Confirmar as Control
 @onready var _centro: Control = $Centro as Control
@@ -30,21 +27,24 @@ var _guardada: Guardado.Resultado = null
 
 
 func _ready() -> void:
-	_zona.visible = OS.is_debug_build() and ResourceLoader.exists(ZONA_PRUEBAS)
 	_confirmar.visible = false
 	_nueva.pressed.connect(_nueva_partida.bind(sala_inicial))
 	_continuar.pressed.connect(_continuar_partida)
-	_zona.pressed.connect(_nueva_partida.bind(ZONA_PRUEBAS))
 	_configuracion.pressed.connect(abrir_configuracion)
-	_controles.pressed.connect(abrir_editor)
-	_volver.pressed.connect(cerrar_configuracion)
-	_panel_configuracion.visible = false
+	configuracion.editor_pedido.connect(abrir_editor)
+	configuracion.zona_pruebas_pedida.connect(_nueva_partida.bind(ZONA_PRUEBAS))
+	configuracion.cerrado.connect(_al_cerrar_configuracion)
+	configuracion.partida_borrada.connect(_leer_partida)
 	_si.pressed.connect(get_tree().quit)
 	_no.pressed.connect(_cancelar_salida)
+	_leer_partida()
+	_nueva.grab_focus()
+
+
+func _leer_partida() -> void:
 	_estado.text = "Cargando partida…"
 	_guardada = Guardado.cargar()
 	_mostrar_partida(_guardada.estado)
-	_nueva.grab_focus()
 
 
 func _nueva_partida(escena: String) -> void:
@@ -83,7 +83,8 @@ func _mostrar_partida(estado: Guardado.Estado) -> void:
 
 
 func _physics_process(_delta: float) -> void:
-	if Input.is_action_just_pressed(&"pausa"):
+	# El Start con que se acaba de asignar un boton del control no es Atras.
+	if Input.is_action_just_pressed(&"pausa") and not configuracion.acaba_de_asignar():
 		atras()
 
 
@@ -92,41 +93,39 @@ func _notification(que: int) -> void:
 		atras()
 
 
-## Un nivel hacia atras: el editor se cancela, el panel vuelve al menu y el menu pide salir.
+## Un nivel hacia atras: el editor se cancela, Configuracion retrocede (y al final vuelve al menu) y el menu
+## pide salir.
 func atras() -> void:
 	if editor != null:
 		editor.cancelar()
-	elif _panel_configuracion.visible:
-		cerrar_configuracion()
+	elif configuracion.visible:
+		configuracion.atras()
 	else:
 		_pedir_salida()
 
 
 func abrir_configuracion() -> void:
 	_centro.visible = false
-	_panel_configuracion.visible = true
-	_controles.grab_focus()
+	configuracion.abrir()
 
 
-func cerrar_configuracion() -> void:
-	_panel_configuracion.visible = false
+func _al_cerrar_configuracion() -> void:
 	_centro.visible = true
 	_configuracion.grab_focus()
 
 
-## El mismo editor que abre la pausa, sobre el fondo del menu; al cerrarlo vuelve el panel.
+## El mismo editor que abre la pausa, sobre el fondo del menu; al cerrarlo vuelve Configuracion.
 func abrir_editor() -> void:
 	var capa: CanvasLayer = ESCENA_EDITOR.instantiate() as CanvasLayer
 	add_child(capa)
 	editor = capa.get_node(^"Lienzo") as EditorControles
 	editor.cerrado.connect(_al_cerrar_editor)
-	_panel_configuracion.visible = false
+	configuracion.visible = false
 
 
 func _al_cerrar_editor() -> void:
 	editor = null
-	_panel_configuracion.visible = true
-	_controles.grab_focus()
+	configuracion.volver_del_editor()
 
 
 func _pedir_salida() -> void:

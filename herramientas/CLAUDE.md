@@ -1,7 +1,8 @@
 # Herramientas
 
 Lo que permite comprobar el juego sin abrirlo a mano: validador, puerto de depuración, guiones, revisión del
-entorno y hooks. El preset de publicación excluye esta carpeta: nada del juego puede depender de ella.
+entorno y hooks. La carpeta viaja en el paquete de publicación (la zona de pruebas, con el modo desarrollador), pero
+nada del juego puede depender de ella; el puerto de depuración solo corre en builds de depuración.
 
 ## Primero
 Leer `funciones.json` de esta carpeta: la primera funcionalidad con `"pasa": false` es la que sigue.
@@ -24,7 +25,11 @@ Leer `funciones.json` de esta carpeta: la primera funcionalidad con `"pasa": fal
 - Un guion comprueba lo que importa (posición con tolerancia, sala, banderas), no todos los decimales.
 - Todo guion corre con `--fixed-fps 60` y toda corrida automática con `--quit-after`.
 - Un error puesto a propósito en un `.gd` debe hacer fallar `validar.ps1`; si no falla, el validador está mal.
-- Reglas del validador sobre escenas, además de compilar: en `contenido/`, `habilidades_de_prueba` vacío.
+- Reglas del validador sobre escenas, además de compilar: en `contenido/`, `habilidades_de_prueba` vacío; en
+  cualquier escena, un `DanoContacto` con `peligro` dentro de algo que se mueve falla (lo que se mueve solo golpea;
+  entrada `validador-peligro-movil`); cada sala respeta el presupuesto de decoración (emisores, partículas,
+  plantas, sin luces 2D; entrada `validador-presupuesto`); el índice de salas del mapa está al día (entrada
+  `mapa-indice` de `mapa/funciones.json`).
 - Los `.ps1`: solo ASCII, sin `$ErrorActionPreference = 'Stop'` alrededor de un ejecutable, probados en
   `powershell.exe` 5.1 y en `pwsh` 7.
 - Salida corta: resumen y fallos; el detalle va a `.godot/validar.log`.

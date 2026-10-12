@@ -1,0 +1,7 @@
+# Soltar la direccion mas de ticks_soltar_carrera (4) ticks apaga la carrera y deja quieto.
+escena res://herramientas/salas/sala_carrera.tscn
+2 mover_derecha press
+10 impulso press
+11 impulso release
+40 mover_derecha release
+fin 50
