@@ -8,8 +8,8 @@ controles táctiles, pensado para teléfonos de gama baja.
 ## Primero
 - Claude se abre siempre en la raíz del repo, nunca dentro de un bloque: los permisos, los hooks y el resto de
   `.claude/` solo cargan desde aquí.
-- Leer `ESTADO.md` y preguntar en qué bloque se trabaja. Antes de tocar un bloque (`nucleo/`, `herramientas/`),
-  leer su `CLAUDE.md` y su `funciones.json`.
+- Leer `ESTADO.md` y preguntar en qué bloque se trabaja. Antes de tocar un bloque (`nucleo/`, `contenido/`,
+  `herramientas/`), leer su `CLAUDE.md` y su `funciones.json`.
 
 ## Cómo se trabaja
 - Una funcionalidad a la vez: la primera con `"pasa": false` de la `funciones.json` del bloque. Para hacerla,
@@ -122,6 +122,7 @@ PowerShell, desde la raíz del repo. `GODOT_PATH` es la ruta al ejecutable de co
 | Qué | Dónde | Cuándo leerlo |
 |---|---|---|
 | Jugador, cámara, sala, guardado, entrada, eventos | `nucleo/CLAUDE.md` | Antes de tocar `nucleo/` |
+| Salas, zonas y fichas del juego (contenido como datos) | `contenido/CLAUDE.md` | Antes de tocar `contenido/` |
 | Validador, puerto de depuración, guiones, hooks | `herramientas/CLAUDE.md` | Antes de tocar `herramientas/` o `.github/` |
 | Configuración del proyecto, ciclo de vida, autoloads y lo que un bloque ofrece a otro | `docs/contrato.md` | Antes de crear contenido, un autoload o tocar el guardado |
 | Idea y alcance de la v1 | `docs/idea.md` | Si la tarea toca qué entra en la v1 |

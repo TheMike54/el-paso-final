@@ -1,0 +1,8 @@
+# Zona de prueba: toma los dos coleccionables de prueba_3, cruza a la vitrina (prueba_4) y en la entrega
+# interactuar da las recompensas de 1 y 2 coleccionables (100 PejeCoins y un amuleto), no la de 3.
+escena res://herramientas/salas/zonas/prueba/prueba_3.tscn
+1 mover_derecha press
+384 mover_derecha release
+395 interactuar press
+397 interactuar release
+fin 420

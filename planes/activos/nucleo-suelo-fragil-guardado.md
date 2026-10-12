@@ -1,4 +1,4 @@
-ACTIVO
+REEMPLAZADO POR nucleo-cierre-antes-de-la-sala.md
 
 # Núcleo: el suelo frágil roto se queda roto y se guarda
 

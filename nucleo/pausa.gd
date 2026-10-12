@@ -2,7 +2,7 @@ class_name Pausa
 extends CanvasLayer
 # Pausa del juego: la accion pausa o el boton Atras de Android la abren y la cierran durante el
 # juego, y se abre sola al salir de la app o cambiar de ventana. Pausar detiene el arbol y no
-# guarda la partida (solo los bancos la guardan). Tiene los interruptores de vibracion y de temblor
+# guarda la partida; salir al menu si guarda lo obtenido, y pasar a segundo plano lo guarda Partida. Tiene los interruptores de vibracion y de temblor
 # de camara mientras no haya Opciones, y el boton que abre el editor de los botones tactiles. La crea cada
 # sala; corre siempre, aun con el arbol en pausa, para poder cerrarse.
 const MENU: String = "res://nucleo/menu.tscn"
@@ -103,6 +103,8 @@ func _guardar_ajustes() -> void:
 		push_error("Pausa: no se pudieron guardar los ajustes (error %d)" % error)
 
 
+# Salir al menu guarda lo obtenido (no la posicion): al continuar se aparece en el ultimo banco.
 func _salir_al_menu() -> void:
 	cerrar()
+	Partida.autoguardar()
 	get_tree().change_scene_to_file(MENU)

@@ -1,0 +1,12 @@
+# El debil muere en el tick 81 y el congelado al vencer dura hasta el 84. Saltar presionado en el 83, en pleno
+# congelado, no se pierde: el salto sale al terminar.
+escena res://herramientas/salas/sala_enemigos.tscn
+2 mover_derecha press
+52 mover_derecha release
+56 atacar press
+57 atacar release
+80 atacar press
+81 atacar release
+83 saltar press
+84 saltar release
+fin 95

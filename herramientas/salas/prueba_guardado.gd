@@ -3,7 +3,10 @@ extends Node
 # entrar, corre los casos sobre archivos propios en user:// y deja en "casos" y "fallos" el
 # resultado, que guardado.guion lee con la clave valor. Imprime el resumen y solo los que fallan.
 const RUTA: String = "user://prueba_guardado.json"
-const PARTIDA: Dictionary = {"banco": "raices_1", "sala": "res://raices/sala_1.tscn", "vidas_maximas": 4, "habilidades": ["impulso"]}
+const PARTIDA: Dictionary = {"banco": {"sala": "raices_1", "id": "banco_raices_1"}, "vidas_maximas": 4,
+		"habilidades": ["impulso"], "jefes": [], "amuletos_tenidos": [], "amuletos_equipados": [], "monedas": 0,
+		"mochila": {}, "mapas": ["raices"], "salas_visitadas": ["raices_1"], "salas_mapeadas": [],
+		"salas": {"raices_1": {"examenes_1": true, "ascensor": 2}}, "personaje": "", "nombre": "", "tiempo_jugado": 12.5}
 
 var casos: int = 0
 var fallos: int = 0
@@ -22,7 +25,7 @@ func _ready() -> void:
 	_caso("no queda el archivo temporal", not FileAccess.file_exists(RUTA + ".tmp"))
 
 	var segunda: Dictionary = PARTIDA.duplicate(true)
-	segunda["banco"] = "raices_2"
+	segunda["banco"] = {"sala": "raices_2", "id": "banco_raices_2"}
 	_caso("guardar sobre una partida existente devuelve OK", Guardado.guardar(segunda, RUTA) == OK)
 	_caso("se carga la ultima partida guardada", _igual(Guardado.cargar(RUTA).partida, segunda))
 
@@ -49,19 +52,34 @@ func _ready() -> void:
 	_caso("version mas nueva da INCOMPATIBLE", Guardado.cargar(RUTA).estado == Guardado.Estado.INCOMPATIBLE)
 	_escribir(RUTA, JSON.stringify({"version": 0, "partida": PARTIDA}))
 	_caso("version mas vieja da INCOMPATIBLE", Guardado.cargar(RUTA).estado == Guardado.Estado.INCOMPATIBLE)
+	_escribir(RUTA, JSON.stringify({"version": 2, "partida": {"banco": "raices_1", "sala": "res://x.tscn", "vidas_maximas": 4, "habilidades": []}}))
+	_caso("una partida de la version 2 da INCOMPATIBLE (sin migracion)", Guardado.cargar(RUTA).estado == Guardado.Estado.INCOMPATIBLE)
+	var sin_banco: Dictionary = PARTIDA.duplicate(true)
+	sin_banco["banco"] = {}
+	_escribir(RUTA, JSON.stringify({"version": Guardado.VERSION, "partida": sin_banco}))
+	_caso("una partida sin banco (autoguardado antes de descansar) es VALIDA", Guardado.cargar(RUTA).estado == Guardado.Estado.VALIDA)
+	var banco_roto: Dictionary = PARTIDA.duplicate(true)
+	banco_roto["banco"] = {"sala": "raices_1"}
+	_danada("banco sin id", JSON.stringify({"version": Guardado.VERSION, "partida": banco_roto}))
 
 	# El estado de la partida se guarda y se carga entero.
 	Partida.reiniciar()
 	Partida.vidas_maximas = 5
-	Partida.banco = "raices_2"
+	Partida.banco = "banco_raices_2"
+	Partida.sala = "raices_2"
 	Partida.habilidades.append(&"impulso")
+	Partida.monedas = 150
+	Partida.mapas.append("raices")
+	Partida.marcar("raices_2", "coleccionable", true)
+	Partida.marcar("raices_2", "ascensor", 3)
 	_caso("Partida.guardar devuelve OK", Partida.guardar(RUTA) == OK)
 	Partida.reiniciar()
 	var de_vuelta: Guardado.Resultado = Guardado.cargar(RUTA)
 	Partida.inspiracion = 50
 	Partida.vencer("res://sala.tscn#fuerte")
 	Partida.desde_diccionario(de_vuelta.partida)
-	_caso("Partida vuelve con su banco, vidas maximas, vidas llenas y habilidades", de_vuelta.estado == Guardado.Estado.VALIDA and Partida.banco == "raices_2" and Partida.vidas_maximas == 5 and Partida.vidas == 5 and Partida.habilidades == [&"impulso"])
+	_caso("Partida vuelve con su banco, vidas maximas, vidas llenas y habilidades", de_vuelta.estado == Guardado.Estado.VALIDA and Partida.banco == "banco_raices_2" and Partida.sala == "raices_2" and Partida.vidas_maximas == 5 and Partida.vidas == 5 and Partida.habilidades == [&"impulso"])
+	_caso("Partida vuelve con PejeCoins, mapas y el estado de sus salas", Partida.monedas == 150 and Partida.mapas.size() == 1 and Partida.mapas.has("raices") and _vale(Partida.estado_de("raices_2", "coleccionable"), true) and _vale(Partida.estado_de("raices_2", "ascensor"), 3))
 	_caso("continuar empieza sin Inspiracion y sin enemigos vencidos", Partida.inspiracion == 0 and Partida.enemigos_vencidos.is_empty())
 	Partida.reiniciar()
 
@@ -130,14 +148,11 @@ func _danada(nombre: String, contenido: String) -> void:
 	_caso(nombre + " da DANADA", Guardado.cargar(RUTA).estado == Guardado.Estado.DANADA)
 
 
-# Compara campo por campo: tras el JSON los enteros vuelven como float y 4 == 4.0.
+# Compara como JSON con las claves ordenadas, pasando la esperada por el JSON: ahi los enteros vuelven
+# como float (4 -> 4.0), tambien dentro de los diccionarios anidados.
 func _igual(a: Dictionary, b: Dictionary) -> bool:
-	if a.size() != b.size():
-		return false
-	for campo: Variant in b:
-		if not a.has(campo) or a[campo] != b[campo]:
-			return false
-	return true
+	var esperada: Variant = JSON.parse_string(JSON.stringify(b))
+	return JSON.stringify(a, "", true) == JSON.stringify(esperada, "", true)
 
 
 func _escribir(ruta: String, contenido: String) -> void:
@@ -150,3 +165,9 @@ func _borrar() -> void:
 	for ruta: String in [RUTA, RUTA + ".tmp"]:
 		if FileAccess.file_exists(ruta):
 			DirAccess.remove_absolute(ruta)
+
+
+# Compara un Variant sin pasarlo directo a _caso (el tipado estricto no lo deja). 3.0 del JSON vale 3.
+func _vale(valor: Variant, esperado: Variant) -> bool:
+	var igual: bool = valor == esperado
+	return igual

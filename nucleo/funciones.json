@@ -103,7 +103,7 @@
   },
   {
     "id": "jugador-golpe-sensacion",
-    "que": "Al golpear, el jugador y lo golpeado salen empujados un poco; al recibir dano, el jugador se detiene unos ticks (hit-stop) con un contador propio, sin Engine.time_scale. Valores exportados. El hit-stop lo comprueba jugador_hit_stop.guion",
+    "que": "Al golpear, el jugador y lo golpeado salen empujados un poco; al recibir dano, el jugador se detiene unos ticks (hit-stop) con el congelado comun (Congelado), sin Engine.time_scale. Valores exportados. El hit-stop lo comprueba jugador_hit_stop.guion",
     "comprobacion": "herramientas/guiones/nucleo/jugador_golpe_sensacion.guion",
     "pasa": true
   },
@@ -213,6 +213,66 @@
     "id": "fundido-a-negro",
     "que": "Al tocar un peligro, al morir y al cruzar una puerta la pantalla funde a negro y vuelve con el jugador ya en su lugar",
     "comprobacion": "herramientas/guiones/nucleo/fundido_peligro.guion",
+    "pasa": true
+  },
+  {
+    "id": "sala-id",
+    "que": "Una sala lleva id <zona>_<numero>; Sala.ruta_de lleva del id a su escena (contenido o zona de prueba) y deja pasar una ruta res://; el banco, los enemigos fuertes y cambio_de_sala usan Sala.clave(), el id o la ruta de una sala de prueba suelta",
+    "comprobacion": "herramientas/guiones/contenido/sala_id.guion",
+    "pasa": true
+  },
+  {
+    "id": "guardado-v3",
+    "que": "El guardado es la version 3 de docs/contrato.md (banco {sala, id}, listas de ids, monedas, mochila, mapas, salas visitadas y mapeadas, estado por sala, personaje, nombre y tiempo jugado); una partida de la version 2 es INCOMPATIBLE y un banco sin id es DANADA",
+    "comprobacion": "herramientas/guiones/nucleo/guardado.guion",
+    "pasa": true
+  },
+  {
+    "id": "estado-por-sala",
+    "que": "Partida guarda el estado de cada sala ({sala: {objeto: true o numero}}); un SueloFragil con id se queda roto y un Coleccionable tomado no vuelve; las recompensas por cantidad se entregan una sola vez; descansar con pluma_mapa dibuja las visitadas de las zonas cuyo mapa se tiene",
+    "comprobacion": "herramientas/guiones/nucleo/estado_sala.guion",
+    "pasa": true
+  },
+  {
+    "id": "autoguardado",
+    "que": "Se autoguarda lo obtenido (no la posicion) al obtener una habilidad, vencer a un jefe, recoger un amuleto o un coleccionable, morir, salir al menu y pasar a segundo plano; las salas de prueba y los guiones guardan en Partida.RUTA_PRUEBAS (lo comprueba el guion). Los momentos con evento los comprueba estado_sala.guion",
+    "comprobacion": "herramientas/guiones/contenido/zona_prueba_coleccionable.guion",
+    "pasa": true
+  },
+  {
+    "id": "autoguardado-segundo-plano",
+    "que": "Mandar la app a segundo plano en medio de una sala guarda lo obtenido; al reabrir y Continuar se aparece en el ultimo banco con lo obtenido",
+    "comprobacion": "manual: en el telefono, con el APK de desarrollo, zona de pruebas -> Prueba 1, cruzar la puerta a Prueba 2 sin tocar nada que guarde y mandar la app al fondo con el boton de inicio; despues, adb shell run-as com.themike54.elpasofinal cat files/prueba_partida.json muestra prueba_2 en salas_visitadas",
+    "pasa": false
+  },
+  {
+    "id": "coleccionables",
+    "que": "Un Coleccionable se toma al tocarlo, autoguarda y no vuelve; la vitrina muestra los juntados y la entrega da cada recompensa por cantidad una vez (PejeCoins, amuleto, vida maxima)",
+    "comprobacion": "herramientas/guiones/contenido/zona_prueba_vitrina.guion",
+    "pasa": true
+  },
+  {
+    "id": "combate-chico",
+    "que": "Sin la pluma no se ataca; con ella, el ataque corta los Cortable (sin Inspiracion), va hacia arriba con mover_arriba y una pulsacion de atacar poco antes de poder atacar sale en cuanto se puede (cola del ataque)",
+    "comprobacion": "herramientas/guiones/nucleo/combate_chico.guion",
+    "pasa": true
+  },
+  {
+    "id": "congelado-comun",
+    "que": "El dano al jugador y un enemigo vencido congelan unos ticks al jugador, los enemigos, los empujes, los proyectiles y la decoracion que se mueve (Congelado, como FreezeMoment de Hollow Knight; las particulas siguen); las pulsaciones hechas durante el congelado no se pierden; morir vacia la Inspiracion",
+    "comprobacion": "herramientas/guiones/nucleo/combate_chico_cuentas.guion",
+    "pasa": true
+  },
+  {
+    "id": "enemigo-comportamiento",
+    "que": "La ficha de un enemigo puede llevar un script de comportamiento (ComportamientoEnemigo) que ataca con un AtaqueEnemigo separado del cuerpo y dispara ProyectilEnemigo; el muneco que ataca de la zona de pruebas lo usa: su golpe parable y su disparo se paran y su golpe no parable dana aunque el jugador ataque",
+    "comprobacion": "herramientas/guiones/nucleo/parry.guion",
+    "pasa": true
+  },
+  {
+    "id": "parry",
+    "que": "El ataque normal del jugador para un ataque enemigo marcado se_puede_parar: no dana, deja al jugador 15 ticks sin dano de enemigos, congela 3 ticks, el dueno recibe el golpe y la vibracion es la del parry",
+    "comprobacion": "herramientas/guiones/nucleo/parry_ventana.guion",
     "pasa": true
   }
 ]

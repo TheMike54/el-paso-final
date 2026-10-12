@@ -6,15 +6,26 @@ extends RefCounted
 
 enum Estado { VALIDA, VACIA, DANADA, INCOMPATIBLE }
 
-const VERSION: int = 2
+const VERSION: int = 3
 const RUTA: String = "user://partida.json"
 ## Campos que toda partida de esta version debe tener, con su tipo despues de leer el JSON
-## (los numeros vuelven siempre como float).
+## (los numeros vuelven siempre como float). Lo de cada campo, en docs/contrato.md («Guardado»).
 const ESQUEMA: Dictionary[String, int] = {
-	"banco": TYPE_STRING,
-	"sala": TYPE_STRING,
+	"banco": TYPE_DICTIONARY,
 	"vidas_maximas": TYPE_FLOAT,
 	"habilidades": TYPE_ARRAY,
+	"jefes": TYPE_ARRAY,
+	"amuletos_tenidos": TYPE_ARRAY,
+	"amuletos_equipados": TYPE_ARRAY,
+	"monedas": TYPE_FLOAT,
+	"mochila": TYPE_DICTIONARY,
+	"mapas": TYPE_ARRAY,
+	"salas_visitadas": TYPE_ARRAY,
+	"salas_mapeadas": TYPE_ARRAY,
+	"salas": TYPE_DICTIONARY,
+	"personaje": TYPE_STRING,
+	"nombre": TYPE_STRING,
+	"tiempo_jugado": TYPE_FLOAT,
 }
 
 
@@ -62,4 +73,8 @@ static func cargar(ruta: String = RUTA) -> Resultado:
 	for campo: String in ESQUEMA:
 		if not partida.has(campo) or typeof(partida[campo]) != ESQUEMA[campo]:
 			return Resultado.new(Estado.DANADA)
+	# El banco va vacio (sin descansar) o con su sala y su id.
+	var banco: Dictionary = partida["banco"]
+	if not banco.is_empty() and (typeof(banco.get("sala")) != TYPE_STRING or typeof(banco.get("id")) != TYPE_STRING):
+		return Resultado.new(Estado.DANADA)
 	return Resultado.new(Estado.VALIDA, partida)

@@ -9,7 +9,7 @@ Leer `funciones.json` de esta carpeta: la primera funcionalidad con `"pasa": fal
 ## Piezas: lo que no se deduce del código
 | Pieza | Contrato |
 |---|---|
-| `validar.ps1` + `validar.tscn` | La lógica vive en `validar.gd`; el `.ps1` y el CI solo corren la escena y revisan la salida. Carga cada `.gd`, `.tscn` y `.tres` y revisa cada `funciones.json`: campos `id`, `que`, `comprobacion` y `pasa`, ids sin repetir y, con `"pasa": true`, que exista el archivo de la comprobación salvo que empiece con `manual:`. Pasa solo si aparece `VALIDACION archivos=N fallos=0` y ninguna línea `SCRIPT ERROR`, `ERROR:` o `FALLO` |
+| `validar.ps1` + `validar.tscn` | La lógica vive en `validar.gd`; el `.ps1` y el CI solo corren la escena y revisan la salida. Carga cada `.gd`, `.tscn` y `.tres` y revisa cada `funciones.json`: campos `id`, `que`, `comprobacion` y `pasa`, ids sin repetir y, con `"pasa": true`, que exista cada archivo de la comprobación (varias rutas separadas por `;`) salvo que empiece con `manual:`. Pasa solo si aparece `VALIDACION archivos=N fallos=0` y ninguna línea `SCRIPT ERROR`, `ERROR:` o `FALLO` |
 | `puerto_depuracion.gd` | No es autoload: lo carga el arranque del núcleo solo en builds de depuración. Modo guion (`--guion=`): compara el resultado con el `.esperado`, imprime `GUION OK` o `GUION FALLA` y sale con 0 o 1. Sin ese argumento no hace nada |
 | `guiones/<bloque>/<nombre>.guion` y `.esperado` | Guion: líneas `cuadro acción press|release`, una línea `fin <cuadro>` y, opcional, `escena <ruta>` para correr sobre una sala de `salas/`. Esperado: líneas `clave valor [tolerancia]` con las claves `x`, `y`, `en_suelo` y `escena`, más `valor <nodo> <propiedad> <valor> [tolerancia]` y `senal <nodo> <señal> <veces>` (tabla en `docs/contrato.md`). El estado se lee al empezar el cuadro `fin`, del primer nodo del grupo `jugador`. En los dos se ignoran las líneas vacías y las que empiezan con `#` |
 | `githooks/commit-msg` | Rechaza mensajes de commit con líneas de coautoría de asistentes; lo activa `verificar-entorno.ps1` |
@@ -24,6 +24,7 @@ Leer `funciones.json` de esta carpeta: la primera funcionalidad con `"pasa": fal
 - Un guion comprueba lo que importa (posición con tolerancia, sala, banderas), no todos los decimales.
 - Todo guion corre con `--fixed-fps 60` y toda corrida automática con `--quit-after`.
 - Un error puesto a propósito en un `.gd` debe hacer fallar `validar.ps1`; si no falla, el validador está mal.
+- Reglas del validador sobre escenas, además de compilar: en `contenido/`, `habilidades_de_prueba` vacío.
 - Los `.ps1`: solo ASCII, sin `$ErrorActionPreference = 'Stop'` alrededor de un ejecutable, probados en
   `powershell.exe` 5.1 y en `pwsh` 7.
 - Salida corta: resumen y fallos; el detalle va a `.godot/validar.log`.

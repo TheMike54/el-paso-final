@@ -23,14 +23,66 @@ static var puerta_llegada: StringName = &""
 ## Verdadero si el jugador debe aparecer en el banco Partida.banco de la proxima sala.
 static var llegada_a_banco: bool = false
 
+## Carpeta de las salas del juego: contenido/salas/<zona>/<id>.tscn.
+const CARPETA_CONTENIDO: String = "res://contenido/salas/"
+## Carpeta de las zonas de prueba, con la misma forma. No viaja en el paquete de publicacion: solo se usa si existe.
+const CARPETA_PRUEBAS: String = "res://herramientas/salas/zonas/"
+
+## Id de la sala, `<zona>_<numero>` (celda_1), igual al nombre de su archivo: es lo que guardan la partida y el
+## mapa. Vacio en las salas de prueba sueltas, que se identifican por su ruta.
+@export var id: String = ""
 ## Rectangulo de la sala en sus coordenadas: la camara no muestra nada fuera de el.
 @export var limites: Rect2 = Rect2(0.0, 0.0, 1280.0, 720.0)
+## Solo salas de prueba: habilidades que la sala da en silencio al entrar (sin aviso ni autoguardado), para
+## probar algo sin conseguirlo antes. Una sala del juego la deja vacia (lo revisa el validador).
+@export var habilidades_de_prueba: Array[StringName] = []
 
 var _ticks_para_reaparecer: int = 0
 
 
+## Ruta de la escena de una sala a partir de su id: celda_1 -> res://contenido/salas/celda/celda_1.tscn (o la zona
+## de prueba con ese nombre, si existe). Una ruta res:// se devuelve tal cual: las salas de prueba sueltas guardan su ruta.
+static func ruta_de(id_o_ruta: String) -> String:
+	if id_o_ruta.begins_with("res://"):
+		return id_o_ruta
+	var zona: String = zona_de(id_o_ruta)
+	if zona.is_empty():
+		push_error("Sala.ruta_de: '%s' no es un id de sala ni una ruta" % id_o_ruta)
+		return ""
+	var ruta: String = CARPETA_CONTENIDO + zona + "/" + id_o_ruta + ".tscn"
+	if ResourceLoader.exists(ruta):
+		return ruta
+	var prueba: String = CARPETA_PRUEBAS + zona + "/" + id_o_ruta + ".tscn"
+	return prueba if ResourceLoader.exists(prueba) else ruta
+
+
+## Zona de un id de sala: lo que va antes del primer guion bajo (celda_1 -> celda). Vacio si no es un id.
+static func zona_de(id_o_ruta: String) -> String:
+	if id_o_ruta.begins_with("res://") or not id_o_ruta.contains("_"):
+		return ""
+	return id_o_ruta.get_slice("_", 0)
+
+
+## Como se nombra esta sala en la partida y el mapa: su id o, en una sala de prueba suelta, su ruta.
+func clave() -> String:
+	return id if not id.is_empty() else scene_file_path
+
+
+## Clave de la sala a la que pertenece un nodo de su escena (su owner); vacia si no esta en una sala.
+static func clave_de(nodo: Node) -> String:
+	var sala: Sala = nodo.owner as Sala
+	if sala == null:
+		sala = nodo.get_parent() as Sala
+	return sala.clave() if sala != null else ""
+
+
 func _ready() -> void:
 	_extender_fondo()
+	Congelado.reiniciar()
+	for habilidad: StringName in habilidades_de_prueba:
+		if not Partida.tiene(habilidad):
+			Partida.habilidades.append(habilidad)
+	Partida.visitar(clave())
 	var jugador: Jugador = ESCENA_JUGADOR.instantiate() as Jugador
 	jugador.position = _punto_de_llegada()
 	var puerta: StringName = puerta_llegada
@@ -52,7 +104,7 @@ func _ready() -> void:
 		add_child(interfaz.instantiate())
 	Eventos.jugador_muerto.connect(_al_morir_el_jugador)
 	if not puerta.is_empty():
-		Eventos.cambio_de_sala.emit(scene_file_path, puerta)
+		Eventos.cambio_de_sala.emit(clave(), puerta)
 
 
 # Si la sala tiene un Fondo visible, crea detras de todo un rectangulo de su color MARGEN_FONDO px mas
@@ -92,8 +144,13 @@ func _physics_process(_delta: float) -> void:
 		if Partida.sala.is_empty():
 			get_tree().reload_current_scene()
 		else:
-			llegada_a_banco = true
-			get_tree().change_scene_to_file(Partida.sala)
+			var ruta: String = Sala.ruta_de(Partida.sala)
+			if ResourceLoader.exists(ruta):
+				llegada_a_banco = true
+				get_tree().change_scene_to_file(ruta)
+			else:
+				push_error("Sala: la sala del banco '%s' no existe; se reaparece aqui" % Partida.sala)
+				get_tree().reload_current_scene()
 
 
 func _punto_de_llegada() -> Vector2:

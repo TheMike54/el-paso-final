@@ -64,5 +64,11 @@
     "que": "El guion puede pedir una escena con la linea escena, el .esperado lee propiedades con valor y cuenta senales con senal, y el puerto sigue contando con el juego en pausa; una escena, nodo o senal inexistentes hacen fallar el guion",
     "comprobacion": "herramientas/guiones/nucleo/jugador_ataque_y_vida.guion",
     "pasa": true
+  },
+  {
+    "id": "validar-salas",
+    "que": "El validador revisa cada sala con id (contenido/salas y herramientas/salas/zonas): id <zona>_<numero> igual al archivo y en la carpeta de su zona, sin repetir; limites con area; Entrada dentro; puertas con id unico, destino existente y de ida y vuelta; bancos con id banco_<id de la sala>",
+    "comprobacion": "manual: en la zona de prueba, una puerta sin vuelta, un id distinto del archivo, un banco mal nombrado y una Entrada fuera de limites dan cada uno su linea FALLO y salida 1",
+    "pasa": true
   }
 ]

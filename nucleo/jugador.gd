@@ -43,6 +43,11 @@ const ESCENA_PROYECTIL: PackedScene = preload("res://nucleo/proyectil.tscn")
 @export var ticks_ataque: int = 8
 ## Ticks entre un ataque y el siguiente, contados desde que empieza.
 @export var ticks_entre_ataques: int = 20
+## Cola del ataque: presionar atacar hasta estos ticks antes de que se pueda atacar otra vez ataca en cuanto se
+## puede (como el salto en cola).
+@export var ticks_ataque_en_cola: int = 6
+## Centro del area de ataque hacia arriba, relativo a los pies del jugador (encima de la cabeza).
+@export var posicion_ataque_arriba: Vector2 = Vector2(0.0, -210.0)
 ## Dano de cada golpe del ataque.
 @export var dano_ataque: int = 1
 ## Centro del area de ataque hacia abajo (pogo), relativo a los pies del jugador.
@@ -69,8 +74,11 @@ const ESCENA_PROYECTIL: PackedScene = preload("res://nucleo/proyectil.tscn")
 @export var margen_fuera_de_sala: float = 160.0
 
 @export_group("Sensacion del golpe")
-## Ticks que el jugador se detiene al recibir dano (hit-stop), antes del retroceso.
+## Ticks que se detiene todo el juego al recibir dano (congelado comun, ver Congelado), antes del retroceso.
 @export var ticks_hit_stop: int = 4
+## Parry: ticks sin dano de enemigos despues de parar un ataque (los peligros si danan) y ticks de congelado.
+@export var ticks_invulnerable_parry: int = 15
+@export var ticks_congelado_parry: int = 3
 ## Ticks en que el jugador sale empujado hacia atras al golpear algo.
 @export var ticks_rebote_al_golpear: int = 4
 ## Velocidad de ese empuje, en px/s, alejandose de lo golpeado.
@@ -175,6 +183,8 @@ var toques_poder: int = 0
 var descansando: bool = false
 ## Golpes que dio la onda de la caida en picada desde que entro a la sala.
 var golpes_onda: int = 0
+## Ataques enemigos parados desde que entro a la sala.
+var paradas: int = 0
 ## Desplazamiento vertical del temblor en este tick, en px. La camara lo recibe solo con el ajuste
 ## temblor encendido; publico para que un guion lo lea aunque el ajuste este apagado.
 var temblor_y: float = 0.0
@@ -196,6 +206,7 @@ var invulnerable: bool:
 
 var _ticks_sin_suelo: int = NUNCA
 var _ticks_desde_pulsar: int = NUNCA
+var _ticks_desde_atacar: int = NUNCA
 var _subiendo: bool = false
 var _ticks_subiendo: int = 0
 var _cortado: bool = false
@@ -225,13 +236,16 @@ var _inspiracion_al_empezar: int = 0
 var _ticks_impulsando: int = 0
 var _ticks_hasta_impulso: int = 0
 var _impulso_en_el_aire: bool = true
+# Impulso presionado durante el congelado comun: sale en cuanto termina.
+var _impulso_en_cola: bool = false
 var _doble_salto_disponible: bool = true
 var _ticks_despegando: int = 0
 var _sentido_despegue: float = 0.0
 # Ticks que lleva presionado curar; -1 si no hay una pulsacion que cuente.
 var _ticks_poder: int = -1
-# Ataque hacia abajo (pogo) en curso, y si ya reboto en este ataque.
+# Ataque hacia abajo (pogo) o hacia arriba en curso, y si ya reboto en este ataque.
 var _atacando_abajo: bool = false
+var _atacando_arriba: bool = false
 var _rebotado: bool = false
 # Centro del area de ataque de la escena, mirando a la derecha.
 var _posicion_ataque: Vector2 = Vector2.ZERO
@@ -295,6 +309,16 @@ func _mover(delta: float) -> void:
 		if _ticks_hasta_reaparecer == Fundido.TICKS_EN_NEGRO_PELIGRO:
 			_colocar_tras_peligro(_punto_reaparicion)
 		return
+	# Congelado comun (dano, enemigo vencido, parry): todo el juego quieto, el jugador tambien. Las pulsaciones
+	# de saltar, atacar e impulso hechas mientras dura no se pierden: cuentan como hechas al terminar.
+	if Congelado.activo():
+		if Input.is_action_just_pressed(&"saltar"):
+			_ticks_desde_pulsar = 0
+		if Input.is_action_just_pressed(&"atacar"):
+			_ticks_desde_atacar = 0
+		if Input.is_action_just_pressed(&"impulso"):
+			_impulso_en_cola = true
+		return
 	var en_suelo: bool = is_on_floor()
 	_aterrizar(en_suelo)
 	if _ticks_congelado > 0:
@@ -317,6 +341,11 @@ func _mover(delta: float) -> void:
 		_ticks_desde_pulsar = 0
 	else:
 		_ticks_desde_pulsar = mini(_ticks_desde_pulsar + 1, NUNCA)
+	# La cola del ataque envejece cada tick con control, se ataque o no en este tick.
+	if Input.is_action_just_pressed(&"atacar"):
+		_ticks_desde_atacar = 0
+	else:
+		_ticks_desde_atacar = mini(_ticks_desde_atacar + 1, NUNCA)
 	_ticks_sin_dano = maxi(_ticks_sin_dano - 1, 0)
 	_ticks_hasta_impulso = maxi(_ticks_hasta_impulso - 1, 0)
 	_ticks_hasta_bola = maxi(_ticks_hasta_bola - 1, 0)
@@ -384,6 +413,7 @@ func _empezar_aterrizaje_duro() -> void:
 func _seguir_aterrizando() -> void:
 	_ticks_aterrizando -= 1
 	_ticks_desde_pulsar = NUNCA
+	_ticks_desde_atacar = NUNCA
 	_ticks_poder = -1
 	velocity.x = 0.0
 	move_and_slide()
@@ -504,7 +534,9 @@ func _seguir_subiendo() -> void:
 
 # Impulso (habilidad impulso): hacia donde mira, sin gravedad unos ticks; uno por salto en el aire.
 func _impulsar() -> void:
-	if not Partida.tiene(&"impulso") or not Input.is_action_just_pressed(&"impulso"):
+	var pedido: bool = Input.is_action_just_pressed(&"impulso") or _impulso_en_cola
+	_impulso_en_cola = false
+	if not Partida.tiene(&"impulso") or not pedido:
 		return
 	if _ticks_hasta_impulso > 0 or _ticks_retrocediendo > 0 or not _impulso_en_el_aire:
 		return
@@ -590,6 +622,8 @@ func _cortar_lo_que_empuja() -> void:
 	_subiendo = false
 	_ticks_atacando = 0
 	_atacando_abajo = false
+	_atacando_arriba = false
+	_ticks_desde_atacar = NUNCA
 	_ataque.set_deferred(&"monitoring", false)
 	_ticks_impulsando = 0
 	_ticks_despegando = 0
@@ -692,17 +726,22 @@ func _cortar_curacion() -> void:
 
 # El area de ataque se enciende unos ticks hacia donde mira el jugador y golpea una sola vez a
 # cada Golpeable que toca durante ese ataque. Cada golpe da Inspiracion y empuja al jugador. En el
-# aire con mover_abajo, el ataque va hacia abajo (pogo): ver _rebotar_pogo.
+# aire con mover_abajo, el ataque va hacia abajo (pogo): ver _rebotar_pogo; con mover_arriba, hacia
+# arriba. Sin la pluma (el arma) no se ataca. Un Cortable que toca se corta, sin mas.
 func _atacar() -> void:
 	_ticks_hasta_ataque = maxi(_ticks_hasta_ataque - 1, 0)
-	if Input.is_action_just_pressed(&"atacar") and _ticks_hasta_ataque == 0:
+	if Partida.tiene(&"pluma") and _ticks_desde_atacar <= ticks_ataque_en_cola and _ticks_hasta_ataque == 0:
+		_ticks_desde_atacar = NUNCA
 		_ticks_atacando = ticks_ataque
 		_ticks_hasta_ataque = ticks_entre_ataques
 		_golpeados.clear()
 		_atacando_abajo = not is_on_floor() and Input.is_action_pressed(&"mover_abajo")
+		_atacando_arriba = not _atacando_abajo and Input.is_action_pressed(&"mover_arriba")
 		_rebotado = false
 		if _atacando_abajo:
 			_forma_ataque.position = posicion_pogo
+		elif _atacando_arriba:
+			_forma_ataque.position = posicion_ataque_arriba
 		else:
 			_forma_ataque.position = Vector2(absf(_posicion_ataque.x) * _mirando, _posicion_ataque.y)
 		_ataque.set_deferred(&"monitoring", true)
@@ -712,6 +751,15 @@ func _atacar() -> void:
 	# monitoring se enciende en diferido: el primer tick del ataque todavia no ve nada.
 	if _ataque.monitoring:
 		for area: Area2D in _ataque.get_overlapping_areas():
+			var cortable: Cortable = area as Cortable
+			if cortable != null:
+				cortable.cortar()
+				continue
+			var ataque_enemigo: AtaqueEnemigo = area as AtaqueEnemigo
+			if ataque_enemigo != null:
+				if ataque_enemigo.se_puede_parar:
+					_parar(ataque_enemigo)
+				continue
 			var golpeable: Golpeable = area as Golpeable
 			if golpeable != null and not _golpeados.has(golpeable):
 				_golpeados.append(golpeable)
@@ -719,7 +767,7 @@ func _atacar() -> void:
 				Partida.ganar_inspiracion(inspiracion_por_golpe)
 				if _atacando_abajo:
 					_rebotar_pogo()
-				else:
+				elif not _atacando_arriba:
 					_ticks_rebote = ticks_rebote_al_golpear
 					_sentido_rebote = -_mirando
 			elif _atacando_abajo:
@@ -728,6 +776,34 @@ func _atacar() -> void:
 					_rebotar_pogo()
 	if _ticks_atacando == 0:
 		_ataque.set_deferred(&"monitoring", false)
+
+
+## Lo llama un AtaqueEnemigo que se puede parar antes de danar: si el ataque del jugador ya lo toca, lo para
+## (asi el orden en que se procesan los dos no decide si hubo parry).
+func intentar_parar(ataque: AtaqueEnemigo) -> bool:
+	if muerto or _ticks_atacando == 0 or not _ataque.monitoring or not _ataque.overlaps_area(ataque):
+		return false
+	_parar(ataque)
+	return true
+
+
+# Parry, con el ataque normal en cualquier direccion: el ataque enemigo desaparece sin danar, el jugador queda
+# ticks_invulnerable_parry ticks sin dano de enemigos, todo se congela un instante y el enemigo recibe el golpe
+# (con su Inspiracion, como cualquier golpe). Un disparo no tiene cuerpo al que pegarle.
+func _parar(ataque: AtaqueEnemigo) -> void:
+	if ataque.parado:
+		return
+	ataque.parar()
+	paradas += 1
+	_ticks_sin_dano = maxi(_ticks_sin_dano, ticks_invulnerable_parry)
+	Congelado.pedir(ticks_congelado_parry)
+	# La senal va antes del golpe al dueno: la vibracion del parry gana el tick a la de pegar.
+	Eventos.parry.emit()
+	var enemigo: Enemigo = ataque.get_parent() as Enemigo
+	if enemigo != null and enemigo.golpeable != null and not _golpeados.has(enemigo.golpeable):
+		_golpeados.append(enemigo.golpeable)
+		enemigo.golpeable.recibir_golpe(self, dano_ataque)
+		Partida.ganar_inspiracion(inspiracion_por_golpe)
 
 
 # Pogo: el golpe hacia abajo a un Golpeable o a un peligro lanza al jugador hacia arriba (una vez por
@@ -778,7 +854,8 @@ func recibir_dano(dano: int, origen_x: float, peligro: bool = false) -> void:
 	if peligro:
 		_volver_al_punto_seguro()
 		return
-	_ticks_congelado = maxi(_ticks_congelado, ticks_hit_stop)
+	# Como Hollow Knight: el golpe congela todo el juego unos ticks y despues empieza el retroceso.
+	Congelado.pedir(ticks_hit_stop)
 	_ticks_retrocediendo = ticks_retroceso
 	var lado: float = signf(global_position.x - origen_x)
 	_sentido_retroceso = lado if lado != 0.0 else -_mirando
@@ -845,8 +922,9 @@ func _colocar_tras_peligro(punto: Vector2) -> void:
 	_ticks_despegando = 0
 	_ticks_rebote = 0
 	_ticks_en_suelo = 0
-	# Una pulsacion de saltar justo antes del peligro no debe hacer saltar al reaparecer.
+	# Una pulsacion de saltar o atacar justo antes del peligro no debe contar al reaparecer.
 	_ticks_desde_pulsar = NUNCA
+	_ticks_desde_atacar = NUNCA
 	_ticks_sin_suelo = NUNCA
 	_ticks_sin_pared = NUNCA
 	_ticks_congelado = ticks_reaparicion_peligro
@@ -866,7 +944,7 @@ func sentarse(x: float) -> void:
 	_cortar_lo_que_empuja()
 	_cortar_curacion()
 	_ticks_poder = -1
-	# Ni el hit-stop ni el retroceso de un golpe justo antes siguen al levantarse.
+	# Ni la pausa tras un peligro ni el retroceso de un golpe justo antes siguen al levantarse.
 	_ticks_retrocediendo = 0
 	_ticks_congelado = 0
 	_ticks_aterrizando = 0

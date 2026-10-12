@@ -1,0 +1,55 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" uid="uid://k7a08bqsbqd0" path="res://nucleo/sala.gd" id="1_sala"]
+[ext_resource type="PackedScene" uid="uid://cantrdqq1cwy8" path="res://nucleo/puerta.tscn" id="2_puerta"]
+[ext_resource type="PackedScene" path="res://nucleo/coleccionable.tscn" id="9_coleccionable"]
+
+[sub_resource type="RectangleShape2D" id="forma_suelo"]
+size = Vector2(2400, 80)
+
+[node name="Prueba2" type="Node2D"]
+script = ExtResource("1_sala")
+habilidades_de_prueba = Array[StringName]([&"pluma"])
+id = "prueba_2"
+limites = Rect2(0, 0, 2400, 720)
+
+[node name="Fondo" type="ColorRect" parent="."]
+offset_right = 2400.0
+offset_bottom = 720.0
+mouse_filter = 2
+color = Color(0.12, 0.13, 0.16, 1)
+
+[node name="Entrada" type="Marker2D" parent="."]
+position = Vector2(300, 680)
+
+[node name="Suelo" type="StaticBody2D" parent="."]
+position = Vector2(1200, 720)
+
+[node name="Forma" type="CollisionShape2D" parent="Suelo"]
+shape = SubResource("forma_suelo")
+
+[node name="Dibujo" type="ColorRect" parent="Suelo"]
+offset_left = -1200.0
+offset_top = -40.0
+offset_right = 1200.0
+offset_bottom = 40.0
+mouse_filter = 2
+color = Color(0.25, 0.25, 0.25, 1)
+
+[node name="PuertaIzquierda" parent="." instance=ExtResource("2_puerta")]
+position = Vector2(20, 680)
+id = &"izquierda"
+sala_destino = "res://herramientas/salas/zonas/prueba/prueba_1.tscn"
+puerta_destino = &"derecha"
+llegada = Vector2(200, 0)
+
+[node name="PuertaDerecha" parent="." instance=ExtResource("2_puerta")]
+position = Vector2(2380, 680)
+id = &"derecha"
+sala_destino = "res://herramientas/salas/zonas/prueba/prueba_3.tscn"
+puerta_destino = &"izquierda"
+llegada = Vector2(-200, 0)
+
+[node name="Coleccionable" parent="." instance=ExtResource("9_coleccionable")]
+position = Vector2(1200, 680)
+id = "coleccionable"

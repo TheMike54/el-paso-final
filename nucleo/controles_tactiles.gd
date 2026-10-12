@@ -34,7 +34,7 @@ const COLOR_BOTON: Color = Color(1.0, 1.0, 1.0, 0.5)
 const COLOR_PRESIONADO: Color = Color(1.0, 1.0, 1.0, 0.25)
 ## Botones que solo existen con una habilidad: accion -> habilidad de Partida. Sin ella no se
 ## dibujan ni responden, y los demas no se mueven.
-const HABILIDAD_DE_BOTON: Dictionary[StringName, StringName] = {&"impulso": &"impulso"}
+const HABILIDAD_DE_BOTON: Dictionary[StringName, StringName] = {&"impulso": &"impulso", &"atacar": &"pluma"}
 
 ## Cuadros entre que se van los controles de una sala y llegan los de la siguiente: con mas, ya
 ## no es un cambio de sala (se paso por el menu) y lo que quedo presionado se suelta.

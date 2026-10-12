@@ -34,7 +34,7 @@ func recibir_golpe(atacante: Node2D, dano: int = 1) -> void:
 
 
 func _physics_process(delta: float) -> void:
-	if _ticks_empujado == 0:
+	if _ticks_empujado == 0 or Congelado.activo():
 		return
 	_ticks_empujado -= 1
 	var padre: Node2D = get_parent() as Node2D

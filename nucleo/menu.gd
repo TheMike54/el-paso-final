@@ -49,17 +49,24 @@ func _ready() -> void:
 
 func _nueva_partida(escena: String) -> void:
 	Partida.reiniciar()
+	# La zona de pruebas guarda aparte: nunca pisa la partida real.
+	Partida.ruta_guardado = Partida.RUTA_PRUEBAS if escena == ZONA_PRUEBAS else Guardado.RUTA
 	_ir(escena)
 
 
 # Se continua en el banco guardado; una partida sin banco, en sala_inicial.
 func _continuar_partida() -> void:
 	Partida.desde_diccionario(_guardada.partida)
-	if Partida.sala.is_empty():
+	Partida.ruta_guardado = Guardado.RUTA
+	var ruta: String = "" if Partida.sala.is_empty() else Sala.ruta_de(Partida.sala)
+	if not ruta.is_empty() and not ResourceLoader.exists(ruta):
+		push_error("Continuar: la sala %s ya no existe; se empieza en la sala inicial" % Partida.sala)
+		ruta = ""
+	if ruta.is_empty():
 		_ir(sala_inicial)
 	else:
-		_ir(Partida.sala)
 		Sala.llegada_a_banco = true
+		_ir(ruta)
 
 
 func _mostrar_partida(estado: Guardado.Estado) -> void:

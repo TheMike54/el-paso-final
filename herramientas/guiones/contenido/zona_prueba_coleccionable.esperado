@@ -1,0 +1,5 @@
+valor /root/Partida autoguardados 1
+senal /root/Eventos coleccionable_obtenido 1
+senal /root/Eventos partida_guardada 1
+valor Interfaz/Hud aviso_visible true
+valor /root/Partida ruta_guardado user://prueba_partida.json

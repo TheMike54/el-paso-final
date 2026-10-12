@@ -22,5 +22,11 @@
     "que": "En el telefono, los corazones y la barra se ven en la esquina de arriba a la izquierda sin tapar el juego ni quedar bajo la camara frontal, y se leen sin esfuerzo",
     "comprobacion": "manual: en el S20, zona de pruebas, sala de curar: recibir un golpe, golpear al muneco y curarse; mirar los corazones y la barra, y descansar en la sala del banco para ver el aviso",
     "pasa": true
+  },
+  {
+    "id": "icono-guardado-y-monedas",
+    "que": "Al guardar se ve 2 s un icono provisional abajo a la derecha en lugar del texto, y bajo la barra de Inspiracion se ven las PejeCoins (las comprueba zona_prueba_vitrina.guion)",
+    "comprobacion": "herramientas/guiones/contenido/zona_prueba_coleccionable.guion",
+    "pasa": true
   }
 ]

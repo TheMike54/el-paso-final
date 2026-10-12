@@ -1,0 +1,3 @@
+# Saltar durante el congelado cuenta: a los pocos ticks el jugador va en el aire y el debil fue vencido.
+en_suelo false
+senal /root/Eventos enemigo_vencido 1

@@ -27,6 +27,8 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if Congelado.activo():
+		return
 	# El rayo va del centro hasta el frente de la bola despues de este paso: un solido delgado no
 	# se salta aunque la bola avance mas de su grosor en un tick.
 	var paso: float = sentido * velocidad * delta

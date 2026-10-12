@@ -8,6 +8,7 @@ size = Vector2(2400, 80)
 
 [node name="SalaPuertaA" type="Node2D"]
 script = ExtResource("1_sala")
+habilidades_de_prueba = Array[StringName]([&"pluma"])
 limites = Rect2(0, 0, 2400, 720)
 
 [node name="Entrada" type="Marker2D" parent="."]

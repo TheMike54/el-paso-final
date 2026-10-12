@@ -1,0 +1,6 @@
+# El muneco actuo 67 de 70 ticks: 1 al arrancar y 2 del congelado del parry (sin el congelado, 69).
+valor Jugador paradas 1
+valor Jugador invulnerable true
+valor Muneco/Comportamiento reloj 67
+valor Vibracion ultima al_parar
+senal /root/Eventos enemigo_golpeado 1

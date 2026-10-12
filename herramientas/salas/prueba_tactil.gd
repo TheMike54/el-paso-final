@@ -11,6 +11,9 @@ var fallos: int = 0
 
 
 func _ready() -> void:
+	# Atacar pide la pluma (el arma), como Impulso pide su habilidad.
+	Partida.reiniciar()
+	Partida.habilidades.append(&"pluma")
 	var capa: CanvasLayer = ESCENA_CONTROLES.instantiate() as CanvasLayer
 	add_child(capa)
 	var c: ControlesTactiles = capa.get_node(^"Controles") as ControlesTactiles
@@ -62,6 +65,9 @@ func _ready() -> void:
 	_tocar(c, 10, c.centro(&"impulso"), true)
 	_caso("sin la habilidad, tocar Impulso no presiona impulso", not Input.is_action_pressed(&"impulso"))
 	_tocar(c, 10, c.centro(&"impulso"), false)
+	_tocar(c, 11, c.centro(&"atacar"), true)
+	_caso("sin la pluma, tocar Atacar no presiona atacar", not Input.is_action_pressed(&"atacar"))
+	_tocar(c, 11, c.centro(&"atacar"), false)
 	Partida.habilidades.append(&"impulso")
 	Eventos.habilidad_obtenida.emit(&"impulso")
 	await get_tree().process_frame

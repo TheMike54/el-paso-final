@@ -27,7 +27,9 @@ Valores de `project.godot`. No se cambian sin actualizar esta tabla.
 
 - Arranque: Godot carga los autoloads y después la escena principal (`application/run/main_scene`).
 - La lógica del juego corre en `_physics_process`, a 60 ticks por segundo. `_process` queda para lo visual.
-- Pausar no guarda. La partida se guarda solo en los bancos.
+- La acción `pausa` no guarda. La partida se guarda al descansar en un banco y se autoguarda (lo obtenido, nunca la
+  posición: al continuar se aparece en el último banco) al obtener una habilidad, vencer a un jefe, recoger un amuleto
+  o un coleccionable, morir, salir al menú y pasar la app a segundo plano (ver «Estado de la partida»).
 - Pausa: `nucleo/pausa.tscn` (`class_name Pausa`), que crea cada sala. La acción `pausa` o el botón Atrás de
   Android la abren y la cierran (`get_tree().paused`); tiene Continuar, los interruptores de vibración y de temblor de
   cámara (mientras no haya Opciones), «Controles» (abre el editor de los botones táctiles; ver «Entrada») y «Salir al menú». Se abre sola al perder el foco (`NOTIFICATION_APPLICATION_FOCUS_OUT` o
@@ -58,9 +60,24 @@ Valores de `project.godot`. No se cambian sin actualizar esta tabla.
 | `DANADA` | No es JSON, no es un objeto, falta `version` o no es número, `partida` no es un objeto, o le falta un campo o tiene otro tipo |
 | `INCOMPATIBLE` | `version` es un número distinto de `VERSION`, más nuevo o más viejo. No hay migración |
 
-- `RUTA` es `user://partida.json`; `VERSION` es 2 (la 1 no tenía `sala`).
-- Esquema de la versión 2 (`Guardado.ESQUEMA`): `banco` (texto, id del último banco), `sala` (texto, escena de la sala
-  de ese banco), `vidas_maximas` (número) y `habilidades` (lista). Un campo nuevo cambia el esquema y `VERSION` en el mismo cambio.
+- `RUTA` es `user://partida.json`; `VERSION` es 3. Una partida de la 2 es `INCOMPATIBLE`, sin migración.
+- Esquema de la versión 3 (`Guardado.ESQUEMA`), copiado de Hollow Knight y Silksong (lo del jugador como listas de
+  ids; lo de cada sala con clave sala + objeto). Un campo nuevo cambia el esquema y `VERSION` en el mismo cambio.
+
+  | Campo | Tipo | Qué guarda |
+  |---|---|---|
+  | `banco` | objeto | `{sala, id}`: clave de la sala y id del último banco; `{}` si no se ha descansado. Si no está vacío y le falta `sala` o `id` (texto), la partida es `DANADA` |
+  | `vidas_maximas` | número | Vidas máximas |
+  | `habilidades`, `jefes`, `amuletos_tenidos`, `amuletos_equipados` | listas | Ids |
+  | `monedas` | número | PejeCoins |
+  | `mochila` | objeto | Lo perdido al morir, `{sala, x, y, monto}`, o `{}` (la mecánica todavía no existe) |
+  | `mapas` | lista | Zonas cuyo mapa se tiene |
+  | `salas_visitadas`, `salas_mapeadas` | listas | Claves de sala (id, o ruta en una sala de prueba suelta) |
+  | `salas` | objeto | Estado por sala: `{clave de la sala: {id del objeto: true o número}}` |
+  | `personaje`, `nombre` | texto | Elegidos en Nueva partida (vacíos hasta que exista esa pantalla) |
+  | `tiempo_jugado` | número | Segundos con el juego corriendo dentro de una sala |
+
+- Lo que reaparece (enemigos) no se escribe. Sin cifrado ni suma de control.
 - Al leer, los números vuelven como `float`: `var vidas: int = partida["vidas_maximas"] as int`.
 - Lo que se guarda sale del estado de la partida: `Partida.guardar()` escribe `Partida.a_diccionario()` y, si salió
   bien, emite `Eventos.partida_guardada`; Continuar carga el resultado con `Partida.desde_diccionario()` (con las
@@ -88,12 +105,13 @@ por omisión: los interruptores en `Ajustes.POR_OMISION`; la disposición de los
 | Evento | Señal | Duración | Fuerza (0 a 1) |
 |---|---|---|---|
 | Pegarle a algo (ataque, pogo, bola, onda) | `enemigo_golpeado` | 25 ms | 0,35 |
+| Parar un ataque (parry) | `parry` | 45 ms | 0,6 |
 | Recibir daño | `jugador_danado` | 60 ms | 0,8 |
 | Curarse | `jugador_curado` | 40 ms | 0,45 |
 | Descansar | `descanso_en_banco` | 70 ms | 0,5 |
 | Aterrizaje duro y aterrizaje de la picada | `jugador_aterrizo` | 80 ms | 0,9 |
 
-- Entre una vibración y la siguiente pasan al menos `ticks_entre_vibraciones` (4); recibir daño no espera. Nada más
+- Entre una vibración y la siguiente pasan al menos `ticks_entre_vibraciones` (4); recibir daño y el parry no esperan (el parry llega en el mismo tick que el golpe a su dueño). Nada más
   vibra: ni moverse, ni saltar, ni los menús. Cuenta en `pedidas` (con el ajuste encendido o no) y `enviadas`, y la
   última en `ultima`: los guiones las leen con `valor Vibracion`.
 - En Android, `vibrate_handheld` necesita el permiso `VIBRATE` en el preset de exportación; sin él no vibra. Un
@@ -106,10 +124,20 @@ Autoload `Partida` (`nucleo/partida.gd`): lo que sobrevive al cambio de sala. Un
 | Propiedad o función | Qué es |
 |---|---|
 | `vidas`, `vidas_maximas` | Vidas actuales y máximas (4 al empezar). `Jugador.vidas` lee y escribe `Partida.vidas`. Cada cambio emite `vidas_cambiadas` |
-| `banco`, `sala` | Id del último banco donde se descansó y la escena de su sala; vacíos si no se ha descansado |
+| `banco`, `sala` | Id del último banco donde se descansó y la clave de su sala (`Sala.clave()`); vacíos si no se ha descansado |
+| `jefes`, `amuletos_tenidos`, `amuletos_equipados`, `mochila`, `mapas`, `personaje`, `nombre`, `tiempo_jugado` | Los campos del guardado del mismo nombre |
+| `monedas` | PejeCoins; cada cambio emite `monedas_cambiadas` |
+| `salas_visitadas`, `visitar(clave)` | Claves de las salas visitadas; la sala se anota al entrar |
+| `salas_mapeadas` | Al oír `descanso_en_banco`, con la habilidad `pluma_mapa`, pasan aquí las visitadas cuya zona está en `mapas` (como la Pluma de Hollow Knight y Silksong) |
+| `salas`, `estado_de(sala, objeto)`, `marcar(sala, objeto, valor := true)` | Estado por sala. `estado_de` da `null` si no hay nada. Lo usan `SueloFragil` y `Coleccionable` con su `id` y la clave de su sala (`Sala.clave_de(nodo)`) |
+| `total_coleccionables()` | Marcas de todas las salas cuyo id empieza con `PREFIJO_COLECCIONABLE` (`coleccionable`) |
+| `obtener_habilidad(id)`, `obtener_amuleto(id)` | Suman y emiten `habilidad_obtenida` o `amuleto_obtenido` (si ya estaba, nada) |
+| `dar_recompensa(recompensa)` | Entrega una `Recompensa` (PejeCoins, vida máxima, amuleto o habilidad) |
+| `ruta_guardado` | Archivo del banco y del autoguardado: `RUTA_PRUEBAS` (`user://prueba_partida.json`) por omisión, para que guiones y zona de pruebas no pisen la partida real; Nueva partida y Continuar lo cambian a `Guardado.RUTA` |
+| `autoguardar()`, `autoguardados` | Guarda en `ruta_guardado` sin tocar el banco y emite `partida_guardada`. Lo llaman los avisos `habilidad_obtenida`, `amuleto_obtenido`, `coleccionable_obtenido`, `jefe_vencido` (que además anota el jefe) y `jugador_muerto`; «Salir al menú» de la pausa; la entrega de recompensas; y `NOTIFICATION_APPLICATION_PAUSED` o `NOTIFICATION_APPLICATION_FOCUS_OUT` con una sala abierta. `autoguardados` los cuenta |
 | `habilidades`, `tiene(id)` | `Array[StringName]` con las habilidades obtenidas, y si una está |
-| `enemigos_vencidos`, `vencer(clave)`, `fue_vencido(clave)` | Claves (`"<escena de la sala>#<id>"`) de los enemigos fuertes vencidos desde el último descanso o la última muerte. Se borra al oír `descanso_en_banco` o `jugador_muerto` y en `reiniciar()`; no se guarda |
-| `inspiracion`, `ganar_inspiracion(n)` | Recurso de curación (0 a `INSPIRACION_MAXIMA`, 99); no se guarda, se reinicia con la partida. Cada cambio emite `inspiracion_cambiada` |
+| `enemigos_vencidos`, `vencer(clave)`, `fue_vencido(clave)` | Claves (`"<clave de la sala>#<id>"`) de los enemigos fuertes vencidos desde el último descanso o la última muerte. Se borra al oír `descanso_en_banco` o `jugador_muerto` y en `reiniciar()`; no se guarda |
+| `inspiracion`, `ganar_inspiracion(n)` | Recurso de curación (0 a `INSPIRACION_MAXIMA`, 99); no se guarda, se reinicia con la partida y se vacía al oír `jugador_muerto`. Cada cambio emite `inspiracion_cambiada` |
 | `reiniciar()` | Partida nueva: la llaman Nueva partida y cada sala de la zona de pruebas |
 | `llenar_vidas()` | Vidas al máximo: al reaparecer después de morir |
 | `a_diccionario()` / `desde_diccionario(partida)` | Hacia y desde los campos de `Guardado.ESQUEMA`. Al cargar, lo que no se guarda empieza de cero: Inspiración 0 y sin enemigos vencidos |
@@ -141,12 +169,16 @@ cambio.
 | `vidas_cambiadas` | `vidas: int`, `maximas: int` | `Partida`, cada vez que cambian las vidas o las vidas máximas (daño, curación, reaparición, banco) |
 | `inspiracion_cambiada` | `inspiracion: int`, `maxima: int` | `Partida`, cada vez que cambia la Inspiración |
 | `descanso_en_banco` | `banco: StringName` (id del banco) | El banco, al descansar |
-| `partida_guardada` | — | `Partida.guardar()`, cuando el guardado salió bien |
+| `partida_guardada` | — | `Partida.guardar()` (banco y autoguardado), cuando el guardado salió bien |
 | `enemigo_golpeado` | `enemigo: Node` | Lo golpeable, al recibir un golpe del ataque o de la bola (solo el ataque llena la Inspiración) |
 | `enemigo_vencido` | `enemigo: StringName` (id de su ficha) | El enemigo, al quedarse sin vida |
-| `habilidad_obtenida` | `habilidad: StringName` | El objeto de habilidad al tocarlo (en el juego, lo darán los jefes) |
-| `jefe_vencido` | `jefe: StringName` (id del jefe) | El jefe (todavía no existe) |
-| `cambio_de_sala` | `sala: String` (ruta de la escena), `puerta: StringName` (por la que llegó) | La sala, ya con el jugador puesto, cuando se llega por una puerta |
+| `parry` | — | El jugador, al parar un `AtaqueEnemigo` |
+| `habilidad_obtenida` | `habilidad: StringName` | `Partida.obtener_habilidad()` (el objeto de habilidad, una recompensa; en el juego, los jefes). Autoguarda |
+| `amuleto_obtenido` | `amuleto: StringName` | `Partida.obtener_amuleto()`. Autoguarda |
+| `coleccionable_obtenido` | `coleccionable: StringName` (su id) | El `Coleccionable` al tomarlo. Autoguarda |
+| `monedas_cambiadas` | `monedas: int` | `Partida`, cada vez que cambian las PejeCoins |
+| `jefe_vencido` | `jefe: StringName` (id del jefe) | El jefe (todavía no existe). `Partida` lo anota en `jefes` y autoguarda |
+| `cambio_de_sala` | `sala: String` (`Sala.clave()`: id, o ruta en una sala de prueba suelta), `puerta: StringName` (por la que llegó) | La sala, ya con el jugador puesto, cuando se llega por una puerta |
 | `jugador_aterrizo` | `velocidad: float` (px/s al tocar el suelo) | El jugador vivo, en un aterrizaje duro y al aterrizar de la picada (antes de la onda, para que su vibración gane a la del golpe) |
 | `fundido_pedido` | `ticks_oscurecer: int`, `ticks_en_negro: int`, `ticks_aclarar: int` (0: se queda en negro) | El jugador al tocar un peligro, la sala al final de la muerte y la puerta al cruzarla; la escucha el `Fundido` de la sala |
 
@@ -182,7 +214,7 @@ letra de la distribución. Una acción nueva se agrega a `project.godot` y a est
   Traducen el toque a estas mismas acciones con `Input.action_press` y `action_release`; es el único script que
   lee toques. Joystick invisible en la zona de abajo a la izquierda (aparece donde se pone el dedo; da fuerza de 0
   a 1 a `mover_*`, con zona muerta de 0,2; hacia arriba también da `interactuar`, como la flecha arriba) y botones Saltar, Atacar, Curar, Impulso, Pausa, Mapa y Mochila en la
-  distribución inicial; Impulso solo mientras `Partida.tiene(&"impulso")` (sin la habilidad no se dibuja ni responde,
+  distribución inicial; Impulso solo mientras `Partida.tiene(&"impulso")` y Atacar mientras `Partida.tiene(&"pluma")` (sin la habilidad no se dibuja ni responde,
   y un dedo encima se suelta al perderla; la tabla `HABILIDAD_DE_BOTON` dice qué botón pide qué habilidad). Anclados a su esquina y medidos en proporción del lado corto. Se ocultan con una tecla o
   el control y reaparecen al tocar la pantalla. Los dedos se recuerdan entre salas (variables estáticas): un dedo
   que sigue en la pantalla al cruzar una puerta o al reaparecer lo sueltan los controles de la sala nueva; si
@@ -225,6 +257,8 @@ Todos los valores son propiedades exportadas del jugador y se ajustan en la zona
 | `distancia_caida_inicial` | 240 px | Caída (desde la cima del salto o desde la orilla) con el tope inicial |
 | `ticks_ataque` | 8 | Ticks del ataque tras presionar `atacar`. El primero solo enciende el área: golpea en los 7 siguientes |
 | `ticks_entre_ataques` | 20 | Ticks entre un ataque y el siguiente, contados desde que empieza |
+| `ticks_ataque_en_cola` | 6 | Cola del ataque: `atacar` presionada hasta estos ticks antes de poder atacar otra vez ataca en cuanto se puede |
+| `posicion_ataque_arriba` | (0, -210) px | Centro del área de ataque hacia arriba, relativo a los pies |
 | `dano_ataque` | 1 | Daño de cada golpe del ataque a un `Golpeable` |
 | `posicion_pogo` | (0, 50) px | Centro del área de ataque hacia abajo (pogo), relativo a los pies |
 | `altura_pogo` | 120 px | Altura del rebote del pogo |
@@ -236,7 +270,8 @@ Todos los valores son propiedades exportadas del jugador y se ajustan en la zona
 | `ticks_reaparicion_peligro` | 20 | Ticks quieto tras volver al punto seguro |
 | `ticks_anti_bucle` | 30 | Ticks con control tras volver de un peligro durante los que otro peligro lleva al punto de llegada sin quitar vida |
 | `margen_fuera_de_sala` | 160 px | Px que los pies pasan del borde de abajo de `limites` para que salir por abajo cuente como peligro (el alto del cuerpo) |
-| `ticks_hit_stop` | 4 | Ticks que el jugador se detiene al recibir daño, antes del retroceso (contador propio, no `Engine.time_scale`) |
+| `ticks_hit_stop` | 4 | Ticks de congelado común al recibir daño, antes del retroceso (ver `Congelado`) |
+| `ticks_invulnerable_parry`, `ticks_congelado_parry` | 15, 3 | Parry: ticks sin daño de enemigos y de congelado común (ver «Enemigos») |
 | `ticks_rebote_al_golpear` | 4 | Ticks en que el jugador sale empujado hacia atrás al golpear algo |
 | `velocidad_rebote_al_golpear` | 240 px/s | Velocidad de ese empuje |
 | `costo_curacion` | 33 | Inspiración que cuesta curar una vida |
@@ -269,8 +304,10 @@ Todos los valores son propiedades exportadas del jugador y se ajustan en la zona
 
 Combate:
 
-- El ataque es el área `Ataque` del jugador, hacia donde mira (el último lado al que caminó). Golpea una sola vez
-  a cada `Golpeable` que toca durante un ataque.
+- Sin la habilidad `pluma` (el arma) `atacar` no hace nada; el botón táctil Atacar tampoco se dibuja.
+- El ataque es el área `Ataque` del jugador, hacia donde mira (el último lado al que caminó); con `mover_arriba`
+  mantenida, encima de la cabeza (`posicion_ataque_arriba`, sin rebote hacia atrás). Golpea una sola vez a cada
+  `Golpeable` que toca durante un ataque y corta cada `Cortable` que toca.
 - `recibir_dano(dano: int, origen_x: float, peligro := false)` es lo único que quita vidas. Durante la
   invulnerabilidad y la caída en picada (con su saltito y su carga) un golpe no quita vidas; un peligro, sí. Emite `jugador_danado` con las vidas que quedan y, al llegar a 0,
   `jugador_muerto`.
@@ -314,7 +351,12 @@ Curar y sensación del golpe:
   corta y lo gastado se pierde. Cada golpe a un `Golpeable` da `inspiracion_por_golpe` (tope 99).
 - Sensación: al golpear, el jugador sale empujado hacia atrás y lo golpeado hacia el otro lado
   (`Golpeable.velocidad_retroceso`, `ticks_retroceso`). Al recibir daño (no de un peligro), el jugador se detiene
-  `ticks_hit_stop` ticks antes del retroceso; el resto del juego sigue.
+  `ticks_hit_stop` ticks antes del retroceso.
+- Congelado común (`nucleo/congelado.gd`, `class_name Congelado`, estático), como `FreezeMoment` de Hollow Knight:
+  `Congelado.pedir(ticks)` detiene unos ticks al jugador, a los `Golpeable` empujados y a los proyectiles, que
+  preguntan `Congelado.activo()` al empezar su tick (sin `Engine.time_scale`: los guiones cuentan ticks). Lo piden
+  el daño al jugador (`ticks_hit_stop`), un enemigo vencido (`Congelado.TICKS_AL_VENCER`, 4) y el parry. La sala lo reinicia
+  al entrar.
 
 Habilidades (solo si `Partida.tiene(&"<id>")`):
 
@@ -335,7 +377,12 @@ Habilidades (solo si `Partida.tiene(&"<id>")`):
 | Componente | Qué es |
 |---|---|
 | `nucleo/golpeable.gd` (`class_name Golpeable`, `Area2D`) | Hijo de lo que el ataque o la bola pueden golpear, con su forma. `recibir_golpe(atacante, dano := 1)` cuenta `golpes` y `dano_recibido`, empuja a su padre lejos del atacante (`velocidad_retroceso` 240 px/s, `ticks_retroceso` 6; 0 para que no se mueva; golpeado justo desde arriba no se empuja), emite su señal `golpeado(atacante, dano)` y `Eventos.enemigo_golpeado` con su padre |
-| `nucleo/suelo_fragil.gd` (`class_name SueloFragil`, `StaticBody2D`) | Sólido que se pisa como cualquier otro y que rompe la caída en picada (`romper()`: `roto` y desaparece). Va en la sala con su forma y su dibujo. Que siga roto al volver a la sala todavía no se guarda |
+| `nucleo/suelo_fragil.gd` (`class_name SueloFragil`, `StaticBody2D`) | Sólido que se pisa como cualquier otro y que rompe la caída en picada (`romper()`: `roto` y desaparece). Va en la sala con su forma y su dibujo. Con `id` (obligatorio en las salas con id) se marca en el estado de su sala al romperse y ya no aparece al entrar |
+| `nucleo/coleccionable.tscn` (`class_name Coleccionable`, `Area2D`) | Al tocarlo el jugador vivo: se marca en el estado de su sala, emite `coleccionable_obtenido` (autoguarda) y desaparece; marcado, no aparece. `id` único en la sala que empieza con `coleccionable`. Gris, sin tema |
+| `nucleo/entrega_recompensas.gd` (`class_name EntregaRecompensas`, `Area2D`) | Con el jugador encima y en el suelo, `interactuar` entrega cada `Recompensa` de su lista cuya `cantidad` ya se juntó y no se entregó (marca `entregado_<cantidad>` en su sala) y autoguarda. `entregadas` las cuenta |
+| `nucleo/recompensa.gd` (`class_name Recompensa`, `Resource`) | `cantidad`, `tipo` (`MONEDAS`, `VIDA_MAXIMA`, `AMULETO`, `HABILIDAD`), `monto` e `id` |
+| `nucleo/vitrina_coleccionables.gd` (`class_name VitrinaColeccionables`, `Node2D`) | Dibuja `total_del_juego` lugares, llenos los `juntados` (leído al entrar): la sala donde se ven los coleccionables |
+| `nucleo/cortable.tscn` (`class_name Cortable`, `Area2D`) | Decoración que corta el ataque (pasto y lo que cada zona quiera). `cortar()` oculta el hijo `Entero`, muestra `Cortado`, suelta `trozos` partículas y emite `cortado`; no da Inspiración, no rebota al jugador ni cuenta como enemigo. Se sacude al pasar el jugador (`sacudidas`). No se guarda: vuelve al entrar otra vez a la sala. `esta_cortado` es pública. Para otra forma, se hereda la escena y se cambian `Entero` y `Cortado` |
 | `nucleo/proyectil.tscn` (`class_name Proyectil`, `Area2D`) | La bola: avanza recto y sin gravedad (`velocidad` 900 px/s, `ticks_vida` 60) y golpea una vez, con su `dano` (2), a cada `Golpeable` que toca, sin detenerse. Desaparece contra un sólido, que busca con un rayo porque un `Area2D` no detecta un `StaticBody2D`. Si el jugador está pegado a una pared, no llega a salir (se cobra igual). No da Inspiración |
 | `nucleo/dano_contacto.gd` (`class_name DanoContacto`, `Area2D`) | Daña al jugador mientras lo toca (`dano`, 1 por omisión). Con `peligro = true` es un peligro (punto seguro); si no, un golpe normal (retroceso). Revisa el contacto cada tick: quien sigue dentro vuelve a recibir daño al acabarse la invulnerabilidad. No es sólido |
 
@@ -356,14 +403,30 @@ Una sala es una escena cuya raíz es un `Node2D` con `nucleo/sala.gd` (`class_na
 
 | Pieza | Qué es |
 |---|---|
+| Propiedad `id` (`String`, exportada) | `<zona>_<número>` (`celda_1`), igual al nombre del archivo. Es lo que guardan la partida y el mapa. Vacío solo en las salas de prueba sueltas de `herramientas/salas/`, que se nombran por su ruta |
 | Nodo `Entrada` (`Marker2D`, hijo de la raíz) | Donde aparece el jugador. Sin él, aparece en el origen de la sala |
 | Propiedad `limites` (`Rect2`, exportada) | Rectángulo de la sala en sus coordenadas. La cámara del jugador sigue al jugador y no muestra nada fuera de él en cada eje donde la sala es al menos tan grande como la vista |
 | El jugador | No va dentro de la escena: la sala instancia `nucleo/jugador.tscn` en su `_ready` y le pasa `limites` |
 | Suelos y plataformas | `StaticBody2D` sólidos por todos lados: el núcleo no ofrece plataformas atravesables desde abajo (`one_way_collision`), decidido el 07-oct-2026 |
 | Controles, pausa, vibración, fundido e interfaz | También los crea la sala en su `_ready`: `ControlesTactiles`, `Pausa`, `Vibracion`, `Fundido` y, si existe, `interfaz/interfaz.tscn` (con `load()`, para que el núcleo no dependa del bloque `interfaz/`; ver «Interfaz») |
+| Propiedad `habilidades_de_prueba` (`Array[StringName]`) | Solo salas de prueba: habilidades que la sala da en silencio al entrar (sin aviso ni autoguardado). Las de `herramientas/salas/` dan `pluma`, salvo la de combate chico, donde se recoge. El validador la exige vacía en `contenido/` |
 | Puertas (opcionales) | Instancias de `nucleo/puerta.tscn` (`class_name Puerta`, `Area2D`), hijas directas de la raíz. Ver abajo |
 | Capas de fondo y de frente (opcionales) | Nodos `Parallax2D` hijos de la raíz. `scroll_scale` menor que 1 para el fondo (más lejos, más lento) y mayor que 1 para el frente; `z_index` negativo para el fondo y positivo para el frente |
 
+- Dónde vive cada sala: las del juego en `contenido/salas/<zona>/<id>.tscn`; las de las zonas de prueba en
+  `herramientas/salas/zonas/<zona>/<id>.tscn`. La zona es lo que va antes del primer guion bajo del id: una palabra
+  sin guion bajo (`celda`, `raices`).
+- Al entrar, la sala se anota en `Partida.salas_visitadas`. `Sala.clave_de(nodo)` (estática) da la clave de la sala a
+  la que pertenece un nodo de su escena.
+- `Sala.ruta_de(id)` (estática) da la escena de un id (primero `contenido/`, después la zona de prueba si existe);
+  una ruta `res://` pasa tal cual. `Sala.zona_de(id)` da su zona. `clave()` es el id de la sala o, si no tiene, su
+  ruta: lo que guardan `Partida.sala`, la clave de los enemigos fuertes y `cambio_de_sala`.
+- Convenciones de ids: puertas por su lado (`izquierda`, `derecha`, `arriba`, `abajo`; dos del mismo lado,
+  `derecha_2`); banco `banco_<id de la sala>`; objetos que se recuerdan, un nombre corto único dentro de la sala.
+- El validador revisa cada sala con id: id `<zona>_<número>` igual al archivo, en la carpeta de su zona y sin
+  repetir; `limites` con área; `Entrada` dentro de `limites`; cada puerta con id único y destino existente; puertas
+  de ida y vuelta (si A lleva a la puerta P de B, P lleva de vuelta a la misma puerta de A); bancos con id
+  `banco_<id>`; suelos frágiles y coleccionables con id único en la sala; `habilidades_de_prueba` vacía en las de `contenido/`.
 - Una capa se desplaza en proporción a la cámara: su posición es el borde de la cámara por `1 - scroll_scale`
   (medido en un guion el 06-oct-2026). Para que no queden huecos, el contenido de una capa cubre, en cada eje,
   desde 0 hasta `(tamaño de la sala - tamaño de la pantalla) × scroll_scale + tamaño de la pantalla`. Con
@@ -408,24 +471,25 @@ Bancos:
 - `nucleo/banco.tscn` (`class_name Banco`, `Area2D`), hijo directo de la raíz de una sala. Con el jugador encima,
   en el suelo y vivo, la acción `interactuar` lo hace descansar: sienta al jugador sobre el banco (`sentarse(x)`:
   queda en la x del banco, quieto y dibujado más bajo, `descansando`), llena las vidas, guarda en `Partida.banco` su
-  `id` y en `Partida.sala` la escena de la sala, guarda la partida (`Partida.guardar(ruta_guardado)`) y emite
+  `id` y en `Partida.sala` la clave de la sala, guarda la partida (`Partida.guardar(ruta_guardado)`) y emite
   `Eventos.descanso_en_banco(id)`. Sentado, `interactuar` no vuelve a descansar. Se levanta con `mover_izquierda`,
   `mover_derecha`, `mover_abajo`, `saltar` o `atacar` recién presionadas, sin saltar ni atacar; un golpe también lo
   levanta.
-- `id` es único en todo el juego. `ruta_guardado` es `Guardado.RUTA`; las salas de prueba usan otro archivo para no
-  tocar la partida real.
-- `Sala.llegada_a_banco` (estática): la sala nueva pone al jugador en el banco `Partida.banco`. La usan la
+- `id` es único en todo el juego. Con `ruta_guardado` en `Guardado.RUTA` (por omisión) guarda en
+  `Partida.ruta_guardado`; una sala de prueba puede fijar otro archivo.
+- `Sala.llegada_a_banco` (estática): la sala nueva (`Sala.ruta_de(Partida.sala)`) pone al jugador en el banco `Partida.banco`. La usan la
   reaparición y Continuar. Sin ese banco en la sala, imprime un `ERROR:` y usa `Entrada`.
 - Descansar y morir hacen reaparecer a los enemigos fuertes (ver «Enemigos»).
-- El aviso «Partida guardada» lo muestra la interfaz al oír `partida_guardada`.
+- El aviso de guardado (ícono abajo a la derecha) lo muestra la interfaz al oír `partida_guardada`.
 
 Las salas de prueba viven en `herramientas/salas/` y no viajan en el paquete de publicación.
 
 ## Enemigos
 
 Un enemigo es una instancia de `nucleo/enemigo.tscn` (`class_name Enemigo`, `Node2D`), hija directa de la raíz de
-una sala, con su ficha y un `id` único dentro de la sala. Lo que lo distingue es la ficha: un enemigo nuevo es
-una ficha `.tres`, no código.
+una sala, con su ficha y un `id` único dentro de la sala. Un enemigo nuevo es una ficha `.tres`; cómo se mueve y
+ataca es un script que la ficha referencia (`comportamiento`), en `contenido/enemigos/` (los de prueba, en
+`herramientas/salas/comportamientos/`). El núcleo lo agrega sin saber cuál es; sin script, el enemigo se queda quieto.
 
 | Campo de `FichaEnemigo` (`nucleo/ficha_enemigo.gd`, `Resource`) | Qué es |
 |---|---|
@@ -435,9 +499,25 @@ una ficha `.tres`, no código.
 | `tamano` ((80, 80) px) | Su cuerpo, con los pies en el origen; las formas del golpe y del contacto se crean con él |
 | `color` | Color de la caja gris mientras no hay arte |
 | `reaparicion` | `AL_VOLVER_A_ENTRAR` (débil) o `AL_DESCANSAR` (fuerte: vuelve al descansar y al morir el jugador) |
+| `comportamiento` (`GDScript`) | Script que hereda de `ComportamientoEnemigo`; vacío, quieto |
 
-- El enemigo lleva un `Golpeable` (recibe los golpes) y un `DanoContacto` (daña al jugador). A vida 0 emite
-  `Eventos.enemigo_vencido(ficha.id)` y desaparece. Por ahora no se mueve.
+- El enemigo lleva un `Golpeable` (recibe los golpes; público como `golpeable`) y un `DanoContacto` (su cuerpo, que
+  daña al jugador y nunca se para). A vida 0 emite `Eventos.enemigo_vencido(ficha.id)`, pide el congelado común y
+  desaparece.
+- `nucleo/comportamiento_enemigo.gd` (`class_name ComportamientoEnemigo`, `Node`): hijo del enemigo, con `enemigo`
+  fijado. Cada tick fuera del congelado llama `actuar()`, que cada comportamiento sobrescribe. Ofrece `jugador()`,
+  `atacar(rectangulo, ticks, dano, se_puede_parar)` (un `AtaqueEnemigo` hijo del enemigo, relativo a sus pies) y
+  `disparar(desplazamiento, direccion, dano, se_puede_parar)` (un `ProyectilEnemigo` en la sala).
+- `nucleo/ataque_enemigo.gd` (`class_name AtaqueEnemigo`, hereda de `DanoContacto`): el ataque, separado del cuerpo;
+  daña mientras dura (`ticks`; 0, hasta que lo quiten) y no corre durante el congelado. Con `se_puede_parar` se
+  dibuja blanco (sin la marca, rojo). `parado` es pública.
+- `nucleo/proyectil_enemigo.gd` (`class_name ProyectilEnemigo`, hereda de `AtaqueEnemigo`): avanza recto a
+  `velocidad` (480 px/s) hasta un sólido o 180 ticks.
+- Parry: el ataque normal del jugador (en cualquier dirección) que toca un `AtaqueEnemigo` con `se_puede_parar` lo
+  para: el ataque desaparece sin dañar, el jugador queda `ticks_invulnerable_parry` (15) ticks sin daño de enemigos
+  (los peligros sí dañan), congelado común de `ticks_congelado_parry` (3), el enemigo dueño del ataque recibe el golpe
+  (con su Inspiración; un disparo no tiene dueño en la sala y nadie lo recibe) y se emite `parry`. Lo resuelve quien se procese primero: el jugador en su ataque o el
+  `AtaqueEnemigo` antes de dañar (`Jugador.intentar_parar`). `paradas` del jugador las cuenta.
 - Débil: reaparece solo, porque la sala se instancia de nuevo cada vez que se entra. Fuerte: al vencerlo,
   `Partida.vencer(clave())` lo anota y, mientras siga anotado, no aparece al entrar a su sala. La lista se borra
   al descansar en un banco y al morir el jugador (como los semipersistentes de Hollow Knight).
@@ -454,8 +534,10 @@ con un `Control` `Hud` (`interfaz/hud.gd`, `class_name Hud`). La sala lo carga c
   de 11 (lo que da un golpe) hasta `INSPIRACION_MAXIMA`, con el bloque a medias dibujado a medias. Centro del grupo
   en (17 %, 12 %) de una pantalla 16:9, anclado arriba a la izquierda y medido en el lado corto; una vida más crece
   hacia la derecha.
-- «Partida guardada» bajo la barra durante 2 s después de `partida_guardada`.
-- `vidas`, `vidas_maximas`, `inspiracion`, `inspiracion_maxima`, `bloques_llenos` y `aviso_visible` son públicas: los
+- PejeCoins bajo la barra (`monedas_cambiadas`).
+- Ícono de guardado provisional (un rombo que gira) abajo a la derecha, centro en (94 %, 90 %) de una pantalla 16:9,
+  durante 2 s después de `partida_guardada`. El diseño del ícono va después.
+- `vidas`, `vidas_maximas`, `inspiracion`, `inspiracion_maxima`, `bloques_llenos`, `monedas` y `aviso_visible` son públicas: los
   guiones las leen con `valor Interfaz/Hud`.
 
 ## Grupos
