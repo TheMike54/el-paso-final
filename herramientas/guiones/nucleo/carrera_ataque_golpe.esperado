@@ -1,4 +1,5 @@
-# Un golpe y la velocidad sigue hacia adelante (con el rebote seria negativa).
+en_suelo false
 valor Muneco/Golpeable golpes 1
-valor Jugador atacando_en_carrera true
-valor Jugador velocity:x 900 1
+valor Jugador volteando true
+valor Jugador corriendo false
+valor Jugador velocity:x 480 1

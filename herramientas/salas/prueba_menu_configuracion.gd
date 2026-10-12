@@ -3,7 +3,7 @@ extends Node
 # y el editor de controles con Atras (la notificacion de Android) y con la accion pausa, que vuelven un nivel a
 # la vez. Comprueba tambien lo que puede romperse: Listo guarda la disposicion, reasignar un boton del control
 # intercambia con la accion que lo tenia y se guarda, el modo desarrollador muestra la zona de pruebas y se
-# recuerda, borrar la partida la borra y el volumen se guarda. Todo en archivos de prueba. Deja casos y fallos
+# recuerda, borrar la partida la borra, el volumen se guarda y el aviso de pocos toques sale solo cuando toca. Todo en archivos de prueba. Deja casos y fallos
 # para menu_configuracion.guion. Imprime el resumen y los fallos.
 
 const ESCENA_MENU: PackedScene = preload("res://nucleo/menu.tscn")
@@ -182,6 +182,18 @@ func _ready() -> void:
 	_caso("al volver de la zona de pruebas el menu abre Configuracion", config_otro.visible and not (otro.get_node(^"Centro") as Control).visible and not Configuracion.abrir_al_volver)
 	remove_child(otro)
 	otro.free()
+
+	# Aviso de pocos toques: sale abajo si Android dice que la pantalla no reconoce 5 toques; si no, no hay aviso.
+	_caso("sin pocos toques (y en PC) no hay aviso", menu.get_node_or_null(^"AvisoToques") == null)
+	Toques.forzar(true)
+	var con_aviso: Control = ESCENA_MENU.instantiate() as Control
+	add_child(con_aviso)
+	var aviso: Label = con_aviso.get_node_or_null(^"AvisoToques") as Label
+	_caso("con pocos toques el menu muestra el aviso", aviso != null and aviso.visible and aviso.text == Toques.TEXTO_AVISO)
+	_caso("el aviso queda debajo de la confirmacion de salida", aviso != null and aviso.get_index() < (con_aviso.get_node(^"Confirmar") as Control).get_index())
+	remove_child(con_aviso)
+	con_aviso.free()
+	Toques.olvidar()
 
 	for ruta: String in [RUTA_PRUEBA, RUTA_PARTIDA]:
 		if FileAccess.file_exists(ruta):

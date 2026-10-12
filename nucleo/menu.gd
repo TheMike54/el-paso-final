@@ -2,7 +2,8 @@ extends Control
 # Menu principal: Nueva partida, Continuar y Configuracion (nucleo/configuracion.tscn, que con el modo
 # desarrollador muestra la zona de pruebas). Dice el estado de la partida guardada (carga, sin partida,
 # danada u otra version) y pide confirmacion antes de cerrar la app con Atras o con pausa. Atras y pausa
-# vuelven un nivel a la vez: del editor de botones a Configuracion, de ahi al menu, y ahi piden salir.
+# vuelven un nivel a la vez: del editor de botones a Configuracion, de ahi al menu, y ahi piden salir. Abajo, el
+# aviso de pocos toques si el telefono lo necesita.
 const ZONA_PRUEBAS: String = "res://herramientas/salas/zona_pruebas.tscn"
 const ESCENA_EDITOR: PackedScene = preload("res://nucleo/editor_controles.tscn")
 
@@ -38,11 +39,21 @@ func _ready() -> void:
 	_si.pressed.connect(get_tree().quit)
 	_no.pressed.connect(_cancelar_salida)
 	_leer_partida()
+	_poner_aviso_toques()
 	_nueva.grab_focus()
 	if Configuracion.abrir_al_volver:
 		Configuracion.abrir_al_volver = false
 		abrir_configuracion()
 		configuracion.enfocar_zona()
+
+
+# Telefono con pocos toques a la vez (ver Toques): una linea abajo, encima del fondo y debajo de la confirmacion de
+# salida. Se ve en el menu y en Configuracion, que no tiene fondo propio.
+func _poner_aviso_toques() -> void:
+	var aviso: Label = Toques.crear_aviso()
+	if aviso != null:
+		add_child(aviso)
+		move_child(aviso, _confirmar.get_index())
 
 
 func _leer_partida() -> void:

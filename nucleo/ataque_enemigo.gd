@@ -56,6 +56,15 @@ func _physics_process(delta: float) -> void:
 			queue_free()
 
 
+## Centro de su forma en coordenadas de la sala: el jugador dibuja ahi el estallido del parry.
+func centro() -> Vector2:
+	for hijo: Node in get_children():
+		var forma: CollisionShape2D = hijo as CollisionShape2D
+		if forma != null:
+			return forma.global_position
+	return global_position
+
+
 ## Lo llama el jugador al pararlo: deja de danar y desaparece.
 func parar() -> void:
 	if parado:

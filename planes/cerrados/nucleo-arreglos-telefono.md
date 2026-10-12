@@ -1,4 +1,4 @@
-ACTIVO
+CERRADO
 
 # Núcleo: arreglos tras la prueba en teléfonos
 
@@ -54,16 +54,17 @@ pasa por el `revisor`)
   con B y C, alto da 58,4 de media y bajo (lo que el automático elige en el S50) 59-60; quedaría ~1 FPS por ganar
   en un modo que el S50 no usa por omisión. Se retoma si la medición en publicación o en caliente cae en bajo.
 - Si con el teléfono caliente (10 min de juego) cae: tope de 30 FPS estables o resolución menor en bajo.
-  **Pendiente**: necesita la prueba en caliente con la persona (10 min en la sala de recursos, en bajo y en alto).
+  **Decidido el 12-oct-2026: no se pone.** La prueba en caliente no se hizo (no medido); se reabre si una medición
+  sostenida baja de ~45 FPS en bajo.
 
 **E. Mapa** (hecha el 12-oct-2026): O-03, el marcador como nodo aparte y las texturas cargadas en `dibujar()`, no en
 `_draw`, y soltadas al ocultarse; los nombres y centros de zona se calculan al preparar la vista. Hito: `mapa_cuentas`
 con 19 casos (nuevo: el marcador sigue al jugador con el mapa rápido).
 
-**F. Fallos 2 a 4 y señales de `ESTADO.md`** (hecha el 12-oct-2026 salvo el multitoque)
+**F. Fallos 2 a 4 y señales de `ESTADO.md`** (hecha el 12-oct-2026; el multitoque pasa al plan siguiente)
 - Multitoque: prueba hecha el 12-oct-2026 (`getevent -lt`, 1 a 4 dedos y jugando, 60 s): el S50 reporta 2 toques
-  como máximo. **Pendiente**: dos decisiones de la persona (regla «joystick + un
-  botón», salto alto + Atacar).
+  como máximo. **Decidido el 12-oct-2026:** el juego no cambia por el teléfono; se avisa con una línea discreta
+  cuando Android no declara 5 o más toques (planes/activos/nucleo-parry-carrera-y-aviso-tactil.md, fase D).
 - Zona de pruebas desplazable, con Volver visible y Atrás a Configuración. Volumen con área de toque de 64 px; lista
   de Recursos con letra 30. Visto en el S50 con `adb`: las 31 salas caben en 5 columnas; Volver y Atrás vuelven a
   Configuración con el foco en «Zona de pruebas»; un toque 21 px sobre la barra mueve el volumen; las opciones de

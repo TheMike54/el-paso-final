@@ -302,7 +302,8 @@ Todos los valores son propiedades exportadas del jugador y se ajustan en la zona
 | `ticks_anti_bucle` | 30 | Ticks con control tras volver de un peligro durante los que otro peligro lleva al punto de llegada sin quitar vida |
 | `margen_fuera_de_sala` | 160 px | Px que los pies pasan del borde de abajo de `limites` para que salir por abajo cuente como peligro (el alto del cuerpo) |
 | `ticks_hit_stop` | 4 | Ticks de congelado común al recibir daño, antes del retroceso (ver `Congelado`) |
-| `ticks_invulnerable_parry`, `ticks_congelado_parry` | 15, 3 | Parry: ticks sin daño de enemigos y de congelado común (ver «Enemigos») |
+| `ticks_invulnerable_parry`, `ticks_congelado_parry` | 15, 20 | Parry: ticks sin daño de enemigos y de congelado común (ver «Enemigos»). 20 = 0,33 s: Hollow Knight 0,36 s (`NailClashEffect`), Silksong 0,2-0,3 s (medido en video) |
+| `ticks_retroceso_parry`, `velocidad_retroceso_parry` | 8, 600 px/s | Parry: empuje del jugador hacia atrás, lejos del ataque, después del congelado |
 | `ticks_rebote_al_golpear` | 4 | Ticks en que el jugador sale empujado hacia atrás al golpear algo |
 | `velocidad_rebote_al_golpear` | 240 px/s | Velocidad de ese empuje |
 | `costo_curacion` | 33 | Inspiración que cuesta curar una vida |
@@ -319,6 +320,8 @@ Todos los valores son propiedades exportadas del jugador y se ajustan en la zona
 | `ticks_giro_carrera` | 8 | Giro en carrera: la velocidad pasa de un sentido al otro, por 0, sin apagarla |
 | `ticks_soltar_carrera` | 4 | Ticks sin dirección que la carrera aguanta a velocidad completa: cruzar el centro del joystick (zona muerta 0,2) al girar no es soltar. Valor nuestro |
 | `velocidad_ataque_carrera` | 900 px/s | Ataque en carrera: empuje hacia adelante mientras dura el ataque |
+| `altura_voltereta`, `velocidad_voltereta` | 160 px, 480 px/s | Voltereta tras un ataque en carrera que golpea: altura del salto y velocidad hacia adelante (o hacia el joystick). Provisional |
+| `ticks_rebote_pared`, `velocidad_rebote_pared`, `altura_rebote_pared` | 8, 300 px/s, 30 px | Chocar corriendo con una pared: rebote hacia atrás y saltito. Provisional |
 | `velocidad_deslizar_pared` | 150 px/s | Caída máxima sostenido en una pared |
 | `velocidad_despegue_pared` | 420 px/s | Velocidad horizontal con que el salto en pared despega de ella |
 | `ticks_despegue_pared` | 8 | Ticks tras el salto en pared en que la entrada horizontal no manda |
@@ -371,7 +374,7 @@ Combate:
   ticks; la gravedad y los golpes siguen. Las pulsaciones de saltar, atacar y curar hechas durante él se pierden; lo
   mantenido (caminar) cuenta al terminar. Lo cortan un golpe, un peligro (siempre: vuelve al punto seguro), morir y
   sentarse; el banco no sienta mientras dura. Emite `jugador_aterrizo`.
-- `vidas`, `muerto`, `toques_poder`, `rebotes_pogo`, `en_picada`, `golpes_onda`, `descansando`, `temblor_x`, `temblor_y`, `aterrizando`, `paradas`, `corriendo`, `atacando_en_carrera`, `girando` e `invulnerable` (`aterrizando`, `girando` e `invulnerable`, de solo lectura) son propiedades
+- `vidas`, `muerto`, `toques_poder`, `rebotes_pogo`, `en_picada`, `golpes_onda`, `descansando`, `temblor_x`, `temblor_y`, `aterrizando`, `paradas`, `corriendo`, `atacando_en_carrera`, `volteando`, `girando` e `invulnerable` (`aterrizando`, `girando` e `invulnerable`, de solo lectura) son propiedades
   públicas: los guiones las leen con `valor Jugador vidas`.
 
 Curar y sensación del golpe:
@@ -396,7 +399,7 @@ Habilidades (solo si `Partida.tiene(&"<id>")`):
 
 | Id | Qué hace |
 |---|---|
-| `impulso` | La acción `impulso` lanza al jugador hacia donde mira, sin gravedad, `ticks_impulso` ticks; recarga `ticks_recarga_impulso`. En el aire, uno hasta tocar el suelo o una pared. Nunca hacia abajo ni solo con el joystick. Si al terminar hay dirección, empieza la carrera (`corriendo`) a `velocidad_carrera` hacia ella, en el suelo o en el aire: sigue hasta soltar la dirección más de `ticks_soltar_carrera` ticks, chocar con una pared, curarse, recibir daño, la picada, sentarse en un banco o el aterrizaje duro; saltar la conserva (salto largo); pedir el otro lado la gira (`girando`, `ticks_giro_carrera`) sin apagarla, y un impulso, despegue o rebote a mitad del giro lo cancela (al volver, si la dirección se opone, empieza otro); en carrera el impulso sale hacia el joystick; atacar al frente en carrera (no durante el giro) es un ataque en carrera (`atacando_en_carrera`): empuja a `velocidad_ataque_carrera` y no rebota al golpear |
+| `impulso` | La acción `impulso` lanza al jugador hacia donde mira, sin gravedad, `ticks_impulso` ticks; recarga `ticks_recarga_impulso`. En el aire, uno hasta tocar el suelo o una pared. Nunca hacia abajo ni solo con el joystick. Corta la voltereta y un rebote a medias. Si al terminar hay dirección, empieza la carrera (`corriendo`) a `velocidad_carrera` hacia ella, en el suelo o en el aire: sigue hasta soltar la dirección más de `ticks_soltar_carrera` ticks, chocar con una pared (con un rebote corto hacia atrás y un saltito), curarse, recibir daño, la picada, sentarse en un banco o el aterrizaje duro; saltar la conserva (salto largo); pedir el otro lado la gira (`girando`, `ticks_giro_carrera`) sin apagarla, y un impulso, despegue o rebote a mitad del giro lo cancela (al volver, si la dirección se opone, empieza otro); en carrera el impulso sale hacia el joystick; atacar al frente en carrera (no durante el giro) es un ataque en carrera (`atacando_en_carrera`): empuja a `velocidad_ataque_carrera`, se dibuja como una estocada y no rebota al golpear. Si golpea un `Golpeable`, corta la carrera y empieza la voltereta (`volteando`, como Silksong con el blasón de cazadora): sale hacia arriba `altura_voltereta` y hacia adelante a `velocidad_voltereta` (el joystick la dirige), con el doble salto y el impulso en el aire de vuelta, como el pogo; el golpe corta un impulso en curso y el siguiente ataque sale en cuanto termina el actual, sin esperar `ticks_entre_ataques` (Silksong: el ataque en carrera reinicia la recarga); acaba al tocar el suelo (camina: la carrera vuelve solo con otro impulso), al atacar, con un impulso, un daño o una pared |
 | `salto_en_pared` | En el aire, cayendo y empujando hacia una pared, el jugador se sostiene y desliza a `velocidad_deslizar_pared` (`en_pared`). Tocándola y empujando hacia ella, suba o baje (y hasta `ticks_coyote_pared` después), `saltar` da un salto completo y lo despega hacia el lado contrario: así se sube por una sola pared o de una pared a la otra. Recupera el impulso y el doble salto |
 | `doble_salto` | `saltar` recién presionada en el aire, fuera del tiempo coyote, da un segundo salto con las mismas reglas; se recupera al tocar el suelo o sostenerse en una pared |
 | `caida_en_picada` | `curar` recién presionada con `mover_abajo`, con `Partida.inspiracion >= costo_poder`, gasta ese costo en el mismo tick (sin esperar a saber si es un toque). En el aire, el jugador cae enseguida recto a `velocidad_picada`, sin control, hasta tocar el suelo (`en_picada`, propiedad pública). En el suelo, primero un saltito de `altura_saltito_picada` y `ticks_carga_picada` quieto en su cima, y después la caída. Un `SueloFragil` que toca se rompe y la caída sigue. Corta un ataque a medias. No recibe daño desde que empieza hasta `ticks_invulnerable_picada` después de aterrizar (un peligro sí quita vida y lo devuelve al punto seguro). Al aterrizar, una onda de `onda_picada` golpea con `dano_picada` a cada `Golpeable` que toca, sin dar Inspiración |
@@ -404,8 +407,8 @@ Habilidades (solo si `Partida.tiene(&"<id>")`):
 
 - `nucleo/objeto_habilidad.tscn` (`class_name ObjetoHabilidad`): al tocarlo, suma su `habilidad` a `Partida.habilidades`,
   emite `Eventos.habilidad_obtenida` y desaparece; si la partida ya la tiene, no aparece.
-- Prioridad del movimiento horizontal: retroceso del golpe recibido, impulso, despegue de la pared, rebote al
-  golpear, carrera y por último la entrada.
+- Prioridad del movimiento horizontal: retroceso del golpe recibido, impulso, despegue de la pared, rebote (al
+  golpear, al parar o contra la pared), voltereta, carrera y por último la entrada.
 
 | Componente | Qué es |
 |---|---|
@@ -537,7 +540,7 @@ ataca es un script que la ficha referencia (`comportamiento`), en `contenido/ene
   `velocidad` (480 px/s) hasta un sólido o 180 ticks.
 - Parry: el ataque normal del jugador (en cualquier dirección) que toca un `AtaqueEnemigo` con `se_puede_parar` lo
   para: el ataque desaparece sin dañar, el jugador queda `ticks_invulnerable_parry` (15) ticks sin daño de enemigos
-  (los peligros sí dañan), congelado común de `ticks_congelado_parry` (3), el enemigo dueño del ataque recibe el golpe
+  (los peligros sí dañan), congelado común de `ticks_congelado_parry` (20) con un estallido de rayos blancos en el punto del choque, después el jugador sale empujado hacia atrás (`ticks_retroceso_parry`) y su carrera o voltereta se corta, el enemigo dueño del ataque recibe el golpe (su `Golpeable` lo empuja)
   (con su Inspiración; un disparo no tiene dueño en la sala y nadie lo recibe) y se emite `parry`. Lo resuelve quien se procese primero: el jugador en su ataque o el
   `AtaqueEnemigo` antes de dañar (`Jugador.intentar_parar`). `paradas` del jugador las cuenta.
 - Débil: reaparece solo, porque la sala se instancia de nuevo cada vez que se entra. Fuerte: al vencerlo,
@@ -660,3 +663,11 @@ confirmación, de un subpanel vuelven a la lista, de la lista al menú, y en el 
 confirmación antes de cerrar la app. La zona de pruebas es un nivel más: su «Volver», Atrás y `pausa` regresan a la
 Configuración (`Configuracion.abrir_al_volver`, que el menú lee al entrar). Se maneja con toque, teclado y control (el foco empieza en la primera opción de
 cada pantalla). Las opciones nuevas de configuración se agregan a esa escena.
+
+Aviso de pocos toques: `nucleo/toques.gd` (`class_name Toques`, estático) pregunta una vez a Android, con el singleton
+`AndroidRuntime` y `PackageManager.hasSystemFeature`, si la pantalla declara 5 o más toques a la vez
+(`android.hardware.touchscreen.multitouch.jazzhand`; Godot 4.7.2 entrega el boolean de Java como entero). Si no
+(`Toques.pocos()`), el menú pone una línea discreta abajo (`AvisoToques`, de `Toques.crear_aviso()`), visible en el menú
+y en la Configuración y tapada por la confirmación de salida. Fuera de Android o si la pregunta falla, no hay aviso. El
+juego no cambia por esto. Las pruebas usan `Toques.forzar()` y `Toques.olvidar()`. Visto el 12-oct-2026: el S50 no declara
+`jazzhand` y avisa; el S20 sí y no avisa.

@@ -16,10 +16,19 @@ const COLOR_ATAQUE: Color = Color(1.0, 0.9, 0.5, 0.5)
 ## Dibujo de prueba de la carrera y de su giro mientras no hay arte.
 ## Provisionales hasta el arte (12-oct-2026): en el S50 el azul de la carrera no se distinguia del color normal, y
 ## el parry y el congelado de 3 a 4 ticks no se notaban. Blanco mientras todo esta congelado y unos ticks mas tras
-## un parry.
+## un parry, con un estallido de rayos en el punto del choque (como Hollow Knight y Silksong). La estocada del
+## ataque en carrera es una linea blanca larga al frente y la voltereta gira el cuerpo.
 const COLOR_CORRIENDO: Color = Color(0.4, 0.7, 1.0)
 const COLOR_DESTELLO: Color = Color(1.0, 1.0, 1.0)
 const TICKS_DESTELLO_PARRY: int = 8
+const RAYOS_ESTALLIDO: int = 8
+const LARGO_RAYO: float = 110.0
+const HUECO_RAYO: float = 24.0
+const ANCHO_RAYO: float = 8.0
+const LARGO_ESTOCADA: float = 140.0
+const ANCHO_ESTOCADA: float = 6.0
+## Ticks de una vuelta completa de la voltereta.
+const TICKS_VUELTA: int = 24
 const ANCHO_GIRANDO: float = 40.0
 const NUNCA: int = 1000000
 const ESCENA_PROYECTIL: PackedScene = preload("res://nucleo/proyectil.tscn")
@@ -85,8 +94,13 @@ const ESCENA_PROYECTIL: PackedScene = preload("res://nucleo/proyectil.tscn")
 ## Ticks que se detiene todo el juego al recibir dano (congelado comun, ver Congelado), antes del retroceso.
 @export var ticks_hit_stop: int = 4
 ## Parry: ticks sin dano de enemigos despues de parar un ataque (los peligros si danan) y ticks de congelado.
+## 20 = 0,33 s: Hollow Knight congela 0,36 s (NailClashEffect) y Silksong 0,2-0,3 s (medido en video).
 @export var ticks_invulnerable_parry: int = 15
-@export var ticks_congelado_parry: int = 3
+@export var ticks_congelado_parry: int = 20
+## Parry: el jugador sale empujado hacia atras estos ticks a esta velocidad, en px/s, despues del congelado
+## (Hollow Knight empuja a los dos). Al enemigo lo empuja su Golpeable.
+@export var ticks_retroceso_parry: int = 8
+@export var velocidad_retroceso_parry: float = 600.0
 ## Ticks en que el jugador sale empujado hacia atras al golpear algo.
 @export var ticks_rebote_al_golpear: int = 4
 ## Velocidad de ese empuje, en px/s, alejandose de lo golpeado.
@@ -141,6 +155,14 @@ const ESCENA_PROYECTIL: PackedScene = preload("res://nucleo/proyectil.tscn")
 @export var ticks_soltar_carrera: int = 4
 ## Ataque en carrera: mientras dura, el jugador sale empujado hacia adelante a esta velocidad.
 @export var velocidad_ataque_carrera: float = 900.0
+## Si el ataque en carrera golpea algo, voltereta (Silksong, blason de cazadora): la carrera se corta y el jugador
+## sale hacia arriba esta altura, en px, y hacia adelante a esta velocidad, en px/s, para pasar por encima.
+@export var altura_voltereta: float = 160.0
+@export var velocidad_voltereta: float = 480.0
+## Chocar con una pared corriendo: rebote corto hacia atras (ticks y px/s) y un saltito de esta altura, en px.
+@export var ticks_rebote_pared: int = 8
+@export var velocidad_rebote_pared: float = 300.0
+@export var altura_rebote_pared: float = 30.0
 
 @export_group("Pared")
 ## Velocidad maxima de caida sostenido en una pared, en px/s.
@@ -209,6 +231,9 @@ var girando: bool:
 	get:
 		return _ticks_girando > 0
 var atacando_en_carrera: bool = false
+## En la voltereta que sigue a un ataque en carrera que golpeo: hasta tocar el suelo, atacar, un impulso, un dano o
+## una pared.
+var volteando: bool = false
 ## Desplazamiento vertical del temblor en este tick, en px. La camara lo recibe solo con el ajuste
 ## temblor encendido; publico para que un guion lo lea aunque el ajuste este apagado.
 var temblor_y: float = 0.0
@@ -244,6 +269,11 @@ var _ticks_retrocediendo: int = 0
 var _sentido_retroceso: float = 0.0
 var _ticks_rebote: int = 0
 var _sentido_rebote: float = 0.0
+var _velocidad_rebote: float = 0.0
+# Punto del ultimo parry, en coordenadas de la sala: ahi se dibuja el estallido.
+var _punto_parry: Vector2 = Vector2.ZERO
+var _sentido_voltereta: float = 1.0
+var _ticks_voltereta: int = 0
 var _ticks_en_suelo: int = 0
 var _puntos_seguros: PackedVector2Array = []
 # Donde aparecio el jugador al entrar a la sala (puerta, banco o Entrada): destino del anti-bucle.
@@ -365,6 +395,12 @@ func _mover(delta: float) -> void:
 		_seguir_descansando()
 		return
 	_recordar_punto_seguro(en_suelo)
+	# La voltereta acaba al tocar el suelo: cae caminando.
+	if volteando:
+		if en_suelo:
+			volteando = false
+		else:
+			_ticks_voltereta += 1
 
 	_ticks_sin_suelo = 0 if en_suelo else mini(_ticks_sin_suelo + 1, NUNCA)
 	if Input.is_action_just_pressed(&"saltar"):
@@ -403,8 +439,15 @@ func _mover(delta: float) -> void:
 	_impulsar()
 	_atacar()
 	move_and_slide()
+	# Chocar con una pared corriendo corta la carrera con un rebote corto hacia atras (Silksong); la voltereta
+	# tambien acaba contra una pared.
 	if corriendo and is_on_wall() and get_wall_normal().x * _sentido_carrera < 0.0:
 		_dejar_de_correr()
+		_rebotar(get_wall_normal().x, ticks_rebote_pared, velocidad_rebote_pared)
+		if is_on_floor():
+			velocity.y = -sqrt(2.0 * gravedad * altura_rebote_pared)
+	if volteando and is_on_wall():
+		volteando = false
 
 
 # Aterrizaje: se mira al empezar el tick, tras el move_and_slide del anterior. Es duro (tiembla la
@@ -485,7 +528,7 @@ func _caer(en_suelo: bool, delta: float) -> void:
 
 
 # Prioridad del movimiento horizontal: retroceso del golpe recibido, impulso, despegue de la
-# pared, rebote al golpear, carrera y por ultimo la entrada. El giro de la carrera solo avanza en
+# pared, rebote (al golpear, al parar o contra la pared), voltereta, carrera y por ultimo la entrada. El giro de la carrera solo avanza en
 # _correr: una rama con prioridad lo cancela y, si al volver el eje se opone, empieza uno nuevo.
 func _mover_en_horizontal(eje: float) -> void:
 	if _ticks_retrocediendo > 0:
@@ -507,8 +550,13 @@ func _mover_en_horizontal(eje: float) -> void:
 		_ticks_girando = 0
 	elif _ticks_rebote > 0:
 		_ticks_rebote -= 1
-		velocity.x = _sentido_rebote * velocidad_rebote_al_golpear
+		velocity.x = _sentido_rebote * _velocidad_rebote
 		_ticks_girando = 0
+	elif volteando:
+		# El joystick la dirige; sin direccion sigue hacia adelante y pasa por encima de lo que golpeo.
+		var sentido: float = signf(eje) if eje != 0.0 else _sentido_voltereta
+		velocity.x = sentido * velocidad_voltereta
+		_mirando = sentido
 	elif corriendo:
 		_correr(eje)
 	else:
@@ -627,6 +675,9 @@ func _impulsar() -> void:
 	_ticks_impulsando = ticks_impulso
 	_ticks_hasta_impulso = ticks_recarga_impulso
 	_subiendo = false
+	# El impulso corta la voltereta y un rebote a medias (golpe, parry o pared): no sigue al terminar.
+	volteando = false
+	_ticks_rebote = 0
 	velocity.y = 0.0
 	if not is_on_floor():
 		_impulso_en_el_aire = false
@@ -713,6 +764,7 @@ func _cortar_lo_que_empuja() -> void:
 	_ticks_despegando = 0
 	_ticks_rebote = 0
 	_dejar_de_correr()
+	volteando = false
 
 
 func _seguir_picada() -> void:
@@ -821,6 +873,8 @@ func _atacar() -> void:
 		_ticks_atacando = ticks_ataque
 		_ticks_hasta_ataque = ticks_entre_ataques
 		_golpeados.clear()
+		# Atacar en la voltereta la cancela (Silksong).
+		volteando = false
 		_atacando_abajo = not is_on_floor() and Input.is_action_pressed(&"mover_abajo")
 		_atacando_arriba = not _atacando_abajo and Input.is_action_pressed(&"mover_arriba")
 		atacando_en_carrera = corriendo and _ticks_girando == 0 and not _atacando_abajo and not _atacando_arriba
@@ -854,9 +908,10 @@ func _atacar() -> void:
 				Partida.ganar_inspiracion(inspiracion_por_golpe)
 				if _atacando_abajo:
 					_rebotar_pogo()
-				elif not _atacando_arriba and not atacando_en_carrera:
-					_ticks_rebote = ticks_rebote_al_golpear
-					_sentido_rebote = -_mirando
+				elif atacando_en_carrera:
+					_empezar_voltereta()
+				elif not _atacando_arriba and not volteando:
+					_rebotar(-_mirando, ticks_rebote_al_golpear, velocidad_rebote_al_golpear)
 			elif _atacando_abajo:
 				var contacto: DanoContacto = area as DanoContacto
 				if contacto != null and contacto.peligro:
@@ -864,6 +919,33 @@ func _atacar() -> void:
 	if _ticks_atacando == 0:
 		_ataque.set_deferred(&"monitoring", false)
 		atacando_en_carrera = false
+
+
+# Empuje horizontal unos ticks, con prioridad sobre la carrera y la entrada: al golpear, al parar un ataque y al
+# chocar corriendo con una pared.
+func _rebotar(sentido: float, ticks: int, velocidad_del_rebote: float) -> void:
+	_ticks_rebote = ticks
+	_sentido_rebote = sentido
+	_velocidad_rebote = velocidad_del_rebote
+
+
+# Voltereta (Silksong, blason de cazadora): el ataque en carrera que golpea corta la carrera y lanza al jugador
+# hacia arriba y adelante; como el pogo, devuelve el doble salto y el impulso en el aire. El ataque en curso
+# termina normal y el siguiente se puede pedir en cuanto termine (el ataque en carrera reinicia la recarga).
+func _empezar_voltereta() -> void:
+	_sentido_voltereta = _sentido_carrera
+	_dejar_de_correr()
+	# Un ataque en carrera hecho durante un impulso: el golpe corta el impulso (si no, anularia el despegue y al
+	# terminar volveria la carrera).
+	_ticks_impulsando = 0
+	volteando = true
+	_ticks_voltereta = 0
+	velocity.y = -sqrt(2.0 * gravedad * altura_voltereta)
+	_subiendo = false
+	_ticks_sin_suelo = NUNCA
+	_impulso_en_el_aire = true
+	_doble_salto_disponible = true
+	_ticks_hasta_ataque = mini(_ticks_hasta_ataque, _ticks_atacando)
 
 
 ## Lo llama un AtaqueEnemigo que se puede parar antes de danar: si el ataque del jugador ya lo toca, lo para
@@ -876,16 +958,24 @@ func intentar_parar(ataque: AtaqueEnemigo) -> bool:
 
 
 # Parry, con el ataque normal en cualquier direccion: el ataque enemigo desaparece sin danar, el jugador queda
-# ticks_invulnerable_parry ticks sin dano de enemigos, todo se congela un instante y el enemigo recibe el golpe
-# (con su Inspiracion, como cualquier golpe). Un disparo no tiene cuerpo al que pegarle.
+# ticks_invulnerable_parry ticks sin dano de enemigos, todo se congela ticks_congelado_parry ticks con un estallido
+# en el punto del choque, despues el jugador sale empujado hacia atras y el enemigo recibe el golpe (con su
+# Inspiracion, como cualquier golpe; su Golpeable lo empuja). Un disparo no tiene cuerpo al que pegarle.
 func _parar(ataque: AtaqueEnemigo) -> void:
 	if ataque.parado:
 		return
+	var centro_ataque: Vector2 = ataque.centro()
 	ataque.parar()
 	paradas += 1
 	_ticks_sin_dano = maxi(_ticks_sin_dano, ticks_invulnerable_parry)
 	Congelado.pedir(ticks_congelado_parry)
 	_ticks_destello = TICKS_DESTELLO_PARRY
+	_punto_parry = (_forma_ataque.global_position + centro_ataque) / 2.0
+	# Despues del congelado, el jugador sale empujado lejos del ataque; parar corta la carrera y la voltereta.
+	var lado: float = signf(global_position.x - centro_ataque.x)
+	_dejar_de_correr()
+	volteando = false
+	_rebotar(lado if lado != 0.0 else -_mirando, ticks_retroceso_parry, velocidad_retroceso_parry)
 	# La senal va antes del golpe al dueno: la vibracion del parry gana el tick a la de pegar.
 	Eventos.parry.emit()
 	var enemigo: Enemigo = ataque.get_parent() as Enemigo
@@ -936,6 +1026,7 @@ func recibir_dano(dano: int, origen_x: float, peligro: bool = false) -> void:
 	_ticks_despegando = 0
 	_ticks_rebote = 0
 	_dejar_de_correr()
+	volteando = false
 	Eventos.jugador_danado.emit(vidas)
 	if vidas == 0:
 		_morir()
@@ -1011,6 +1102,7 @@ func _colocar_tras_peligro(punto: Vector2) -> void:
 	_ticks_impulsando = 0
 	_ticks_despegando = 0
 	_ticks_rebote = 0
+	volteando = false
 	_ticks_en_suelo = 0
 	# Una pulsacion de saltar o atacar justo antes del peligro no debe contar al reaparecer.
 	_ticks_desde_pulsar = NUNCA
@@ -1145,7 +1237,31 @@ func _draw() -> void:
 		color = COLOR_CORRIENDO
 	if girando:
 		cuerpo = Rect2(-ANCHO_GIRANDO / 2.0, cuerpo.position.y, ANCHO_GIRANDO, cuerpo.size.y)
-	draw_rect(cuerpo, color)
+	if volteando:
+		# La voltereta gira el cuerpo sobre su centro hacia donde sale.
+		var angulo: float = TAU * float(_ticks_voltereta) / float(TICKS_VUELTA) * _sentido_voltereta
+		draw_set_transform(Vector2(0.0, -TAMANO.y / 2.0), angulo)
+		draw_rect(Rect2(-TAMANO / 2.0, TAMANO), color)
+		draw_set_transform(Vector2.ZERO)
+	else:
+		draw_rect(cuerpo, color)
 	if _ticks_atacando > 0:
 		var forma: RectangleShape2D = _forma_ataque.shape as RectangleShape2D
-		draw_rect(Rect2(_forma_ataque.position - forma.size / 2.0, forma.size), COLOR_ATAQUE)
+		if atacando_en_carrera:
+			# Estocada: una linea blanca larga al frente, a la altura del ataque.
+			var y: float = _forma_ataque.position.y
+			var desde: float = _mirando * TAMANO.x / 2.0
+			var hasta: float = _mirando * (absf(_forma_ataque.position.x) + forma.size.x / 2.0 + LARGO_ESTOCADA)
+			draw_line(Vector2(desde, y), Vector2(hasta, y), COLOR_DESTELLO, ANCHO_ESTOCADA)
+		else:
+			draw_rect(Rect2(_forma_ataque.position - forma.size / 2.0, forma.size), COLOR_ATAQUE)
+	if _ticks_destello > 0:
+		_dibujar_estallido()
+
+
+# Estallido del parry: rayos blancos desde el punto del choque, fijo en la sala aunque el jugador salga empujado.
+func _dibujar_estallido() -> void:
+	var centro: Vector2 = to_local(_punto_parry)
+	for i: int in range(RAYOS_ESTALLIDO):
+		var direccion: Vector2 = Vector2.RIGHT.rotated(TAU * float(i) / float(RAYOS_ESTALLIDO) + TAU / 16.0)
+		draw_line(centro + direccion * HUECO_RAYO, centro + direccion * LARGO_RAYO, COLOR_DESTELLO, ANCHO_RAYO)

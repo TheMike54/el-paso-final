@@ -1,5 +1,5 @@
-# Atacar en carrera contra el muneco: lo golpea y el jugador sigue empujado hacia adelante, sin el rebote
-# hacia atras que da pegarle a algo caminando.
+# Atacar en carrera contra el muneco: lo golpea, la carrera se corta y el jugador sale en voltereta hacia arriba y
+# adelante (Silksong, blason de cazadora), sin el rebote hacia atras que da pegarle a algo caminando.
 escena res://herramientas/salas/sala_carrera.tscn
 2 mover_derecha press
 10 impulso press

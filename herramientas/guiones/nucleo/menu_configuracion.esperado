@@ -1,4 +1,4 @@
-# Los 38 casos de herramientas/salas/prueba_menu_configuracion.gd corrieron y ninguno fallo. Cada caso que
+# Los 41 casos de herramientas/salas/prueba_menu_configuracion.gd corrieron y ninguno fallo. Cada caso que
 # falla imprime una linea "FALLO menu_configuracion: <caso>".
-valor . casos 38
+valor . casos 41
 valor . fallos 0
