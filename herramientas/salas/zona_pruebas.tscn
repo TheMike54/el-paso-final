@@ -21,16 +21,34 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0.1, 0.12, 0.08, 1)
 
-[node name="Centro" type="CenterContainer" parent="."]
+[node name="Desplazable" type="ScrollContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_top = 96.0
+offset_bottom = -16.0
 grow_horizontal = 2
 grow_vertical = 2
+follow_focus = true
+horizontal_scroll_mode = 0
 
-[node name="Lista" type="GridContainer" parent="Centro"]
+[node name="Centro" type="CenterContainer" parent="Desplazable"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Lista" type="GridContainer" parent="Desplazable/Centro"]
 layout_mode = 2
 theme_override_constants/h_separation = 16
 theme_override_constants/v_separation = 12
 columns = 3
+
+[node name="Volver" type="Button" parent="."]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 16.0
+offset_right = 264.0
+offset_bottom = 80.0
+theme_override_font_sizes/font_size = 28
+text = "Volver"

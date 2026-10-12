@@ -12,6 +12,9 @@ signal partida_borrada()
 
 const ZONA_PRUEBAS: String = "res://herramientas/salas/zona_pruebas.tscn"
 
+## Lo pone la zona de pruebas al volver: el menu abre la Configuracion en lugar de su lista, un nivel atras de la zona.
+static var abrir_al_volver: bool = false
+
 ## Archivos que usa: publicos para que la prueba trabaje con los suyos.
 var ruta_ajustes: String = Ajustes.RUTA
 var ruta_partida: String = Guardado.RUTA
@@ -21,6 +24,9 @@ var esperando: StringName = &""
 # Tick en que se asigno un boton: si era Start, la accion pausa quedo recien presionada en ese tick y el menu
 # la tomaria como Atras (ver acaba_de_asignar).
 var _tick_asignado: int = -10
+# Tick en que se cerro la lista de Recursos: en Android, Atras cierra la lista y despues llega como Atras del
+# menu; sin esto subia un nivel de mas (S50, 12-oct-2026).
+var _tick_lista_cerrada: int = -10
 
 @onready var _lista: Control = $Lista as Control
 @onready var _controles: Button = $Lista/Caja/Opciones/Controles as Button
@@ -61,6 +67,11 @@ func _ready() -> void:
 	_recursos.add_item("Recursos: bajo")
 	_recursos.add_item("Recursos: alto")
 	_recursos.item_selected.connect(_al_elegir_recursos)
+	# Las opciones de la lista median ~18 px en el S50: el dedo no les atinaba (prueba del 12-oct-2026).
+	var opciones: PopupMenu = _recursos.get_popup()
+	opciones.add_theme_font_size_override(&"font_size", 30)
+	opciones.add_theme_constant_override(&"v_separation", 28)
+	opciones.popup_hide.connect(_al_cerrar_lista)
 	_modo.toggled.connect(_al_cambiar_modo)
 	_zona.pressed.connect(zona_pruebas_pedida.emit)
 	_borrar.pressed.connect(_pedir_borrado)
@@ -99,16 +110,27 @@ func abrir() -> void:
 	_controles.grab_focus()
 
 
-## Un nivel hacia atras. En la lista, cierra la Configuracion.
+## Pone el foco en la entrada a la zona de pruebas: al volver de ella.
+func enfocar_zona() -> void:
+	if _zona.visible:
+		_zona.grab_focus()
+
+
 ## Si se acaba de asignar un boton (este tick o el anterior): el menu ignora entonces la accion pausa.
 func acaba_de_asignar() -> bool:
 	return Engine.get_physics_frames() - _tick_asignado <= 1
 
 
+## Un nivel hacia atras. En la lista, cierra la Configuracion.
 func atras() -> void:
 	if not visible:
 		return
-	if _confirmar.visible:
+	var opciones: PopupMenu = _recursos.get_popup()
+	if opciones.visible:
+		opciones.hide()
+	elif Engine.get_physics_frames() - _tick_lista_cerrada <= 1:
+		pass
+	elif _confirmar.visible:
 		_confirmar.visible = false
 		_borrar.grab_focus()
 	elif not esperando.is_empty():
@@ -158,6 +180,10 @@ func _al_cambiar_volumen(valor: float) -> void:
 	Ajustes.volumen = valor / 100.0
 	Ajustes.aplicar_volumen()
 	_guardar()
+
+
+func _al_cerrar_lista() -> void:
+	_tick_lista_cerrada = Engine.get_physics_frames()
 
 
 func _al_elegir_recursos(indice: int) -> void:

@@ -654,7 +654,9 @@ instancia `Configuracion` del menú) reemplaza al panel central con: «Botones t
 ver «Entrada»), «Botones del control» (reasignación con `Mando`: tocar una acción y presionar el botón del control;
 «Por omisión»), Vibración, Temblor de cámara, Volumen, Modo desarrollador (con él aparece «Zona de pruebas»),
 «Borrar partida» (con confirmación; `Guardado.borrar()`), «Créditos» y «Volver». Cada cambio se guarda al momento.
-Atrás y la acción `pausa` vuelven un nivel a la vez (`atras()` del menú y de la Configuración): cancelan el editor, la
-espera de un botón y la confirmación, de un subpanel vuelven a la lista, de la lista al menú, y en el menú piden
-confirmación antes de cerrar la app. Se maneja con toque, teclado y control (el foco empieza en la primera opción de
+Atrás y la acción `pausa` vuelven un nivel a la vez (`atras()` del menú y de la Configuración): cierran la lista de
+Recursos (y no hacen nada más si se cerró ese tick o el anterior), cancelan el editor, la espera de un botón y la
+confirmación, de un subpanel vuelven a la lista, de la lista al menú, y en el menú piden
+confirmación antes de cerrar la app. La zona de pruebas es un nivel más: su «Volver», Atrás y `pausa` regresan a la
+Configuración (`Configuracion.abrir_al_volver`, que el menú lee al entrar). Se maneja con toque, teclado y control (el foco empieza en la primera opción de
 cada pantalla). Las opciones nuevas de configuración se agregan a esa escena.

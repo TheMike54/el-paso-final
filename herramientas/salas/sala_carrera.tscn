@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://k7a08bqsbqd0" path="res://nucleo/sala.gd" id="1_sala"]
 [ext_resource type="Script" uid="uid://dmunerkne8s1e" path="res://nucleo/golpeable.gd" id="2_golpeable"]
+[ext_resource type="Script" uid="uid://hxki5pjykj50" path="res://herramientas/salas/franjas.gd" id="3_franjas"]
 
 [sub_resource type="RectangleShape2D" id="forma_suelo"]
 size = Vector2(4000, 80)
@@ -16,6 +17,13 @@ size = Vector2(80, 720)
 script = ExtResource("1_sala")
 limites = Rect2(0, 0, 4000, 720)
 habilidades_de_prueba = Array[StringName]([&"pluma", &"impulso"])
+
+[node name="Marcas" type="Node2D" parent="."]
+script = ExtResource("3_franjas")
+area = Rect2(80, 520, 3480, 160)
+separacion = 200.0
+ancho = 12.0
+color_franja = Color(0.35, 0.35, 0.45, 1)
 
 [node name="Entrada" type="Marker2D" parent="."]
 position = Vector2(300, 680)

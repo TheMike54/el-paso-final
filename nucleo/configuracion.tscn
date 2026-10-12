@@ -70,9 +70,10 @@ theme_override_font_sizes/font_size = 28
 text = "Volumen"
 
 [node name="Barra" type="HSlider" parent="Lista/Caja/Opciones/Volumen"]
+custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
 size_flags_horizontal = 3
-size_flags_vertical = 4
+size_flags_vertical = 3
 step = 5.0
 value = 100.0
 

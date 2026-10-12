@@ -36,23 +36,20 @@ Pasos 1, 2, 3, 5 y 6 cumplidos (06-oct-2026; detalle en git). Abiertos:
 ## Arreglos tras la prueba en teléfonos (12-oct-2026; plan `nucleo-arreglos-telefono.md`, aprobado)
 
 Fallos, por importancia:
-1. FPS en el S50 (SC7731E, Mali-T820, 68 MB libres). Los 35-40 jugando del 11-oct-2026 fueron con el teléfono
-   caliente: frío, todo va a 59-60 en bajo. En Sala Recursos en alto, jugando (APK de diagnóstico, depuración):
-   55,9 normal; 59,4 sin dibujar los controles; 56,8 sin redibujo por arrastre; ~58 sin HUD; Sala Cámara 59,1.
-   Controles (~3,5 FPS) y HUD (~2) cuestan por su `_draw`, no por la lógica. Fases B y C del plan; después, medir
-   otra vez, también en caliente y en publicación.
-2. Multitoque: el panel del S50 (`tlsc6x_touch`, protocolo A) no declara su máximo; por la prueba, 2 toques.
-   Falta confirmarlo con `getevent -lt` y 1 a 4 dedos. Regla a escribir en el contrato: ninguna mecánica pide más
+1. FPS en el S50 (SC7731E, Mali-T820). Los 35-40 del 11-oct-2026 fueron con el teléfono caliente: frío, 59-60 en
+   bajo. En Sala Recursos en alto, jugando: 55,9 antes y 58,4 con las fases B y C (controles y HUD agrupados). El
+   atlas de la fase D no se hace (~1 FPS en un modo que el S50 no usa). Falta medir en publicación y en caliente
+   (10 min, bajo y alto): de eso depende el tope de 30 FPS.
+2. Multitoque: el panel del S50 (`tlsc6x_touch`, protocolo A) reporta 2 toques como máximo (`getevent -lt` con 1
+   a 4 dedos, 12-oct-2026: solo los IDs 0 y 1). Regla a decidir para el contrato: ninguna mecánica pide más
    que joystick + un botón. Choca: salto alto (Saltar mantenido) + Atacar, e Impulso + Saltar sin levantar el dedo.
-3. Zona de pruebas: unos 33 botones en 3 columnas no caben en 480 px y no se desplazan; quedan fuera la primera
-   fila, «Zona Prueba 4» y «Volver al menú». Atrás lleva al menú y no a Configuración.
-4. Volumen: el `HSlider` no tiene tamaño mínimo (unos 10 px físicos de alto en el S50); el dedo no le atina.
-5. Ícono de guardado en (0.94, 0.9): lo tapaba Saltar. Ya va bajo las PejeCoins (fase C); falta verlo en el S50.
+3. Zona de pruebas, volumen, lista de Recursos e ícono de guardado: arreglados y vistos en el S50 con `adb`
+   (12-oct-2026); con el dedo de la persona, sin probar.
 
-Señales: destello en el parry (hoy solo vibración, 3 ticks de congelado y el golpe); el congelado de daño y de
-vencer (4 ticks) no se ve a 45 FPS; marcas en la sala de carrera y color de carrera más fuerte; aviso de brújula;
-el caso de QA del ataque en carrera dice qué debe verse. Diseño: banco con Mochila y Mapa grandes; Configuración
-táctil en una columna con filas de 72 px; estados del mapa con capturas de Hollow Knight y Silksong.
+Señales (provisionales hasta el arte, fase F): destello blanco en el congelado y el parry, carrera azul claro,
+postes en la sala de carrera y aviso de brújula; el azul y el destello, sin ver en el teléfono. Diseño: banco con
+Mochila y Mapa grandes; Configuración táctil en una columna con filas de 72 px; estados del mapa con capturas de
+Hollow Knight y Silksong.
 
 ## Decisiones abiertas
 

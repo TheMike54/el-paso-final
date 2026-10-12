@@ -127,6 +127,16 @@ func _ready() -> void:
 	Ajustes.cargar(RUTA_PRUEBA)
 	_caso("elegir recursos bajo se guarda", Ajustes.recursos == Recursos.BAJO)
 	Ajustes.recursos = recursos_real
+	opcion_recursos.show_popup()
+	menu.notification(NOTIFICATION_WM_GO_BACK_REQUEST)
+	_caso("Atras con la lista de recursos abierta solo la cierra", not opcion_recursos.get_popup().visible and config.visible and lista.visible)
+	# En Android la lista se cierra sola con Atras y despues llega el aviso: ese aviso tampoco sube de nivel.
+	opcion_recursos.show_popup()
+	opcion_recursos.get_popup().hide()
+	menu.notification(NOTIFICATION_WM_GO_BACK_REQUEST)
+	_caso("y el Atras que llega justo despues de cerrarla tampoco sube de nivel", config.visible and lista.visible)
+	for i: int in range(3):
+		await get_tree().physics_frame
 
 	# Volumen.
 	(config.get_node(^"Lista/Caja/Opciones/Volumen/Barra") as HSlider).value = 40.0
@@ -163,6 +173,15 @@ func _ready() -> void:
 	(menu.get_node(^"Centro/Opciones/Configuracion") as Button).pressed.emit()
 	_boton(config, "Volver").pressed.emit()
 	_caso("Volver cierra Configuracion", centro.visible and not config.visible)
+
+	# Al volver de la zona de pruebas, el menu se abre en Configuracion (un nivel atras de la zona), una sola vez.
+	Configuracion.abrir_al_volver = true
+	var otro: Control = ESCENA_MENU.instantiate() as Control
+	add_child(otro)
+	var config_otro: Configuracion = otro.get_node(^"Configuracion") as Configuracion
+	_caso("al volver de la zona de pruebas el menu abre Configuracion", config_otro.visible and not (otro.get_node(^"Centro") as Control).visible and not Configuracion.abrir_al_volver)
+	remove_child(otro)
+	otro.free()
 
 	for ruta: String in [RUTA_PRUEBA, RUTA_PARTIDA]:
 		if FileAccess.file_exists(ruta):

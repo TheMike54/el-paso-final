@@ -39,6 +39,10 @@ func _ready() -> void:
 	_no.pressed.connect(_cancelar_salida)
 	_leer_partida()
 	_nueva.grab_focus()
+	if Configuracion.abrir_al_volver:
+		Configuracion.abrir_al_volver = false
+		abrir_configuracion()
+		configuracion.enfocar_zona()
 
 
 func _leer_partida() -> void:

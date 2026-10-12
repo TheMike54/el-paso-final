@@ -49,19 +49,31 @@ pasa por el `revisor`)
 - Hito: `validar.ps1` con `fallos=0`; los guiones `fundido_*`, `recursos_cuentas`, `mapa_cuentas` y los del HUD y
   el guardado dan `GUION OK`.
 
-**D. Según la medición con B y C** (condicional)
-- Si los controles visibles siguen costando: atlas de aro y disco hecho por código (O-02, paso 2).
+**D. Según la medición con B y C** (condicional; decidida el 12-oct-2026)
+- Si los controles visibles siguen costando: atlas de aro y disco hecho por código (O-02, paso 2). **No se hace**:
+  con B y C, alto da 58,4 de media y bajo (lo que el automático elige en el S50) 59-60; quedaría ~1 FPS por ganar
+  en un modo que el S50 no usa por omisión. Se retoma si la medición en publicación o en caliente cae en bajo.
 - Si con el teléfono caliente (10 min de juego) cae: tope de 30 FPS estables o resolución menor en bajo.
+  **Pendiente**: necesita la prueba en caliente con la persona (10 min en la sala de recursos, en bajo y en alto).
 
 **E. Mapa** (hecha el 12-oct-2026): O-03, el marcador como nodo aparte y las texturas cargadas en `dibujar()`, no en
 `_draw`, y soltadas al ocultarse; los nombres y centros de zona se calculan al preparar la vista. Hito: `mapa_cuentas`
 con 19 casos (nuevo: el marcador sigue al jugador con el mapa rápido).
 
-**F. Fallos 2 a 4 y señales de `ESTADO.md`**
-- Multitoque: espera la prueba con `getevent` y dos decisiones (regla «joystick + un botón», salto alto + Atacar).
-- Zona de pruebas desplazable, con Volver visible y Atrás a Configuración. Volumen con área de toque de 64 px.
-- Señales: destello del parry, congelado visible, marcas de la sala de carrera, aviso de brújula, caso de QA del
-  ataque en carrera.
+**F. Fallos 2 a 4 y señales de `ESTADO.md`** (hecha el 12-oct-2026 salvo el multitoque)
+- Multitoque: prueba hecha el 12-oct-2026 (`getevent -lt`, 1 a 4 dedos y jugando, 60 s): el S50 reporta 2 toques
+  como máximo. **Pendiente**: dos decisiones de la persona (regla «joystick + un
+  botón», salto alto + Atacar).
+- Zona de pruebas desplazable, con Volver visible y Atrás a Configuración. Volumen con área de toque de 64 px; lista
+  de Recursos con letra 30. Visto en el S50 con `adb`: las 31 salas caben en 5 columnas; Volver y Atrás vuelven a
+  Configuración con el foco en «Zona de pruebas»; un toque 21 px sobre la barra mueve el volumen; las opciones de
+  Recursos miden unos 45 px. Ahí apareció un fallo nuevo, arreglado: Atrás con la lista abierta subía al menú
+  (`docs/errores/2026-10-12-atras-con-lista-de-recursos.md`, 2 casos más en `menu_configuracion`, 38).
+- Señales, provisionales hasta el arte: el jugador se pinta blanco mientras dura un congelado y 8 ticks más tras un
+  parry (`COLOR_DESTELLO`, `TICKS_DESTELLO_PARRY`); la carrera, azul claro (`COLOR_CORRIENDO`); postes cada 200 px
+  en la sala de carrera (`franjas.gd`); «Brújula puesta/quitada» sobre el interruptor 2 s. Filas «Carrera y ataque en
+  carrera» y «Parry y congelado» en `docs/pruebas.md`. Vistos en el S50: postes, aviso de brújula y el ícono de
+  guardado bajo los PejeCoins. Sin ver: el azul y el destello (con `adb` no se simulan joystick y botón a la vez).
 
 ## No se hace y por qué
 - O-04 (fondo): medido sin costo.

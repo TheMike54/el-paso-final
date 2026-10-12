@@ -14,7 +14,12 @@ const COLOR_DESCANSANDO: Color = Color(0.7, 0.75, 0.9)
 const ALTO_SENTADO: float = 110.0
 const COLOR_ATAQUE: Color = Color(1.0, 0.9, 0.5, 0.5)
 ## Dibujo de prueba de la carrera y de su giro mientras no hay arte.
-const COLOR_CORRIENDO: Color = Color(0.8, 0.9, 1.0)
+## Provisionales hasta el arte (12-oct-2026): en el S50 el azul de la carrera no se distinguia del color normal, y
+## el parry y el congelado de 3 a 4 ticks no se notaban. Blanco mientras todo esta congelado y unos ticks mas tras
+## un parry.
+const COLOR_CORRIENDO: Color = Color(0.4, 0.7, 1.0)
+const COLOR_DESTELLO: Color = Color(1.0, 1.0, 1.0)
+const TICKS_DESTELLO_PARRY: int = 8
 const ANCHO_GIRANDO: float = 40.0
 const NUNCA: int = 1000000
 const ESCENA_PROYECTIL: PackedScene = preload("res://nucleo/proyectil.tscn")
@@ -234,6 +239,7 @@ var _ticks_atacando: int = 0
 var _ticks_hasta_ataque: int = 0
 var _golpeados: Array[Golpeable] = []
 var _ticks_sin_dano: int = 0
+var _ticks_destello: int = 0
 var _ticks_retrocediendo: int = 0
 var _sentido_retroceso: float = 0.0
 var _ticks_rebote: int = 0
@@ -313,6 +319,8 @@ func _physics_process(delta: float) -> void:
 	# Antes de _mover, igual que un DanoContacto (que se procesa antes que el jugador): asi el fundido de un
 	# peligro cuenta sus ticks a la par del Fundido y el jugador pasa al punto con la pantalla en negro.
 	_revisar_salida_por_abajo()
+	if _ticks_destello > 0 and not Congelado.activo():
+		_ticks_destello -= 1
 	_mover(delta)
 	_seguir_con_camara(delta)
 
@@ -877,6 +885,7 @@ func _parar(ataque: AtaqueEnemigo) -> void:
 	paradas += 1
 	_ticks_sin_dano = maxi(_ticks_sin_dano, ticks_invulnerable_parry)
 	Congelado.pedir(ticks_congelado_parry)
+	_ticks_destello = TICKS_DESTELLO_PARRY
 	# La senal va antes del golpe al dueno: la vibracion del parry gana el tick a la de pegar.
 	Eventos.parry.emit()
 	var enemigo: Enemigo = ataque.get_parent() as Enemigo
@@ -1126,6 +1135,8 @@ func _draw() -> void:
 		color = COLOR_DESCANSANDO
 	if muerto:
 		color = COLOR_MUERTO
+	elif Congelado.activo() or _ticks_destello > 0:
+		color = COLOR_DESTELLO
 	elif _ticks_sin_dano > 0:
 		color = COLOR_INVULNERABLE
 	elif curando:
