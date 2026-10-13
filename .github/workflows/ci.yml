@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  validar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Commit messages without assistant attribution
+        shell: bash
+        env:
+          EVENTO: ${{ github.event_name }}
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          if [ "$EVENTO" = "pull_request" ]; then rango=("$BASE..$HEAD"); else rango=(-1 HEAD); fi
+          if git log --format=%B "${rango[@]}" | grep -inE '^(co-authored-by:.*(claude|anthropic)|claude-session:)|generated with \[?claude'; then
+            echo "::error::A commit message carries an AI assistant attribution line"
+            exit 1
+          fi
+
+      - name: No local or binary files tracked
+        shell: bash
+        run: |
+          if git ls-files | grep -E '(^|/)(CLAUDE\.local\.md|settings\.local\.json)$|\.(apk|aab|keystore|jks)$'; then
+            echo "::error::Local-only or binary files are tracked"
+            exit 1
+          fi
+
+      - uses: chickensoft-games/setup-godot@v2
+        with:
+          version: 4.7.2
+          use-dotnet: false
+          include-templates: false
+
+      - name: Import and validate
+        shell: bash
+        run: |
+          godot --headless --path . --import 2>&1 | tee validar.log
+          godot --headless --path . res://herramientas/validar.tscn --quit-after 600 2>&1 | tee -a validar.log
+          if grep -nE 'SCRIPT ERROR|^[[:space:]]*ERROR:|^FALLO ' validar.log; then
+            echo "::error::Validation found errors"
+            exit 1
+          fi
+          grep -qE '^VALIDACION archivos=[0-9]+ fallos=0' validar.log || { echo "::error::The validator scene did not finish"; exit 1; }
+
+      - name: Input scripts
+        shell: bash
+        run: |
+          shopt -s nullglob globstar
+          estado=0
+          for guion in herramientas/guiones/**/*.guion; do
+            salida=$(godot --headless --path . --fixed-fps 60 --quit-after 7200 -- --guion="$guion" 2>&1) || true
+            if ! grep -q '^GUION OK' <<<"$salida" || grep -qE 'SCRIPT ERROR|^[[:space:]]*ERROR:' <<<"$salida"; then
+              echo "::error file=$guion::$(grep -E '^GUION|ERROR' <<<"$salida" | head -3 | tr '\n' ' ')"
+              estado=1
+            fi
+          done
+          exit "$estado"

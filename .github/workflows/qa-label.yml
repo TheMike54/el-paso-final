@@ -1,0 +1,36 @@
+name: QA label
+
+on:
+  pull_request:
+    types: [opened, reopened, ready_for_review]
+  pull_request_review:
+    types: [submitted, dismissed]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  qa-pending:
+    # Solo ramas del propio repo: en un PR desde un fork el token es de solo lectura.
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/github-script@v9
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const destino = { ...context.repo, issue_number: pr.number };
+            const poner = () => github.rest.issues.addLabels({ ...destino, labels: ['qa-pending'] });
+            const quitar = () => github.rest.issues.removeLabel({ ...destino, name: 'qa-pending' })
+              .catch((e) => { if (e.status !== 404) throw e; });
+
+            if (context.eventName === 'pull_request') return poner();
+
+            const review = context.payload.review;
+            const estado = String(review.state).toLowerCase();
+            const delEquipo = ['OWNER', 'COLLABORATOR', 'MEMBER'].includes(review.author_association);
+            if (context.payload.action === 'dismissed' || estado === 'changes_requested') return poner();
+            if (estado === 'approved' && delEquipo) return quitar();

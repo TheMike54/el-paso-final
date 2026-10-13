@@ -1,0 +1,25 @@
+{
+  "attribution": { "commit": "", "pr": "", "sessionUrl": false },
+  "permissions": {
+    "deny": [
+      "Bash(git commit *)", "Bash(git push *)",
+      "PowerShell(git commit *)", "PowerShell(git push *)",
+      "Read(**/*.keystore)", "Read(**/*.jks)", "Read(**/.env*)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash|PowerShell|Monitor",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell.exe",
+            "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "${CLAUDE_PROJECT_DIR}/.claude/hooks/sin-commit.ps1"],
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,23 @@
+name: Feature
+description: New behaviour with a verifiable acceptance criterion
+title: "feat: "
+body:
+  - type: textarea
+    id: current
+    attributes:
+      label: Current behaviour
+    validations:
+      required: true
+  - type: textarea
+    id: desired
+    attributes:
+      label: Desired behaviour
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criterion
+      description: Given [initial state], when [event], then [observable result]
+    validations:
+      required: true

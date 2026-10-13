@@ -38,7 +38,24 @@ Los comandos son de PowerShell.
    & $env:GODOT_PATH --headless --path . --import
    ```
 
-4. Abrir el proyecto en el editor:
+4. Revisar el entorno. El script comprueba Godot, `GODOT_PATH` y la identidad de git, activa el hook de git del
+   repositorio (`core.hooksPath` no viaja al clonar) y debe terminar con `ENTORNO OK`:
+
+   ```powershell
+   .\herramientas\verificar-entorno.ps1
+   ```
+
+   Si PowerShell no deja correr scripts:
+   `powershell -ExecutionPolicy Bypass -File .\herramientas\verificar-entorno.ps1`. Claude Code no hace falta
+   para correr el proyecto; si está instalado, el script revisa su versión.
+
+5. Validar el proyecto. Pasa solo si imprime `OK  VALIDACION archivos=N fallos=0`:
+
+   ```powershell
+   .\herramientas\validar.ps1
+   ```
+
+6. Abrir el proyecto en el editor:
 
    ```powershell
    & $env:GODOT_PATH --path . --editor
