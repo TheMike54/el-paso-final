@@ -114,8 +114,8 @@ func _draw() -> void:
 			var lleno: float = clampf(float(inspiracion - i * INSPIRACION_POR_BLOQUE) / INSPIRACION_POR_BLOQUE, 0.0, 1.0)
 			if lleno > 0.0:
 				draw_rect(Rect2(x, y, ancho_bloque * lleno, ALTO_BLOQUE * corto), COLOR_LLENO)
-		draw_string(fuente, Vector2(izquierda, _base_monedas(corto)), "%d PejeCoins" % monedas,
-				HORIZONTAL_ALIGNMENT_LEFT, -1, tamano_letra, COLOR_LLENO)
+	draw_string(fuente, Vector2(izquierda, _base_monedas(corto)), "%d PejeCoins" % monedas,
+			HORIZONTAL_ALIGNMENT_LEFT, -1, tamano_letra, COLOR_LLENO)
 
 
 # El borde izquierdo queda fijo con las vidas iniciales centradas en CENTRO: una vida mas crece

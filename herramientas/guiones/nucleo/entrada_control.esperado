@@ -1,4 +1,4 @@
-# Los 16 casos de herramientas/salas/prueba_control.gd: las 13 filas del mapeo, el gatillo a
-# medias, el stick dentro de la zona muerta, y el gatillo izquierdo y RB libres.
+# Los 16 casos de herramientas/salas/prueba_control.gd: las filas del mapeo (LB da mapa rapido y pagina
+# anterior; RB, pagina siguiente), el gatillo a medias, el stick dentro de la zona muerta y el gatillo izquierdo libre.
 valor . casos 16
 valor . fallos 0

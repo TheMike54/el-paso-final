@@ -1,15 +1,15 @@
 class_name PantallaMapa
 extends CanvasLayer
-# Pantalla del mapa, como en Hollow Knight y Silksong: la accion mapa abre el mapa completo (detiene el juego) y
-# mapa_rapido, mantenida, lo muestra encima mientras se camina. Dos estados, alejado y acercado, con + y -. Sin
-# la habilidad pluma_mapa no hay nada dibujado; el jugador se ve solo con el amuleto brujula equipado. La carga
-# la sala con load() si existe: el nucleo no depende de este bloque. No conoce ninguna zona.
+# Pantalla del mapa, como en Hollow Knight y Silksong: es la pagina Mapa del marco de menus (MarcoMenus, que la
+# abre con la accion mapa y detiene el juego) y mapa_rapido, mantenida, la muestra encima mientras se camina. Dos
+# estados, alejado y acercado, con + y -. Sin la habilidad pluma_mapa no hay nada dibujado; el jugador se ve solo
+# con el amuleto brujula equipado. La carga la sala con load() si existe: el nucleo no depende de este bloque.
 
-const GRUPO: StringName = &"pantalla_encima"
+const CAPA: int = 20
 const PLUMA: StringName = &"pluma_mapa"
 const BRUJULA: StringName = &"brujula"
 
-## Mapa completo abierto (juego detenido) y mapa rapido a la vista. Publicas para los guiones.
+## Mapa completo a la vista en el marco (juego detenido) y mapa rapido a la vista. Publicas para los guiones.
 var abierta: bool = false
 var rapido: bool = false
 ## Estado del mapa completo: acercado a la zona actual o alejado con todas.
@@ -18,7 +18,6 @@ var acercado: bool = true
 var lienzo: LienzoMapa = null
 
 var _indice: IndiceSalas = null
-var _tick_cerrada: int = -10
 var _botones: HBoxContainer = null
 var _mas: Button = null
 var _menos: Button = null
@@ -28,8 +27,8 @@ var _con_brujula: bool = false
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	layer = 20
-	add_to_group(GRUPO)
+	layer = CAPA
+	add_to_group(MarcoMenus.GRUPO_PAGINAS)
 	_indice = IndiceSalas.cargar()
 	var fondo: ColorRect = ColorRect.new()
 	fondo.color = Color(0.0, 0.0, 0.0, 0.85)
@@ -49,7 +48,6 @@ func _ready() -> void:
 	add_child(_botones)
 	_menos = _boton("−", alejar)
 	_mas = _boton("+", acercar)
-	_boton("Cerrar", cerrar)
 	visible = false
 	Eventos.descanso_en_banco.connect(_al_descansar)
 
@@ -57,20 +55,17 @@ func _ready() -> void:
 func _boton(texto: String, al_tocar: Callable) -> Button:
 	var boton: Button = Button.new()
 	boton.text = texto
-	boton.custom_minimum_size = Vector2(120.0, 96.0)
+	boton.custom_minimum_size = Vector2(120.0, Tema.ALTO_TOQUE)
 	boton.add_theme_font_size_override(&"font_size", 40)
 	boton.pressed.connect(al_tocar)
 	_botones.add_child(boton)
 	return boton
 
 
-# Se leen acciones con nombre, como la pausa: las abren igual el teclado, el control, el boton tactil y un guion.
+# El mapa rapido lee su accion: lo muestran igual el teclado, el control y un guion. Con el juego detenido (el marco
+# o la pausa abiertos) no responde.
 func _physics_process(_delta: float) -> void:
-	if Input.is_action_just_pressed(&"mapa"):
-		alternar()
-	elif abierta and Input.is_action_just_pressed(&"pausa"):
-		cerrar()
-	elif not abierta:
+	if not abierta:
 		var mantiene: bool = Input.is_action_pressed(&"mapa_rapido") and not get_tree().paused
 		if mantiene != rapido:
 			rapido = mantiene
@@ -79,36 +74,27 @@ func _physics_process(_delta: float) -> void:
 		_seguir_jugador()
 
 
-func _notification(que: int) -> void:
-	if que == NOTIFICATION_WM_GO_BACK_REQUEST and abierta:
-		cerrar()
+func id_pagina() -> StringName:
+	return &"mapa"
 
 
-func alternar() -> void:
-	if abierta:
-		cerrar()
-	else:
-		abrir()
+func titulo_pagina() -> String:
+	return "Mapa"
 
 
-## Abre el mapa completo, salvo con el juego ya detenido (la pausa abierta).
-func abrir() -> void:
-	if abierta or get_tree().paused:
-		return
+## El marco la muestra con el juego ya detenido: el mapa completo, acercado a la zona actual.
+func mostrar_en_marco() -> void:
 	abierta = true
 	rapido = false
 	acercado = true
-	get_tree().paused = true
 	_mostrar()
 	_menos.grab_focus()
 
 
-func cerrar() -> void:
+func ocultar_de_marco() -> void:
 	if not abierta:
 		return
 	abierta = false
-	_tick_cerrada = Engine.get_physics_frames()
-	get_tree().paused = false
 	_mostrar()
 
 
@@ -122,11 +108,6 @@ func alejar() -> void:
 	_mostrar()
 
 
-## La pausa no se abre con el mapa abierto ni en el tick en que se cerro (la misma pulsacion de pausa o Atras).
-func bloquea_pausa() -> bool:
-	return abierta or Engine.get_physics_frames() == _tick_cerrada
-
-
 # Con el mapa rapido a la vista, cada tick solo se mueve el marcador: el mapa no se rehace ni se redibuja. Equipar o
 # quitar la brujula a la vista lo rehace una vez.
 func _seguir_jugador() -> void:
@@ -138,7 +119,7 @@ func _seguir_jugador() -> void:
 	var sala: Sala = get_parent() as Sala
 	if sala == null:
 		return
-	var jugador: Node2D = sala.get_node_or_null(^"Jugador") as Node2D
+	var jugador: Node2D = get_tree().get_first_node_in_group(&"jugador") as Node2D
 	if jugador != null:
 		lienzo.mover_marcador(sala.posicion_mapa + jugador.position)
 
@@ -152,6 +133,8 @@ func _al_descansar(_banco: StringName) -> void:
 func _mostrar() -> void:
 	visible = abierta or rapido
 	_botones.visible = abierta
+	# En el marco, la barra de arriba tapa esa franja: el mapa se encaja debajo.
+	lienzo.offset_top = MarcoMenus.ALTO_BARRA if abierta else 0.0
 	_con_brujula = Partida.amuletos_equipados.has(BRUJULA)
 	if not visible:
 		lienzo.soltar_texturas()
@@ -163,7 +146,7 @@ func _mostrar() -> void:
 	var marcador: Vector2 = Vector2.ZERO
 	var con_marcador: bool = false
 	if sala != null and _indice.rectangulos.has(sala.id) and Partida.amuletos_equipados.has(BRUJULA):
-		var jugador: Node2D = sala.get_node_or_null(^"Jugador") as Node2D
+		var jugador: Node2D = get_tree().get_first_node_in_group(&"jugador") as Node2D
 		if jugador != null:
 			marcador = sala.posicion_mapa + jugador.position
 			con_marcador = true

@@ -1,10 +1,9 @@
 # Interfaz
 
-Lo que se dibuja encima del juego: hoy los corazones de vida, la barra de Inspiración, las PejeCoins y el ícono
-de guardado (`interfaz.tscn`, script `hud.gd`). Los menús todavía viven en `nucleo/`.
+Lo que se dibuja encima del juego (`interfaz.tscn`, script `hud.gd`). Los menús son de `nucleo/`.
 
 ## Primero
-Leer `funciones.json` de esta carpeta: la primera funcionalidad con `"pasa": false` es la que sigue.
+Leer `funciones.json` de esta carpeta.
 
 ## Reglas
 - Se entera de todo por el bus de eventos (`Eventos`) y lee `Partida` solo al entrar a la sala, para el primer
@@ -12,10 +11,10 @@ Leer `funciones.json` de esta carpeta: la primera funcionalidad con `"pasa": fal
 - La sala carga `interfaz.tscn` con `load()` si existe: el núcleo no depende de este bloque. Si se mueve o se
   renombra, se cambia `Sala.INTERFAZ` en el mismo cambio.
 - Posiciones como en el diseño: centro en fracción de una pantalla 16:9, anclado a su esquina y medido en el lado
-  corto, como los botones táctiles. Nada fuera de la pantalla en 16:9, 20:9 ni 4:3.
-- Todo en gris hasta tener arte; cada herramienta de IA nueva o recurso ajeno, en `docs/uso-de-ia.md`.
+  corto, como los botones táctiles. Nada fuera de la pantalla en todo el rango de la vista, de 4:3 a 22:9.
+- Todo en gris hasta tener arte.
 
 ## Cómo se comprueba
 - `.\herramientas\validar.ps1` y los guiones de `herramientas/guiones/interfaz/`, que leen lo que muestra el `Hud`
   (`vidas`, `bloques_llenos`, `aviso_visible`) con la clave `valor`.
-- Si se ve bien y no estorba lo juzga la persona en el teléfono.
+- En el teléfono, la fila «Interfaz» de `docs/pruebas.md`.

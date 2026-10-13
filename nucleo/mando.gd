@@ -5,7 +5,10 @@ extends RefCounted
 # movimiento ni impulso (RT) ni interactuar (stick arriba), que en project.godot no tienen boton. Lo que se cambia se guarda en Ajustes ("mando") y se aplica al InputMap al cargarlos. Estatico,
 # como Ajustes: el InputMap es uno solo para todo el juego.
 
-const REASIGNABLES: Array[StringName] = [&"saltar", &"atacar", &"curar", &"mapa", &"mapa_rapido", &"mochila", &"pausa"]
+const REASIGNABLES: Array[StringName] = [&"saltar", &"atacar", &"curar", &"mapa", &"mapa_rapido", &"inventario", &"pausa"]
+## Nombre que tenia inventario en ajustes de antes del 13-oct-2026, y el nuevo: aplicar() los traduce.
+const ACCION_VIEJA: String = "mochila"
+const ACCION_RENOMBRADA: StringName = &"inventario"
 ## Nombre en pantalla de cada boton de un control estandar (indices de JoyButton).
 const NOMBRES: PackedStringArray = ["A / Cruz", "B / Circulo", "X / Cuadrado", "Y / Triangulo", "Select", "Guia", "Start", "Stick izq.", "Stick der.", "LB / L1", "RB / R1", "Arriba", "Abajo", "Izquierda", "Derecha"]
 
@@ -81,7 +84,11 @@ static func aplicar(guardado: Variant) -> void:
 	por_omision()
 	if typeof(guardado) != TYPE_DICTIONARY:
 		return
-	var cambios: Dictionary = guardado
+	var cambios: Dictionary = (guardado as Dictionary).duplicate()
+	# La accion mochila se renombro inventario (13-oct-2026): unos ajustes viejos guardan su boton con el nombre viejo.
+	if cambios.has(ACCION_VIEJA) and not cambios.has(String(ACCION_RENOMBRADA)):
+		cambios[String(ACCION_RENOMBRADA)] = cambios[ACCION_VIEJA]
+	cambios.erase(ACCION_VIEJA)
 	for clave: Variant in cambios:
 		var accion: StringName = StringName(str(clave))
 		var valor: Variant = cambios[clave]

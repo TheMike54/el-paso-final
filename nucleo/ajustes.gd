@@ -7,7 +7,7 @@ extends RefCounted
 
 const VERSION: int = 1
 const RUTA: String = "user://ajustes.json"
-## Valores por omision de los interruptores; la disposicion de los botones tiene los suyos en
+## Valores por omision de las opciones de si o no; la disposicion de los botones tiene los suyos en
 ## DisposicionControles.por_omision().
 const POR_OMISION: Dictionary[String, bool] = {"vibracion": true, "temblor": true, "modo_desarrollador": false}
 const VOLUMEN_POR_OMISION: float = 1.0

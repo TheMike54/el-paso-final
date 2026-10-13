@@ -9,7 +9,7 @@ extends Node
 const FICHA_PRUEBA: String = "res://nucleo/sonidos/sonidos_prueba.tres"
 const BUS: StringName = &"Efectos"
 
-## Efectos a la vez: el siguiente toma la voz que lleva mas tiempo sonando.
+## Efectos a la vez. Van en rueda: el siguiente toma la voz que empezo hace mas tiempo, aunque otra ya este libre.
 @export var voces: int = 4
 ## Ticks minimos entre dos veces el mismo evento (la onda de la picada golpea a varios en un tick). Dano y parry no
 ## esperan, como en Vibracion.

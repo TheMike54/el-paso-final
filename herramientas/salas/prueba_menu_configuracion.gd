@@ -3,8 +3,9 @@ extends Node
 # y el editor de controles con Atras (la notificacion de Android) y con la accion pausa, que vuelven un nivel a
 # la vez. Comprueba tambien lo que puede romperse: Listo guarda la disposicion, reasignar un boton del control
 # intercambia con la accion que lo tenia y se guarda, el modo desarrollador muestra la zona de pruebas en el menu y se
-# recuerda, el panel de audio guarda cada volumen en su ajuste y su bus, el brillo se guarda (tambien con - y +), las columnas segun el ancho de la
-# vista y el aviso de pocos toques sale solo cuando toca. Todo en archivos de prueba. Deja casos y fallos
+# recuerda, el panel de audio guarda cada volumen en su ajuste y su bus (barra, teclas y altavoz), las opciones
+# de si o no y Recursos cambian con un toque, la pantalla de brillo guarda al soltar y muestra la foto o la escena de
+# muestra, las columnas segun el ancho de la vista y el aviso de pocos toques sale solo cuando toca. Todo en archivos de prueba. Deja casos y fallos
 # para menu_configuracion.guion. Imprime el resumen y los fallos.
 
 const ESCENA_MENU: PackedScene = preload("res://nucleo/menu.tscn")
@@ -101,6 +102,8 @@ func _ready() -> void:
 	Mando.aplicar({"saltar": float(Mando.boton_de(&"curar")), "atacar": 999.0, "curar": "x"})
 	# saltar pide el boton de curar: curar recibe el de saltar; atacar fuera de rango y curar no numerico se ignoran.
 	_caso("aplicar un archivo con un boton repetido intercambia y descarta lo invalido", Mando.boton_de(&"curar") == saltar and Mando.boton_de(&"atacar") == atacar and Mando.boton_de(&"saltar") != saltar)
+	Mando.aplicar({"mochila": float(saltar)})
+	_caso("unos ajustes viejos con el boton de mochila se lo dan a inventario", Mando.boton_de(&"inventario") == saltar and not InputMap.has_action(&"mochila"))
 	config._esperar_boton(&"curar")
 	menu.notification(NOTIFICATION_WM_GO_BACK_REQUEST)
 	_caso("Atras mientras espera un boton cancela la espera y sigue en el panel", config.esperando.is_empty() and panel_mando.visible)
@@ -110,9 +113,10 @@ func _ready() -> void:
 	_caso("Atras en el panel del control vuelve a la lista", lista.visible and not panel_mando.visible)
 
 	# Modo desarrollador: al volver al menu, este muestra la zona de pruebas; se recuerda.
-	var modo: CheckButton = config.get_node(NodePath(OPCIONES + "ModoDesarrollador")) as CheckButton
-	modo.button_pressed = true
-	_caso("el interruptor dice su estado con palabras", modo.text.ends_with("sí"))
+	var modo: BotonValor = config.get_node(NodePath(OPCIONES + "ModoDesarrollador")) as BotonValor
+	_caso("las opciones de si o no son botones con pastilla, sin interruptor", modo != null and not modo.toggle_mode and modo.valor == "No" and modo.estilo == BotonValor.Estilo.NO)
+	modo.pressed.emit()
+	_caso("tocar el boton cambia el valor y la pastilla dice Si en dorado", Ajustes.modo_desarrollador and modo.valor == "Sí" and modo.estilo == BotonValor.Estilo.SI)
 	menu.notification(NOTIFICATION_WM_GO_BACK_REQUEST)
 	_caso("con el modo desarrollador el menu muestra la zona de pruebas", zona.visible and centro.visible)
 	(menu.get_node(^"Centro/Opciones/Configuracion") as Button).pressed.emit()
@@ -123,80 +127,122 @@ func _ready() -> void:
 	# Vibracion y temblor.
 	var vibracion_real: bool = Ajustes.vibracion
 	var temblor_real: bool = Ajustes.temblor
-	(config.get_node(NodePath(OPCIONES + "Vibracion")) as CheckButton).button_pressed = not vibracion_real
-	(config.get_node(NodePath(OPCIONES + "Temblor")) as CheckButton).button_pressed = not temblor_real
+	# Se lee el archivo tras cada toque: el segundo guarda todos los ajustes y taparia que el primero no guardo.
+	_boton(config, "Vibracion").pressed.emit()
 	Ajustes.vibracion = vibracion_real
+	Ajustes.cargar(RUTA_PRUEBA)
+	var vibracion_guardada: bool = Ajustes.vibracion != vibracion_real
+	_boton(config, "Temblor").pressed.emit()
 	Ajustes.temblor = temblor_real
 	Ajustes.cargar(RUTA_PRUEBA)
-	_caso("vibracion y temblor se guardan al cambiarlos", Ajustes.vibracion != vibracion_real and Ajustes.temblor != temblor_real)
+	_caso("vibracion y temblor se guardan al tocarlos", vibracion_guardada and Ajustes.temblor != temblor_real)
 	Ajustes.vibracion = vibracion_real
 	Ajustes.temblor = temblor_real
 
-	# Recursos: la opcion elegida se guarda.
+	# Recursos: cada toque pasa al siguiente y se guarda.
 	var recursos_real: String = Ajustes.recursos
-	var opcion_recursos: OptionButton = config.get_node(NodePath(OPCIONES + "Recursos")) as OptionButton
-	opcion_recursos.select(1)
-	opcion_recursos.item_selected.emit(1)
+	var recursos: BotonValor = _boton(config, "Recursos") as BotonValor
 	Ajustes.recursos = Recursos.AUTO
-	Ajustes.cargar(RUTA_PRUEBA)
-	_caso("elegir recursos bajo se guarda", Ajustes.recursos == Recursos.BAJO)
+	var vistos: PackedStringArray = []
+	for i: int in range(3):
+		recursos.pressed.emit()
+		Ajustes.recursos = ""
+		Ajustes.cargar(RUTA_PRUEBA)
+		vistos.append(Ajustes.recursos)
+	_caso("cada toque de Recursos pasa al siguiente y se guarda: bajo, alto y auto", vistos == PackedStringArray([Recursos.BAJO, Recursos.ALTO, Recursos.AUTO]))
+	_caso("en auto la pastilla dice lo que se eligio", Configuracion.nombre_recursos(Recursos.AUTO, true) == "Auto (bajo)" and Configuracion.nombre_recursos(Recursos.ALTO, true) == "Alto")
+	_caso("sin la partida no avisa de la siguiente sala", not (config.get_node(^"Lista/AvisoRecursos") as Label).text.contains("siguiente sala"))
+	config.en_partida = true
+	config.abrir()
+	recursos.pressed.emit()
+	_caso("en la partida, cambiar Recursos avisa que vale en la siguiente sala", (config.get_node(^"Lista/AvisoRecursos") as Label).text.contains("siguiente sala"))
+	_caso("en la partida no aparece Desarrollador", not modo.visible)
+	config.en_partida = false
+	config.abrir()
 	Ajustes.recursos = recursos_real
-	opcion_recursos.show_popup()
-	menu.notification(NOTIFICATION_WM_GO_BACK_REQUEST)
-	_caso("Atras con la lista de recursos abierta solo la cierra", not opcion_recursos.get_popup().visible and config.visible and lista.visible)
-	# En Android la lista se cierra sola con Atras y despues llega el aviso: ese aviso tampoco sube de nivel.
-	opcion_recursos.show_popup()
-	opcion_recursos.get_popup().hide()
-	menu.notification(NOTIFICATION_WM_GO_BACK_REQUEST)
-	_caso("y el Atras que llega justo despues de cerrarla tampoco sube de nivel", config.visible and lista.visible)
 	for i: int in range(3):
 		await get_tree().physics_frame
 
-	# Audio: un panel con tres barras, cada una en su ajuste y en su bus.
+	# Audio: un panel con tres barras anchas, cada una en su ajuste y en su bus, con altavoz.
 	_boton(config, "Audio").pressed.emit()
 	var panel_audio: Control = config.get_node(^"PanelAudio") as Control
 	var general: HSlider = _barra_audio(config, "General")
 	_caso("Audio abre su panel con el foco en General", panel_audio.visible and not lista.visible and general.has_focus())
+	_caso("las barras son anchas, sin - ni +", general.theme_type_variation == Tema.BARRA_ANCHA and config.get_node_or_null(^"PanelAudio/Desplazable/Centro/Filas/General/Mas") == null)
 	var antes: String = FileAccess.get_file_as_string(RUTA_PRUEBA)
 	general.value = 40.0
 	_barra_audio(config, "Musica").value = 30.0
 	_barra_audio(config, "Efectos").value = 70.0
 	_caso("mover una barra aplica pero no escribe el archivo hasta soltarla", is_equal_approx(Ajustes.volumen, 0.4) and FileAccess.get_file_as_string(RUTA_PRUEBA) == antes)
+	_caso("el porcentaje sigue a la barra", (config.get_node(^"PanelAudio/Desplazable/Centro/Filas/General/Porcentaje") as Label).text == "40 %")
+	# Salir desde el menu avisa el cierre a todo el arbol (Menu.salir): la barra sin soltar se guarda.
+	get_tree().root.propagate_notification(NOTIFICATION_WM_CLOSE_REQUEST)
+	_caso("el aviso de cierre guarda las barras que no se soltaron", FileAccess.get_file_as_string(RUTA_PRUEBA) != antes)
 	general.drag_ended.emit(true)
 	Ajustes.volumen = 1.0
 	Ajustes.volumen_musica = 1.0
 	Ajustes.volumen_efectos = 1.0
 	Ajustes.cargar(RUTA_PRUEBA)
 	_caso("cada volumen se guarda en su ajuste", is_equal_approx(Ajustes.volumen, 0.4) and is_equal_approx(Ajustes.volumen_musica, 0.3) and is_equal_approx(Ajustes.volumen_efectos, 0.7))
-	var musica: Button = config.get_node(^"PanelAudio/Desplazable/Centro/Filas/Musica/Mas") as Button
-	musica.pressed.emit()
-	musica.pressed.emit()
-	(config.get_node(^"PanelAudio/Desplazable/Centro/Filas/Musica/Menos") as Button).pressed.emit()
+	general.grab_focus()
+	_tecla(&"ui_right")
+	_tecla(&"ui_right")
+	_tecla(&"ui_left")
+	_caso("con teclado o control, izquierda y derecha mueven la barra de 10 en 10", is_equal_approx(general.value, 50.0))
+	general.value = 40.0
+	var altavoz: Button = config.get_node(^"PanelAudio/Desplazable/Centro/Filas/Musica/Silencio") as Button
+	altavoz.pressed.emit()
 	Ajustes.volumen_musica = 1.0
 	Ajustes.cargar(RUTA_PRUEBA)
-	_caso("+ y - mueven un volumen de 10 en 10 y lo guardan", is_equal_approx(Ajustes.volumen_musica, 0.4))
+	_caso("el altavoz silencia y lo guarda", is_equal_approx(Ajustes.volumen_musica, 0.0) and is_equal_approx(_barra_audio(config, "Musica").value, 0.0))
+	altavoz.pressed.emit()
+	Ajustes.volumen_musica = 1.0
+	Ajustes.cargar(RUTA_PRUEBA)
+	_caso("otro toque vuelve al volumen de antes y lo guarda", is_equal_approx(Ajustes.volumen_musica, 0.3))
 	var bus_musica: int = AudioServer.get_bus_index(Ajustes.BUS_MUSICA)
 	var bus_efectos: int = AudioServer.get_bus_index(Ajustes.BUS_EFECTOS)
 	_caso("los buses de musica y efectos existen y pasan por Master", bus_musica > 0 and bus_efectos > 0 and AudioServer.get_bus_send(bus_musica) == &"Master" and AudioServer.get_bus_send(bus_efectos) == &"Master")
-	_caso("cada volumen va a su bus", is_equal_approx(AudioServer.get_bus_volume_db(0), Ajustes.db_de(0.4)) and is_equal_approx(AudioServer.get_bus_volume_db(bus_musica), Ajustes.db_de(0.4)) and is_equal_approx(AudioServer.get_bus_volume_db(bus_efectos), Ajustes.db_de(0.7)))
+	_caso("cada volumen va a su bus", is_equal_approx(AudioServer.get_bus_volume_db(0), Ajustes.db_de(0.4)) and is_equal_approx(AudioServer.get_bus_volume_db(bus_musica), Ajustes.db_de(0.3)) and is_equal_approx(AudioServer.get_bus_volume_db(bus_efectos), Ajustes.db_de(0.7)))
 	_barra_audio(config, "Efectos").value = 0.0
 	_caso("en 0 su bus queda en silencio y los otros no", AudioServer.is_bus_mute(bus_efectos) and not AudioServer.is_bus_mute(bus_musica))
 	menu.notification(NOTIFICATION_WM_GO_BACK_REQUEST)
 	_caso("Atras en Audio vuelve a la lista con el foco en Audio", lista.visible and not panel_audio.visible and _boton(config, "Audio").has_focus())
-
-	# Brillo.
 	# El efecto en 0 se movio sin soltar: volver a la lista lo guarda.
 	Ajustes.cargar(RUTA_PRUEBA)
 	_caso("salir del panel guarda la barra que no se solto", is_equal_approx(Ajustes.volumen_efectos, 0.0))
-	(config.get_node(NodePath(OPCIONES + "Brillo/Medio/Barra")) as HSlider).value = 140.0
-	(config.get_node(NodePath(OPCIONES + "Brillo/Medio/Barra")) as HSlider).drag_ended.emit(true)
+	_boton(config, "Audio").pressed.emit()
+	(config.get_node(^"PanelAudio/Desplazable/Centro/Filas/Efectos/Silencio") as Button).pressed.emit()
+	_caso("silenciada arrastrando a 0, el altavoz la sube a la mitad", is_equal_approx(_barra_audio(config, "Efectos").value, Configuracion.VOLUMEN_AL_QUITAR_SILENCIO))
+	menu.notification(NOTIFICATION_WM_GO_BACK_REQUEST)
+
+	# Brillo: su pantalla, con la escena y la barra.
+	var brillo: BotonValor = _boton(config, "Brillo") as BotonValor
+	_caso("Brillo dice su valor y que abre otra pantalla", brillo.valor == "%d %%" % roundi(Ajustes.brillo * 100.0) and brillo.estilo == BotonValor.Estilo.ENLACE)
+	brillo.pressed.emit()
+	var panel_brillo: Control = config.get_node(^"PanelBrillo") as Control
+	var barra_brillo: HSlider = config.get_node(^"PanelBrillo/Columna/Fila/Barra") as HSlider
+	_caso("Brillo abre su pantalla con el foco en la barra", panel_brillo.visible and not lista.visible and barra_brillo.has_focus())
+	_caso("desde el menu no hay foto: se ve la escena de muestra", not config.brillo_con_foto())
+	barra_brillo.value = 140.0
+	_caso("la barra del brillo aplica pero no escribe hasta soltarla", is_equal_approx(Ajustes.brillo, 1.4) and not FileAccess.get_file_as_string(RUTA_PRUEBA).contains("1.4"))
+	barra_brillo.drag_ended.emit(true)
 	Ajustes.brillo = 1.0
 	Ajustes.cargar(RUTA_PRUEBA)
 	_caso("el brillo se guarda al soltar la barra", is_equal_approx(Ajustes.brillo, 1.4))
-	_boton(config, "Brillo/Menos").pressed.emit()
-	Ajustes.brillo = 1.0
-	Ajustes.cargar(RUTA_PRUEBA)
-	_caso("- mueve el brillo de 10 en 10 y se guarda", is_equal_approx(Ajustes.brillo, 1.3))
+	(config.get_node(^"PanelBrillo/Columna/Arriba/Volver") as Button).pressed.emit()
+	_caso("Volver vuelve a la lista con el foco en Brillo y su valor al dia", lista.visible and not panel_brillo.visible and brillo.has_focus() and brillo.valor == "140 %")
+	var foto: Image = Image.create_empty(64, 36, false, Image.FORMAT_RGBA8)
+	foto.fill(Color(0.5, 0.5, 0.5))
+	config.foto = foto
+	brillo.pressed.emit()
+	_caso("con la foto de la sala (desde la pausa) se ve la foto", config.brillo_con_foto())
+	menu.notification(NOTIFICATION_WM_GO_BACK_REQUEST)
+	_caso("Atras en Brillo vuelve a la lista", lista.visible and not panel_brillo.visible)
+	config.foto = Image.new()
+	brillo.pressed.emit()
+	_caso("una foto vacia usa la escena de muestra", not config.brillo_con_foto())
+	menu.notification(NOTIFICATION_WM_GO_BACK_REQUEST)
+	config.foto = null
 
 	_boton(config, "Creditos").pressed.emit()
 	_caso("Creditos abre su panel", (config.get_node(^"PanelCreditos") as Control).visible)
@@ -263,7 +309,19 @@ func _ready() -> void:
 
 
 func _barra_audio(config: Configuracion, nombre: String) -> HSlider:
-	return config.get_node(NodePath("PanelAudio/Desplazable/Centro/Filas/%s/Medio/Barra" % nombre)) as HSlider
+	return config.get_node(NodePath("PanelAudio/Desplazable/Centro/Filas/%s/Barra" % nombre)) as HSlider
+
+
+# Una accion de la interfaz (ui_left, ui_right) al control con el foco, como la manda el teclado o el control.
+func _tecla(accion: StringName) -> void:
+	var evento: InputEventAction = InputEventAction.new()
+	evento.action = accion
+	evento.pressed = true
+	get_viewport().push_input(evento)
+	evento = InputEventAction.new()
+	evento.action = accion
+	evento.pressed = false
+	get_viewport().push_input(evento)
 
 
 func _boton(config: Configuracion, nombre: String) -> Button:

@@ -5,23 +5,27 @@ extends Control
 # invisible abajo a la izquierda y botones en la distribucion inicial del diseno, anclados a
 # su esquina. Se ocultan al usar teclado o control y reaparecen al tocar la pantalla. Un boton
 # que pide una habilidad solo se dibuja y responde mientras Partida la tiene. Donde va cada boton y su
-# tamano los da Ajustes.disposicion, que cambia el editor de controles de la pausa.
+# tamano los da Ajustes.disposicion, que cambia el editor de controles de Configuracion. El boton del mapa
+# tiene doble uso: de pie dice Mapa y manda mapa; sentado en un banco dice Inventario y manda inventario.
 
-const ACCIONES: Array[StringName] = [&"saltar", &"atacar", &"curar", &"impulso", &"pausa", &"mapa", &"mochila"]
-const ETIQUETAS: PackedStringArray = ["Saltar", "Atacar", "Curar", "Impulso", "Pausa", "Mapa", "Mochila"]
+const ACCIONES: Array[StringName] = [&"saltar", &"atacar", &"curar", &"impulso", &"pausa", &"mapa"]
+const ETIQUETAS: PackedStringArray = ["Saltar", "Atacar", "Curar", "Impulso", "Pausa", "Mapa"]
+## Lo que manda y dice el boton del mapa con el jugador sentado en un banco (Jugador.descansando).
+const ACCION_SENTADO: StringName = &"inventario"
+const ETIQUETA_SENTADO: String = "Inventario"
 ## Centro de cada boton en la distribucion inicial: fraccion de una pantalla 16:9. De aqui salen los
 ## valores por omision de DisposicionControles; en juego manda Ajustes.disposicion.
 const CENTROS: PackedVector2Array = [
 	Vector2(0.91, 0.81), Vector2(0.81, 0.81), Vector2(0.82, 0.63), Vector2(0.91, 0.60),
-	Vector2(0.94, 0.09), Vector2(0.94, 0.21), Vector2(0.94, 0.32),
+	Vector2(0.94, 0.09), Vector2(0.94, 0.21),
 ]
 ## Esquina a la que se ancla cada boton: (1, 1) abajo a la derecha, (1, 0) arriba a la derecha.
 const ANCLAS: PackedVector2Array = [
-	Vector2(1, 1), Vector2(1, 1), Vector2(1, 1), Vector2(1, 1), Vector2(1, 0), Vector2(1, 0), Vector2(1, 0),
+	Vector2(1, 1), Vector2(1, 1), Vector2(1, 1), Vector2(1, 1), Vector2(1, 0), Vector2(1, 0),
 ]
 ## Radio de cada boton, en fraccion del lado corto de la pantalla. Con los centros del diseno,
 ## Atacar y Saltar quedan a 0,18 del lado corto: sus radios suman menos para no encimarse.
-const RADIOS: PackedFloat32Array = [0.085, 0.07, 0.07, 0.07, 0.05, 0.05, 0.05]
+const RADIOS: PackedFloat32Array = [0.085, 0.07, 0.07, 0.07, 0.05, 0.05]
 ## El toque cuenta un poco fuera del circulo dibujado: es mas facil acertar con el pulgar.
 const HOLGURA: float = 1.25
 ## Zona del joystick: fraccion de la pantalla desde la esquina de arriba a la izquierda.
@@ -35,10 +39,6 @@ const COLOR_PRESIONADO: Color = Color(1.0, 1.0, 1.0, 0.25)
 ## Botones que solo existen con una habilidad: accion -> habilidad de Partida. Sin ella no se
 ## dibujan ni responden, y los demas no se mueven.
 const HABILIDAD_DE_BOTON: Dictionary[StringName, StringName] = {&"impulso": &"impulso", &"atacar": &"pluma"}
-## Botones que no se ponen en el tactil: no se dibujan ni responden, aqui ni en el editor. Mochila abre los amuletos
-## con teclado y control; en el tactil se entra por la pausa, para no sumar otro boton a la pantalla. Siguen
-## en ACCIONES para no mover los indices, CENTROS, ANCLAS, RADIOS ni la disposicion guardada.
-const BOTONES_SIN_USO: Array[StringName] = [&"mochila"]
 ## Segmentos de cada aro y tamano unico de las etiquetas: en el S50 el dibujo de los controles costaba
 ## ~3,5 FPS jugando (medido el 12-oct-2026), sobre todo por intercalar aros y letras de tres tamanos.
 const SEGMENTOS_ARCO: int = 24
@@ -53,6 +53,8 @@ const CUADROS_CAMBIO_DE_SALA: int = 5
 # controles nuevos. Sin esto, su accion quedaba presionada sin nadie que la soltara.
 # Dedo -> indice del boton que presiona.
 static var _dedos_en_botones: Dictionary[int, int] = {}
+# Dedo -> accion que presiono su boton: la del mapa depende de si el jugador estaba sentado al tocarlo.
+static var _acciones_de_dedos: Dictionary[int, StringName] = {}
 static var _dedo_joystick: int = -1
 static var _origen_joystick: Vector2 = Vector2.ZERO
 static var _palanca: Vector2 = Vector2.ZERO
@@ -76,6 +78,7 @@ var _disposicion: DisposicionControles = DisposicionControles.por_omision()
 var _disposicion_origen: DisposicionControles = null
 var _radio_minimo: float = 0.0
 var _editando_visto: bool = false
+var _sentado_visto: bool = false
 # La palanca son dos nodos que se dibujan una vez y se mueven con position: mover el joystick no
 # vuelve a dibujar los botones.
 var _base_palanca: Node2D = null
@@ -104,6 +107,9 @@ func _process(_delta: float) -> void:
 	_revisar_habilidades()
 	if Ajustes.disposicion != _disposicion_origen:
 		aplicar_disposicion()
+	if _sentado() != _sentado_visto:
+		_sentado_visto = not _sentado_visto
+		queue_redraw()
 	if editando != _editando_visto:
 		_editando_visto = editando
 		if editando:
@@ -161,11 +167,6 @@ func centro(accion: StringName) -> Vector2:
 	return _disposicion.centro(ACCIONES.find(accion), size)
 
 
-## Si el boton i hace algo en el juego. El editor tampoco muestra los que no.
-static func en_uso(i: int) -> bool:
-	return not BOTONES_SIN_USO.has(ACCIONES[i])
-
-
 func _radio(i: int) -> float:
 	return _disposicion.radio(i, size, _radio_minimo)
 
@@ -175,8 +176,6 @@ func _radio_joystick() -> float:
 
 
 func _disponible(i: int) -> bool:
-	if not en_uso(i):
-		return false
 	if hablando and ACCIONES[i] != &"pausa":
 		return false
 	var habilidad: StringName = HABILIDAD_DE_BOTON.get(ACCIONES[i], &"")
@@ -209,7 +208,8 @@ func _tocar(dedo: int, posicion: Vector2) -> void:
 			continue
 		if posicion.distance_to(centro(ACCIONES[i])) <= _radio(i) * HOLGURA:
 			_dedos_en_botones[dedo] = i
-			Input.action_press(ACCIONES[i])
+			_acciones_de_dedos[dedo] = _accion(i)
+			Input.action_press(_acciones_de_dedos[dedo])
 			queue_redraw()
 			return
 	var zona: Rect2 = Rect2(ZONA_JOYSTICK.position * size, ZONA_JOYSTICK.size * size)
@@ -227,24 +227,44 @@ func _soltar(dedo: int) -> void:
 		_aplicar_palanca()
 		_actualizar_palanca()
 	elif _dedos_en_botones.has(dedo):
-		var i: int = _dedos_en_botones[dedo]
+		var accion: StringName = _acciones_de_dedos[dedo]
 		_dedos_en_botones.erase(dedo)
+		_acciones_de_dedos.erase(dedo)
 		# Otro dedo puede seguir sobre el mismo boton.
-		if not _dedos_en_botones.values().has(i):
-			Input.action_release(ACCIONES[i])
+		if not _acciones_de_dedos.values().has(accion):
+			Input.action_release(accion)
 		queue_redraw()
 
 
 func _soltar_todo() -> void:
 	if not _dedos_en_botones.is_empty():
 		queue_redraw()
-	for i: int in _dedos_en_botones.values():
-		Input.action_release(ACCIONES[i])
+	for accion: StringName in _acciones_de_dedos.values():
+		Input.action_release(accion)
 	_dedos_en_botones.clear()
+	_acciones_de_dedos.clear()
 	_dedo_joystick = -1
 	_palanca = Vector2.ZERO
 	_aplicar_palanca()
 	_actualizar_palanca()
+
+
+# La accion que manda el boton i ahora: la del mapa cambia a inventario con el jugador sentado.
+func _accion(i: int) -> StringName:
+	if ACCIONES[i] == &"mapa" and _sentado():
+		return ACCION_SENTADO
+	return ACCIONES[i]
+
+
+func _etiqueta(i: int) -> String:
+	if ACCIONES[i] == &"mapa" and _sentado():
+		return ETIQUETA_SENTADO
+	return ETIQUETAS[i]
+
+
+func _sentado() -> bool:
+	var jugador: Jugador = get_tree().get_first_node_in_group(&"jugador") as Jugador
+	return jugador != null and jugador.descansando
 
 
 func _mover_joystick(posicion: Vector2) -> void:
@@ -356,5 +376,6 @@ func _draw() -> void:
 	var fuente: Font = ThemeDB.fallback_font
 	for i: int in range(ACCIONES.size()):
 		if _disponibles[i]:
-			var ancho: float = fuente.get_string_size(ETIQUETAS[i], HORIZONTAL_ALIGNMENT_LEFT, -1, TAMANO_LETRA).x
-			draw_string(fuente, centro(ACCIONES[i]) + Vector2(-ancho / 2.0, TAMANO_LETRA * 0.35), ETIQUETAS[i], HORIZONTAL_ALIGNMENT_LEFT, -1, TAMANO_LETRA, color_boton)
+			var etiqueta: String = _etiqueta(i)
+			var ancho: float = fuente.get_string_size(etiqueta, HORIZONTAL_ALIGNMENT_LEFT, -1, TAMANO_LETRA).x
+			draw_string(fuente, centro(ACCIONES[i]) + Vector2(-ancho / 2.0, TAMANO_LETRA * 0.35), etiqueta, HORIZONTAL_ALIGNMENT_LEFT, -1, TAMANO_LETRA, color_boton)

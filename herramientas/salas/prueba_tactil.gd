@@ -4,6 +4,7 @@ extends Node
 # "casos" y "fallos" el resultado para controles_tactiles.guion. No sustituye la prueba en el
 # telefono: no mira si los botones se ven bien ni si el pulgar los alcanza.
 const ESCENA_CONTROLES: PackedScene = preload("res://nucleo/controles_tactiles.tscn")
+const ESCENA_JUGADOR: PackedScene = preload("res://nucleo/jugador.tscn")
 const MOVIMIENTOS: Array[StringName] = [&"mover_izquierda", &"mover_derecha", &"mover_arriba", &"mover_abajo"]
 
 var casos: int = 0
@@ -59,10 +60,22 @@ func _ready() -> void:
 	c.procesar(atras)
 	_caso("el boton Atras de Android no oculta los controles", c.visible)
 
-	# Mochila sigue en ACCIONES (indices y disposicion guardada) pero no hace nada todavia: no responde.
-	_tocar(c, 12, c.centro(&"mochila"), true)
-	_caso("tocar donde estaba Mochila no presiona mochila", not Input.is_action_pressed(&"mochila"))
-	_tocar(c, 12, c.centro(&"mochila"), false)
+	# El boton del mapa: de pie manda mapa; sentado en un banco manda inventario, y suelta lo que mando.
+	_caso("ya no hay boton Mochila", not ControlesTactiles.ACCIONES.has(&"mochila"))
+	_tocar(c, 12, c.centro(&"mapa"), true)
+	_caso("de pie, el boton del mapa presiona mapa y no inventario", Input.is_action_pressed(&"mapa") and not Input.is_action_pressed(&"inventario"))
+	_tocar(c, 12, c.centro(&"mapa"), false)
+	var jugador: Jugador = ESCENA_JUGADOR.instantiate() as Jugador
+	jugador.process_mode = Node.PROCESS_MODE_DISABLED
+	add_child(jugador)
+	jugador.descansando = true
+	_tocar(c, 12, c.centro(&"mapa"), true)
+	_caso("sentado, el boton del mapa presiona inventario y no mapa", Input.is_action_pressed(&"inventario") and not Input.is_action_pressed(&"mapa"))
+	# Si se levanta con el dedo encima, al soltar se suelta inventario, que fue lo que presiono.
+	jugador.descansando = false
+	_tocar(c, 12, c.centro(&"mapa"), false)
+	_caso("soltar el boton suelta la accion que presiono aunque el jugador ya no este sentado", not Input.is_action_pressed(&"inventario") and not Input.is_action_pressed(&"mapa"))
+	jugador.free()
 
 	# El boton Impulso existe solo con la habilidad impulso; los controles la revisan cada cuadro.
 	Partida.reiniciar()

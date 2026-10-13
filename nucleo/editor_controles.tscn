@@ -4,7 +4,7 @@
 
 [node name="EditorControles" type="CanvasLayer"]
 process_mode = 3
-layer = 21
+layer = 23
 
 [node name="Lienzo" type="Control" parent="."]
 layout_mode = 3
@@ -68,21 +68,21 @@ theme_override_constants/separation = 16
 alignment = 1
 
 [node name="Restaurar" type="Button" parent="Lienzo/Barra/Filas/Botones"]
-custom_minimum_size = Vector2(0, 64)
+custom_minimum_size = Vector2(0, 108)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 28
 text = "Restaurar"
 
 [node name="Cancelar" type="Button" parent="Lienzo/Barra/Filas/Botones"]
-custom_minimum_size = Vector2(0, 64)
+custom_minimum_size = Vector2(0, 108)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 28
 text = "Cancelar"
 
 [node name="Listo" type="Button" parent="Lienzo/Barra/Filas/Botones"]
-custom_minimum_size = Vector2(0, 64)
+custom_minimum_size = Vector2(0, 108)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 28

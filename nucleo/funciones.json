@@ -169,7 +169,7 @@
   },
   {
     "id": "temblor-al-aterrizar",
-    "que": "Al aterrizar tras ticks_caida_dura ticks cayendo a velocidad_caida_max, o al aterrizar de la picada, el jugador calcula el temblor (propiedades temblor_x y temblor_y) durante temblor_ticks ticks; una caida corta y un salto normal no tiemblan. Que el temblor pase al offset de la camara y el interruptor Temblor de camara de la Configuracion del menu se comprueban a mano en el S20",
+    "que": "Al aterrizar tras ticks_caida_dura ticks cayendo a velocidad_caida_max, o al aterrizar de la picada, el jugador calcula el temblor (propiedades temblor_x y temblor_y) durante temblor_ticks ticks; una caida corta y un salto normal no tiemblan. Que el temblor pase al offset de la camara y la opcion Temblor de la Configuracion se comprueban a mano en el S20",
     "comprobacion": "herramientas/guiones/nucleo/camara_temblor.guion",
     "pasa": true
   },
@@ -187,13 +187,13 @@
   },
   {
     "id": "controles-configurables",
-    "que": "Desde la pausa se puede mover cada boton tactil, cambiar su tamano y la opacidad de todos, restaurar los valores por omision y guardarlo en user://ajustes.json",
+    "que": "Desde Configuracion (la del menu o la de la pausa), Botones tactiles abre el editor: se puede mover cada boton tactil, cambiar su tamano y la opacidad de todos, restaurar los valores por omision y guardarlo en user://ajustes.json",
     "comprobacion": "herramientas/guiones/nucleo/controles_configurables.guion",
     "pasa": true
   },
   {
     "id": "configuracion-menu",
-    "que": "El menu principal tiene Configuracion con Botones tactiles, que abre el mismo editor de botones que la pausa; Atras vuelve un nivel a la vez",
+    "que": "El menu principal tiene Configuracion con Botones tactiles, que abre el editor de botones; Atras vuelve un nivel a la vez",
     "comprobacion": "herramientas/guiones/nucleo/menu_configuracion.guion",
     "pasa": true
   },
@@ -301,7 +301,7 @@
   },
   {
     "id": "configuracion-opciones",
-    "que": "La Configuracion del menu tiene Audio (volumen general, musica y efectos), Brillo, vibracion, temblor, Recursos, Botones tactiles, botones del control (reasignar intercambia con la accion que tenia el boton y se guarda; Restablecer), modo desarrollador (muestra la zona de pruebas y se recuerda) y Creditos; cada cambio se guarda (las barras al soltarlas) y Atras vuelve un nivel. Borrar una partida esta en las ranuras",
+    "que": "La Configuracion tiene Audio (volumen general, musica y efectos), Brillo (en su propia pantalla), vibracion, temblor, Recursos, Botones tactiles, botones del control (reasignar intercambia con la accion que tenia el boton y se guarda; Restablecer), modo desarrollador (muestra la zona de pruebas y se recuerda) y Creditos; las opciones de si o no son botones con su valor, sin interruptores; cada cambio se guarda (las barras al soltarlas) y Atras vuelve un nivel. Borrar una partida esta en las ranuras",
     "comprobacion": "herramientas/guiones/nucleo/menu_configuracion.guion",
     "pasa": true
   },
@@ -316,7 +316,7 @@
     "que": "La sala de recursos de la zona de pruebas, con el presupuesto completo (30 plantas, 2 nieblas, emisores), corre a 60 FPS en alto en el S20 y en bajo en el S50",
     "comprobacion": "manual: con el APK de desarrollo (arranca con --print-fps), sala de recursos en alto y en bajo en el S50 y en el S20; anotar los FPS en docs/pruebas.md",
     "pasa": true
-    },
+  },
   {
     "id": "recursos-medicion-publicacion",
     "que": "La sala de recursos, con el presupuesto completo, se mantiene en el paquete de publicacion por encima de ~45 FPS en bajo en el S50 tras varios minutos de juego (en caliente)",
@@ -363,11 +363,11 @@
     "id": "ranuras-telefono",
     "que": "En el telefono las 4 fichas caben en una fila y se leen y se tocan con el pulgar, con y sin el aviso de pocos toques; una partida nueva deja ocupada su ficha y Borrar y Restaurar funcionan con su confirmacion",
     "comprobacion": "manual: en el S50 y el S20 con el APK de desarrollo: Jugar, ranura 1, un personaje y Empezar (caja gris), Volver al menu, Jugar: la ficha 1 dice Inicio y 0 min; entrar otra vez y volver: aparece Restaurar; Borrar con su confirmacion la deja vacia",
-    "pasa": false
+    "pasa": true
   },
   {
     "id": "audio-y-brillo",
-    "que": "Configuracion tiene Audio, un panel con el volumen general, de musica y de efectos (cada uno en su bus: Master, Musica y Efectos), con barra, - y +, que se guardan; mientras esta abierto suena la musica de prueba y Probar efecto toca uno; y una fila Brillo de 50 a 150 % que oscurece o aclara toda la pantalla y se guarda",
+    "que": "Configuracion tiene Audio, un panel con el volumen general, de musica y de efectos (cada uno en su bus: Master, Musica y Efectos), cada uno con barra ancha y altavoz, que se guardan; mientras esta abierto suena la musica de prueba y Probar efecto toca uno; y Brillo, en su pantalla, de 50 a 150 %, que oscurece o aclara toda la pantalla y se guarda",
     "comprobacion": "herramientas/guiones/nucleo/menu_configuracion.guion;herramientas/guiones/nucleo/guardado.guion",
     "pasa": true
   },
@@ -375,19 +375,19 @@
     "id": "audio-y-brillo-telefono",
     "que": "En el telefono la musica de prueba y el efecto se oyen, cada barra cambia solo su parte y el brillo se ve bien en sus extremos sin tapar los toques",
     "comprobacion": "manual: en el S50 y el S20 con el APK de desarrollo: Configuracion, Audio: suena la musica; bajar Musica a 0 la calla y Probar efecto sigue sonando; bajar Efectos a 0 calla el efecto; General a 0 calla todo; Brillo en 50 y en 150: la pantalla se oscurece o aclara y los botones siguen respondiendo",
-    "pasa": false
+    "pasa": true
   },
   {
     "id": "amuletos-banco",
-    "que": "Los amuletos se ponen y se quitan solo sentado en un banco, en una pantalla que abre la accion mochila o el boton Amuletos de la pausa; de pie solo se ven; Partida no pone uno que no se tiene, repetido ni mas de MAX_EQUIPADOS, y poner o quitar autoguarda",
+    "que": "Los amuletos se ponen y se quitan solo sentado en un banco, en la pagina Amuletos del marco de menus (la abre la accion inventario sentado, o el boton tactil que sentado dice Inventario); de pie solo se ven; Partida no pone uno que no se tiene, repetido ni mas de MAX_EQUIPADOS, y poner o quitar autoguarda",
     "comprobacion": "herramientas/guiones/nucleo/amuletos.guion",
     "pasa": true
   },
   {
     "id": "amuletos-telefono",
-    "que": "En el telefono la pantalla de amuletos se abre desde la pausa, se lee y se toca con el pulgar, y la brujula puesta sentado se ve en el mapa",
+    "que": "En el telefono la pagina Amuletos del marco de menus se abre sentado con el boton Inventario, se lee y se toca con el pulgar, y la brujula puesta sentado se ve en el mapa",
     "comprobacion": "manual: fila Amuletos en el banco de docs/pruebas.md, en el S50 y el S20",
-    "pasa": false
+    "pasa": true
   },
   {
     "id": "personaje-y-nombre",
@@ -399,7 +399,7 @@
     "id": "personaje-y-nombre-telefono",
     "que": "En el telefono el campo del nombre abre el teclado de Android, Enter empieza la partida y la ficha muestra el nombre",
     "comprobacion": "manual: en el S50 y el S20: Jugar, ranura vacia, Mujer, tocar Nombre y escribir con el teclado del telefono, Enter; Volver al menu, Jugar: la ficha lleva el nombre",
-    "pasa": false
+    "pasa": true
   },
   {
     "id": "dialogo-npc",
@@ -411,7 +411,7 @@
     "id": "dialogo-telefono",
     "que": "En el telefono la caja y sus opciones caben fuera de la muesca, se leen y se tocan con el pulgar, y mientras se habla solo queda el boton de pausa",
     "comprobacion": "manual: fila Dialogo con el guia de docs/pruebas.md, en el S50 y el S20",
-    "pasa": false
+    "pasa": true
   },
   {
     "id": "reto-preguntas",
@@ -423,7 +423,7 @@
     "id": "reto-telefono",
     "que": "En el telefono las preguntas y sus opciones se leen y se tocan con el pulgar, y al ganar se ven las PejeCoins",
     "comprobacion": "manual: fila Reto de preguntas de docs/pruebas.md, en el S50 y el S20",
-    "pasa": false
+    "pasa": true
   },
   {
     "id": "sonidos-eventos",
@@ -436,5 +436,29 @@
     "que": "En el telefono cada evento se oye, el golpe dado y el recibido se distinguen, nada se corta al cruzar una puerta y el volumen de efectos los baja",
     "comprobacion": "manual: fila Efectos de los eventos de docs/pruebas.md, en el S50 y el S20",
     "pasa": false
+  },
+  {
+    "id": "marco-menus",
+    "que": "Un marco detiene el juego y muestra en ciclo las paginas Inventario, Amuletos y Mapa (sin el bloque mapa, las dos primeras): mapa lo abre en Mapa e inventario en Inventario de pie y en Amuletos sentado; pagina_anterior, pagina_siguiente y la barra cambian de pagina; la misma accion, pausa, Atras y Volver lo cierran sin abrir la pausa, y con la pausa abierta no se abre. Inventario muestra vida, Inspiracion, PejeCoins, arma, habilidades, mapas y lo perdido",
+    "comprobacion": "herramientas/guiones/nucleo/marco.guion",
+    "pasa": true
+  },
+  {
+    "id": "pausa-configuracion",
+    "que": "La pausa tiene Continuar, Configuracion y Salir al menu; Configuracion se abre encima con el juego detenido, sin Desarrollador, el editor de botones sale encima de ella, y Atras y pausa vuelven un nivel hasta la pausa",
+    "comprobacion": "herramientas/guiones/nucleo/marco.guion",
+    "pasa": true
+  },
+  {
+    "id": "configuracion-tactil",
+    "que": "Configuracion sin interruptores: cada opcion de si o no muestra su valor en una pastilla y se cambia tocando el boton; Recursos pasa a bajo, alto y auto con cada toque; cada volumen tiene una barra ancha que salta al toque, se arrastra y con teclas se mueve de 10 en 10, y un altavoz que silencia y vuelve al valor de antes; Brillo abre su pantalla con la escena (la foto de la sala desde la pausa o una de muestra), un cuadro de calibracion y la barra, que guarda al soltarla",
+    "comprobacion": "herramientas/guiones/nucleo/menu_configuracion.guion",
+    "pasa": true
+  },
+  {
+    "id": "marco-menus-telefono",
+    "que": "En el telefono el marco de menus se abre con el boton Mapa de pie y con el que sentado dice Inventario, se cambia de pagina con la barra y se cierra con Volver y Atras; la pausa abre Configuracion encima sin un tiron visible; las pastillas, las barras, el altavoz y la pantalla de brillo se usan con el pulgar",
+    "comprobacion": "manual: filas Marco de menus en el telefono y Configuracion tactil de docs/pruebas.md, en el S50 y el S20",
+    "pasa": true
   }
 ]

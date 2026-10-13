@@ -17,7 +17,7 @@ func _physics_process(_delta: float) -> void:
 		return
 	for cuerpo: Node2D in get_overlapping_bodies():
 		var jugador: Jugador = cuerpo as Jugador
-		if jugador != null and jugador.is_on_floor() and not jugador.muerto and not jugador.hablando:
+		if jugador != null and jugador.puede_interactuar:
 			entregar()
 			return
 

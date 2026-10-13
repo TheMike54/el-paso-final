@@ -16,7 +16,7 @@ const GRUPOS: Dictionary = {
 }
 const OTRAS: String = "Otras"
 ## Escenas de la carpeta que no se listan: esta y las pruebas sin jugador, que solo corre un guion.
-const OCULTAS: PackedStringArray = ["zona_pruebas.tscn", "sala_guardado.tscn", "sala_tactil.tscn", "sala_control.tscn", "sala_foco.tscn", "sala_aterrizaje.tscn", "sala_vista.tscn", "sala_controles_configurables.tscn", "sala_menu_configuracion.tscn", "sala_ranuras.tscn", "sala_amuletos.tscn", "sala_dialogo_prueba.tscn", "sala_reto_prueba.tscn", "sala_sonido.tscn", "sala_peligro_anti_bucle.tscn", "sala_enemigo_al_morir.tscn", "sala_sala_id.tscn", "sala_estado_sala.tscn", "sala_combate_chico_cuentas.tscn", "sala_recursos_cuentas.tscn", "sala_mapa_cuentas.tscn"]
+const OCULTAS: PackedStringArray = ["zona_pruebas.tscn", "sala_guardado.tscn", "sala_tactil.tscn", "sala_control.tscn", "sala_foco.tscn", "sala_aterrizaje.tscn", "sala_vista.tscn", "sala_controles_configurables.tscn", "sala_menu_configuracion.tscn", "sala_ranuras.tscn", "sala_amuletos.tscn", "sala_marco.tscn", "sala_dialogo_prueba.tscn", "sala_reto_prueba.tscn", "sala_sonido.tscn", "sala_peligro_anti_bucle.tscn", "sala_enemigo_al_morir.tscn", "sala_sala_id.tscn", "sala_estado_sala.tscn", "sala_combate_chico_cuentas.tscn", "sala_recursos_cuentas.tscn", "sala_mapa_cuentas.tscn"]
 ## Boton de cada sala: cabe «Enemigos banco» con la letra del tema. 3 columnas en la vista de 1280 y 4 desde 1600;
 ## 2 solo si el area segura recorta mucho.
 const CELDA: Vector2 = Vector2(320.0, Tema.ALTO_TOQUE)

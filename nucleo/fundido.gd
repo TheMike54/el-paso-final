@@ -14,8 +14,9 @@ const TICKS_ACLARAR: int = 15
 const TICKS_EN_NEGRO_PELIGRO: int = 18
 ## Ticks en negro al cruzar una puerta, antes de cambiar de sala: 6 = 0,1 s. Provisional.
 const TICKS_EN_NEGRO_PUERTA: int = 6
-## Encima de los controles tactiles (5) y la interfaz (10), que se oscurecen con el juego; debajo de la pausa
-## (20) y el editor de botones (21), que se ven aunque se abran en negro.
+## Encima de los controles tactiles (5) y la interfaz (10), que se oscurecen con el juego; debajo de la pausa y las
+## paginas del marco (20), su barra (21), Configuracion (22) y el editor de botones (23), que se ven aunque se abran
+## en negro.
 const CAPA: int = 15
 
 ## Lo que tapa el negro: 0, nada; 1, todo.

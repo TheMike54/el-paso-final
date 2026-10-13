@@ -88,5 +88,17 @@
     "que": "El validador falla si la tabla de categorias de la zona de pruebas (GRUPOS u OCULTAS) nombra una escena que no existe",
     "comprobacion": "manual: con sala_pogoX.tscn en GRUPOS de zona_pruebas.gd, validar.ps1 imprime FALLO ... (nombra sala_pogoX.tscn, que no existe) y fallos=1",
     "pasa": true
+  },
+  {
+    "id": "validador-texturas",
+    "que": "El validador falla si una imagen del proyecto (png, jpg, webp, svg) pasa de 2048 px de ancho o de alto",
+    "comprobacion": "manual: en una copia del proyecto, un PNG de 4096x8 px en herramientas/salas/arte/ da FALLO ... (4096x8 px: el maximo es 2048 por lado); sin el, fallos=0",
+    "pasa": true
+  },
+  {
+    "id": "validador-capas-translucidas",
+    "que": "El validador falla si una sala tiene mas de 2 capas translucidas grandes (alfa efectivo menor que 1 y al menos un cuarto de 1280x720, con la escala de sus padres)",
+    "comprobacion": "manual: en una copia del proyecto, tres ColorRect de 800x400 con modulate alfa 0.5 en sala_recursos.tscn dan FALLO ... (3 capas translucidas grandes ...); con dos, mas una opaca, una chica y una escalada a 0.25, fallos=0; la transparencia heredada de un padre cuenta; tambien dan FALLO tres capas con color alfa 0.5 (sin modulate), tres ColorRect anclados a pantalla completa dentro de un CanvasLayer y tres TextureRect sin offsets (miden su textura); no cuentan los anclados dentro de un Node2D; sala_recursos y sala_arte solas, fallos=0",
+    "pasa": true
   }
 ]

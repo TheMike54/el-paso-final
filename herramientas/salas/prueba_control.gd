@@ -11,9 +11,10 @@ func _ready() -> void:
 	_boton(JOY_BUTTON_A, &"saltar")
 	_boton(JOY_BUTTON_X, &"atacar")
 	_boton(JOY_BUTTON_B, &"curar")
-	_boton(JOY_BUTTON_LEFT_SHOULDER, &"mapa_rapido")
+	# LB es mapa rapido con el juego andando y pagina anterior en el marco, que detiene el juego: no chocan.
+	_botones(JOY_BUTTON_LEFT_SHOULDER, [&"mapa_rapido", &"pagina_anterior"])
 	_boton(JOY_BUTTON_Y, &"mapa")
-	_boton(JOY_BUTTON_BACK, &"mochila")
+	_boton(JOY_BUTTON_BACK, &"inventario")
 	_boton(JOY_BUTTON_START, &"pausa")
 	_eje(JOY_AXIS_LEFT_X, -1.0, [&"mover_izquierda"])
 	_eje(JOY_AXIS_LEFT_X, 1.0, [&"mover_derecha"])
@@ -23,7 +24,7 @@ func _ready() -> void:
 	_eje(JOY_AXIS_TRIGGER_RIGHT, 0.5, [&"impulso"])
 	_eje(JOY_AXIS_LEFT_X, 0.1, [])
 	_eje(JOY_AXIS_TRIGGER_LEFT, 1.0, [])
-	_boton(JOY_BUTTON_RIGHT_SHOULDER, &"")
+	_boton(JOY_BUTTON_RIGHT_SHOULDER, &"pagina_siguiente")
 	print("PRUEBAS control casos=%d fallos=%d" % [casos, fallos])
 
 
@@ -35,6 +36,13 @@ func _boton(boton: JoyButton, accion: StringName) -> void:
 	var esperadas: Array[StringName] = []
 	if not accion.is_empty():
 		esperadas.append(accion)
+	_revisar("boton %d" % boton, evento, esperadas)
+
+
+func _botones(boton: JoyButton, esperadas: Array[StringName]) -> void:
+	var evento: InputEventJoypadButton = InputEventJoypadButton.new()
+	evento.button_index = boton
+	evento.pressed = true
 	_revisar("boton %d" % boton, evento, esperadas)
 
 

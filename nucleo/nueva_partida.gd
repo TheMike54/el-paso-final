@@ -93,7 +93,7 @@ static func limpiar_nombre(texto: String, de: String) -> String:
 
 
 func _pintar() -> void:
-	# El elegido se ve encendido, como un interruptor de Configuracion.
+	# El elegido se ve encendido (mas claro), como la categoria elegida de la zona de pruebas.
 	for cual: String in botones:
 		botones[cual].set_pressed_no_signal(cual == personaje)
 	empezar_boton.disabled = personaje.is_empty()

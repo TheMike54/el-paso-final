@@ -10,11 +10,11 @@ los ids, las puertas, los bancos y lo que revisa el validador.
 | Qué | Dónde |
 |---|---|
 | Sala | `salas/<zona>/<id>.tscn`, con `id` igual al nombre del archivo (`celda_1`) |
-| Enemigo | `enemigos/<id>/`: ficha `.tres`, script de comportamiento y escena |
+| Enemigo | `enemigos/<id>/`: ficha `.tres` y script de comportamiento; en la sala va una instancia de `nucleo/enemigo.tscn` con esa ficha («Enemigos» de `docs/contrato.md`) |
 | Objeto propio de una zona | `objetos/` |
 
 ## Cómo se comprueba
-- `.\herramientas\validar.ps1`: las reglas de sala de `docs/contrato.md`, «Sala» (ids, límites, puertas, bancos,
-  `Entrada` y objetos recordados).
+- `.\herramientas\validar.ps1`: las reglas de sala de `docs/contrato.md`, «Sala» (lista completa ahí); propia de
+  este bloque, `habilidades_de_prueba` vacío.
 - Un guion por sala en `herramientas/guiones/contenido/`: entra por cada puerta, cruza cada puerta y descansa en
   el banco si hay.

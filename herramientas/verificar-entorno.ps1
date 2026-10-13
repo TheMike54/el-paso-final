@@ -1,6 +1,6 @@
 # Revisa el entorno de un clon: Godot 4.7.2 y GODOT_PATH, identidad de git, hook de git,
-# archivos locales ignorados y version de Claude Code. Activa el hook de git y agrega las
-# lineas de exclude si faltan. Termina con "ENTORNO OK" (salida 0) o "ENTORNO FALLA" (salida 1).
+# archivos locales ignorados, version de Claude Code; copia local de la documentacion y adb (solo aviso).
+# Activa el hook de git y agrega las lineas de exclude si faltan. Termina con "ENTORNO OK" (salida 0) o "ENTORNO FALLA" (salida 1).
 # Solo ASCII: debe correr igual en powershell.exe 5.1 y en pwsh 7.
 $raiz = Split-Path -Parent $PSScriptRoot
 $script:fallos = 0
@@ -61,6 +61,24 @@ else {
     }
     else { Mal 'no se pudo leer la version de Claude Code (claude --version)' }
 }
+
+# 6. Documentacion oficial de Godot 4.7 (opcional para correr el juego; la usan Claude y quien programa)
+$docs = $env:GODOT_DOCS
+if (-not $docs -or -not (Test-Path -LiteralPath (Join-Path $docs 'tutorials\scripting\gdscript\gdscript_styleguide.rst'))) {
+    Write-Output 'aviso  GODOT_DOCS no apunta a la copia local de la documentacion de Godot 4.7 (README, paso 6)'
+}
+else {
+    $rama = [string](git -C $docs rev-parse --abbrev-ref HEAD 2>$null)
+    if ($rama -eq '4.7') { Bien ("documentacion de Godot 4.7 en " + $docs) }
+    else { Write-Output ("aviso  la documentacion en " + $docs + " esta en la rama '" + $rama + "' y no en 4.7 (README, paso 6)") }
+}
+
+# 7. adb (opcional; lo usan las pruebas en el telefono: instalar el APK, logcat y FPS)
+$adb = Get-Command adb -ErrorAction SilentlyContinue
+$adbSdk = Join-Path $env:LOCALAPPDATA 'Android\Sdk\platform-tools\adb.exe'
+if ($adb) { Bien ("adb en " + $adb.Source) }
+elseif (Test-Path -LiteralPath $adbSdk) { Bien ("adb en " + $adbSdk + " (fuera del PATH)") }
+else { Write-Output 'aviso  adb no esta (Android SDK, platform-tools): hace falta solo para probar en el telefono' }
 
 if ($script:fallos -eq 0) { Write-Output 'ENTORNO OK'; exit 0 }
 Write-Output ("ENTORNO FALLA (" + $script:fallos + ")")

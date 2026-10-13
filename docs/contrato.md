@@ -17,9 +17,10 @@ Valores de `project.godot`. No se cambian sin actualizar esta tabla.
 | Estiramiento | `canvas_items` con aspecto `expand`, limitado al ejecutar a proporciones de 4:3 a 22:9 (`nucleo/vista.gd`, aplicado por `Arranque`, el mismo rango en escritorio, teléfono y tableta) | Dentro del rango la base se escala y se ve más escenario, sin barras; fuera, la vista se recorta a 1760×720 o 1280×960 y el motor pone barras negras. Sin pantalla (guiones) no se aplica. El color de borrado es negro (`Arranque`): fuera de una sala no se ve gris |
 | Escala | Cuadro de 40 px; el personaje mide 160 px de alto | Medida común para salas, colisiones y arte |
 | Orientación | Horizontal con giro (`window/handheld/orientation=4`, `SCREEN_SENSOR_LANDSCAPE`) | Se juega acostado, hacia cualquiera de los dos lados |
-| Botón Atrás | `quit_on_go_back=false` | Atrás no cierra la app: en el juego abre la pausa y en el menú pide confirmación |
+| Botón Atrás | `quit_on_go_back=false` | Atrás no cierra la app: en el juego abre la pausa (con el marco de menús o Configuración abiertos, los cierra o vuelve un nivel) y en el menú pide confirmación |
 | Tipado | `untyped_declaration`, `unsafe_property_access`, `unsafe_method_access` y `unsafe_call_argument` como error | Un error de tipos se ve al validar, no al jugar |
-| Texturas | Ninguna de más de 2048 px por lado | Memoria en gama baja |
+| Texturas | Ninguna de más de 2048 px por lado (lo revisa el validador) | Memoria en gama baja |
+| Solo 2D | `Arranque` pone `disable_3d` en la vista raíz | La vista no prepara nada de 3D; un nodo 3D no se vería |
 | Compresión de texturas | `textures/vram_compression/import_etc2_astc=true` | Godot no exporta a Android sin ella |
 | Id del paquete Android | `com.themike54.elpasofinal` | Identidad estable de la app instalada |
 
@@ -31,13 +32,16 @@ Valores de `project.godot`. No se cambian sin actualizar esta tabla.
   posición: al continuar se aparece en el último banco) en los momentos que lista `autoguardar()` en «Estado de la
   partida».
 - Pausa: `nucleo/pausa.tscn` (`class_name Pausa`), que crea cada sala. La acción `pausa` o el botón Atrás de
-  Android la abren y la cierran (`get_tree().paused`); tiene Continuar, «Amuletos» (abre encima la pantalla
-  de los amuletos de la sala y, al cerrarla, vuelve a la pausa; ver «Amuletos»), «Controles» (abre el editor de los botones
-  táctiles; ver «Entrada») y «Salir al menú». Vibración, temblor y lo demás están en la Configuración del menú. Se abre sola al perder el foco (`NOTIFICATION_APPLICATION_FOCUS_OUT` o
+  Android la abren y la cierran (`get_tree().paused`); tiene Continuar, «Configuración» (la misma del menú, en la capa
+  22 encima de la pausa y con el juego detenido, sin «Desarrollador»; de ahí sale el editor de los botones táctiles;
+  ver «Menú» y «Entrada») y «Salir al menú», como en Hollow Knight. Los amuletos, el inventario y el mapa están en el
+  marco de menús (ver «Marco de menús»). Al abrirse guarda una copia de la pantalla para la pantalla de brillo (no en
+  headless) y la suelta al cerrarse. Se abre sola al perder el foco (`NOTIFICATION_APPLICATION_FOCUS_OUT` o
   `NOTIFICATION_APPLICATION_PAUSED`: apps recientes, otra ventana) y no se cierra sola al volver. Corre con
   `PROCESS_MODE_ALWAYS`, igual que los controles táctiles. Su propiedad `abierta` dice si está abierta. La pausa
   lee la acción, no el evento: la abren igual la tecla, el botón táctil y un guion. Con el editor abierto (`editor`
-  no es `null`), la acción `pausa` no hace nada y Atrás es Cancelar.
+  no es `null`), la acción `pausa` no hace nada y Atrás es Cancelar. Con Configuración abierta, `pausa` y Atrás
+  vuelven un nivel en ella (`Configuracion.atras()`).
 - El guardado se escribe en un archivo temporal y después se renombra: un cierre a la mitad no daña la partida.
 - Los ajustes del jugador van en su propio archivo, no en la partida (ver «Ajustes y vibración»).
 - El guardado es JSON con número de versión. Al cargar se distinguen partida válida, archivo dañado y partida de
@@ -95,7 +99,7 @@ Valores de `project.godot`. No se cambian sin actualizar esta tabla.
 `nucleo/ajustes.gd` (`class_name Ajustes`): funciones estáticas, como `Guardado`. Archivo `user://ajustes.json`
 (`{"version": 1, "ajustes": {...}}`), escrito a un temporal y renombrado. Son del teléfono y no de la partida:
 agregar un ajuste no cambia `Guardado.VERSION`. Un archivo que falta, dañado o de otra versión deja los valores
-por omisión: los interruptores en `Ajustes.POR_OMISION`; la disposición de los botones en
+por omisión: los de sí o no en `Ajustes.POR_OMISION`; la disposición de los botones en
 `DisposicionControles.por_omision()`.
 
 | Ajuste | Por omisión | Qué es |
@@ -111,17 +115,18 @@ por omisión: los interruptores en `Ajustes.POR_OMISION`; la disposición de los
 | `mando` | `{}` | Botones del control que difieren de `project.godot`: `{acción: índice de botón}`. Lo aplica `Mando.aplicar` al cargar |
 | `controles` | La distribución inicial | `{"opacidad": n, "botones": {acción: {"ancla": [0|1, 0|1], "desplazamiento": [x, y], "escala": n}}}` (ver «Entrada»). Lo que falta o no es válido se queda en su valor por omisión, botón por botón; escala y opacidad fuera de rango se recortan |
 
-- Audio: `default_bus_layout.tres` (raíz) define los buses `Musica` y `Efectos`, que envían a `Master`. La música se
+- Audio: `default_bus_layout.tres` (raíz) define los buses `Musica` y `Efectos`, que envían a `Master`;
+  `Master` lleva un `AudioEffectHardLimiter` como último efecto, contra el recorte cuando suenan varios a la vez. La música se
   toca en `Ajustes.BUS_MUSICA` y los efectos en `Ajustes.BUS_EFECTOS`; nada suena directo en `Master`. Un volumen o
   un brillo que no es número deja su valor por omisión y uno fuera de rango se recorta.
 - Brillo: `nucleo/brillo.gd` (`class_name Brillo`), una `CanvasLayer` en la capa 100 con un rectángulo que no recibe
   toques; la crea `Arranque` solo con pantalla (no en guiones ni en el validador). `Brillo.color_para(valor)`.
 - `Ajustes.cargar_una_vez()` lo llaman `Arranque` (así los botones del control y el volumen valen desde el principio),
   la vibración, el jugador, los controles táctiles, la Configuración y el editor de controles; `Ajustes.guardar()`,
-  cada cambio de la Configuración (las barras de volumen y brillo, al soltarlas, con «−» y «+», al cambiar de panel,
+  cada cambio de la Configuración (las barras de volumen y brillo, al soltarlas, con el altavoz, al cambiar de panel,
   al cerrar y al pasar la app al fondo) y «Listo» del editor de controles.
 - `nucleo/mando.gd` (`class_name Mando`, estático): reasigna los botones del control de `Mando.REASIGNABLES`
-  (`saltar`, `atacar`, `curar`, `mapa`, `mapa_rapido`, `mochila`, `pausa`; los ejes no: ni el movimiento ni
+  (`saltar`, `atacar`, `curar`, `mapa`, `mapa_rapido`, `inventario`, `pausa`; los ejes no: ni el movimiento ni
   `impulso` (RT) ni `interactuar` (stick arriba), que no tienen botón en `project.godot`). `asignar(acción, botón)`
   intercambia con la acción que ya tenía ese botón: ninguna se queda sin botón; un botón fuera de
   `0..JOY_BUTTON_SDL_MAX-1` se ignora. `aplicar` (al cargar) asigna lo guardado del mismo modo, así un archivo
@@ -206,8 +211,11 @@ Configuración vale desde la sala siguiente. Elegir alto en un teléfono débil 
 | `nucleo/niebla.gd` (`class_name Niebla`, `Node2D`) | Quieta | Avanza `velocidad` px/s y vuelve tras `recorrido`, con tiempo propio; sigue en el congelado |
 
 - Presupuesto por sala (lo revisa el validador en toda escena cuya raíz es una `Sala`): a lo más 3 emisores de
-  partículas con 60 partículas entre todos, 30 plantas y ninguna luz 2D. Las capas translúcidas grandes (a lo más
-  2) no las revisa. Nunca se marca como prescindible un aviso de peligro ni algo cuya colisión importe.
+  partículas con 60 partículas entre todos, 30 plantas, ninguna luz 2D y a lo más 2 capas translúcidas
+  grandes: un `Sprite2D`, `TextureRect`, `ColorRect`, `NinePatchRect` o `Polygon2D` visible con alfa efectivo menor
+  que 1 (el de su color en `ColorRect` y `Polygon2D`, por su `self_modulate` y el `modulate` de él y de sus padres;
+  dentro de un `CanvasLayer` oculto no cuenta) que cubre al menos un
+  cuarto de 1280×720 con la escala de sus padres y sus anclas. Nunca se marca como prescindible un aviso de peligro ni algo cuya colisión importe.
   Excepción: la sala de arte (`herramientas/salas/sala_arte.gd`) arma su decoración en `_ready` y pasa del
   presupuesto a propósito (hasta 12 emisores y ~500 partículas en alto): es la sala para medir el rendimiento.
 - `herramientas/salas/sala_recursos.tscn` llena el presupuesto (2 nieblas, 30 plantas, 3 emisores, 6 cortables;
@@ -259,11 +267,18 @@ La lógica lee acciones con nombre (`Input.is_action_pressed(&"saltar")`), nunca
 | `interactuar` | Flecha arriba | Stick izquierdo arriba |
 | `mapa_rapido` | Tab | LB / L1 |
 | `mapa` | M | Y / Triángulo |
-| `mochila` | I | View / Select |
+| `inventario` | I | View / Select |
+| `pagina_anterior` | Z | LB / L1 |
+| `pagina_siguiente` | C | RB / R1 |
 | `pausa` | Esc | Start |
 
 Las teclas se guardan como tecla física (`physical_keycode`): valen por su posición en el teclado, no por la
 letra de la distribución. Una acción nueva se agrega a `project.godot` y a esta tabla en el mismo cambio.
+
+- `inventario` se llamaba `mochila` hasta el 13-oct-2026: `Mando.aplicar` da a `inventario` el botón que unos
+  ajustes viejos guardaron como `mochila`. El campo `mochila` del guardado (lo perdido al morir) no cambió.
+- LB es `mapa_rapido` y también `pagina_anterior`: el mapa rápido solo responde con el juego andando y las páginas
+  solo con el marco de menús abierto, que lo detiene. Las dos acciones de página no se reasignan.
 
 - `interactuar` y `mover_arriba` comparten tecla y las dos se activan juntas. Son acciones aparte para
   reasignarlas por separado; junto a algo con que interactuar, la lógica del jugador decide cuál vale.
@@ -273,11 +288,14 @@ letra de la distribución. Una acción nueva se agrega a `project.godot` y a est
 - Controles táctiles: `nucleo/controles_tactiles.tscn` (`class_name ControlesTactiles`), que crea cada sala.
   Traducen el toque a estas mismas acciones con `Input.action_press` y `action_release`; es el único script que
   lee toques durante el juego (el Editor de controles lee el ratón emulado del toque, ver más abajo, y la
-  Configuración lee botones del control para reasignarlos). Joystick invisible en la zona de abajo a la izquierda (aparece donde se pone el dedo; da fuerza de 0
-  a 1 a `mover_*`, con zona muerta de 0,2; hacia arriba también da `interactuar`, como la flecha arriba) y botones Saltar, Atacar, Curar, Impulso, Pausa, Mapa y Mochila en la
-  distribución inicial (Mochila está en la tabla, pero está en `BOTONES_SIN_USO`: no se dibuja ni responde, ni en
-  el editor. La acción `mochila` abre los amuletos con teclado y control; en el táctil se entra por la pausa, para no
-  sumar otro botón a la pantalla); Impulso solo mientras `Partida.tiene(&"impulso")` y Atacar mientras `Partida.tiene(&"pluma")` (sin la habilidad no se dibuja ni responde,
+  Configuración lee botones del control para reasignarlos). Lee en `_input` y no en el tick, a diferencia del resto
+  de la entrada: el toque es un evento con dedo y posición que `Input` no guarda; lo que produce son acciones, y
+  esas sí se leen en el tick. Por eso se excluye a mano mientras hay conversación o editor (`hablando`,
+  `editando`). Joystick invisible en la zona de abajo a la izquierda (aparece donde se pone el dedo; da fuerza de 0
+  a 1 a `mover_*`, con zona muerta de 0,2; hacia arriba también da `interactuar`, como la flecha arriba) y botones Saltar, Atacar, Curar, Impulso, Pausa y Mapa en la
+  distribución inicial (no hay botón de inventario: el de Mapa tiene doble uso, de pie dice «Mapa» y da `mapa`, y
+  sentado en un banco (`Jugador.descansando`, leído del grupo `jugador`) dice «Inventario» y da `inventario`; al
+  soltar se suelta la acción que se presionó); Impulso solo mientras `Partida.tiene(&"impulso")` y Atacar mientras `Partida.tiene(&"pluma")` (sin la habilidad no se dibuja ni responde,
   y un dedo encima se suelta al perderla; la tabla `HABILIDAD_DE_BOTON` dice qué botón pide qué habilidad). Anclados a su esquina y medidos en proporción del lado corto. Se ocultan con una tecla o
   el control y reaparecen al tocar la pantalla. Los dedos se recuerdan entre salas (variables estáticas): un dedo
   que sigue en la pantalla al cruzar una puerta o al reaparecer lo sueltan los controles de la sala nueva; si
@@ -299,7 +317,7 @@ letra de la distribución. Una acción nueva se agrega a `project.godot` y a est
 - Conversación: mientras hay una `CajaDialogo`, `ControlesTactiles.hablando` es verdadero y solo Pausa se dibuja y
   responde; el joystick se suelta y no se toma. La caja se toca directamente.
 - Control (Xbox / PlayStation): un evento del InputMap junto a cada tecla, para cualquier control (`device` -1).
-  El stick usa la zona muerta de cada acción (0,2); RT es un eje que cuenta como presionado pasada esa zona. RB y LT quedan libres.
+  El stick usa la zona muerta de cada acción (0,2); RT es un eje que cuenta como presionado pasada esa zona. LT queda libre.
 
 ## Jugador
 
@@ -312,7 +330,7 @@ El jugador (propiedades, combate, curar, habilidades y prioridad del movimiento)
 | `nucleo/golpeable.gd` (`class_name Golpeable`, `Area2D`) | Hijo de lo que el ataque o la bola pueden golpear, con su forma. `recibir_golpe(atacante, dano := 1)` cuenta `golpes` y `dano_recibido`, empuja a su padre lejos del atacante (`velocidad_retroceso` 240 px/s, `ticks_retroceso` 6; 0 para que no se mueva; golpeado justo desde arriba no se empuja) sin meter su forma en un `StaticBody2D` (lo busca con un rayo a media altura) ni sacarla de los `limites` de su `Sala`: al topar, el empuje se acaba, emite su señal `golpeado(atacante, dano)` y `Eventos.enemigo_golpeado` con su padre |
 | `nucleo/suelo_fragil.gd` (`class_name SueloFragil`, `StaticBody2D`) | Sólido que se pisa como cualquier otro y que rompe la caída en picada (`romper()`: `roto` y desaparece). Va en la sala con su forma y su dibujo. Con `id` (obligatorio en las salas con id) se marca en el estado de su sala al romperse y ya no aparece al entrar |
 | `nucleo/coleccionable.tscn` (`class_name Coleccionable`, `Area2D`) | Al tocarlo el jugador vivo: se marca en el estado de su sala, emite `coleccionable_obtenido` (autoguarda) y desaparece; marcado, no aparece. `id` único en la sala que empieza con `coleccionable`. Gris, sin tema |
-| `nucleo/entrega_recompensas.gd` (`class_name EntregaRecompensas`, `Area2D`) | Con el jugador encima y en el suelo, `interactuar` entrega cada `Recompensa` de su lista cuya `cantidad` ya se juntó y no se entregó (marca `entregado_<cantidad>` en su sala) y autoguarda. `entregadas` las cuenta |
+| `nucleo/entrega_recompensas.gd` (`class_name EntregaRecompensas`, `Area2D`) | Con el jugador encima y `Jugador.puede_interactuar` (la misma regla del `Npc`), `interactuar` entrega cada `Recompensa` de su lista cuya `cantidad` ya se juntó y no se entregó (marca `entregado_<cantidad>` en su sala) y autoguarda. `entregadas` las cuenta |
 | `nucleo/recompensa.gd` (`class_name Recompensa`, `Resource`) | `cantidad`, `tipo` (`MONEDAS`, `VIDA_MAXIMA`, `AMULETO`, `HABILIDAD`, `MAPA`; el orden no cambia porque se guarda como número), `monto` e `id` (en `MAPA`, la zona) |
 | `nucleo/npc.tscn` (`class_name Npc`, `Area2D`) | Personaje con quien se habla. Con el jugador encima, en el suelo y libre (sin morir, sentarse, aterrizar duro ni hablar ya), un triángulo encima avisa e `interactuar` abre una `CajaDialogo` con la conversación de su `etapa` y llama `Jugador.empezar_a_hablar()`. `conversaciones` tiene una `FichaDialogo` por etapa. Terminar contando sube la etapa, la marca en el estado de su sala (`id` único en la sala, que no empieza con `coleccionable` ni `entregado_`), entrega las recompensas de esa ficha una sola vez y autoguarda; terminada la última, se repite sin entregar. Sin contar (`CANCELAR`), un golpe, un peligro o morir la cierran sin cambiar nada. Emite `conversacion_terminada(etapa)`; `etapa`, `cerca` y `caja` son públicas. Forma provisional: un rectángulo |
 | `nucleo/caja_dialogo.gd` (`class_name CajaDialogo`, `CanvasLayer` capa 12) | Caja abajo de la pantalla, dentro del área segura: quién habla y el texto letra por letra (`ticks_por_letra`, 2). `interactuar`, `saltar`, `atacar` o tocar la caja completan la línea y, completa, pasan a la siguiente; la pulsación que la abrió no cuenta. Las opciones de una pregunta van en fila encima de la caja: izquierda y derecha cambian la marcada y se toma con las mismas acciones o tocándola; con opciones a la vista, tocar la caja no elige. Emite `terminada(contar)` y, al tomar una opción, `opcion_elegida(linea, opcion)` antes de pasar a su destino. Corre con el juego: la pausa y el mapa la detienen. Mientras existe, `ControlesTactiles.hablando` es verdadero. `linea`, `letras_visibles`, `completa` y `elegida` son públicas |
@@ -321,7 +339,7 @@ El jugador (propiedades, combate, curar, habilidades y prioridad del movimiento)
 | `nucleo/ficha_pregunta.gd` (`class_name FichaPregunta`, `Resource`) | `pregunta`, de 2 a 3 `opciones` (las que caben en la fila de la caja) y `correcta`. `fallos()` da la lista de problemas de forma |
 | `nucleo/vitrina_coleccionables.gd` (`class_name VitrinaColeccionables`, `Node2D`) | Dibuja `total_del_juego` lugares, llenos los `juntados` (leído al entrar): la sala donde se ven los coleccionables |
 | `nucleo/cortable.tscn` (`class_name Cortable`, `Area2D`) | Decoración que corta el ataque (pasto y lo que cada zona quiera). `cortar()` oculta el hijo `Entero`, muestra `Cortado`, suelta `trozos` partículas y emite `cortado`; no da Inspiración, no rebota al jugador ni cuenta como enemigo. Se sacude al pasar el jugador (`sacudidas`). No se guarda: vuelve al entrar otra vez a la sala. `esta_cortado` es pública. Para otra forma, se hereda la escena y se cambian `Entero` y `Cortado` |
-| `nucleo/proyectil.tscn` (`class_name Proyectil`, `Area2D`) | La bola: avanza recto y sin gravedad (`velocidad` 900 px/s, `ticks_vida` 60) y golpea una vez, con su `dano` (2), a cada `Golpeable` que toca, sin detenerse. Desaparece contra un sólido, que busca con un rayo porque un `Area2D` no detecta un `StaticBody2D`. Si el jugador está pegado a una pared, no llega a salir (se cobra igual). No da Inspiración |
+| `nucleo/proyectil.tscn` (`class_name Proyectil`, `Area2D`) | La bola: avanza recto y sin gravedad (`velocidad` 900 px/s, `ticks_vida` 60) y golpea una vez, con su `dano` (2), a cada `Golpeable` que toca, sin detenerse. Desaparece contra un sólido, que busca con un rayo: movido por posición, no detectó los `StaticBody2D` de las salas (`docs/errores/2026-10-06-bola-atravesaba-paredes.md`); el rayo además cubre el paso de un tick. Si el jugador está pegado a una pared, no llega a salir (se cobra igual). No da Inspiración |
 | `nucleo/dano_contacto.gd` (`class_name DanoContacto`, `Area2D`) | Daña al jugador mientras lo toca (`dano`, 1 por omisión). Con `peligro = true` es un peligro (punto seguro); si no, un golpe normal (retroceso). Regla, como Silksong: lo fijo (pinchos, ácido, lava, vacío) es peligro; lo que se mueve (sierras que viajan, trampas, lo que lanza un jefe) solo golpea, y el validador falla si un `DanoContacto` con `peligro` está dentro de un `Vaiven`, un `Enemigo`, un `PathFollow2D` o un cuerpo que se mueve. Revisa el contacto cada tick: quien sigue dentro vuelve a recibir daño al acabarse la invulnerabilidad. No es sólido |
 | `nucleo/vaiven.gd` (`class_name Vaiven`, `Node2D`) | Pieza que va y viene en línea recta: `recorrido` en `ticks_ida` ticks, vuelta y repite; quieta durante el congelado común. Al entrar fija `peligro = false` en cada `DanoContacto` que lleva |
 
@@ -336,7 +354,7 @@ Una sala es una escena cuya raíz es un `Node2D` con `nucleo/sala.gd` (`class_na
 | Propiedad `limites` (`Rect2`, exportada) | Rectángulo de la sala en sus coordenadas. La cámara del jugador sigue al jugador y no muestra nada fuera de él en cada eje donde la sala es al menos tan grande como la vista |
 | El jugador | No va dentro de la escena: la sala instancia `nucleo/jugador.tscn` en su `_ready` y le pasa `limites` |
 | Suelos y plataformas | `StaticBody2D` sólidos por todos lados: el núcleo no ofrece plataformas atravesables desde abajo (`one_way_collision`), decidido el 07-oct-2026 |
-| Controles, pausa, amuletos, vibración, fundido, interfaz y mapa | También los crea la sala en su `_ready`: `ControlesTactiles`, `Pausa`, `Amuletos` (`PantallaAmuletos`), `Vibracion`, `Fundido` y, si existen, `interfaz/interfaz.tscn` y `mapa/pantalla_mapa.tscn` (con `load()`, para que el núcleo no dependa de esos bloques; ver «Interfaz» y «Mapa») |
+| Controles, pausa, marco de menús, vibración, fundido, interfaz y mapa | También los crea la sala en su `_ready`: `ControlesTactiles`, `Pausa`, `Marco` (`MarcoMenus`), `Inventario` (`PaginaInventario`), `Amuletos` (`PantallaAmuletos`), `Vibracion`, `Fundido` y, si existen, `interfaz/interfaz.tscn` y `mapa/pantalla_mapa.tscn` (con `load()`, para que el núcleo no dependa de esos bloques; ver «Interfaz» y «Mapa») |
 | Propiedad `posicion_mapa` (`Vector2`) | Esquina de la sala en el mapa del mundo, en px: el mapa la dibuja en `posicion_mapa + limites`. Las salas de una zona se acomodan como se recorren. Cambiarla obliga a regenerar el índice del mapa |
 | Propiedad `habilidades_de_prueba` (`Array[StringName]`) | Solo salas de prueba: habilidades que la sala da en silencio al entrar (sin aviso ni autoguardado). Las de `herramientas/salas/` dan `pluma`, salvo la de combate chico (donde se recoge), la de capas y la del diálogo. El validador la exige vacía en `contenido/` |
 | Puertas (opcionales) | Instancias de `nucleo/puerta.tscn` (`class_name Puerta`, `Area2D`), hijas directas de la raíz. Ver abajo |
@@ -478,9 +496,9 @@ con un `Control` `Hud` (`interfaz/hud.gd`, `class_name Hud`). La sala lo carga c
 Bloque `mapa/`: no conoce ninguna zona; dibuja lo que hay y, si no hay nada, no dibuja. La sala carga
 `mapa/pantalla_mapa.tscn` con `load()` si existe (`Sala.MAPA`).
 
-- `PantallaMapa` (`CanvasLayer`, capa 20, grupo `pantalla_encima`, corre en pausa): la acción `mapa` abre y cierra el
-  mapa completo, que detiene el juego (`get_tree().paused`); `mapa_rapido` mantenida lo muestra encima sin detenerlo
-  (como en Hollow Knight y Silksong). Con la pausa abierta el mapa no se abre. Abierto, `pausa` y Atrás lo cierran.
+- `PantallaMapa` (`CanvasLayer`, capa 20, grupo `pagina_marco`, corre en pausa): la página Mapa del marco de menús
+  (ver «Marco de menús»); la acción `mapa` abre el marco en ella. `mapa_rapido` mantenida muestra el mapa encima sin
+  detener el juego (como en Hollow Knight y Silksong), solo con el juego andando.
 - Dos estados del mapa completo: acercado (las salas de la zona actual con borde, o su dibujo) y alejado (cada zona
   como la silueta rellena de sus salas, con su nombre); abre acercado, y los botones «−» y «+» cambian. Si la zona
   actual no tiene nada dibujado, se ve alejado. El mapa rápido siempre va acercado.
@@ -498,13 +516,29 @@ Bloque `mapa/`: no conoce ninguna zona; dibuja lo que hay y, si no hay nada, no 
   cada tick solo se mueve el punto del jugador (un nodo aparte); el mapa se rehace al abrir, al cambiar de estado, al
   equipar o quitar la brújula y al descansar. Los dibujos de las salas se cargan al preparar la vista, no al dibujar.
 
+## Marco de menús
+
+- `nucleo/marco_menus.gd` (`class_name MarcoMenus`, `CanvasLayer` capa 21, grupo `pantalla_encima`, corre en pausa),
+  creado por cada sala como `Marco`: páginas en ciclo, como el inventario de Hollow Knight, en el orden de
+  `MarcoMenus.ORDEN` (Inventario, Amuletos y Mapa; sin el bloque `mapa/`, las dos primeras). Abierto detiene el juego
+  (`get_tree().paused`); no se abre con el juego ya detenido (la pausa abierta).
+- `mapa` lo abre en Mapa; `inventario`, de pie en Inventario y sentado en un banco en Amuletos. Abierto,
+  `pagina_anterior` y `pagina_siguiente` (y tocar la vecina en la barra) cambian de página en ciclo; `pausa`, `mapa`,
+  `inventario`, Atrás y «Volver» lo cierran sin abrir la pausa (`bloquea_pausa()`, también en el tick en que se cerró).
+- Barra de arriba, de alto `MarcoMenus.ALTO_BARRA`: «Volver» a la izquierda y, al centro, «‹ anterior», el título y
+  «siguiente ›».
+- Una página es un nodo del grupo `pagina_marco` (`MarcoMenus.GRUPO_PAGINAS`) con `id_pagina() -> StringName`,
+  `titulo_pagina() -> String`, `mostrar_en_marco()` y `ocultar_de_marco()`. El marco las busca por el grupo, sin conocer
+  sus clases: así el núcleo no depende de `mapa/`. Una página va en la capa 20 y deja libre la franja de la barra.
+- `nucleo/pagina_inventario.gd` (`class_name PaginaInventario`, creada como `Inventario`): solo para leer lo que ya
+  existe en `Partida`: vida, Inspiración, PejeCoins, arma (la habilidad `pluma`), habilidades, mapas y lo perdido al
+  morir (`PaginaInventario.perdido(mochila)`). Sin objetos: un inventario de objetos subiría el guardado a la versión 4.
+- `abierta`, `pagina` e `ids()` del marco y `valores` del inventario son públicos para las pruebas.
+
 ## Amuletos
 
-- `nucleo/pantalla_amuletos.gd` (`class_name PantallaAmuletos`, `CanvasLayer` capa 21, grupo `pantalla_encima`,
-  corre en pausa), creada por cada sala como `Amuletos`. La acción `mochila` la abre (deteniendo el juego) y la
-  cierra; no se abre con el juego ya detenido (pausa o mapa abiertos). «Amuletos» de la pausa la abre con
-  `abrir_desde_pausa()`: al cerrarla emite `cerrada` y el juego sigue detenido. Abierta, `pausa`, Atrás y «Volver» la
-  cierran sin abrir la pausa (`bloquea_pausa()`).
+- `nucleo/pantalla_amuletos.gd` (`class_name PantallaAmuletos`, `CanvasLayer` capa 20, grupo `pagina_marco`, corre en
+  pausa), creada por cada sala como `Amuletos`: la página Amuletos del marco de menús.
 - Lista los amuletos de `Partida.amuletos_tenidos`, cada uno «puesto» o «guardado». Como en Hollow Knight, solo
   sentado en un banco (`Jugador.descansando` del `Jugador` de la sala) se ponen y se quitan (`alternar(id)`); de pie
   se ven, sin responder. El que no cabe tampoco responde.
@@ -517,19 +551,23 @@ Bloque `mapa/`: no conoce ninguna zona; dibuja lo que hay y, si no hay nada, no 
 | Grupo | Quién lo lleva | Quién lo usa |
 |---|---|---|
 | `jugador` | El cuerpo que controla la persona: el `Jugador` que crea la sala, o la caja gris (`sala_inicial`) | El puerto de depuración (posición y si está en el suelo), `ComportamientoEnemigo.jugador()` y, en pruebas, `medidor_camara.gd` y `prueba_peligro_anti_bucle.gd` |
-| `pantalla_encima` | Una pantalla abierta sobre el juego (hoy, `PantallaMapa` y `PantallaAmuletos`) con `bloquea_pausa() -> bool` | La `Pausa`: no se abre (con `pausa`, Atrás ni al perder el foco) mientras una diga que bloquea, ni en el tick en que se cerró |
+| `pantalla_encima` | Una pantalla abierta sobre el juego (hoy, `MarcoMenus`) con `bloquea_pausa() -> bool` | La `Pausa`: no se abre (con `pausa`, Atrás ni al perder el foco) mientras una diga que bloquea, ni en el tick en que se cerró |
+| `pagina_marco` | Las páginas del marco de menús: `PaginaInventario`, `PantallaAmuletos` y `PantallaMapa` | `MarcoMenus`, que las ordena y las muestra (ver «Marco de menús») |
 
 ## Capas de dibujo
 
 | Capa | Qué | Dónde |
 |---|---|---|
+| 1 | `Interfaz` de la caja gris, con «Volver al menú» (capa por omisión) | `nucleo/caja_gris.tscn` |
 | 5 | `ControlesTactiles` | `nucleo/controles_tactiles.tscn` |
 | 10 | `Interfaz` | `interfaz/interfaz.tscn` |
 | 11 | Medidor de FPS de la sala de arte (solo pruebas) | `herramientas/salas/sala_arte.gd` |
 | 12 | `CajaDialogo` | `nucleo/caja_dialogo.gd` |
 | 15 | `Fundido` | `nucleo/fundido.gd` |
-| 20 | `Pausa` y `PantallaMapa` (nunca abiertas a la vez) | `nucleo/pausa.tscn`, `mapa/pantalla_mapa.gd` |
-| 21 | `EditorControles` y `PantallaAmuletos` (nunca abiertas a la vez) | `nucleo/editor_controles.tscn`, `nucleo/pantalla_amuletos.gd` |
+| 20 | `Pausa` y las páginas del marco (la pausa y el marco nunca están abiertos a la vez) | `nucleo/pausa.tscn`, `nucleo/pagina_inventario.gd`, `nucleo/pantalla_amuletos.gd`, `mapa/pantalla_mapa.gd` |
+| 21 | La barra del marco de menús (`MarcoMenus`) | `nucleo/marco_menus.gd` |
+| 22 | Configuración abierta desde la pausa (`Pausa.CAPA_CONFIGURACION`) | `nucleo/pausa.gd` |
+| 23 | `EditorControles`, encima de Configuración | `nucleo/editor_controles.tscn` |
 | 100 | `Brillo` | `nucleo/brillo.gd` |
 
 Una capa nueva entra a esta tabla en el mismo cambio.
@@ -541,7 +579,8 @@ Formato, comando y condiciones de fallo: `docs/guiones.md`.
 ## Paquete de publicación
 
 El núcleo no depende de `herramientas/`: las únicas referencias son la carga condicional de `Arranque` (el puerto,
-solo en un build de depuración) y el botón «Zona de pruebas» del menú principal, que aparece con el modo
+solo en un build de depuración), `Sala.ruta_de` (busca una sala en `Sala.CARPETA_PRUEBAS` si no está en
+`contenido/salas/`) y el botón «Zona de pruebas» del menú principal, que aparece con el modo
 desarrollador encendido si `herramientas/salas/zona_pruebas.tscn` existe (`ResourceLoader.exists`, sin `preload`),
 en depuración y en publicación. Que la zona viaje en el paquete de publicación lo decide el `exclude_filter` del
 preset «Publicacion» de `export_presets.cfg`.
@@ -562,14 +601,24 @@ responde sin personaje. `NuevaPartida.limpiar_nombre` deja letras, números y es
 «Alumno» o «Alumna». La ficha ocupada lleva el nombre (sin él, «Partida N»). «Borrar» (si no está vacía) y «Restaurar» (si hay copia: vuelve al inicio de la última sesión)
 piden confirmación. «Configuración» (`nucleo/configuracion.tscn`, `class_name Configuracion`,
 instancia `Configuracion` del menú) reemplaza al panel central con, en orden de uso: «Audio» (panel con el volumen general, de
-música y de efectos, cada uno con barra, «−» y «+»; mientras está abierto suena la música de prueba en su bus, salvo
-sin pantalla, y «Probar efecto» toca uno en el de efectos), Brillo (barra con «−» y «+»), Vibración, Temblor, Recursos (automático, bajo o alto; ver «Recursos»), «Botones táctiles» (el mismo editor que la
+música y de efectos; cada uno con su barra ancha, su porcentaje y un altavoz que lo silencia y, con otro toque, lo
+devuelve al valor de antes, o a 50 si se bajó a 0 con la barra; mientras está abierto suena la música de prueba en su
+bus, salvo sin pantalla, y «Probar efecto» toca uno en el de efectos), «Brillo» (su pantalla, como en Hollow Knight:
+detrás la escena tenue; en una ventana la misma escena con un cuadro casi negro de calibración en la esquina; el texto
+«Ajusta el brillo hasta que el cuadro de la esquina apenas se vea.» y la barra ancha, de 50 % a 150 % en pasos de 5.
+La escena es la copia que tomó la pausa, con un shader que deshace el brillo con que se tomó, o, desde el menú o sin
+copia, `EscenaMuestra` de `nucleo/escena_muestra.gd`, rectángulos de color), Vibración, Temblor, Recursos (cada toque
+pasa a automático, bajo o alto; ver «Recursos»), «Botones táctiles» (el mismo editor que la
 pausa; ver «Entrada»), «Botones del control» (reasignación con `Mando`: tocar una acción y presionar el botón del
 control; «Restablecer» los devuelve a los de `project.godot`; sin control conectado lo avisa, con `Input.joy_connection_changed`), Modo desarrollador
-(con él el menú muestra «Zona de pruebas») y «Créditos»;
-«Volver», arriba a la izquierda en cada pantalla. Cada cambio se guarda al momento; las barras, al soltarlas.
-Atrás y la acción `pausa` vuelven un nivel a la vez (`atras()` del menú y de la Configuración): cierran la lista de
-Recursos (y no hacen nada más si se cerró ese tick o el anterior), cancelan el editor, la espera de un botón y la
+(con él el menú muestra «Zona de pruebas»; no aparece abierta desde la pausa, `en_partida`) y «Créditos»;
+«Volver», arriba a la izquierda en cada pantalla. Cada opción es un `BotonValor` (`nucleo/boton_valor.gd`): el nombre
+a la izquierda y el valor a la derecha, en una pastilla («Sí» dorada, «No» gris, Recursos en azul, con la letra más
+chica si no cabe) o «›» si abre otra pantalla; sin interruptores, y se toca el botón entero. Las barras anchas
+(variación `Tema.BARRA_ANCHA` de `HSlider`) saltan al punto tocado y se arrastran; con teclado o control, izquierda y
+derecha las mueven de 10 en 10. Desde la pausa, cambiar Recursos avisa que vale al entrar a la sala siguiente. Cada
+cambio se guarda al momento; las barras, al soltarlas.
+Atrás y la acción `pausa` vuelven un nivel a la vez (`atras()` del menú y de la Configuración): cancelan el editor, la espera de un botón y la
 confirmación, de un subpanel vuelven a la lista, de «Nueva partida» a las ranuras, de la lista o de las ranuras al menú, y en el menú piden
 confirmación antes de cerrar la app. La zona de pruebas es un nivel más: su «Volver», Atrás y `pausa` regresan al menú con
 el foco en su entrada (`MenuPrincipal.volver_a_zona`, que el menú lee al entrar). Se maneja con toque, teclado y
@@ -577,12 +626,17 @@ control (el foco empieza en la primera opción de cada pantalla). Las opciones n
 esa escena.
 
 Tamaños (`nucleo/tema.gd`, `class_name Tema`): el tema de los menús se arma en código (`Tema.crear()`) y se asigna
-solo a sus raíces (menú, que lo hereda la Configuración, pausa, pantalla de amuletos, caja de diálogo y zona de pruebas), no en `project.godot`. Todo lo
-que se toca mide al menos 108 px de alto (48 dp en el Senwa S50), también las opciones de la lista de Recursos;
+solo a sus raíces (menú, que lo hereda la Configuración, pausa, marco de menús y sus páginas, caja de diálogo y zona de pruebas), no en `project.godot`. Todo lo
+que se toca mide al menos 108 px de alto (48 dp en el Senwa S50);
 letra de 36 en botones y 33 en etiquetas. `Tema.ajustar(control)` pone un panel en el área segura menos 64 px a los
 lados y 16 arriba y abajo, y lo reacomoda al cambiar la ventana. Las cuadrículas de la Configuración toman 2 columnas
 de 420 px en la vista de 1280 (4:3 y 16:9) y 3 desde 1440 (`Configuracion.columnas_para`), y se desplazan si no
-caben en alto. El dorado marca solo el foco; presionado o encendido se ve más claro.
+caben en alto. El borde dorado marca solo el foco; presionado se ve más claro.
+
+Los menús hechos de piezas repetidas (ranuras, nueva partida, marco y sus páginas, partes de Configuración como el
+brillo) se arman en código y no en un `.tscn`: las fichas son iguales y su número sale de los datos. El resto es
+escena (`menu.tscn`, `configuracion.tscn`, `pausa.tscn`). Fuera de la v1: accesibilidad para lector de pantalla
+(`accessibility_name`); los menús se manejan con toque, teclado y control.
 
 Aviso de pocos toques: `nucleo/toques.gd` (`class_name Toques`, estático) pregunta una vez a Android, con el singleton
 `AndroidRuntime` y `PackageManager.hasSystemFeature`, si la pantalla declara 5 o más toques a la vez

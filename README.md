@@ -55,7 +55,19 @@ Los comandos son de PowerShell.
    .\herramientas\validar.ps1
    ```
 
-6. Abrir el proyecto en el editor:
+6. Para programar (con o sin Claude Code): copia local de la documentación oficial de Godot 4.7, solo el texto
+   (unos 36 MB), fuera del repositorio. Se guarda su ruta en `GODOT_DOCS` y se abre una terminal nueva:
+
+   ```powershell
+   git clone --depth 1 --branch 4.7 --filter=blob:none --no-checkout https://github.com/godotengine/godot-docs.git C:\ruta\godot-docs-4.7
+   git -C C:\ruta\godot-docs-4.7 sparse-checkout set --no-cone '/**/*.rst'
+   git -C C:\ruta\godot-docs-4.7 checkout 4.7
+   setx GODOT_DOCS "C:\ruta\godot-docs-4.7"
+   ```
+
+   Para actualizarla: `git -C $env:GODOT_DOCS pull --depth 1`.
+
+7. Abrir el proyecto en el editor:
 
    ```powershell
    & $env:GODOT_PATH --path . --editor

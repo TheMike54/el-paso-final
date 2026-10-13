@@ -27,6 +27,10 @@ const ALTO_LETRA: float = 50.0
 const FONDO_BOTON: Color = Color(0.17, 0.17, 0.2, 1.0)
 const BORDE_BOTON: Color = Color(0.27, 0.27, 0.3, 1.0)
 const FOCO: Color = Color(0.88, 0.69, 0.29, 1.0)
+## Barra ancha (volumen y brillo): nombre de la variacion, grosor de la pista y diametro del pomo, en px de la vista.
+const BARRA_ANCHA: StringName = &"BarraAncha"
+const GROSOR_PISTA: float = 24.0
+const POMO: int = 72
 
 static var _tema: Theme = null
 
@@ -39,13 +43,13 @@ static func crear() -> Theme:
 	tema.default_font_size = LETRA
 	var normal: StyleBoxFlat = _caja(FONDO_BOTON, BORDE_BOTON, 2)
 	var encima: StyleBoxFlat = _caja(FONDO_BOTON.lightened(0.08), BORDE_BOTON.lightened(0.2), 2)
-	# Presionado (y encendido, en un interruptor o la categoria elegida) se ve mas claro; el dorado es solo del foco,
+	# Presionado (y encendido: el personaje o la categoria elegida) se ve mas claro; el dorado es solo del foco,
 	# si no, con el control no se sabe donde esta el foco.
 	var presionado: StyleBoxFlat = _caja(FONDO_BOTON.lightened(0.2), BORDE_BOTON.lightened(0.45), 2)
 	var apagado: StyleBoxFlat = _caja(FONDO_BOTON.darkened(0.3), BORDE_BOTON.darkened(0.3), 2)
 	var foco: StyleBoxFlat = _caja(Color(0.0, 0.0, 0.0, 0.0), FOCO, 4)
 	foco.draw_center = false
-	for tipo: StringName in [&"Button", &"CheckButton", &"OptionButton"]:
+	for tipo: StringName in [&"Button"]:
 		tema.set_stylebox(&"normal", tipo, normal)
 		tema.set_stylebox(&"hover", tipo, encima)
 		tema.set_stylebox(&"pressed", tipo, presionado)
@@ -55,8 +59,10 @@ static func crear() -> Theme:
 		tema.set_font_size(&"font_size", tipo, LETRA)
 		tema.set_color(&"font_disabled_color", tipo, Color(0.55, 0.55, 0.58, 1.0))
 	tema.set_stylebox(&"focus", &"HSlider", foco)
+	_barra_ancha(tema, foco)
 	tema.set_font_size(&"font_size", &"Label", LETRA_CHICA)
-	# Cada opcion de una lista desplegable (Recursos) tambien mide ALTO_TOQUE: letra mas separacion.
+	# Cada opcion de un menu emergente (copiar y pegar del campo del nombre) tambien mide ALTO_TOQUE: letra mas
+	# separacion.
 	tema.set_font_size(&"font_size", &"PopupMenu", LETRA)
 	tema.set_constant(&"v_separation", &"PopupMenu", int(ALTO_TOQUE - ALTO_LETRA))
 	_tema = tema
@@ -93,6 +99,38 @@ static func _ajustar_ya(control: Control) -> void:
 	control.set_anchors_preset(Control.PRESET_TOP_LEFT)
 	control.position = area.position
 	control.size = area.size
+
+
+## Variacion BARRA_ANCHA de HSlider (volumen y brillo, mockup del 13-oct-2026): pista gruesa, lo lleno en dorado y un
+## pomo redondo de POMO px. Una variacion y no el HSlider del tema: las barras del editor de botones no cambian.
+static func _barra_ancha(tema: Theme, foco: StyleBoxFlat) -> void:
+	tema.set_type_variation(BARRA_ANCHA, &"HSlider")
+	var pista: StyleBoxFlat = StyleBoxFlat.new()
+	pista.bg_color = BORDE_BOTON
+	pista.set_corner_radius_all(int(GROSOR_PISTA / 2.0))
+	pista.content_margin_top = GROSOR_PISTA / 2.0
+	pista.content_margin_bottom = GROSOR_PISTA / 2.0
+	var lleno: StyleBoxFlat = pista.duplicate() as StyleBoxFlat
+	lleno.bg_color = FOCO
+	tema.set_stylebox(&"slider", BARRA_ANCHA, pista)
+	tema.set_stylebox(&"grabber_area", BARRA_ANCHA, lleno)
+	tema.set_stylebox(&"grabber_area_highlight", BARRA_ANCHA, lleno)
+	tema.set_stylebox(&"focus", BARRA_ANCHA, foco)
+	var pomo: ImageTexture = _circulo(POMO, Color(0.95, 0.95, 0.97))
+	tema.set_icon(&"grabber", BARRA_ANCHA, pomo)
+	tema.set_icon(&"grabber_highlight", BARRA_ANCHA, pomo)
+	tema.set_icon(&"grabber_disabled", BARRA_ANCHA, pomo)
+
+
+static func _circulo(diametro: int, color: Color) -> ImageTexture:
+	var imagen: Image = Image.create_empty(diametro, diametro, false, Image.FORMAT_RGBA8)
+	var radio: float = diametro / 2.0
+	for y: int in range(diametro):
+		for x: int in range(diametro):
+			# Borde suavizado de 1 px.
+			var d: float = Vector2(x + 0.5 - radio, y + 0.5 - radio).length()
+			imagen.set_pixel(x, y, Color(color, clampf(radio - d, 0.0, 1.0)))
+	return ImageTexture.create_from_image(imagen)
 
 
 static func _caja(fondo: Color, borde: Color, grosor: int) -> StyleBoxFlat:

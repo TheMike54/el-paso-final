@@ -48,6 +48,7 @@ controles táctiles, pensado para teléfonos de gama baja.
 
 ## Comandos
 PowerShell, desde la raíz del repo. `GODOT_PATH` es la ruta al ejecutable de consola de Godot 4.7.2 de cada persona.
+`GODOT_DOCS` es la ruta a la copia local de la documentación oficial de Godot 4.7 (instalación: `README.md`, paso 6).
 - Revisar el entorno (tras clonar): `.\herramientas\verificar-entorno.ps1`
 - Importar (tras clonar o al agregar un asset o un `class_name`): `& $env:GODOT_PATH --headless --path . --import`
 - Validar todo: `.\herramientas\validar.ps1` (pasa solo si imprime `OK  VALIDACION ... fallos=0`); sin reimportar,
@@ -66,12 +67,20 @@ PowerShell, desde la raíz del repo. `GODOT_PATH` es la ruta al ejecutable de co
 - El validador no ejecuta `_ready`: un error que solo ocurre al correr lo atrapa un guion, no `validar.ps1`.
 - Todo tipado: `project.godot` trata como error las declaraciones sin tipo y los accesos inseguros; toda función
   lleva tipo de retorno.
-- GDScript 4 no es Python: antes de escribir un `.gd`, usar la skill `gdscript4`.
+- GDScript 4 no es Python: antes de escribir un `.gd`, usar la skill `gdscript4`. Además, antes de un menú, el HUD o
+  un `Control`, la skill `ui-tactil`; antes del jugador, enemigos, áreas, rayos o formas, `fisica-2d`; antes de arte,
+  partículas, shaders o una sala nueva, o de proponer una optimización, `rendimiento-gama-baja`.
+- Antes de usar una clase, señal o patrón de Godot que no esté en la skill `gdscript4`, buscarlo con Grep en
+  `$env:GODOT_DOCS` (`classes/class_<nombre>.rst` para la API, `tutorials/` para las guías) y citar `archivo:línea`;
+  WebFetch solo si no está ahí. Al `investigador` se le pasa esa ruta.
 - Las fichas `.tres` son de solo lectura en ejecución: un recurso cargado es la misma copia para todos.
 - `.godot/` es caché: no se edita ni se versiona. Cada `.gd` tiene su `.gd.uid` al lado: se versiona y se mueve
   con su script. No copiar `.tscn`, `.tres` ni `.gd` con `cp` (duplica el UID): heredar la escena.
 - `.tscn` y `.tres` los escribe el editor: al editarlos a mano, conservar `uid` e ids de `ext_resource`. No usar
   las herramientas `mcp__godot__*` para crear ni editar escenas.
+- Mover, renombrar o borrar una escena, un recurso o una imagen se hace en el panel FileSystem del editor: fuera de
+  Godot, las rutas que la nombran se rompen (`tutorials/scripting/filesystem.rst`). Si ya se movió fuera: con
+  su `.import` o `.uid`, abrir el editor para que repare las rutas y correr `validar.ps1`.
 - Godot importa todo lo que cuelga de la raíz: una carpeta que no es del juego (`docs/`, `planes/`, `build/`)
   lleva un archivo `.gdignore` vacío.
 - Rutas dentro de `res://` en ASCII, minúsculas y snake_case.
@@ -91,6 +100,10 @@ PowerShell, desde la raíz del repo. `GODOT_PATH` es la ruta al ejecutable de co
 - Pruebas solo donde la lógica puede romperse: guardado, cuentas (daño, amuletos), reglas y el validador de
   contenido, más un guion corto por sala. No se prueba que una escena se dibuje ni que exista un nodo.
 - Las pruebas, los guiones y el validador imprimen el resumen y los fallos, no cada caso que pasa.
+- `.gitattributes` con `eol=lf`: los hooks de `sh` y el CI corren en Linux. `LICENSE` solo MIT; el arte queda fuera.
+- CI: `ci.yml` con `chickensoft-games/setup-godot@v2`, sin plantillas; el check que exige el ruleset se llama `validar`.
+- Android: id `com.themike54.elpasofinal`, ARM de 32 (S50) y 64 bits. El preset «Publicacion» excluye solo
+  `*funciones.json`; «Desarrollo» lleva todo y arranca con `--print-fps`.
 
 ## Reglas de este proyecto
 - IMPORTANT: Claude nunca ejecuta `git commit`, `git push`, `git merge`, `git rebase`, `git tag`, `gh pr create` ni

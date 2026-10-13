@@ -255,6 +255,11 @@ var aterrizando: bool:
 var invulnerable: bool:
 	get:
 		return _ticks_sin_dano > 0 or en_picada or _preparando_picada
+## Puede usar interactuar (banco, Npc, reto, entrega): en el suelo, vivo, de pie, sin aterrizaje duro ni conversacion.
+## Una sola regla para todos: la entrega olvidaba sentado y aterrizando (auditoria del 13-oct-2026).
+var puede_interactuar: bool:
+	get:
+		return is_on_floor() and not muerto and not descansando and not aterrizando and not hablando
 
 @onready var _camara: Camera2D = $Camara as Camera2D
 @onready var _ataque: Area2D = $Ataque as Area2D

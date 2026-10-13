@@ -113,8 +113,9 @@ Combate:
   jugador quieto con gravedad (`hablando`) hasta `dejar_de_hablar()`. El tick siguiente también queda quieto: la
   pulsación que cerró la caja no salta ni ataca. Un golpe, un peligro o morir lo cortan. Mientras habla, el banco no
   sienta y la entrega de recompensas no responde.
-- `vidas`, `muerto`, `toques_poder`, `rebotes_pogo`, `en_picada`, `golpes_onda`, `descansando`, `hablando`, `temblor_x`, `temblor_y`, `aterrizando`, `paradas`, `corriendo`, `atacando_en_carrera`, `volteando`, `girando` e `invulnerable` (`aterrizando`, `girando` e `invulnerable`, de solo lectura) son propiedades
-  públicas: los guiones las leen con `valor Jugador vidas`.
+- `vidas`, `muerto`, `toques_poder`, `rebotes_pogo`, `en_picada`, `golpes_onda`, `descansando`, `hablando`, `temblor_x`, `temblor_y`, `aterrizando`, `paradas`, `corriendo`, `atacando_en_carrera`, `volteando`, `girando`, `invulnerable` y `puede_interactuar` (`aterrizando`, `girando`, `invulnerable` y `puede_interactuar`, de solo
+  lectura) son propiedades públicas: los guiones las leen con `valor Jugador vidas`. `puede_interactuar` es la regla
+  única del banco, el `Npc`, el reto y la entrega: en el suelo, vivo, de pie, sin aterrizaje duro ni conversación.
 
 Curar y sensación del golpe:
 

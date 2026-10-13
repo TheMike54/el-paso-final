@@ -1,4 +1,4 @@
-# Los 31 casos de herramientas/salas/prueba_tactil.gd corrieron y ninguno fallo. Cada caso que
+# Los 34 casos de herramientas/salas/prueba_tactil.gd corrieron y ninguno fallo. Cada caso que
 # falla imprime una linea "FALLO controles_tactiles: <caso>".
-valor . casos 31
+valor . casos 34
 valor . fallos 0

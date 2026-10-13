@@ -1,12 +1,10 @@
 # Herramientas
 
 Lo que permite comprobar el juego sin abrirlo a mano: validador, puerto de depuración, guiones, revisión del
-entorno y hooks. La carpeta viaja en el paquete de publicación (la zona de pruebas, con el modo desarrollador), pero
-nada del juego puede depender de ella; el puerto de depuración solo corre en builds de depuración (detalle en
-`docs/contrato.md`, «Paquete de publicación»).
+entorno y hooks.
 
 ## Primero
-Leer `funciones.json` de esta carpeta: la primera funcionalidad con `"pasa": false` es la que sigue.
+Leer `funciones.json` de esta carpeta.
 
 ## Piezas: lo que no se deduce del código
 | Pieza | Contrato |
@@ -15,25 +13,24 @@ Leer `funciones.json` de esta carpeta: la primera funcionalidad con `"pasa": fal
 | `puerto_depuracion.gd` | No es autoload: lo carga el arranque del núcleo solo en builds de depuración. Modo guion (`--guion=`): compara el resultado con el `.esperado`, imprime `GUION OK` o `GUION FALLA` y sale con 0 o 1. Sin ese argumento no hace nada |
 | `guiones/<bloque>/<nombre>.guion` y `.esperado` | Entradas por cuadro y estado esperado al final. Formato, claves y condiciones de fallo en `docs/guiones.md` |
 | `githooks/commit-msg` | Rechaza mensajes de commit con líneas de coautoría de asistentes; lo activa `verificar-entorno.ps1` |
-| `.claude/hooks/al-compactar.ps1` | Hook `SessionStart` con matcher `compact`: imprime la rama, `git status --short`, `ESTADO.md` y la lista de `planes/activos/`, y pide releer el `CLAUDE.md` y el `funciones.json` del bloque. Siempre sale con 0 |
-| `verificar-entorno.ps1` | Comprueba Godot 4.7.2, `GODOT_PATH`, versión de Claude Code, identidad de git, hook de git y archivos locales ignorados |
+| `.claude/hooks/al-compactar.ps1` | Hook `SessionStart` con matcher `compact` (qué reinyecta: «Al compactar» del `CLAUDE.md` raíz); además pide releer el `CLAUDE.md` y el `funciones.json` del bloque. Siempre sale con 0 |
+| `verificar-entorno.ps1` | Comprueba Godot 4.7.2, `GODOT_PATH`, versión de Claude Code, identidad de git, hook de git y archivos locales ignorados, y avisa (sin fallar) si `GODOT_DOCS` no apunta a la documentación de Godot 4.7 o si falta `adb` |
 
 ## Reglas
 - El puerto solo tiene el modo guion (`--guion=`): no abre conexiones ni recibe órdenes. Si algún día las acepta,
   solo de una lista fija y escribiendo solo dentro de `user://`.
-- Los guiones siguen `docs/guiones.md`: comprueban lo que importa, con tolerancia; toda corrida automática lleva
-  `--fixed-fps 60` y `--quit-after`.
+- Los guiones siguen `docs/guiones.md`: comprueban lo que importa, con tolerancia.
 - Un error puesto a propósito en un `.gd` debe hacer fallar `validar.ps1`; si no falla, el validador está mal.
 - Reglas del validador sobre escenas, además de compilar: las de cada sala, completas en `docs/contrato.md`,
   «Sala»; en cualquier escena, un `DanoContacto` con `peligro` dentro de algo que se mueve falla (lo que se mueve solo golpea;
   entrada `validador-peligro-movil`); cada sala respeta el presupuesto de decoración (cifras en `docs/contrato.md`,
-  «Recursos»; entrada `validador-presupuesto`); el índice de salas del mapa está al día (entrada
+  «Recursos»; entradas `validador-presupuesto` y `validador-capas-translucidas`); ninguna imagen pasa de 2048 px por
+  lado (entrada `validador-texturas`); el índice de salas del mapa está al día (entrada
   `mapa-indice` de `mapa/funciones.json`); las tablas de la zona de pruebas (`GRUPOS` y `OCULTAS` de
-  `salas/zona_pruebas.gd`) solo nombran escenas que existen (entrada `validador-zona-pruebas`); cada `Npc` y
+  `herramientas/salas/zona_pruebas.gd`) solo nombran escenas que existen (entrada `validador-zona-pruebas`); cada `Npc` y
   `RetoPreguntas` con conversaciones o preguntas sin fallos e id libre (detalle en `docs/contrato.md`, «Sala»).
-- Los `.ps1`: solo ASCII, sin `$ErrorActionPreference = 'Stop'` alrededor de un ejecutable, probados en
-  `powershell.exe` 5.1 y en `pwsh` 7.
-- Salida corta: resumen y fallos; el detalle va a `.godot/validar.log`.
+- Los `.ps1`, además de lo que dice el raíz: sin `$ErrorActionPreference = 'Stop'` alrededor de un ejecutable.
+- El detalle de `validar.ps1` va a `.godot/validar.log`.
 - El CI corre la misma validación que `validar.ps1` y además todos los guiones, los mensajes de commit y los
   archivos locales: si cambia la validación de uno, cambia la del otro en el mismo PR.
 - El hook `.claude/hooks/sin-commit.ps1` es más estricto que la regla escrita: también frena `git revert`,

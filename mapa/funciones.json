@@ -1,7 +1,7 @@
 [
   {
     "id": "mapa-pantalla",
-    "que": "La accion mapa abre el mapa completo (detiene el juego) con dos estados, acercado y alejado, que cambian + y -; mapa_rapido mantenida lo muestra sin detenerlo; sin la pluma_mapa no hay nada; el banco dibuja lo visitado de las zonas cuyo mapa se tiene; el jugador se ve solo con la brujula; con el mapa abierto la pausa no se abre",
+    "que": "La accion mapa abre el marco de menus en la pagina Mapa (detiene el juego), con dos estados, acercado y alejado, que cambian + y -; mapa_rapido mantenida muestra el mapa sin detener el juego; sin la pluma_mapa no hay nada; el banco dibuja lo visitado de las zonas cuyo mapa se tiene; el jugador se ve solo con la brujula; con el marco abierto la pausa no se abre",
     "comprobacion": "herramientas/guiones/mapa/mapa_cuentas.guion",
     "pasa": true
   },

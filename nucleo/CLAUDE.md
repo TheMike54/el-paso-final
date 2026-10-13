@@ -1,10 +1,10 @@
 # Núcleo
 
 Código que se escribe una vez y usa todo el juego: jugador, cámara, sala y cambio de sala, guardado, entrada,
-bus de eventos, menús (ranuras, Configuración, pausa, amuletos) y diálogo. El contenido (zonas, enemigos, NPC) se agrega sin tocar esta carpeta.
+bus de eventos, menús (ranuras, Configuración, pausa, marco de menús) y diálogo. El contenido (zonas, enemigos, NPC) se agrega sin tocar esta carpeta.
 
 ## Primero
-Leer `funciones.json` de esta carpeta: la primera funcionalidad con `"pasa": false` es la que sigue.
+Leer `funciones.json` de esta carpeta.
 
 ## Qué ofrece a los demás bloques
 Lo que otro bloque puede usar está en `docs/contrato.md` (autoloads, señales del bus, forma de una sala, ficha y
@@ -13,17 +13,16 @@ el contrato todavía no define se propone en un plan antes de programarlo.
 
 ## Qué no toca
 - No conoce zonas, enemigos ni NPC concretos: trabaja con fichas y señales.
-- No depende de ningún otro bloque. Excepciones: el autoload de arranque carga con `load()` las herramientas de
-  depuración si existen, el menú principal muestra la zona de pruebas solo con el modo desarrollador
-  encendido y si su escena existe, en depuración y en publicación (ver `docs/contrato.md`, «Paquete de publicación»), y la sala carga con `load()` la interfaz (`interfaz/interfaz.tscn`) y el
-  mapa (`mapa/pantalla_mapa.tscn`) si existen.
+- No depende de ningún otro bloque. Excepciones, todas solo si el archivo existe (`load()` o
+  `ResourceLoader.exists`): `Arranque` carga el puerto de depuración, solo en builds de depuración; el menú
+  principal muestra la zona de pruebas con el modo desarrollador encendido, en depuración y en publicación
+  (`docs/contrato.md`, «Paquete de publicación»); la sala carga `interfaz/interfaz.tscn` y
+  `mapa/pantalla_mapa.tscn`, y `Sala.ruta_de` busca el id en `contenido/salas/` y después en
+  `herramientas/salas/zonas/`.
 
 ## Cómo se comprueba
-- Después de cada cambio: `.\herramientas\validar.ps1`, desde la raíz del repo.
 - Movimiento, salto, cámara y cambio de sala: un guion en `herramientas/guiones/nucleo/` con lo que debe
   cumplirse al final.
-- La sensación (salto, aceleración, cámara) la juzga la persona en una ventana; Claude dice qué observar.
 
 ## Trampas
-- El jugador se mueve en `_physics_process`; nada de lógica de movimiento en `_process`.
 - El guardado se escribe a un archivo temporal y luego se renombra: así un cierre a mitad no deja el archivo dañado.

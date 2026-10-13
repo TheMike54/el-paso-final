@@ -70,6 +70,17 @@ func _ready() -> void:
 	for i: int in range(5, 13):
 		Partida.marcar("prueba_2", "coleccionable_%d" % i)
 	_caso("con 12 se entregan el amuleto y la vida maxima", entrega.entregar() == 2 and Partida.amuletos_tenidos.has(&"amuleto_prueba") and Partida.vidas_maximas == 5)
+	# La regla de interactuar es una para banco, Npc, reto y entrega: sentado no se interactua (la entrega lo olvidaba).
+	# El jugador cae hasta el suelo: asi la unica diferencia entre los dos casos es estar sentado.
+	for i: int in range(90):
+		if jugador.is_on_floor():
+			break
+		await get_tree().physics_frame
+	var de_pie_puede: bool = jugador.puede_interactuar
+	jugador.descansando = true
+	var sentado_puede: bool = jugador.puede_interactuar
+	jugador.descansando = false
+	_caso("de pie en el suelo se puede interactuar y sentado en un banco no", de_pie_puede and not sentado_puede)
 	sala.free()
 
 	# Mapa: descansar con la pluma del mapa dibuja las visitadas de las zonas cuyo mapa se tiene.

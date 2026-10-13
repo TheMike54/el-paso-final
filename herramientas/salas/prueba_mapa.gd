@@ -1,8 +1,8 @@
 extends Node
 # Prueba del mapa: las cuentas de DatosMapa (que salas se dibujan, el rectangulo que abarcan, como se encaja en la
 # pantalla) y la pantalla sobre la sala mapa_1 de la zona de prueba: sin la pluma_mapa no hay nada, el banco dibuja
-# lo visitado de las zonas cuyo mapa se tiene, acercado y alejado, la brujula, y que el mapa detenga el juego y se
-# quede la pulsacion de pausa. Deja casos y fallos para mapa_cuentas.guion. Imprime el resumen y los fallos.
+# lo visitado de las zonas cuyo mapa se tiene, acercado y alejado, la brujula, y que el mapa, como pagina del marco
+# de menus, detenga el juego y se quede la pulsacion de pausa. Deja casos y fallos para mapa_cuentas.guion.
 
 const SALA: String = "res://herramientas/salas/zonas/mapa/mapa_1.tscn"
 const RUTA: String = "user://prueba_mapa.json"
@@ -20,15 +20,16 @@ func _ready() -> void:
 	await get_tree().physics_frame
 	var mapa: PantallaMapa = sala.get_node(^"PantallaMapa") as PantallaMapa
 	var pausa: Pausa = sala.get_node(^"Pausa") as Pausa
+	var marco: MarcoMenus = sala.get_node(^"Marco") as MarcoMenus
 
-	mapa.abrir()
+	marco.abrir(&"mapa")
 	_caso("abrir el mapa detiene el juego", mapa.abierta and get_tree().paused)
 	_caso("sin la pluma_mapa no hay nada dibujado", mapa.lienzo.salas_dibujadas == 0)
-	mapa.cerrar()
+	marco.cerrar()
 	Partida.salas_mapeadas.append("mapa_1")
-	mapa.abrir()
+	marco.abrir(&"mapa")
 	_caso("con una sala mapeada pero sin la pluma_mapa, la pantalla no la dibuja", mapa.lienzo.salas_dibujadas == 0)
-	mapa.cerrar()
+	marco.cerrar()
 	Partida.salas_mapeadas.clear()
 	_caso("cerrar lo reanuda", not mapa.abierta and not get_tree().paused)
 
@@ -38,16 +39,16 @@ func _ready() -> void:
 	Partida.visitar("prueba_1")
 	Eventos.descanso_en_banco.emit(&"banco_mapa_1")
 	_caso("el banco dibuja lo visitado de las zonas cuyo mapa se tiene", Partida.salas_mapeadas.has("mapa_1") and Partida.salas_mapeadas.has("mapa_2") and not Partida.salas_mapeadas.has("prueba_1"))
-	mapa.abrir()
+	marco.abrir(&"mapa")
 	_caso("acercado muestra las salas de la zona actual", mapa.lienzo.quedo_acercado and mapa.lienzo.salas_dibujadas == 2 and mapa.lienzo.zonas_dibujadas == 1)
 	_caso("sin la brujula no se ve al jugador", not mapa.lienzo.marcador_visible)
-	mapa.cerrar()
+	marco.cerrar()
 
 	Partida.mapas.append("prueba")
 	Eventos.descanso_en_banco.emit(&"banco_mapa_1")
 	Partida.amuletos_tenidos.append(&"brujula")
 	Partida.equipar(&"brujula")
-	mapa.abrir()
+	marco.abrir(&"mapa")
 	mapa.alejar()
 	_caso("alejado muestra todas las zonas dibujadas", not mapa.lienzo.quedo_acercado and mapa.lienzo.salas_dibujadas == 3 and mapa.lienzo.zonas_dibujadas == 2)
 	_caso("con la brujula equipada se ve al jugador", mapa.lienzo.marcador_visible)
@@ -59,7 +60,7 @@ func _ready() -> void:
 	await get_tree().physics_frame
 	await get_tree().physics_frame
 	Input.action_release(&"pausa")
-	_caso("pausa con el mapa abierto lo cierra sin abrir la pausa", not mapa.abierta and not pausa.abierta and not get_tree().paused)
+	_caso("pausa con el mapa abierto lo cierra sin abrir la pausa", not mapa.abierta and not marco.abierta and not pausa.abierta and not get_tree().paused)
 
 	Input.action_press(&"mapa_rapido")
 	await get_tree().physics_frame
@@ -78,7 +79,7 @@ func _ready() -> void:
 	_caso("soltarlo lo oculta", not mapa.rapido and not mapa.visible)
 
 	pausa.abrir()
-	mapa.abrir()
+	marco.abrir(&"mapa")
 	_caso("con la pausa abierta el mapa no se abre", not mapa.abierta)
 	pausa.cerrar()
 

@@ -55,7 +55,7 @@ func _ready() -> void:
 	configuracion.editor_pedido.connect(abrir_editor)
 	_zona.pressed.connect(_entrar_a_zona)
 	configuracion.cerrado.connect(_al_cerrar_configuracion)
-	_si.pressed.connect(get_tree().quit)
+	_si.pressed.connect(salir)
 	_no.pressed.connect(_cancelar_salida)
 	_poner_aviso_toques()
 	_mostrar_zona()
@@ -197,7 +197,7 @@ func _al_cerrar_configuracion() -> void:
 	_configuracion.grab_focus()
 
 
-## El mismo editor que abre la pausa, sobre el fondo del menu; al cerrarlo vuelve Configuracion.
+## El editor de botones tactiles, sobre el fondo del menu (la pausa abre el mismo); al cerrarlo vuelve Configuracion.
 func abrir_editor() -> void:
 	var capa: CanvasLayer = ESCENA_EDITOR.instantiate() as CanvasLayer
 	add_child(capa)
@@ -218,6 +218,13 @@ func _pedir_salida() -> void:
 		_confirmar.visible = true
 		_centro.visible = false
 		_no.grab_focus()
+
+
+## Sale del juego avisando antes el cierre a todo el arbol, como al cerrar la ventana: quit() solo no lo avisa y
+## Configuracion guarda ahi lo que no se guardo (inputs/handling_quit_requests.rst, «Sending your own quit notification»).
+func salir() -> void:
+	get_tree().root.propagate_notification(NOTIFICATION_WM_CLOSE_REQUEST)
+	get_tree().quit()
 
 
 func _cancelar_salida() -> void:

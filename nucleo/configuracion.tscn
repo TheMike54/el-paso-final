@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://bfg53786ab33n"]
 
 [ext_resource type="Script" uid="uid://dp5jqdvhw30hj" path="res://nucleo/configuracion.gd" id="1_configuracion"]
+[ext_resource type="Script" uid="uid://xdh8gd5iuplu" path="res://nucleo/boton_valor.gd" id="2_boton_valor"]
 
 [node name="Configuracion" type="Control"]
 layout_mode = 3
@@ -54,73 +55,55 @@ columns = 3
 custom_minimum_size = Vector2(420, 108)
 layout_mode = 2
 text = "Audio"
+script = ExtResource("2_boton_valor")
 
-[node name="Brillo" type="HBoxContainer" parent="Lista/Desplazable/Centro/Opciones"]
+[node name="Brillo" type="Button" parent="Lista/Desplazable/Centro/Opciones"]
 custom_minimum_size = Vector2(420, 108)
-layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="Menos" type="Button" parent="Lista/Desplazable/Centro/Opciones/Brillo"]
-custom_minimum_size = Vector2(108, 108)
-layout_mode = 2
-text = "−"
-
-[node name="Medio" type="VBoxContainer" parent="Lista/Desplazable/Centro/Opciones/Brillo"]
-layout_mode = 2
-size_flags_horizontal = 3
-alignment = 1
-
-[node name="Nombre" type="Label" parent="Lista/Desplazable/Centro/Opciones/Brillo/Medio"]
 layout_mode = 2
 text = "Brillo"
-horizontal_alignment = 1
+script = ExtResource("2_boton_valor")
 
-[node name="Barra" type="HSlider" parent="Lista/Desplazable/Centro/Opciones/Brillo/Medio"]
-custom_minimum_size = Vector2(0, 40)
-layout_mode = 2
-min_value = 50.0
-max_value = 150.0
-step = 5.0
-value = 100.0
-
-[node name="Mas" type="Button" parent="Lista/Desplazable/Centro/Opciones/Brillo"]
-custom_minimum_size = Vector2(108, 108)
-layout_mode = 2
-text = "+"
-
-[node name="Vibracion" type="CheckButton" parent="Lista/Desplazable/Centro/Opciones"]
+[node name="Vibracion" type="Button" parent="Lista/Desplazable/Centro/Opciones"]
 custom_minimum_size = Vector2(420, 108)
 layout_mode = 2
-text = "Vibración: sí"
+text = "Vibración"
+script = ExtResource("2_boton_valor")
 
-[node name="Temblor" type="CheckButton" parent="Lista/Desplazable/Centro/Opciones"]
+[node name="Temblor" type="Button" parent="Lista/Desplazable/Centro/Opciones"]
 custom_minimum_size = Vector2(420, 108)
 layout_mode = 2
-text = "Temblor: sí"
+text = "Temblor"
+script = ExtResource("2_boton_valor")
 
-[node name="Recursos" type="OptionButton" parent="Lista/Desplazable/Centro/Opciones"]
+[node name="Recursos" type="Button" parent="Lista/Desplazable/Centro/Opciones"]
 custom_minimum_size = Vector2(420, 108)
 layout_mode = 2
+text = "Recursos"
+script = ExtResource("2_boton_valor")
 
 [node name="Controles" type="Button" parent="Lista/Desplazable/Centro/Opciones"]
 custom_minimum_size = Vector2(420, 108)
 layout_mode = 2
 text = "Botones táctiles"
+script = ExtResource("2_boton_valor")
 
 [node name="Mando" type="Button" parent="Lista/Desplazable/Centro/Opciones"]
 custom_minimum_size = Vector2(420, 108)
 layout_mode = 2
 text = "Botones del control"
+script = ExtResource("2_boton_valor")
 
-[node name="ModoDesarrollador" type="CheckButton" parent="Lista/Desplazable/Centro/Opciones"]
+[node name="ModoDesarrollador" type="Button" parent="Lista/Desplazable/Centro/Opciones"]
 custom_minimum_size = Vector2(420, 108)
 layout_mode = 2
-text = "Desarrollador: no"
+text = "Desarrollador"
+script = ExtResource("2_boton_valor")
 
 [node name="Creditos" type="Button" parent="Lista/Desplazable/Centro/Opciones"]
 custom_minimum_size = Vector2(420, 108)
 layout_mode = 2
 text = "Créditos"
+script = ExtResource("2_boton_valor")
 
 [node name="AvisoRecursos" type="Label" parent="Lista"]
 visible = false

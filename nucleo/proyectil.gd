@@ -2,8 +2,9 @@ class_name Proyectil
 extends Area2D
 # Poder del boton de curar (habilidad proyectil; nombre neutro hasta decidir que es en el mundo):
 # avanza recto y sin gravedad, golpea una sola vez a cada Golpeable que toca y lo atraviesa, y
-# desaparece contra un solido o al acabar su recorrido. Los solidos se buscan con un rayo: un Area2D
-# no detecta a un StaticBody2D. Lo crea el jugador en su sala.
+# desaparece contra un solido o al acabar su recorrido. Los solidos se buscan con un rayo: este Area2D, movido
+# por posicion, no detecto los StaticBody2D de las salas (docs/errores/2026-10-06-bola-atravesaba-paredes.md).
+# Lo crea el jugador en su sala.
 const TAMANO: Vector2 = Vector2(60.0, 40.0)
 const COLOR: Color = Color(0.75, 0.75, 0.8)
 

@@ -6,7 +6,7 @@ extends Node
 # objetos recordados (suelo fragil, coleccionable, npc, reto de preguntas) con id unico. Revisa tambien la forma de
 # cada FichaDialogo y FichaPregunta, y de los Npc y RetoPreguntas de cualquier escena. En cualquier escena, un DanoContacto que se mueve
 # (dentro de un Vaiven, un enemigo o un cuerpo que se mueve) no puede ser peligro. Las tablas de la zona de pruebas
-# (GRUPOS y OCULTAS) solo nombran escenas que existen.
+# (GRUPOS y OCULTAS) solo nombran escenas que existen. Ninguna imagen pasa de 2048 px por lado.
 const IGNORAR: PackedStringArray = ["addons", "build"]
 const CAMPOS_TEXTO: PackedStringArray = ["id", "que", "comprobacion"]
 const INDICE_MAPA: String = "res://mapa/indice_salas.gd"
@@ -46,6 +46,22 @@ func _recorrer(ruta: String) -> void:
 			_revisar(ruta.path_join(archivo))
 		elif archivo == "funciones.json":
 			_revisar_funciones(ruta.path_join(archivo))
+		elif IMAGENES.has(ext):
+			_revisar_imagen(ruta.path_join(archivo))
+
+
+# Ninguna textura de mas de 2048 px por lado (decision cerrada del CLAUDE.md raiz: limite de los telefonos de gama
+# baja con el renderer Compatibility).
+const IMAGENES: PackedStringArray = ["png", "jpg", "jpeg", "webp", "svg"]
+const MAXIMO_LADO_TEXTURA: int = 2048
+
+
+func _revisar_imagen(ruta: String) -> void:
+	var textura: Texture2D = ResourceLoader.load(ruta) as Texture2D
+	if textura == null:
+		_fallos.append(ruta + " (imagen que no carga como textura)")
+	elif textura.get_width() > MAXIMO_LADO_TEXTURA or textura.get_height() > MAXIMO_LADO_TEXTURA:
+		_fallos.append("%s (%dx%d px: el maximo es %d por lado)" % [ruta, textura.get_width(), textura.get_height(), MAXIMO_LADO_TEXTURA])
 
 
 func _revisar(ruta: String) -> void:
@@ -81,16 +97,21 @@ func _revisar(ruta: String) -> void:
 
 
 # Presupuesto de una sala (seccion 8 del plan de cierre del nucleo, medido para el S50): a lo mas 3 emisores de
-# particulas con 60 particulas entre todos, 30 plantas y ninguna luz 2D.
+# particulas con 60 particulas entre todos, 30 plantas, ninguna luz 2D y 2 capas translucidas grandes (cada capa
+# translucida se pinta encima de lo de atras: el costo es el area, gpu_optimization.rst).
 const MAXIMO_EMISORES: int = 3
 const MAXIMO_PARTICULAS: int = 60
 const MAXIMO_PLANTAS: int = 30
+const MAXIMO_CAPAS_TRANSLUCIDAS: int = 2
+## Una capa es grande si cubre al menos un cuarto de la vista base (1280x720).
+const AREA_CAPA_GRANDE: float = 1280.0 * 720.0 / 4.0
 
 
 func _revisar_presupuesto(ruta: String, sala: Node) -> void:
 	var emisores: int = 0
 	var particulas: int = 0
 	var plantas: int = 0
+	var capas: PackedStringArray = []
 	for nodo: Node in sala.find_children("*", "", true, false):
 		if nodo is CPUParticles2D or nodo is GPUParticles2D:
 			emisores += 1
@@ -99,10 +120,75 @@ func _revisar_presupuesto(ruta: String, sala: Node) -> void:
 			plantas += 1
 		elif nodo is Light2D:
 			_fallos.append("%s (%s: sin luces 2D, el renderer Compatibility las cobra caras)" % [ruta, nodo.name])
+		elif nodo is CanvasItem and _es_capa_translucida_grande(nodo as CanvasItem, sala):
+			capas.append(nodo.name)
 	if emisores > MAXIMO_EMISORES or particulas > MAXIMO_PARTICULAS:
 		_fallos.append("%s (%d emisores y %d particulas: el maximo es %d y %d)" % [ruta, emisores, particulas, MAXIMO_EMISORES, MAXIMO_PARTICULAS])
 	if plantas > MAXIMO_PLANTAS:
 		_fallos.append("%s (%d plantas: el maximo es %d)" % [ruta, plantas, MAXIMO_PLANTAS])
+	if capas.size() > MAXIMO_CAPAS_TRANSLUCIDAS:
+		_fallos.append("%s (%d capas translucidas grandes, %s: el maximo es %d)" % [ruta, capas.size(), ", ".join(capas), MAXIMO_CAPAS_TRANSLUCIDAS])
+
+
+# Capa translucida grande: un Sprite2D, TextureRect, ColorRect, NinePatchRect o Polygon2D visible, con alfa efectivo
+# (el de su color si es ColorRect o Polygon2D, por su self_modulate y por el modulate de el y de sus padres) menor
+# que 1 y un area, con la escala de sus padres, de al menos AREA_CAPA_GRANDE. Se mide sin el arbol (el validador no
+# agrega la sala): por eso la escala se acumula a mano y el tamano de un Control sale de sus anclas (_tamano_control).
+func _es_capa_translucida_grande(item: CanvasItem, sala: Node) -> bool:
+	var tam: Vector2 = Vector2.ZERO
+	if item is Sprite2D:
+		var sprite: Sprite2D = item as Sprite2D
+		if sprite.texture == null:
+			return false
+		tam = sprite.region_rect.size if sprite.region_enabled else sprite.texture.get_size() / Vector2(sprite.hframes, sprite.vframes)
+	elif item is TextureRect or item is ColorRect or item is NinePatchRect:
+		tam = _tamano_control(item as Control)
+	elif item is Polygon2D:
+		var caja: Rect2 = Rect2()
+		var puntos: PackedVector2Array = (item as Polygon2D).polygon
+		if puntos.is_empty():
+			return false
+		caja.position = puntos[0]
+		for punto: Vector2 in puntos:
+			caja = caja.expand(punto)
+		tam = caja.size
+	else:
+		return false
+	var alfa: float = item.self_modulate.a
+	if item is ColorRect:
+		alfa *= (item as ColorRect).color.a
+	elif item is Polygon2D:
+		alfa *= (item as Polygon2D).color.a
+	var escala: Vector2 = Vector2.ONE
+	var nodo: Node = item
+	while nodo != null and nodo != sala.get_parent() and not (nodo is CanvasLayer):
+		if nodo is CanvasItem:
+			if not (nodo as CanvasItem).visible:
+				return false
+			alfa *= (nodo as CanvasItem).modulate.a
+		if nodo is Node2D:
+			escala *= (nodo as Node2D).scale.abs()
+		elif nodo is Control:
+			escala *= (nodo as Control).scale.abs()
+		nodo = nodo.get_parent()
+	if nodo is CanvasLayer and not (nodo as CanvasLayer).visible:
+		return false
+	return alfa < 1.0 and tam.x * escala.x * tam.y * escala.y >= AREA_CAPA_GRANDE
+
+
+# Tamano de un Control como quedaria en el juego: fuera del arbol, size no aplica las anclas (un PRESET_FULL_RECT
+# mide 0x0) ni el minimo de su contenido. Las anclas toman su parte del padre Control; bajo un Node2D, de nada (el
+# motor ancla contra 0x0); bajo un CanvasLayer o sin CanvasItem encima, de la vista base.
+func _tamano_control(control: Control) -> Vector2:
+	var padre: Vector2 = Vista.BASE
+	if control.get_parent() is Control:
+		padre = _tamano_control(control.get_parent() as Control)
+	elif control.get_parent() is CanvasItem:
+		padre = Vector2.ZERO
+	var ancho: float = (control.anchor_right - control.anchor_left) * padre.x + control.offset_right - control.offset_left
+	var alto: float = (control.anchor_bottom - control.anchor_top) * padre.y + control.offset_bottom - control.offset_top
+	var minimo: Vector2 = control.get_combined_minimum_size()
+	return Vector2(maxf(ancho, minimo.x), maxf(alto, minimo.y))
 
 
 # Regla de los peligros: lo fijo (pinchos, acido, lava, vacio) devuelve al suelo seguro; lo que se mueve solo

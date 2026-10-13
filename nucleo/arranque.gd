@@ -14,6 +14,8 @@ const RUTA_PUERTO: String = "res://herramientas/puerto_depuracion.gd"
 func _ready() -> void:
 	# Lo que queda fuera de una sala (y la sala sin Fondo) se ve negro, como las barras, no gris.
 	RenderingServer.set_default_clear_color(Color.BLACK)
+	# El juego es solo 2D: la vista raiz no prepara nada de 3D (rendering/viewports.rst, «Disable 3D»).
+	get_viewport().disable_3d = true
 	Ajustes.cargar_una_vez()
 	# Sin pantalla (guiones y validador) la vista se queda como esta: los guiones dependen de ella.
 	if DisplayServer.get_name() != "headless":
