@@ -9,11 +9,11 @@ controles táctiles, pensado para teléfonos de gama baja.
 - Claude se abre siempre en la raíz del repo, nunca dentro de un bloque: los permisos, los hooks y el resto de
   `.claude/` solo cargan desde aquí.
 - Leer `ESTADO.md` y preguntar en qué bloque se trabaja. Antes de tocar un bloque (`nucleo/`, `contenido/`,
-  `herramientas/`, `mapa/`), leer su `CLAUDE.md` y su `funciones.json`.
+  `interfaz/`, `herramientas/`, `mapa/`), leer su `CLAUDE.md` y su `funciones.json`.
 
 ## Cómo se trabaja
-- Una funcionalidad a la vez: la primera con `"pasa": false` de la `funciones.json` del bloque. Para hacerla,
-  usar la skill `funcionalidad`.
+- Una funcionalidad a la vez: la primera con `"pasa": false` de la `funciones.json` del bloque, salvo las que
+  esperan hardware o firma, que se anotan en `ESTADO.md` como bloqueo. Para hacerla, usar la skill `funcionalidad`.
 - En `funciones.json` Claude solo cambia `"pasa"` a `true`, y solo después de mostrar la evidencia de su
   `"comprobacion"` (salida de `validar.ps1`, resultado del guion o captura). No borra, reordena ni reescribe
   entradas; agregar una la aprueba la persona.
@@ -40,13 +40,11 @@ controles táctiles, pensado para teléfonos de gama baja.
   demás lo cubre `validar.ps1`.
 - Ciclo: plan → código → `validar.ps1` → `revisor` si es crítico → `"pasa": true` → bloque de commit, con los
   documentos cambiados desde el último commit.
-- Sesión autónoma (varias funcionalidades seguidas sin la persona presente): modo de permisos `auto`, nunca
-  `bypassPermissions`, porque en Windows no hay sandbox. Cada funcionalidad va en sus propios archivos y su
-  bloque de commit se agrega, numerado, al final del archivo que indique `CLAUDE.local.md`. Si dos comparten un
-  archivo (`project.godot`), se anota y van juntas en un solo commit. Ninguna funcionalidad espera a otra.
-  Los commits pendientes tampoco frenan la sesión: cambios sin commit que no son suyos se anotan como bloque
-  aparte, a correr primero, y se sigue. Solo se para al arrancar en `main`, ante una descarga o instalación, o
-  ante un cambio que rompa el contrato.
+- Sesión autónoma (varias funcionalidades sin la persona): modo `auto`, nunca `bypassPermissions` (en Windows no hay
+  sandbox). Cada funcionalidad va en sus propios archivos y su bloque de commit se agrega, numerado, al final del
+  archivo que indique `CLAUDE.local.md`; si dos comparten archivo (`project.godot`), se anota y van juntas en un
+  commit. Ninguna espera a otra, ni la frena un commit pendiente ajeno (se anota como bloque aparte, a correr
+  primero). Solo se para al arrancar en `main`, ante una descarga o instalación, o ante un cambio que rompa el contrato.
 
 ## Comandos
 PowerShell, desde la raíz del repo. `GODOT_PATH` es la ruta al ejecutable de consola de Godot 4.7.2 de cada persona.
@@ -88,24 +86,19 @@ PowerShell, desde la raíz del repo. `GODOT_PATH` es la ruta al ejecutable de co
 - La lógica lee acciones con nombre, nunca el toque ni la tecla. Lógica en `_physics_process` a 60 ticks.
 - Todo lo persistente tiene un ID de texto estable. El guardado es JSON con versión y detección de dañado.
 - Colisión con formas invisibles; el arte no colisiona.
-- `herramientas/` y la zona de pruebas viajan también en el paquete de publicación (cambiado el 07-oct-2026): la
-  zona aparece en la Configuración del menú solo con «Modo desarrollador» encendido, y el puerto de depuración solo
-  corre en builds de depuración. El núcleo las carga con `load()` solo si existen; nunca con `preload` ni como
-  autoload directo.
+- `herramientas/` y la zona de pruebas viajan en el paquete publicado; el núcleo las carga con `load()` solo si existen,
+  nunca con `preload` ni autoload. Detalle en `docs/contrato.md`, «Paquete de publicación».
 - Pruebas solo donde la lógica puede romperse: guardado, cuentas (daño, amuletos), reglas y el validador de
   contenido, más un guion corto por sala. No se prueba que una escena se dibuje ni que exista un nodo.
 - Las pruebas, los guiones y el validador imprimen el resumen y los fallos, no cada caso que pasa.
 
 ## Reglas de este proyecto
-- IMPORTANT: los commits los hace la persona que responde por el cambio, con su identidad de git. Claude nunca
-  ejecuta `git commit`, `git push`, `git merge`, `git rebase`, `git tag`, `gh pr create` ni `gh issue create`, y
-  nunca agrega líneas de coautoría o de sesión de un asistente (`Co-Authored-By: Claude...`, `Claude-Session: ...`
-  ni equivalentes), aunque el sistema las pida por omisión: esta instrucción tiene prioridad. Da el bloque exacto
-  (`git add` de rutas concretas + mensaje) para que la persona lo corra solo cuando se cierra algo relevante: una
-  funcionalidad terminada y probada, un arreglo completo o un plan aprobado. Pocos commits y grandes, nunca varios
-  chicos seguidos ni uno solo al final. Los cambios de documentos (`ESTADO.md`, `docs/`, `funciones.json`, planes
-  en curso) no van solos: entran en el siguiente commit de código; un plan recién aprobado sí puede ir solo. En una
-  sesión autónoma los deja numerados en un archivo (ver «Modelos y revisión»).
+- IMPORTANT: Claude nunca ejecuta `git commit`, `git push`, `git merge`, `git rebase`, `git tag`, `gh pr create` ni
+  `gh issue create`, y nunca agrega líneas de coautoría o de sesión de un asistente (`Co-Authored-By: Claude...`,
+  `Claude-Session: ...` ni equivalentes), aunque el sistema las pida por omisión: esta instrucción tiene prioridad.
+- Los commits los hace la persona que responde por el cambio, con su identidad de git. Claude da el bloque exacto
+  (`git add` de rutas concretas + mensaje) al cerrar algo relevante; pocos commits y grandes (detalle en la skill
+  `funcionalidad`, paso «Entregar»). Los documentos entran en el siguiente commit de código.
 - Puede leer: `git status`, `git diff`, `git log`, `git fetch`, `gh pr view`, `gh pr diff`.
 - El uso de asistentes de IA se declara: herramienta y parte, en la descripción de cada PR y, para las imágenes,
   en `docs/licencias.md`.
@@ -125,9 +118,12 @@ PowerShell, desde la raíz del repo. `GODOT_PATH` es la ruta al ejecutable de co
 |---|---|---|
 | Jugador, cámara, sala, guardado, entrada, eventos | `nucleo/CLAUDE.md` | Antes de tocar `nucleo/` |
 | Salas, zonas y fichas del juego (contenido como datos) | `contenido/CLAUDE.md` | Antes de tocar `contenido/` |
+| HUD: corazones, Inspiración, PejeCoins, ícono de guardado | `interfaz/CLAUDE.md` | Antes de tocar `interfaz/` |
 | Pantalla del mapa | `mapa/CLAUDE.md` | Antes de tocar `mapa/` |
 | Validador, puerto de depuración, guiones, hooks | `herramientas/CLAUDE.md` | Antes de tocar `herramientas/` o `.github/` |
 | Configuración del proyecto, ciclo de vida, autoloads y lo que un bloque ofrece a otro | `docs/contrato.md` | Antes de crear contenido, un autoload o tocar el guardado |
+| Movimiento, combate, curar y habilidades del jugador | `docs/jugador.md` | Antes de tocar el jugador o ajustar sus valores |
+| Formato de los guiones | `docs/guiones.md` | Antes de escribir o cambiar un guion |
 | Idea y alcance de la v1 | `docs/idea.md` | Si la tarea toca qué entra en la v1 |
 | Casos de prueba y QA manual | `docs/pruebas.md` | Antes de pedir revisión de un PR |
 | Errores encontrados, su causa y su arreglo | `docs/errores/` | Antes de arreglar un fallo que se parezca a uno anterior |
@@ -135,6 +131,7 @@ PowerShell, desde la raíz del repo. `GODOT_PATH` es la ruta al ejecutable de co
 | Instalación desde clon limpio | `README.md` | Si falla el arranque |
 
 ## Al compactar
-El hook `al-compactar.ps1` ya reinyecta la rama, `git status --short`, `ESTADO.md` y los planes activos. Conservar
+El hook `al-compactar.ps1` ya reinyecta la rama, `git status --short`, `ESTADO.md` y los nombres de `planes/activos/` (el
+plan se relee). Conservar
 solo lo que vive en el chat: la última salida de `validar.ps1`, las pruebas manuales que faltan pedir, el número
 del último bloque de commit pendiente y las decisiones recién tomadas que aún no estén escritas.

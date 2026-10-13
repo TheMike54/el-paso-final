@@ -14,7 +14,7 @@
   {
     "id": "entrada-acciones",
     "que": "El InputMap tiene todas las acciones del juego con su teclado inicial y la logica solo lee acciones con nombre",
-    "comprobacion": "manual: project.godot lista las acciones de docs/contrato.md y ningun .gd de nucleo/ lee teclas ni toques, salvo nucleo/controles_tactiles.gd, que traduce los toques a acciones",
+    "comprobacion": "manual: project.godot lista las acciones de docs/contrato.md y ningun .gd de nucleo/ lee teclas ni toques, salvo nucleo/controles_tactiles.gd, que traduce los toques a acciones; nucleo/editor_controles.gd lee el raton emulado del toque para mover los botones y nucleo/configuracion.gd lee botones del control para reasignarlos",
     "pasa": true
   },
   {
@@ -169,7 +169,7 @@
   },
   {
     "id": "temblor-al-aterrizar",
-    "que": "Al aterrizar tras ticks_caida_dura ticks cayendo a velocidad_caida_max, o al aterrizar de la picada, el jugador calcula el temblor (propiedades temblor_x y temblor_y) durante temblor_ticks ticks; una caida corta y un salto normal no tiemblan. Que el temblor pase al offset de la camara y el interruptor de la pausa se comprueban a mano en el S20",
+    "que": "Al aterrizar tras ticks_caida_dura ticks cayendo a velocidad_caida_max, o al aterrizar de la picada, el jugador calcula el temblor (propiedades temblor_x y temblor_y) durante temblor_ticks ticks; una caida corta y un salto normal no tiemblan. Que el temblor pase al offset de la camara y el interruptor Temblor de camara de la Configuracion del menu se comprueban a mano en el S20",
     "comprobacion": "herramientas/guiones/nucleo/camara_temblor.guion",
     "pasa": true
   },
@@ -235,7 +235,7 @@
   },
   {
     "id": "autoguardado",
-    "que": "Se autoguarda lo obtenido (no la posicion) al obtener una habilidad, vencer a un jefe, recoger un amuleto o un coleccionable, morir, salir al menu y pasar a segundo plano; las salas de prueba y los guiones guardan en Partida.RUTA_PRUEBAS",
+    "que": "Se autoguarda lo obtenido (no la posicion) al obtener una habilidad, vencer a un jefe, recoger un amuleto o un coleccionable, entregar recompensas, morir, salir al menu y pasar a segundo plano; las salas de prueba y los guiones guardan en Partida.RUTA_PRUEBAS",
     "comprobacion": "herramientas/guiones/contenido/zona_prueba_coleccionable.guion; herramientas/guiones/nucleo/estado_sala.guion",
     "pasa": true
   },
@@ -271,7 +271,7 @@
   },
   {
     "id": "parry",
-    "que": "El ataque normal del jugador para un ataque enemigo marcado se_puede_parar: no dana, deja al jugador 15 ticks sin dano de enemigos, congela 3 ticks, el dueno recibe el golpe y la vibracion es la del parry",
+    "que": "El ataque normal del jugador para un ataque enemigo marcado se_puede_parar: no dana, deja al jugador 15 ticks sin dano de enemigos, congela 20 ticks y empuja al jugador hacia atras, el dueno recibe el golpe y la vibracion es la del parry",
     "comprobacion": "herramientas/guiones/nucleo/parry_ventana.guion",
     "pasa": true
   },
@@ -315,6 +315,36 @@
     "id": "recursos-medicion",
     "que": "La sala de recursos de la zona de pruebas, con el presupuesto completo (30 plantas, 2 nieblas, emisores), corre a 60 FPS en alto en el S20 y en bajo en el S50",
     "comprobacion": "manual: con el APK de desarrollo (arranca con --print-fps), sala de recursos en alto y en bajo en el S50 y en el S20; anotar los FPS en docs/pruebas.md",
+    "pasa": true
+    },
+  {
+    "id": "recursos-medicion-publicacion",
+    "que": "La sala de recursos, con el presupuesto completo, se mantiene en el paquete de publicacion por encima de ~45 FPS en bajo en el S50 tras varios minutos de juego (en caliente)",
+    "comprobacion": "manual: paquete exportado en release con el preset Publicacion, sala de recursos en bajo en el S50 durante 5 minutos; anotar los FPS en docs/pruebas.md",
     "pasa": false
+  },
+  {
+    "id": "parry-visible",
+    "que": "Un parry congela todo 20 ticks, dibuja un estallido blanco en el punto de choque y empuja al jugador hacia atras; el golpe parado no quita vida",
+    "comprobacion": "herramientas/guiones/nucleo/parry.guion; herramientas/guiones/nucleo/parry_ventana.guion",
+    "pasa": true
+  },
+  {
+    "id": "carrera-voltereta",
+    "que": "El ataque en carrera que golpea corta la carrera y lanza al jugador en voltereta por encima del enemigo; cae caminando, y atacar o un impulso en el aire la cortan",
+    "comprobacion": "herramientas/guiones/nucleo/carrera_ataque_golpe.guion; herramientas/guiones/nucleo/carrera_voltereta_cae.guion; herramientas/guiones/nucleo/carrera_voltereta_ataque.guion; herramientas/guiones/nucleo/carrera_voltereta_impulso.guion",
+    "pasa": true
+  },
+  {
+    "id": "carrera-rebote-pared",
+    "que": "Chocar con una pared en carrera corta la carrera y da un rebote corto hacia atras",
+    "comprobacion": "herramientas/guiones/nucleo/carrera_pared_rebote.guion",
+    "pasa": true
+  },
+  {
+    "id": "aviso-pocos-toques",
+    "que": "En Android, si la pantalla no declara 5 o mas toques, una linea discreta abajo en el menu y en Configuracion lo avisa; en PC y en telefonos con 5 o mas toques no sale; el juego no cambia",
+    "comprobacion": "herramientas/guiones/nucleo/menu_configuracion.guion",
+    "pasa": true
   }
 ]

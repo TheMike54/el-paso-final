@@ -14,6 +14,7 @@ los ids, las puertas, los bancos y lo que revisa el validador.
 | Objeto propio de una zona | `objetos/` |
 
 ## Cómo se comprueba
-- `.\herramientas\validar.ps1`: ids, puertas de ida y vuelta, bancos y `Entrada` de cada sala.
+- `.\herramientas\validar.ps1`: las reglas de sala de `docs/contrato.md`, «Sala» (ids, límites, puertas, bancos,
+  `Entrada` y objetos recordados).
 - Un guion por sala en `herramientas/guiones/contenido/`: entra por cada puerta, cruza cada puerta y descansa en
   el banco si hay.

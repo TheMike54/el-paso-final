@@ -54,9 +54,31 @@ dedo en el S50 del 12-oct-2026 y de comparar con Silksong y Hollow Knight (video
   **Hecho el 12-oct-2026**: 41 casos sin fallos; con `adb` y capturas, el S50 avisa (menú y Configuración, sin tapar
   nada) y el S20 no. Godot 4.7.2 entrega el boolean de Java como entero: `Toques` acepta los dos.
 
+**E. Tras la prueba con el dedo del 12-oct-2026 (Senwa S50)** (`nucleo/jugador.gd`, `nucleo/golpeable.gd`; `revisor`)
+- Pasan: carrera, estocada, voltereta («como Silksong»), rebote en la pared, giro, parry y Volumen con el dedo.
+- Estocada repetida: se podía repetir sin límite. En el video de referencia de la persona
+  (`2026-10-12_silksong_ataque-en-carrera-repetido`) salen cada 0,65-0,85 s, cada una es un empujón de ~0,13 s
+  (el que ya había) y sin golpe no hay voltereta (confirmado por la persona). Decidido: recarga propia
+  `ticks_entre_ataques_carrera` = 42 (provisional); lo pedido antes se pierde y la carrera sigue, sin ataque normal.
+  Hito: `carrera_ataque_recarga` (falla sin el cambio) y `carrera_ataque_recarga_fin`. **Hecho**: los dos `GUION OK`.
+- El muñeco de la sala de combate, empujado a golpes, salía de la sala por la puerta: el empuje de `Golpeable` no
+  miraba paredes ni límites (`docs/errores/2026-10-12-empuje-atravesaba-paredes.md`). Hito: `golpe_contra_pared` y
+  `golpe_borde_sala` (fallan sin el arreglo). **Hecho**: `GUION OK`; `validar` 147/0 y 119 guiones OK.
+- Segunda prueba en el S50 (APK de las 22:05): la recarga, el empuje contra pared y borde y el congelado pasan. La
+  persona pidió que la estocada avance más: `velocidad_ataque_carrera` de 900 a 1150 px/s (provisional), por debajo
+  del impulso (1200), unos 52 px más que corriendo en vez de 19. `revisor`: código aprobado; corregidos la
+  descripción en `docs/jugador.md` (arriba, pogo y giro no cuentan) y el `.esperado` de `carrera_ataque_recarga`
+  (comprueba también que no salga un ataque normal). Decidido con su observación: la voltereta reinicia también la
+  recarga del ataque en carrera, como ya reiniciaba la del ataque (fase B); ningún guion lo cubre.
+- El paso del congelado pedía «vencer al muñeco» de la sala de combate, que no tiene vida: pasa a la sala de
+  enemigos (`docs/pruebas.md`).
+
 ## Falta
-- Prueba con el dedo de la persona: sensación del parry, de la voltereta y del rebote (filas de `docs/pruebas.md`).
-- Entradas de `funciones.json` para lo nuevo: las aprueba la persona.
+- Repetir con el dedo (APK del 12-oct-2026, 22:05, en el S50): estocada repetida, empuje contra la pared y el borde,
+  y el congelado al pegar, al vencer y al recibir daño.
+- Entradas de `funciones.json` para lo nuevo: aprobadas el 12-oct-2026 y en `true` con sus guiones
+  (`parry-visible`, `carrera-voltereta`, `carrera-rebote-pared`, `aviso-pocos-toques`). El plan se cierra tras la
+  prueba con el dedo.
 
 ## Sin cambio, y por qué
 - Impulso repetido en carrera: los «pasitos» de Silksong salen de soltar el botón que mantiene la carrera; aquí la

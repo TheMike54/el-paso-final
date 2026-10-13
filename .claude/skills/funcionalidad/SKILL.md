@@ -8,7 +8,8 @@ description: Flujo para hacer una funcionalidad de El Paso Final de principio a 
 Una a la vez. No se empieza la siguiente hasta que esta tiene su evidencia y su bloque de commit.
 
 1. **Elegir.** Leer el `CLAUDE.md` del bloque y su `funciones.json`. Se toma la primera entrada con
-   `"pasa": false`, salvo que la persona nombre otra. Decir cuál es y cuál es su `"comprobacion"`.
+   `"pasa": false`, salvo que la persona nombre otra o que espere hardware o firma (se anota en `ESTADO.md` como
+   bloqueo y se toma la siguiente). Decir cuál es y cuál es su `"comprobacion"`.
 2. **Contexto.** Si usa o cambia algo que otro bloque ve (autoloads, señales, forma de una sala, guardado),
    leer `docs/contrato.md`.
 3. **Plan.** Cambio chico: el plan en pocas líneas en la conversación. Más de un archivo o más de una sesión:
@@ -35,4 +36,8 @@ Una a la vez. No se empieza la siguiente hasta que esta tiene su evidencia y su 
     concretas (con los `.gd.uid` y los documentos cambiados desde el último commit, como `ESTADO.md`) y
     `git commit -m "feat: ..."` en inglés, sin líneas de atribución. Si cierra el PR, también el título y la
     descripción en inglés con What changed? · Why? · QA evidence · Risk / rollback, y dentro de What changed?
-    qué herramienta de IA se usó y en qué parte.
+    qué herramienta de IA se usó y en qué parte. El bloque se da solo al cerrar algo relevante: una funcionalidad
+    terminada y probada, un arreglo completo o un plan aprobado. Pocos commits y grandes, nunca varios chicos
+    seguidos ni uno solo al final. Los cambios de documentos (`ESTADO.md`, `docs/`, `funciones.json`, planes en
+    curso) no van solos, salvo un plan recién aprobado. En una sesión autónoma, los bloques se dejan numerados en el
+    archivo que indique `CLAUDE.local.md`.

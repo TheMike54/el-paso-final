@@ -13,7 +13,7 @@
   },
   {
     "id": "aviso-partida-guardada",
-    "que": "Cuando la partida se guarda bien (Eventos.partida_guardada, al descansar en un banco), la interfaz muestra «Partida guardada» bajo la barra durante 2 s",
+    "que": "Cuando la partida se guarda bien (Eventos.partida_guardada, al descansar en un banco), la interfaz muestra el icono de guardado bajo las PejeCoins durante 2 s",
     "comprobacion": "herramientas/guiones/nucleo/banco_sentarse.guion; herramientas/guiones/interfaz/aviso_guardado_se_quita.guion",
     "pasa": true
   },
@@ -25,7 +25,7 @@
   },
   {
     "id": "icono-guardado-y-monedas",
-    "que": "Al guardar se ve 2 s un icono provisional abajo a la derecha en lugar del texto, y bajo la barra de Inspiracion se ven las PejeCoins",
+    "que": "Al guardar se ve 2 s un icono provisional bajo las PejeCoins, alineado a la izquierda del grupo, en lugar del texto, y bajo la barra de Inspiracion se ven las PejeCoins",
     "comprobacion": "herramientas/guiones/contenido/zona_prueba_coleccionable.guion; herramientas/guiones/contenido/zona_prueba_vitrina.guion",
     "pasa": true
   }

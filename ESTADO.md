@@ -1,30 +1,30 @@
 # Estado
 
-Se sobrescribe; máximo 60 líneas. Rama y PR en curso, bloqueos y decisiones abiertas. El historial está en git.
+Se sobrescribe (ver `CLAUDE.md`).
 
 ## Ahora
 
-- Etapa: núcleo cerrado antes de la primera sala (`planes/activos/nucleo-cierre-antes-de-la-sala.md`, fases 0 a 8
-  hechas; la 9, la prueba con control real, la hace otro integrante). Probado en el S50 y el S20 el 12-oct-2026: los
-  fallos y lo que falta están abajo, en «Tras la prueba en teléfonos».
-- Rama en curso: `feature/nucleo-parry-carrera-y-aviso-tactil` (plan
-  `planes/activos/nucleo-parry-carrera-y-aviso-tactil.md`), sobre `fix/telefono-fps-y-controles` (arreglos tras la
-  prueba en teléfonos, tres commits; plan en `planes/cerrados/`), sobre `feature/nucleo-cierre-antes-de-la-sala`,
-  y debajo las ramas del núcleo hasta `chore/setup`; de `feature/herramientas-puerto-guion` sale también
-  `chore/android-export` (presets de 32 y 64 bits y zona de pruebas en «Publicacion»). Solo `chore/setup` está subido.
-- PR en curso: #1, de `chore/setup` a `main`: aprobado el 11-oct-2026, checks en verde. La persona decidió el
-  12-oct-2026 no fusionarlo por ahora; propuesta abierta: dejarlo abierto y, con el núcleo y la primera sala listos,
-  cerrarlo y abrir un solo PR desde la punta de la pila (evita el rebase de la pila).
+- Etapa: núcleo cerrado antes de la primera sala (plan en `planes/cerrados/nucleo-cierre-antes-de-la-sala.md`; la
+  prueba con control real es la entrada `entrada-control`).
+- Rama en curso: `docs/limpieza-auditoria` (plan cerrado en `planes/cerrados/docs-limpieza-auditoria.md`), sobre
+  `feature/nucleo-parry-carrera-y-aviso-tactil` (plan `planes/activos/nucleo-parry-carrera-y-aviso-tactil.md`), sobre
+  `fix/telefono-fps-y-controles`, `feature/nucleo-cierre-antes-de-la-sala` y las ramas del núcleo hasta
+  `chore/setup`; de `feature/herramientas-puerto-guion` sale también `chore/android-export` (presets de 32 y 64 bits
+  y zona de pruebas en «Publicacion»). Solo `chore/setup` está subido.
+- PR en curso: #1, de `chore/setup` a `main`: aprobado el 11-oct-2026, checks en verde. Decidido el 12-oct-2026
+  (noche), antes de cerrarlo se terminan los pendientes: fusionarlo con Squash and merge (sin `--delete-branch`:
+  `chore/setup` es la frontera del rebase), rebasar la pila sobre `main` (ensayar antes en un clon), ruleset, y un
+  PR con la pila. La prueba con control la hacen los otros dos integrantes en el teléfono, con un APK fuera del repo
+  y un issue en inglés; la guía para su Claude va en la bóveda.
 
 ## Preparación del repositorio
 
-Pasos 1, 2, 3, 5 y 6 cumplidos (06-oct-2026; detalle en git). Abiertos:
+Pasos 1, 2, 3, 5, 6 y 8 cumplidos (detalle en git). Abiertos:
 
 | # | Paso | Condición de salida | Estado |
 |---|---|---|---|
-| 4 | GitHub: etiqueta, plantillas, CODEOWNERS, workflows, ajustes y primer PR | El PR sale en rojo con un `.gd` roto y en verde al quitarlo; `qa-pending` se pone al abrir y se quita al aprobar; después, ruleset activo y push directo a `main` rechazado | Rojo y verde vistos; `qa-pending` puesta y quitada (11-oct-2026). Falta: fusión, ruleset, push directo rechazado y los guiones en el CI de Linux |
+| 4 | GitHub: etiqueta, plantillas, CODEOWNERS, workflows, ajustes y primer PR | El PR sale en rojo con un `.gd` roto y en verde al quitarlo; `qa-pending` se pone al abrir y se quita al aprobar; después, ruleset activo y push directo a `main` rechazado | Rojo y verde vistos; `qa-pending` puesta y quitada (11-oct-2026). Falta: fusión, ruleset, push directo rechazado y ver los guiones en verde en un PR (el paso «Input scripts» ya está en `ci.yml`) |
 | 7 | Clon limpio y las tres máquinas | Solo con el README pasan `verificar-entorno.ps1` y `validar.ps1` en cada máquina | Pasa en una máquina; faltan las de los otros dos integrantes, con el PR #1 fusionado |
-| 8 | Android: preset, APK de depuración, instalación con `adb` | La caja gris corre en el teléfono de prueba; modelo, Android, RAM y FPS en `docs/pruebas.md` | Galaxy S20 a 60 FPS (06-oct-2026); Senwa S50 (Android 13 Go, 32 bits, 1,9 GB) a 59-60 FPS en la caja gris (11-oct-2026); en las salas, ver abajo |
 
 ## Decisiones técnicas
 
@@ -36,22 +36,25 @@ Pasos 1, 2, 3, 5 y 6 cumplidos (06-oct-2026; detalle en git). Abiertos:
 
 ## Tras la prueba en teléfonos (12-oct-2026)
 
-- FPS en el S50: frío, 59-60 en bajo y 58,4 en alto con los arreglos. Sin tope de 30 FPS (decidido el
-  12-oct-2026): la prueba en caliente no se hizo; se reabre si una medición sostenida baja de ~45 en bajo. Falta la
-  medición en publicación (`recursos-medicion`).
-- Multitoque: el S50 reporta 2 toques como máximo. Decidido: el juego no cambia por el teléfono; se avisa con una
-  línea discreta si Android no declara 5 o más toques (fase D del plan en curso).
-- Parry, ataque en carrera y choque con la pared se ajustan a Silksong y Hollow Knight (fases A a C).
+- FPS en el S50 en depuración, frío: 59-60 en bajo y 58,4 en alto. Sin tope de 30 FPS: se reabre si una medición
+  sostenida baja de ~45 en bajo (`recursos-medicion-publicacion`).
+- Multitoque: el S50 reporta 2 toques como máximo; el juego no cambia y avisa con una línea (`aviso-pocos-toques`).
 - Señales provisionales hasta el arte: carrera azul claro, postes en la sala de carrera, aviso de brújula y el
   destello del parry.
 
-## Decisiones abiertas
+## Bloqueos y pendientes
 
-- Siguiente, en este orden: (1) prueba con el dedo de las filas «Carrera, voltereta y pared» y «Parry y congelado» de
-  `docs/pruebas.md` (APK de esta rama ya instalado en el S50 y el S20); (2) aprobar las entradas propuestas de
-  `nucleo/funciones.json`: `parry-visible`, `carrera-voltereta`, `carrera-rebote-pared` y `aviso-pocos-toques`, con
-  los guiones del plan en curso; (3) decidir la propuesta del PR #1 (arriba). Después, un plan aparte para lo de
-  «Para después» del plan en curso.
-
-- `ticks_soltar_carrera = 4` (rango 4 a 6): sin queja en la prueba. Plantas y niebla no se paran en el congelado.
-- Provisionales: salto, combate y daños. Sin probar: control y paquete firmado. Ícono: se espera al arte.
+- Pruebas con el dedo del 12-oct-2026 (S50) anotadas en `docs/pruebas.md`. Arreglados la estocada repetible y el
+  empuje que sacaba al enemigo de la sala (fase E del plan del parry); falta repetir eso y el congelado con el APK
+  nuevo. El plan del parry se cierra tras esa prueba.
+- Planes sin aprobar para código (12-oct-2026): `planes/activos/nucleo-menu-tactil.md` (menús a 48 dp, reglas para
+  4:3 a 22:9, zona de pruebas en el menú de inicio, aviso «Conecta un control») y
+  `planes/activos/herramientas-zona-pruebas-categorias.md`. La persona aprobó la maqueta y tomó las recomendaciones
+  (zona de pruebas en el menú de inicio, sin grupo «Habilidades»). Van antes del PR (12-oct-2026).
+- Prueba con control (decisión del 12-oct-2026): un integrante con su tableta y control, el otro con su teléfono y
+  control; cada uno anota modelo exacto del dispositivo, Android, modelo del control y qué filas de
+  `docs/pruebas.md` corrió, para comparar.
+- Esperan hardware o firma: `menu-desarrollo` y `paquete-publicacion` (keystore), `entrada-control` (control),
+  `autoguardado-segundo-plano` y `recursos-medicion-publicacion` (teléfono).
+- Provisionales: salto, combate y daños. Ícono del proyecto: se espera al arte.
+- Después de esta rama: un plan aparte para lo de «Para después» del plan del parry.

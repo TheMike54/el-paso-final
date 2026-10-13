@@ -1,5 +1,5 @@
 # Ida y vuelta entre las salas de puertas: de A a B por la puerta derecha y de B a A por la
-# izquierda. El bus de eventos debe emitir cambio_de_sala dos veces y ninguna otra senal.
+# izquierda. El bus de eventos debe emitir cambio_de_sala dos veces, el fundido de cada puerta y ninguna otra senal.
 escena res://herramientas/salas/sala_puerta_a.tscn
 2 mover_derecha press
 70 mover_derecha release

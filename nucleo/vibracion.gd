@@ -1,7 +1,7 @@
 class_name Vibracion
 extends Node
 # Vibracion del telefono: escucha el bus y vibra corto al pegar, al parar, al recibir dano, al curarse, al
-# descansar y al aterrizar duro o de la picada, cada uno con su duracion y su fuerza (docs/contrato.md, Vibracion). La crea cada sala.
+# descansar y al aterrizar duro o de la picada, cada uno con su duracion y su fuerza (docs/contrato.md, Ajustes y vibracion). La crea cada sala.
 # Con el ajuste vibracion apagado no vibra. Nada mas vibra: moverse, saltar y los menus no.
 
 ## Duracion en ms y fuerza (0 a 1) de cada vibracion. En un telefono sin control de fuerza solo

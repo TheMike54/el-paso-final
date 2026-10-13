@@ -15,6 +15,6 @@
     "id": "mapa-telefono",
     "que": "En el telefono, la zona de prueba Mapa: tomar el mapa y la pluma y descansar dibuja las salas; + y - cambian de estado; la brujula muestra al jugador; el boton tactil del mapa lo abre y lo cierra",
     "comprobacion": "manual: con el APK de desarrollo, la fila Mapa de docs/pruebas.md",
-    "pasa": false
+    "pasa": true
   }
 ]

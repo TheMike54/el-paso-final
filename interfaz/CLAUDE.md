@@ -1,7 +1,7 @@
 # Interfaz
 
-Lo que se dibuja encima del juego: hoy los corazones de vida, la barra de Inspiración y el aviso de partida
-guardada (`interfaz.tscn`, script `hud.gd`). Los menús todavía viven en `nucleo/`.
+Lo que se dibuja encima del juego: hoy los corazones de vida, la barra de Inspiración, las PejeCoins y el ícono
+de guardado (`interfaz.tscn`, script `hud.gd`). Los menús todavía viven en `nucleo/`.
 
 ## Primero
 Leer `funciones.json` de esta carpeta: la primera funcionalidad con `"pasa": false` es la que sigue.

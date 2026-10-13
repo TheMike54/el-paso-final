@@ -1,7 +1,7 @@
 class_name Jugador
 extends CharacterBody2D
 # Jugador del nucleo: camina, salta, ataca, se cura y usa poderes con las acciones del InputMap,
-# con toda su logica en _physics_process y las reglas de docs/contrato.md. Las habilidades solo
+# con toda su logica en _physics_process y las reglas de docs/jugador.md. Las habilidades solo
 # funcionan si Partida las tiene. Cada valor se exporta para afinarlo en la zona de pruebas.
 # Avisa al resto del juego por el bus Eventos.
 const TAMANO: Vector2 = Vector2(80.0, 160.0)
@@ -146,15 +146,19 @@ const ESCENA_PROYECTIL: PackedScene = preload("res://nucleo/proyectil.tscn")
 ## Ticks desde que empieza un impulso hasta poder hacer otro.
 @export var ticks_recarga_impulso: int = 36
 ## Carrera (sprint) que sigue al impulso si hay direccion al terminar: unas 2,1 veces caminar (Silksong: «112 %
-## mas rapido»). Lo que la apaga esta en el contrato (soltar mas de ticks_soltar_carrera, pared, dano, curar...).
+## mas rapido»). Lo que la apaga esta en docs/jugador.md (soltar mas de ticks_soltar_carrera, pared, dano, curar...).
 @export var velocidad_carrera: float = 756.0
 ## Ticks del giro en carrera: la velocidad pasa de un sentido al otro, por 0, sin apagar la carrera.
 @export var ticks_giro_carrera: int = 8
 ## Ticks sin direccion que la carrera aguanta: el pulgar o el stick cruzan el centro (zona muerta) al girar y eso no
 ## es soltar. Mientras, sigue a velocidad completa hacia donde iba.
 @export var ticks_soltar_carrera: int = 4
-## Ataque en carrera: mientras dura, el jugador sale empujado hacia adelante a esta velocidad.
-@export var velocidad_ataque_carrera: float = 900.0
+## Ataque en carrera: mientras dura, el jugador sale empujado hacia adelante a esta velocidad. Provisional: por debajo
+## de velocidad_impulso, para que la estocada no avance mas que el impulso (la persona la pidio mas larga el 12-oct-2026).
+@export var velocidad_ataque_carrera: float = 1150.0
+## Ticks desde un ataque en carrera hasta poder hacer otro sin dejar de correr; lo pedido antes se pierde. Provisional:
+## en Silksong sale uno cada 0,65-0,85 s aunque se presione mas rapido (video del 12-oct-2026).
+@export var ticks_entre_ataques_carrera: int = 42
 ## Si el ataque en carrera golpea algo, voltereta (Silksong, blason de cazadora): la carrera se corta y el jugador
 ## sale hacia arriba esta altura, en px, y hacia adelante a esta velocidad, en px/s, para pasar por encima.
 @export var altura_voltereta: float = 160.0
@@ -262,6 +266,7 @@ var _cortado: bool = false
 var _mirando: float = 1.0
 var _ticks_atacando: int = 0
 var _ticks_hasta_ataque: int = 0
+var _ticks_hasta_ataque_carrera: int = 0
 var _golpeados: Array[Golpeable] = []
 var _ticks_sin_dano: int = 0
 var _ticks_destello: int = 0
@@ -868,7 +873,16 @@ func _cortar_curacion() -> void:
 # arriba. Sin la pluma (el arma) no se ataca. Un Cortable que toca se corta, sin mas.
 func _atacar() -> void:
 	_ticks_hasta_ataque = maxi(_ticks_hasta_ataque - 1, 0)
-	if Partida.tiene(&"pluma") and _ticks_desde_atacar <= ticks_ataque_en_cola and _ticks_hasta_ataque == 0:
+	_ticks_hasta_ataque_carrera = maxi(_ticks_hasta_ataque_carrera - 1, 0)
+	var pedido: bool = Partida.tiene(&"pluma") and _ticks_desde_atacar <= ticks_ataque_en_cola and _ticks_hasta_ataque == 0
+	# En carrera, el ataque pedido durante la recarga del ataque en carrera se pierde: ni estocada ni ataque normal,
+	# y se sigue corriendo (Silksong). Hacia arriba o el pogo no cuentan como ataque en carrera.
+	if pedido and corriendo and _ticks_girando == 0 and _ticks_hasta_ataque_carrera > 0 \
+			and not Input.is_action_pressed(&"mover_arriba") \
+			and not (not is_on_floor() and Input.is_action_pressed(&"mover_abajo")):
+		_ticks_desde_atacar = NUNCA
+		pedido = false
+	if pedido:
 		_ticks_desde_atacar = NUNCA
 		_ticks_atacando = ticks_ataque
 		_ticks_hasta_ataque = ticks_entre_ataques
@@ -878,6 +892,8 @@ func _atacar() -> void:
 		_atacando_abajo = not is_on_floor() and Input.is_action_pressed(&"mover_abajo")
 		_atacando_arriba = not _atacando_abajo and Input.is_action_pressed(&"mover_arriba")
 		atacando_en_carrera = corriendo and _ticks_girando == 0 and not _atacando_abajo and not _atacando_arriba
+		if atacando_en_carrera:
+			_ticks_hasta_ataque_carrera = ticks_entre_ataques_carrera
 		_rebotado = false
 		if _atacando_abajo:
 			_forma_ataque.position = posicion_pogo
@@ -946,6 +962,8 @@ func _empezar_voltereta() -> void:
 	_impulso_en_el_aire = true
 	_doble_salto_disponible = true
 	_ticks_hasta_ataque = mini(_ticks_hasta_ataque, _ticks_atacando)
+	# El golpe tambien reinicia la recarga del ataque en carrera: tras la voltereta, la siguiente carrera ataca enseguida.
+	_ticks_hasta_ataque_carrera = 0
 
 
 ## Lo llama un AtaqueEnemigo que se puede parar antes de danar: si el ataque del jugador ya lo toca, lo para

@@ -1,0 +1,3 @@
+# En el borde de la sala el muneco se queda con su cara izquierda en x=0 (centro en 40).
+valor Muneco position:x 40 1
+escena res://herramientas/salas/sala_combate.tscn

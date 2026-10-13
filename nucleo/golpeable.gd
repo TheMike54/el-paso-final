@@ -2,7 +2,7 @@ class_name Golpeable
 extends Area2D
 # Componente de lo que el ataque del jugador puede golpear (enemigos, objetos que se rompen).
 # Va como hijo del nodo golpeable, con su forma; cuenta los golpes, empuja un poco a su padre
-# lejos del atacante y avisa con la senal golpeado (con el dano, para quien lleve la vida) y con
+# lejos del atacante (sin cruzar paredes ni salir de la sala) y avisa con la senal golpeado (con el dano, para quien lleve la vida) y con
 # Eventos.enemigo_golpeado. Lo golpean el ataque del jugador y el proyectil.
 
 signal golpeado(atacante: Node2D, dano: int)
@@ -38,4 +38,57 @@ func _physics_process(delta: float) -> void:
 		return
 	_ticks_empujado -= 1
 	var padre: Node2D = get_parent() as Node2D
-	padre.position.x += _sentido * velocidad_retroceso * delta
+	var paso: float = _sentido * velocidad_retroceso * delta
+	var libre: float = _paso_libre(paso)
+	padre.global_position.x += libre
+	# Contra una pared o el borde de la sala el empuje se acaba ahi.
+	if libre != paso:
+		_ticks_empujado = 0
+
+
+# Cuanto puede avanzar el padre en x sin meter su forma en un solido (pared, suelo) ni sacarla de los limites
+# de su sala. Los cuerpos que no son solidos (el jugador) no lo detienen.
+func _paso_libre(paso: float) -> float:
+	var forma: CollisionShape2D = _forma()
+	if forma == null or forma.shape == null or paso == 0.0:
+		return paso
+	var mitad: float = forma.shape.get_rect().size.x * 0.5
+	var centro: Vector2 = forma.global_position
+	var sentido: float = signf(paso)
+	var libre: float = absf(paso)
+	var espacio: PhysicsDirectSpaceState2D = get_world_2d().direct_space_state
+	var excluir: Array[RID] = []
+	for _i: int in range(4):
+		var consulta: PhysicsRayQueryParameters2D = PhysicsRayQueryParameters2D.create(
+				centro, centro + Vector2(sentido * (mitad + libre), 0.0))
+		consulta.exclude = excluir
+		var choque: Dictionary = espacio.intersect_ray(consulta)
+		if choque.is_empty():
+			break
+		if choque["collider"] is StaticBody2D:
+			var punto: Vector2 = choque["position"] as Vector2
+			libre = minf(libre, maxf(absf(punto.x - centro.x) - mitad, 0.0))
+			break
+		excluir.append(choque["rid"] as RID)
+	var sala: Sala = _sala()
+	if sala != null:
+		var limites: Rect2 = Rect2(sala.global_position + sala.limites.position, sala.limites.size)
+		var borde: float = limites.end.x if sentido > 0.0 else limites.position.x
+		libre = minf(libre, maxf(absf(borde - centro.x) - mitad, 0.0))
+	return sentido * libre
+
+
+func _forma() -> CollisionShape2D:
+	for hijo: Node in get_children():
+		if hijo is CollisionShape2D:
+			return hijo as CollisionShape2D
+	return null
+
+
+func _sala() -> Sala:
+	var nodo: Node = get_parent()
+	while nodo != null:
+		if nodo is Sala:
+			return nodo as Sala
+		nodo = nodo.get_parent()
+	return null

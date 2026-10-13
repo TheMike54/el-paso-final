@@ -1,0 +1,10 @@
+# Dos ataques en carrera separados por mas que la recarga del ataque en carrera (44 ticks): el segundo sale.
+escena res://herramientas/salas/sala_carrera.tscn
+2 mover_derecha press
+10 impulso press
+11 impulso release
+40 atacar press
+41 atacar release
+84 atacar press
+85 atacar release
+fin 88

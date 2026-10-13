@@ -7,6 +7,6 @@
   contador del tiempo coyote vuelve a 0 y la condición del salto se cumple. Cerrar el contador en `recibir_dano`
   no bastaba por esa misma razón.
 - **Arreglo**: `nucleo/jugador.gd` no deja saltar mientras dura el retroceso (`_ticks_retrocediendo == 0` en la
-  condición del salto). El contrato lo dice en «Jugador» → Combate.
+  condición del salto). `docs/jugador.md` lo dice en «Combate».
 - **Guion que lo cubre**: `herramientas/guiones/nucleo/jugador_retroceso.guion`. Sin la regla da
   `velocity:y obtenido=-699.80`.
