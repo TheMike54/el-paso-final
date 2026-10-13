@@ -1,0 +1,9 @@
+# La conversacion termino contando: etapa 1, entrego la pluma del mapa una vez, el jugador ya no habla y sigue en el
+# suelo donde se detuvo, junto al guia (cerrar la caja con saltar no salto).
+x 588 1
+y 680 1
+en_suelo true
+valor Jugador hablando false
+valor Guia etapa 1
+senal Guia conversacion_terminada 1
+senal /root/Eventos habilidad_obtenida 1

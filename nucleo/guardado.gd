@@ -2,12 +2,19 @@ class_name Guardado
 extends RefCounted
 # Guarda y carga la partida como JSON con numero de version. Escribe en un archivo temporal y
 # despues lo renombra, para que un cierre a la mitad nunca deje la partida danada. Al cargar
-# distingue partida valida, sin partida, archivo danado y version incompatible.
+# distingue partida valida, sin partida, archivo danado y version incompatible. Hay 4 ranuras de partida, cada una
+# con su copia de la ultima sesion para Restaurar.
 
 enum Estado { VALIDA, VACIA, DANADA, INCOMPATIBLE }
 
 const VERSION: int = 3
+## Partida de antes de las ranuras: se pasa una vez a la ranura 1 (migrar). Banco la usa como centinela.
 const RUTA: String = "user://partida.json"
+const RANURAS: int = 4
+## Ruta de cada ranura, con su numero (1 a RANURAS).
+const FORMATO_RANURA: String = "user://partida_%d.json"
+## Lo que se agrega a la ruta de una partida para su copia.
+const RESPALDO: String = ".bak"
 ## Campos que toda partida de esta version debe tener, con su tipo despues de leer el JSON
 ## (los numeros vuelven siempre como float). Lo de cada campo, en docs/contrato.md («Guardado»).
 const ESQUEMA: Dictionary[String, int] = {
@@ -52,14 +59,56 @@ static func guardar(partida: Dictionary, ruta: String = RUTA) -> Error:
 	return DirAccess.rename_absolute(temporal, ruta)
 
 
-## Borra la partida y su temporal; sin archivo no es error.
+static func ruta_ranura(numero: int) -> String:
+	return FORMATO_RANURA % numero
+
+
+## Borra la partida, su temporal y su copia; sin archivo no es error.
 static func borrar(ruta: String = RUTA) -> Error:
-	for archivo: String in [ruta, ruta + ".tmp"]:
+	for archivo: String in [ruta, ruta + ".tmp", ruta + RESPALDO, ruta + RESPALDO + ".tmp"]:
 		if FileAccess.file_exists(archivo):
 			var error: Error = DirAccess.remove_absolute(archivo)
 			if error != OK:
 				return error
 	return OK
+
+
+## Pasa la partida de antes de las ranuras a una ranura, una sola vez: sin archivo viejo o con la ranura ya ocupada
+## no hace nada (nunca pisa una partida).
+static func migrar(desde: String, hacia: String) -> Error:
+	if not FileAccess.file_exists(desde) or FileAccess.file_exists(hacia):
+		return OK
+	return DirAccess.rename_absolute(desde, hacia)
+
+
+## Copia una partida valida al empezar una sesion, para Restaurar. Una danada o de otra version no se copia: asi la
+## copia buena de antes sigue sirviendo.
+static func respaldar(ruta: String) -> Error:
+	if cargar(ruta).estado != Estado.VALIDA:
+		return ERR_INVALID_DATA
+	# Al temporal y despues renombrada, como guardar: una copia cortada a la mitad no queda como copia.
+	var temporal: String = ruta + RESPALDO + ".tmp"
+	var error: Error = DirAccess.copy_absolute(ruta, temporal)
+	if error != OK:
+		return error
+	return DirAccess.rename_absolute(temporal, ruta + RESPALDO)
+
+
+## Si hay una copia valida a la que volver.
+static func tiene_respaldo(ruta: String) -> bool:
+	return cargar(ruta + RESPALDO).estado == Estado.VALIDA
+
+
+## Vuelve la partida a su copia, solo si la copia es valida. Copia al temporal y lo renombra, como guardar: un cierre
+## a la mitad no la dana.
+static func restaurar(ruta: String) -> Error:
+	if not tiene_respaldo(ruta):
+		return ERR_FILE_NOT_FOUND
+	var temporal: String = ruta + ".tmp"
+	var error: Error = DirAccess.copy_absolute(ruta + RESPALDO, temporal)
+	if error != OK:
+		return error
+	return DirAccess.rename_absolute(temporal, ruta)
 
 
 static func cargar(ruta: String = RUTA) -> Resultado:

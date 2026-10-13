@@ -28,7 +28,7 @@ Una a la vez. No se empieza la siguiente hasta que esta tiene su evidencia y su 
    no se cambia la comprobación para que pase.
 8. **Marcar.** Solo con la evidencia a la vista, cambiar `"pasa"` a `true` en esa entrada. Nada más del JSON.
 9. **Documentos.** Si cambió lo que el bloque ofrece: `docs/contrato.md` en el mismo cambio. Casos de QA
-   ejecutados: `docs/pruebas.md`. Recurso nuevo: su fila en `docs/licencias.md`. `ESTADO.md` solo si cambió la
+   ejecutados: `docs/pruebas.md`. Herramienta de IA nueva o recurso ajeno: `docs/uso-de-ia.md`. `ESTADO.md` solo si cambió la
    rama, el PR, un bloqueo o una decisión abierta. Plan terminado: `CERRADO` y a `planes/cerrados/`.
 10. **Releer.** Cada `.md` tocado, completo: sin texto dirigido a una persona ni avisos de trabajo sin terminar
     fuera de `ESTADO.md`, `funciones.json` y los planes.

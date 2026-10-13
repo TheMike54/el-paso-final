@@ -13,7 +13,7 @@ Leer `funciones.json` de esta carpeta: la primera funcionalidad con `"pasa": fal
   renombra, se cambia `Sala.INTERFAZ` en el mismo cambio.
 - Posiciones como en el diseño: centro en fracción de una pantalla 16:9, anclado a su esquina y medido en el lado
   corto, como los botones táctiles. Nada fuera de la pantalla en 16:9, 20:9 ni 4:3.
-- Todo en gris hasta tener arte; cada imagen que entre lleva su fila en `docs/licencias.md`.
+- Todo en gris hasta tener arte; cada herramienta de IA nueva o recurso ajeno, en `docs/uso-de-ia.md`.
 
 ## Cómo se comprueba
 - `.\herramientas\validar.ps1` y los guiones de `herramientas/guiones/interfaz/`, que leen lo que muestra el `Hud`

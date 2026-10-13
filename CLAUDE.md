@@ -100,8 +100,8 @@ PowerShell, desde la raíz del repo. `GODOT_PATH` es la ruta al ejecutable de co
   (`git add` de rutas concretas + mensaje) al cerrar algo relevante; pocos commits y grandes (detalle en la skill
   `funcionalidad`, paso «Entregar»). Los documentos entran en el siguiente commit de código.
 - Puede leer: `git status`, `git diff`, `git log`, `git fetch`, `gh pr view`, `gh pr diff`.
-- El uso de asistentes de IA se declara: herramienta y parte, en la descripción de cada PR y, para las imágenes,
-  en `docs/licencias.md`.
+- El uso de asistentes de IA se declara: herramienta y parte, en la descripción de cada PR y, para imágenes y
+  sonidos, en `docs/uso-de-ia.md` (por herramienta, no por archivo).
 - Nunca editar en `main`: una rama por PR (`feature/<bloque>-<desc>`, `fix/<desc>`, `docs/<desc>`, `chore/<desc>`),
   que no se reutiliza después de fusionarla.
 - Commits y PR en inglés (`feat: …`, `fix: …`). El título del PR es el mensaje que queda en `main` (Squash and
@@ -110,7 +110,8 @@ PowerShell, desde la raíz del repo. `GODOT_PATH` es la ruta al ejecutable de co
 - Nada de lo que se sube lleva texto dirigido a una persona, datos de una persona ni avisos de trabajo sin
   terminar, salvo `ESTADO.md`, `funciones.json` y los planes. Lo que no es de este repo (notas personales,
   reparto, credenciales) no se guarda dentro de él, ni en una carpeta ignorada.
-- Toda imagen, sonido o fuente que entra al repo lleva su fila en `docs/licencias.md`; sin fila no entra.
+- Herramienta de IA nueva para generar recursos: su línea en `docs/uso-de-ia.md`. Recurso de otra persona (fuente,
+  sonido o imagen ajena): su autor y licencia en «De terceros» del mismo archivo; sin eso no entra.
 - No leer ni escribir `.env*`, `*.keystore`, `*.jks`, `*.pem` ni `*.key`.
 
 ## Dónde está lo demás
@@ -127,7 +128,7 @@ PowerShell, desde la raíz del repo. `GODOT_PATH` es la ruta al ejecutable de co
 | Idea y alcance de la v1 | `docs/idea.md` | Si la tarea toca qué entra en la v1 |
 | Casos de prueba y QA manual | `docs/pruebas.md` | Antes de pedir revisión de un PR |
 | Errores encontrados, su causa y su arreglo | `docs/errores/` | Antes de arreglar un fallo que se parezca a uno anterior |
-| Procedencia de recursos | `docs/licencias.md` | Al agregar cualquier asset |
+| Uso de IA y recursos de terceros | `docs/uso-de-ia.md` | Al usar una herramienta nueva o un recurso ajeno |
 | Instalación desde clon limpio | `README.md` | Si falla el arranque |
 
 ## Al compactar

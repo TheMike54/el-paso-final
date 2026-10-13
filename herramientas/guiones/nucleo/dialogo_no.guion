@@ -1,0 +1,17 @@
+# Como dialogo_completo, pero en la pregunta pasa a «No» con mover_derecha antes de confirmar.
+escena res://herramientas/salas/sala_dialogo.tscn
+2 mover_derecha press
+50 mover_derecha release
+55 interactuar press
+56 interactuar release
+60 saltar press
+61 saltar release
+63 saltar press
+64 saltar release
+66 saltar press
+67 saltar release
+69 mover_derecha press
+70 mover_derecha release
+72 saltar press
+73 saltar release
+fin 85

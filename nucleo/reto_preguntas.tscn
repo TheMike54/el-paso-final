@@ -1,0 +1,13 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://nucleo/reto_preguntas.gd" id="1_reto"]
+
+[sub_resource type="RectangleShape2D" id="forma_reto"]
+size = Vector2(160, 160)
+
+[node name="RetoPreguntas" type="Area2D"]
+script = ExtResource("1_reto")
+
+[node name="Forma" type="CollisionShape2D" parent="."]
+position = Vector2(0, -80)
+shape = SubResource("forma_reto")

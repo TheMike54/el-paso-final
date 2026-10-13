@@ -1,7 +1,7 @@
 extends Area2D
 # Interruptor de la brujula para la zona de prueba del mapa: al entrar el jugador, equipa el amuleto brujula si
-# no lo lleva o lo quita si lo lleva (en el juego se comprara y se equipara en la mochila). Asi se prueba el mapa
-# con y sin el marcador del jugador.
+# no lo lleva o lo quita si lo lleva, sin banco (en el juego se comprara y se pondra sentado en un banco, en la
+# pantalla de los amuletos). Asi se prueba el mapa con y sin el marcador del jugador.
 
 const BRUJULA: StringName = &"brujula"
 ## Aviso sobre el interruptor (provisional, 12-oct-2026): en el telefono no se notaba si se puso o se quito.
@@ -35,11 +35,11 @@ func _al_entrar(cuerpo: Node2D) -> void:
 		return
 	if not Partida.amuletos_tenidos.has(BRUJULA):
 		Partida.amuletos_tenidos.append(BRUJULA)
-	if Partida.amuletos_equipados.has(BRUJULA):
-		Partida.amuletos_equipados.erase(BRUJULA)
+	if Partida.desequipar(BRUJULA):
 		_aviso.text = "Brújula quitada"
-	else:
-		Partida.amuletos_equipados.append(BRUJULA)
+	elif Partida.equipar(BRUJULA):
 		_aviso.text = "Brújula puesta"
+	else:
+		_aviso.text = "Sin lugar para la brújula"
 	_ticks_aviso = TICKS_AVISO
 	_aviso.visible = true

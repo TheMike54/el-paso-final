@@ -1,0 +1,45 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://nucleo/sala.gd" id="1_sala"]
+[ext_resource type="PackedScene" path="res://nucleo/reto_preguntas.tscn" id="2_reto"]
+[ext_resource type="Script" path="res://nucleo/ficha_pregunta.gd" id="3_ficha"]
+[ext_resource type="Resource" path="res://herramientas/salas/fichas/pregunta_prueba_1.tres" id="4_p1"]
+[ext_resource type="Resource" path="res://herramientas/salas/fichas/pregunta_prueba_2.tres" id="5_p2"]
+[ext_resource type="Resource" path="res://herramientas/salas/fichas/pregunta_prueba_3.tres" id="6_p3"]
+[ext_resource type="Script" path="res://nucleo/recompensa.gd" id="7_recompensa"]
+
+[sub_resource type="RectangleShape2D" id="forma_suelo"]
+size = Vector2(1600, 80)
+
+[sub_resource type="Resource" id="recompensa_monedas"]
+script = ExtResource("7_recompensa")
+monto = 50
+
+[node name="SalaReto" type="Node2D"]
+script = ExtResource("1_sala")
+limites = Rect2(0, 0, 1600, 720)
+
+[node name="Entrada" type="Marker2D" parent="."]
+position = Vector2(300, 680)
+
+[node name="Suelo" type="StaticBody2D" parent="."]
+position = Vector2(800, 720)
+
+[node name="Forma" type="CollisionShape2D" parent="Suelo"]
+shape = SubResource("forma_suelo")
+
+[node name="Dibujo" type="ColorRect" parent="Suelo"]
+offset_left = -800.0
+offset_top = -40.0
+offset_right = 800.0
+offset_bottom = 40.0
+mouse_filter = 2
+color = Color(0.25, 0.25, 0.25, 1)
+
+[node name="Reto" parent="." instance=ExtResource("2_reto")]
+position = Vector2(600, 680)
+id = "reto"
+quien = "Sinodal"
+preguntas = Array[ExtResource("3_ficha")]([ExtResource("4_p1"), ExtResource("5_p2"), ExtResource("6_p3")])
+meta = 2
+recompensa = SubResource("recompensa_monedas")

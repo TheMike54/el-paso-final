@@ -3,7 +3,7 @@ extends CanvasLayer
 # Pausa del juego: la accion pausa o el boton Atras de Android la abren y la cierran durante el
 # juego, y se abre sola al salir de la app o cambiar de ventana. Pausar detiene el arbol y no
 # guarda la partida; salir al menu si guarda lo obtenido, y pasar a segundo plano lo guarda Partida. Tiene el
-# boton que abre el editor de los botones tactiles; vibracion, temblor y lo demas estan en la Configuracion del
+# boton que abre la pantalla de los amuletos (la de la sala) y el que abre el editor de los botones tactiles; vibracion, temblor y lo demas estan en la Configuracion del
 # menu. La crea cada sala; corre siempre, aun con el arbol en pausa, para poder cerrarse.
 const MENU: String = "res://nucleo/menu.tscn"
 const ESCENA_EDITOR: PackedScene = preload("res://nucleo/editor_controles.tscn")
@@ -17,6 +17,7 @@ var editor: EditorControles = null
 @onready var _continuar: Button = $Panel/Opciones/Continuar as Button
 @onready var _salir: Button = $Panel/Opciones/SalirAlMenu as Button
 @onready var _controles: Button = $Panel/Opciones/Controles as Button
+@onready var _amuletos: Button = $Panel/Opciones/Amuletos as Button
 
 
 func _ready() -> void:
@@ -26,6 +27,7 @@ func _ready() -> void:
 	_continuar.pressed.connect(cerrar)
 	_salir.pressed.connect(_salir_al_menu)
 	_controles.pressed.connect(abrir_editor)
+	_amuletos.pressed.connect(abrir_amuletos)
 
 
 # Se lee la accion y no el evento: asi la abren igual el teclado, el boton tactil y un guion.
@@ -88,6 +90,23 @@ func _al_cerrar_editor() -> void:
 	editor = null
 	_panel.visible = abierta
 	_controles.grab_focus()
+
+
+## Oculta el panel y abre encima la pantalla de los amuletos de la sala, si la hay; al cerrarla vuelve el panel.
+func abrir_amuletos() -> void:
+	var pantalla: PantallaAmuletos = get_parent().get_node_or_null(^"Amuletos") as PantallaAmuletos
+	if pantalla == null:
+		return
+	if not pantalla.cerrada.is_connected(_al_cerrar_amuletos):
+		pantalla.cerrada.connect(_al_cerrar_amuletos)
+	_panel.visible = false
+	pantalla.abrir_desde_pausa()
+
+
+func _al_cerrar_amuletos() -> void:
+	_panel.visible = abierta
+	if abierta:
+		_amuletos.grab_focus()
 
 
 # Salir al menu guarda lo obtenido (no la posicion): al continuar se aparece en el ultimo banco.

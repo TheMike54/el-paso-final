@@ -1,0 +1,8 @@
+# Habla con el guia y, con la caja abierta, empuja a la derecha: no se mueve y el texto sigue escribiendose.
+escena res://herramientas/salas/sala_dialogo.tscn
+2 mover_derecha press
+50 mover_derecha release
+55 interactuar press
+56 interactuar release
+58 mover_derecha press
+fin 70

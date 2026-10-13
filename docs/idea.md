@@ -20,14 +20,14 @@ tiene que subir, zona por zona, hasta su salón y vencer a los tres sinodales qu
 Como alumno de ESCOM con ratos libres cortos, quiero explorar el mundo bajo la escuela en sesiones de pocos
 minutos y retomar donde me quedé, para entretenerme sin perder mi avance.
 
-Dado que descansé en un banco y cerré la app, cuando la vuelvo a abrir y toco Continuar, entonces aparezco en
+Dado que descansé en un banco y cerré la app, cuando la vuelvo a abrir, toco Jugar y elijo mi ranura, entonces aparezco en
 ese mismo banco con las mismas vidas y las mismas habilidades.
 
 ## Qué entra en la primera versión
 
 | Área | Entra |
 |---|---|
-| Inicio | Elegir personaje (mujer u hombre) y escribir su nombre; menú con Nueva partida y Continuar, con estados de carga, vacío, error y dato inválido |
+| Inicio | Elegir personaje (mujer u hombre) y escribir su nombre; menú con cuatro ranuras de partida (nueva o continuar), con estados vacío, dañado y de otra versión |
 | Historia | Intro con imágenes fijas y escena de los sinodales |
 | Zonas | Las dos primeras, completas: tres enemigos, raíces con espinas, un mini jefe opcional y el jefe de la zona |
 | Progresión | La habilidad de impulso, el arma base y un amuleto |
@@ -46,4 +46,4 @@ completa; el fondo animado del menú.
 
 Núcleo común y contenido como datos: el núcleo (jugador, cámara, salas, guardado, entrada, eventos) se escribe
 una vez, y las zonas, enemigos y personajes se agregan como escenas y fichas sin tocarlo. Primero todo con
-cajas grises; el arte entra después, con su procedencia registrada en `docs/licencias.md`.
+cajas grises; el arte entra después, con sus herramientas de IA registradas en `docs/uso-de-ia.md`.

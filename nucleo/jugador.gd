@@ -225,6 +225,9 @@ var en_picada: bool = false
 var toques_poder: int = 0
 ## Sentado en un banco: quieto hasta que se mueve, salta o ataca.
 var descansando: bool = false
+## Hablando con un Npc: quieto (con gravedad) y sin control hasta que el Npc cierra la conversacion. Un golpe o un
+## peligro la cortan.
+var hablando: bool = false
 ## Golpes que dio la onda de la caida en picada desde que entro a la sala.
 var golpes_onda: int = 0
 ## Ataques enemigos parados desde que entro a la sala.
@@ -318,6 +321,8 @@ var _y_inicio_caida: float = 0.0
 var _ticks_hasta_bola: int = 0
 # Recien sentado: el primer tick sentado no se levanta (joystick en diagonal da arriba y un lado juntos).
 var _recien_sentado: bool = false
+# Tick despues de cerrar una conversacion: la pulsacion que la cerro (saltar, atacar) no salta ni ataca.
+var _recien_hablado: bool = false
 # Picada desde el suelo: el saltito y los ticks de carga en su cima.
 var _preparando_picada: bool = false
 var _ticks_carga: int = 0
@@ -398,6 +403,11 @@ func _mover(delta: float) -> void:
 		return
 	if descansando:
 		_seguir_descansando()
+		return
+	if hablando or _recien_hablado:
+		_recien_hablado = false
+		velocity.x = 0.0
+		move_and_slide()
 		return
 	_recordar_punto_seguro(en_suelo)
 	# La voltereta acaba al tocar el suelo: cae caminando.
@@ -653,6 +663,7 @@ func _saltar() -> void:
 	# Gasta la pulsacion y el suelo: ni el salto en cola ni el coyote dan un segundo salto.
 	_ticks_desde_pulsar = NUNCA
 	_ticks_sin_suelo = NUNCA
+	Eventos.jugador_salto.emit()
 
 
 # Salto variable: soltar saltar corta la subida, pero no antes de ticks_minimos_salto.
@@ -1040,6 +1051,7 @@ func recibir_dano(dano: int, origen_x: float, peligro: bool = false) -> void:
 	# Un golpe tambien pierde la pulsacion de curar a medias (ni toque ni curacion) y levanta del banco.
 	_ticks_poder = -1
 	descansando = false
+	hablando = false
 	_ticks_impulsando = 0
 	_ticks_despegando = 0
 	_ticks_rebote = 0
@@ -1113,6 +1125,7 @@ func _colocar_tras_peligro(punto: Vector2) -> void:
 	_preparando_picada = false
 	_ticks_carga = 0
 	descansando = false
+	hablando = false
 	# Ni una pulsacion de curar a medias: soltarla congelado contaria como toque.
 	_ticks_poder = -1
 	_subiendo = false
@@ -1152,6 +1165,27 @@ func sentarse(x: float) -> void:
 	_recien_sentado = true
 	global_position.x = x
 	velocity = Vector2.ZERO
+
+
+## Lo llama el Npc al empezar una conversacion: como sentarse(), corta lo que empujaba al jugador y lo deja quieto.
+func empezar_a_hablar() -> void:
+	_cortar_lo_que_empuja()
+	_cortar_curacion()
+	_ticks_poder = -1
+	_ticks_retrocediendo = 0
+	_ticks_aterrizando = 0
+	hablando = true
+	velocity.x = 0.0
+
+
+## Lo llama el Npc al cerrar la conversacion. El tick siguiente sigue quieto: la pulsacion que la cerro no cuenta.
+func dejar_de_hablar() -> void:
+	if not hablando:
+		return
+	hablando = false
+	_recien_hablado = true
+	_ticks_desde_pulsar = NUNCA
+	_ticks_desde_atacar = NUNCA
 
 
 # Sentado: quieto hasta que se mueve, salta o ataca. Levantarse no hace saltar ni atacar: esto

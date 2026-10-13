@@ -1,0 +1,4 @@
+# La escena de prueba de los amuletos corre sus casos al entrar: poner y quitar en Partida, la pantalla de pie y
+# sentado, Atras, la entrada desde la pausa y las acciones mochila y pausa. Deja la cuenta en sus propiedades.
+escena res://herramientas/salas/sala_amuletos.tscn
+fin 60

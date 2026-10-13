@@ -1,7 +1,7 @@
 # Núcleo
 
-Código que se escribe una vez y usa todo el juego: jugador, cámara, sala y cambio de sala, guardado, entrada y
-bus de eventos. El contenido (zonas, enemigos, NPC) se agrega sin tocar esta carpeta.
+Código que se escribe una vez y usa todo el juego: jugador, cámara, sala y cambio de sala, guardado, entrada,
+bus de eventos, menús (ranuras, Configuración, pausa, amuletos) y diálogo. El contenido (zonas, enemigos, NPC) se agrega sin tocar esta carpeta.
 
 ## Primero
 Leer `funciones.json` de esta carpeta: la primera funcionalidad con `"pasa": false` es la que sigue.

@@ -3,13 +3,12 @@ extends Node
 # y el editor de controles con Atras (la notificacion de Android) y con la accion pausa, que vuelven un nivel a
 # la vez. Comprueba tambien lo que puede romperse: Listo guarda la disposicion, reasignar un boton del control
 # intercambia con la accion que lo tenia y se guarda, el modo desarrollador muestra la zona de pruebas en el menu y se
-# recuerda, borrar la partida la borra, el volumen se guarda (tambien con - y +), las columnas segun el ancho de la
+# recuerda, el panel de audio guarda cada volumen en su ajuste y su bus, el brillo se guarda (tambien con - y +), las columnas segun el ancho de la
 # vista y el aviso de pocos toques sale solo cuando toca. Todo en archivos de prueba. Deja casos y fallos
 # para menu_configuracion.guion. Imprime el resumen y los fallos.
 
 const ESCENA_MENU: PackedScene = preload("res://nucleo/menu.tscn")
 const RUTA_PRUEBA: String = "user://prueba_menu_configuracion.json"
-const RUTA_PARTIDA: String = "user://prueba_menu_partida.json"
 const OPCIONES: String = "Lista/Desplazable/Centro/Opciones/"
 
 var casos: int = 0
@@ -26,13 +25,15 @@ func _ready() -> void:
 	Mando.por_omision()
 	var modo_real: bool = Ajustes.modo_desarrollador
 	var volumen_real: float = Ajustes.volumen
+	var musica_real: float = Ajustes.volumen_musica
+	var efectos_real: float = Ajustes.volumen_efectos
+	var brillo_real: float = Ajustes.brillo
 	Ajustes.modo_desarrollador = false
 	var menu: Control = ESCENA_MENU.instantiate() as Control
 	add_child(menu)
 	var centro: Control = menu.get_node(^"Centro") as Control
 	var config: Configuracion = menu.get_node(^"Configuracion") as Configuracion
 	config.ruta_ajustes = RUTA_PRUEBA
-	config.ruta_partida = RUTA_PARTIDA
 	var lista: Control = config.get_node(^"Lista") as Control
 	var confirmar: Control = menu.get_node(^"Confirmar") as Control
 	_caso("al entrar, Configuracion esta oculta", centro.visible and not config.visible)
@@ -151,29 +152,51 @@ func _ready() -> void:
 	for i: int in range(3):
 		await get_tree().physics_frame
 
-	# Volumen.
-	(config.get_node(NodePath(OPCIONES + "Volumen/Medio/Barra")) as HSlider).value = 40.0
+	# Audio: un panel con tres barras, cada una en su ajuste y en su bus.
+	_boton(config, "Audio").pressed.emit()
+	var panel_audio: Control = config.get_node(^"PanelAudio") as Control
+	var general: HSlider = _barra_audio(config, "General")
+	_caso("Audio abre su panel con el foco en General", panel_audio.visible and not lista.visible and general.has_focus())
+	var antes: String = FileAccess.get_file_as_string(RUTA_PRUEBA)
+	general.value = 40.0
+	_barra_audio(config, "Musica").value = 30.0
+	_barra_audio(config, "Efectos").value = 70.0
+	_caso("mover una barra aplica pero no escribe el archivo hasta soltarla", is_equal_approx(Ajustes.volumen, 0.4) and FileAccess.get_file_as_string(RUTA_PRUEBA) == antes)
+	general.drag_ended.emit(true)
 	Ajustes.volumen = 1.0
+	Ajustes.volumen_musica = 1.0
+	Ajustes.volumen_efectos = 1.0
 	Ajustes.cargar(RUTA_PRUEBA)
-	_caso("el volumen se guarda", is_equal_approx(Ajustes.volumen, 0.4))
-	_boton(config, "Volumen/Mas").pressed.emit()
-	_boton(config, "Volumen/Mas").pressed.emit()
-	_boton(config, "Volumen/Menos").pressed.emit()
-	_caso("+ y - mueven el volumen de 10 en 10 y se guarda", is_equal_approx(Ajustes.volumen, 0.5))
-
-	# Borrar partida, con confirmacion.
-	Guardado.guardar(Partida.a_diccionario(), RUTA_PARTIDA)
-	var temporal: FileAccess = FileAccess.open(RUTA_PARTIDA + ".tmp", FileAccess.WRITE)
-	temporal.store_string("{}")
-	temporal.close()
-	_boton(config, "BorrarPartida").pressed.emit()
-	var confirmar_borrado: Control = config.get_node(^"ConfirmarBorrado") as Control
-	_caso("Borrar partida pide confirmacion", confirmar_borrado.visible and FileAccess.file_exists(RUTA_PARTIDA))
+	_caso("cada volumen se guarda en su ajuste", is_equal_approx(Ajustes.volumen, 0.4) and is_equal_approx(Ajustes.volumen_musica, 0.3) and is_equal_approx(Ajustes.volumen_efectos, 0.7))
+	var musica: Button = config.get_node(^"PanelAudio/Desplazable/Centro/Filas/Musica/Mas") as Button
+	musica.pressed.emit()
+	musica.pressed.emit()
+	(config.get_node(^"PanelAudio/Desplazable/Centro/Filas/Musica/Menos") as Button).pressed.emit()
+	Ajustes.volumen_musica = 1.0
+	Ajustes.cargar(RUTA_PRUEBA)
+	_caso("+ y - mueven un volumen de 10 en 10 y lo guardan", is_equal_approx(Ajustes.volumen_musica, 0.4))
+	var bus_musica: int = AudioServer.get_bus_index(Ajustes.BUS_MUSICA)
+	var bus_efectos: int = AudioServer.get_bus_index(Ajustes.BUS_EFECTOS)
+	_caso("los buses de musica y efectos existen y pasan por Master", bus_musica > 0 and bus_efectos > 0 and AudioServer.get_bus_send(bus_musica) == &"Master" and AudioServer.get_bus_send(bus_efectos) == &"Master")
+	_caso("cada volumen va a su bus", is_equal_approx(AudioServer.get_bus_volume_db(0), Ajustes.db_de(0.4)) and is_equal_approx(AudioServer.get_bus_volume_db(bus_musica), Ajustes.db_de(0.4)) and is_equal_approx(AudioServer.get_bus_volume_db(bus_efectos), Ajustes.db_de(0.7)))
+	_barra_audio(config, "Efectos").value = 0.0
+	_caso("en 0 su bus queda en silencio y los otros no", AudioServer.is_bus_mute(bus_efectos) and not AudioServer.is_bus_mute(bus_musica))
 	menu.notification(NOTIFICATION_WM_GO_BACK_REQUEST)
-	_caso("Atras en la confirmacion no borra", not confirmar_borrado.visible and FileAccess.file_exists(RUTA_PARTIDA))
-	_boton(config, "BorrarPartida").pressed.emit()
-	(config.get_node(^"ConfirmarBorrado/Caja/Botones/Borrar") as Button).pressed.emit()
-	_caso("confirmar borra la partida y su temporal", not FileAccess.file_exists(RUTA_PARTIDA) and not FileAccess.file_exists(RUTA_PARTIDA + ".tmp") and not confirmar_borrado.visible)
+	_caso("Atras en Audio vuelve a la lista con el foco en Audio", lista.visible and not panel_audio.visible and _boton(config, "Audio").has_focus())
+
+	# Brillo.
+	# El efecto en 0 se movio sin soltar: volver a la lista lo guarda.
+	Ajustes.cargar(RUTA_PRUEBA)
+	_caso("salir del panel guarda la barra que no se solto", is_equal_approx(Ajustes.volumen_efectos, 0.0))
+	(config.get_node(NodePath(OPCIONES + "Brillo/Medio/Barra")) as HSlider).value = 140.0
+	(config.get_node(NodePath(OPCIONES + "Brillo/Medio/Barra")) as HSlider).drag_ended.emit(true)
+	Ajustes.brillo = 1.0
+	Ajustes.cargar(RUTA_PRUEBA)
+	_caso("el brillo se guarda al soltar la barra", is_equal_approx(Ajustes.brillo, 1.4))
+	_boton(config, "Brillo/Menos").pressed.emit()
+	Ajustes.brillo = 1.0
+	Ajustes.cargar(RUTA_PRUEBA)
+	_caso("- mueve el brillo de 10 en 10 y se guarda", is_equal_approx(Ajustes.brillo, 1.3))
 
 	_boton(config, "Creditos").pressed.emit()
 	_caso("Creditos abre su panel", (config.get_node(^"PanelCreditos") as Control).visible)
@@ -213,19 +236,34 @@ func _ready() -> void:
 	var aviso: Label = con_aviso.get_node_or_null(^"AvisoToques") as Label
 	_caso("con pocos toques el menu muestra el aviso", aviso != null and aviso.visible and aviso.text == Toques.TEXTO_AVISO)
 	_caso("el aviso queda debajo de la confirmacion de salida", aviso != null and aviso.get_index() < (con_aviso.get_node(^"Confirmar") as Control).get_index())
+	# El aviso de recursos de Configuracion queda arriba de esa linea, no encima (S50, 13-oct-2026).
+	var conf: Configuracion = con_aviso.get_node(^"Configuracion") as Configuracion
+	conf.abrir()
+	var aviso_recursos: Label = conf.get_node(^"Lista/AvisoRecursos") as Label
+	aviso_recursos.text = "x"
+	aviso_recursos.visible = true
+	await get_tree().process_frame
+	await get_tree().process_frame
+	_caso("el aviso de recursos queda arriba del de pocos toques", aviso != null and aviso_recursos.get_global_rect().end.y <= aviso.get_global_rect().position.y + 1.0)
 	remove_child(con_aviso)
 	con_aviso.free()
 	Toques.olvidar()
 
-	for ruta: String in [RUTA_PRUEBA, RUTA_PARTIDA]:
-		if FileAccess.file_exists(ruta):
-			DirAccess.remove_absolute(ruta)
+	if FileAccess.file_exists(RUTA_PRUEBA):
+		DirAccess.remove_absolute(RUTA_PRUEBA)
 	Ajustes.disposicion = DisposicionControles.por_omision()
 	Ajustes.modo_desarrollador = modo_real
 	Ajustes.volumen = volumen_real
+	Ajustes.volumen_musica = musica_real
+	Ajustes.volumen_efectos = efectos_real
+	Ajustes.brillo = brillo_real
 	Ajustes.aplicar_volumen()
 	Mando.aplicar(mando_real)
 	print("PRUEBAS menu_configuracion casos=%d fallos=%d" % [casos, fallos])
+
+
+func _barra_audio(config: Configuracion, nombre: String) -> HSlider:
+	return config.get_node(NodePath("PanelAudio/Desplazable/Centro/Filas/%s/Medio/Barra" % nombre)) as HSlider
 
 
 func _boton(config: Configuracion, nombre: String) -> Button:

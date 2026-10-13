@@ -6,10 +6,12 @@ extends Node
 
 const VIDAS_MAXIMAS_INICIALES: int = 4
 const INSPIRACION_MAXIMA: int = 99
+## Amuletos puestos a la vez. Provisional: la carga de cada amuleto llega cuando haya tres con efecto.
+const MAX_EQUIPADOS: int = 3
 ## Los ids de los coleccionables empiezan asi: el total se cuenta con las marcas de las salas.
 const PREFIJO_COLECCIONABLE: String = "coleccionable"
 ## Archivo donde se guarda fuera de una partida empezada en el menu (guiones, zona de pruebas): asi
-## nada de eso pisa la partida real. Nueva partida y Continuar cambian ruta_guardado a Guardado.RUTA.
+## nada de eso pisa una partida real. Entrar a una ranura del menu cambia ruta_guardado a la de esa ranura.
 const RUTA_PRUEBAS: String = "user://prueba_partida.json"
 
 # Cada cambio de vidas, de Inspiracion o de PejeCoins se avisa por el bus: asi la interfaz se
@@ -133,6 +135,34 @@ func obtener_amuleto(amuleto: StringName) -> void:
 	Eventos.amuleto_obtenido.emit(amuleto)
 
 
+func esta_equipado(amuleto: StringName) -> bool:
+	return amuletos_equipados.has(amuleto)
+
+
+## Se puede poner si se tiene, no esta puesto y queda lugar. Donde se puede (sentado en un banco) lo decide quien
+## llama: Partida no conoce al jugador.
+func puede_equipar(amuleto: StringName) -> bool:
+	return amuletos_tenidos.has(amuleto) and not esta_equipado(amuleto) and amuletos_equipados.size() < MAX_EQUIPADOS
+
+
+## Pone un amuleto y autoguarda. Devuelve false si no se puede (ver puede_equipar).
+func equipar(amuleto: StringName) -> bool:
+	if not puede_equipar(amuleto):
+		return false
+	amuletos_equipados.append(amuleto)
+	autoguardar()
+	return true
+
+
+## Quita un amuleto puesto y autoguarda. Devuelve false si no estaba puesto.
+func desequipar(amuleto: StringName) -> bool:
+	if not esta_equipado(amuleto):
+		return false
+	amuletos_equipados.erase(amuleto)
+	autoguardar()
+	return true
+
+
 func llenar_vidas() -> void:
 	vidas = vidas_maximas
 
@@ -184,6 +214,9 @@ func dar_recompensa(recompensa: Recompensa) -> void:
 			obtener_amuleto(recompensa.id)
 		Recompensa.Tipo.HABILIDAD:
 			obtener_habilidad(recompensa.id)
+		Recompensa.Tipo.MAPA:
+			if not mapas.has(String(recompensa.id)):
+				mapas.append(String(recompensa.id))
 
 
 ## Al entrar a una sala: queda como visitada.

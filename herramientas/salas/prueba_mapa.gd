@@ -45,7 +45,8 @@ func _ready() -> void:
 
 	Partida.mapas.append("prueba")
 	Eventos.descanso_en_banco.emit(&"banco_mapa_1")
-	Partida.amuletos_equipados.append(&"brujula")
+	Partida.amuletos_tenidos.append(&"brujula")
+	Partida.equipar(&"brujula")
 	mapa.abrir()
 	mapa.alejar()
 	_caso("alejado muestra todas las zonas dibujadas", not mapa.lienzo.quedo_acercado and mapa.lienzo.salas_dibujadas == 3 and mapa.lienzo.zonas_dibujadas == 2)

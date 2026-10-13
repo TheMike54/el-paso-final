@@ -1,5 +1,6 @@
 extends Node
-# Autoload de arranque del nucleo. Carga los ajustes y, solo si el build es de depuracion y el
+# Autoload de arranque del nucleo. Carga los ajustes, crea la capa del brillo y los efectos (Sonido, que asi no
+# muere al cambiar de escena) y, solo si el build es de depuracion y el
 # archivo viajo en el paquete, el puerto de depuracion: herramientas/ viaja tambien en
 # publicacion (zona de pruebas con el modo desarrollador), pero el puerto nunca corre ahi.
 const RUTA_PUERTO: String = "res://herramientas/puerto_depuracion.gd"
@@ -18,6 +19,14 @@ func _ready() -> void:
 	if DisplayServer.get_name() != "headless":
 		get_window().size_changed.connect(_al_cambiar_tamano)
 		_ajustar_vista()
+		# La capa del brillo, encima de todo; sin pantalla no hace falta.
+		var brillo: Brillo = Brillo.new()
+		brillo.name = "Brillo"
+		add_child(brillo)
+	# Tambien sin pantalla: los guiones leen sus cuentas; ahi no toca nada.
+	var sonido: Sonido = Sonido.new()
+	sonido.name = "Sonido"
+	add_child(sonido)
 	var depuracion: bool = OS.is_debug_build()
 	var existe: bool = ResourceLoader.exists(RUTA_PUERTO)
 	print("ARRANQUE depuracion=%s puerto=%s" % [depuracion, existe])

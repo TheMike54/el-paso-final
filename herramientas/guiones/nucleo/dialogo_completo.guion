@@ -1,0 +1,20 @@
+# Camina hasta el guia, habla con interactuar y pasa cada linea con saltar (un toque la completa, otro la pasa); en la
+# pregunta deja marcado «Si». Al terminar, la pulsacion que cerro la caja no hace saltar.
+escena res://herramientas/salas/sala_dialogo.tscn
+2 mover_derecha press
+50 mover_derecha release
+55 interactuar press
+56 interactuar release
+60 saltar press
+61 saltar release
+63 saltar press
+64 saltar release
+66 saltar press
+67 saltar release
+69 saltar press
+70 saltar release
+72 saltar press
+73 saltar release
+75 saltar press
+76 saltar release
+fin 90

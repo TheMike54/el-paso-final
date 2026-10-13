@@ -1,7 +1,7 @@
 class_name Sala
 extends Node2D
 # Raiz de toda sala: al entrar crea al jugador (en la puerta por la que llega o en Entrada), le
-# pasa los limites para la camara y pone los controles tactiles, la pausa, la vibracion, el fundido
+# pasa los limites para la camara y pone los controles tactiles, la pausa, los amuletos, la vibracion, el fundido
 # a negro (empieza en negro y aclara), la interfaz y el mapa. Si el jugador muere, funde a negro y lo hace
 # reaparecer en el ultimo banco (o en Entrada) con las vidas llenas.
 const ESCENA_JUGADOR: PackedScene = preload("res://nucleo/jugador.tscn")
@@ -96,6 +96,9 @@ func _ready() -> void:
 	jugador.fijar_limites(limites)
 	add_child(ESCENA_CONTROLES.instantiate())
 	add_child(ESCENA_PAUSA.instantiate())
+	var amuletos: PantallaAmuletos = PantallaAmuletos.new()
+	amuletos.name = &"Amuletos"
+	add_child(amuletos)
 	var fundido: Fundido = Fundido.new()
 	fundido.name = &"Fundido"
 	add_child(fundido)

@@ -37,6 +37,11 @@ custom_minimum_size = Vector2(480, 108)
 layout_mode = 2
 text = "Continuar"
 
+[node name="Amuletos" type="Button" parent="Panel/Opciones"]
+custom_minimum_size = Vector2(480, 108)
+layout_mode = 2
+text = "Amuletos"
+
 [node name="Controles" type="Button" parent="Panel/Opciones"]
 custom_minimum_size = Vector2(480, 108)
 layout_mode = 2

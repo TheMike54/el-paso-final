@@ -107,8 +107,30 @@ func _ready() -> void:
 	_escribir(ruta_ajustes, '{"version": 1, "ajustes": {"vibracion": false}}')
 	Ajustes.cargar(ruta_ajustes)
 	_caso("un archivo de antes del temblor lo deja encendido y respeta la vibracion", Ajustes.temblor and not Ajustes.vibracion)
+	_caso("un archivo de antes del audio deja musica, efectos y brillo en su valor por omision", is_equal_approx(Ajustes.volumen_musica, 1.0) and is_equal_approx(Ajustes.volumen_efectos, 1.0) and is_equal_approx(Ajustes.brillo, Ajustes.BRILLO_POR_OMISION))
+	_escribir(ruta_ajustes, '{"version": 1, "ajustes": {"volumen_musica": 7, "volumen_efectos": -2, "brillo": 9}}')
+	Ajustes.cargar(ruta_ajustes)
+	_caso("volumenes y brillo fuera de rango se recortan", is_equal_approx(Ajustes.volumen_musica, 1.0) and is_equal_approx(Ajustes.volumen_efectos, 0.0) and is_equal_approx(Ajustes.brillo, Ajustes.BRILLO_MAXIMO))
+	_escribir(ruta_ajustes, '{"version": 1, "ajustes": {"volumen_musica": "alto", "brillo": "x"}}')
+	Ajustes.cargar(ruta_ajustes)
+	_caso("un volumen o un brillo que no es numero deja el valor por omision", is_equal_approx(Ajustes.volumen_musica, 1.0) and is_equal_approx(Ajustes.brillo, Ajustes.BRILLO_POR_OMISION))
+	Ajustes.volumen_musica = 0.3
+	Ajustes.volumen_efectos = 0.6
+	Ajustes.brillo = 0.8
+	Ajustes.guardar(ruta_ajustes)
+	Ajustes.volumen_musica = 1.0
+	Ajustes.volumen_efectos = 1.0
+	Ajustes.brillo = 1.0
+	Ajustes.cargar(ruta_ajustes)
+	_caso("musica, efectos y brillo vuelven como se guardaron", is_equal_approx(Ajustes.volumen_musica, 0.3) and is_equal_approx(Ajustes.volumen_efectos, 0.6) and is_equal_approx(Ajustes.brillo, 0.8))
+	_caso("el volumen pasa a dB: 1 es 0 dB y 0,5 queda por debajo", is_equal_approx(Ajustes.db_de(1.0), 0.0) and Ajustes.db_de(0.5) < -5.0)
+	_caso("el brillo bajo oscurece, el alto aclara con tope y 1 no tapa nada", is_equal_approx(Brillo.color_para(0.5).a, 0.5) and Brillo.color_para(0.5).r == 0.0 and Brillo.color_para(1.5).r == 1.0 and Brillo.color_para(1.5).a <= Brillo.ACLARADO_MAXIMO and is_zero_approx(Brillo.color_para(1.0).a))
 	DirAccess.remove_absolute(ruta_ajustes)
 	Ajustes.temblor = Ajustes.POR_OMISION["temblor"]
+	Ajustes.volumen_musica = 1.0
+	Ajustes.volumen_efectos = 1.0
+	Ajustes.brillo = Ajustes.BRILLO_POR_OMISION
+	Ajustes.aplicar_volumen()
 	# El jugador carga los ajustes al entrar (lee user://ajustes.json, sin escribirlo), sin esperar a
 	# que la pausa o la vibracion lo hagan antes.
 	Ajustes._cargados = false

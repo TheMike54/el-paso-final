@@ -35,7 +35,8 @@ const COLOR_PRESIONADO: Color = Color(1.0, 1.0, 1.0, 0.25)
 ## Botones que solo existen con una habilidad: accion -> habilidad de Partida. Sin ella no se
 ## dibujan ni responden, y los demas no se mueven.
 const HABILIDAD_DE_BOTON: Dictionary[StringName, StringName] = {&"impulso": &"impulso", &"atacar": &"pluma"}
-## Botones que todavia no hacen nada en el juego: no se dibujan ni responden, aqui ni en el editor. Siguen
+## Botones que no se ponen en el tactil: no se dibujan ni responden, aqui ni en el editor. Mochila abre los amuletos
+## con teclado y control; en el tactil se entra por la pausa, para no sumar otro boton a la pantalla. Siguen
 ## en ACCIONES para no mover los indices, CENTROS, ANCLAS, RADIOS ni la disposicion guardada.
 const BOTONES_SIN_USO: Array[StringName] = [&"mochila"]
 ## Segmentos de cada aro y tamano unico de las etiquetas: en el S50 el dibujo de los controles costaba
@@ -62,6 +63,8 @@ static var _movimientos_propios: Array[StringName] = []
 static var _cuadro_salida: int = -1
 ## Mientras el editor de controles esta abierto, los toques no presionan acciones y los botones no se dibujan.
 static var editando: bool = false
+## Mientras hay una conversacion (CajaDialogo) solo Pausa se dibuja y responde: el resto de la pantalla es de la caja.
+static var hablando: bool = false
 # Acciones del InputMap que no son ui_*: se calculan una vez (Mando cambia eventos, no nombres).
 static var _acciones_de_juego: Array[StringName] = []
 
@@ -106,6 +109,9 @@ func _process(_delta: float) -> void:
 		if editando:
 			_soltar_todo()
 		queue_redraw()
+	# El joystick con que se empezo a hablar (arriba tambien es interactuar) se suelta al abrir la caja.
+	if hablando and _dedo_joystick != -1:
+		_soltar(_dedo_joystick)
 
 
 ## Toma Ajustes.disposicion y la ajusta al tamano y al area segura de esta pantalla.
@@ -171,6 +177,8 @@ func _radio_joystick() -> float:
 func _disponible(i: int) -> bool:
 	if not en_uso(i):
 		return false
+	if hablando and ACCIONES[i] != &"pausa":
+		return false
 	var habilidad: StringName = HABILIDAD_DE_BOTON.get(ACCIONES[i], &"")
 	return habilidad.is_empty() or Partida.tiene(habilidad)
 
@@ -205,7 +213,7 @@ func _tocar(dedo: int, posicion: Vector2) -> void:
 			queue_redraw()
 			return
 	var zona: Rect2 = Rect2(ZONA_JOYSTICK.position * size, ZONA_JOYSTICK.size * size)
-	if _dedo_joystick == -1 and zona.has_point(posicion):
+	if _dedo_joystick == -1 and zona.has_point(posicion) and not hablando:
 		_dedo_joystick = dedo
 		_origen_joystick = posicion
 		_palanca = Vector2.ZERO

@@ -109,7 +109,11 @@ Combate:
   ticks; la gravedad y los golpes siguen. Las pulsaciones de saltar, atacar y curar hechas durante él se pierden; lo
   mantenido (caminar) cuenta al terminar. Lo cortan un golpe, un peligro (siempre: vuelve al punto seguro), morir y
   sentarse; el banco no sienta mientras dura. Emite `jugador_aterrizo`.
-- `vidas`, `muerto`, `toques_poder`, `rebotes_pogo`, `en_picada`, `golpes_onda`, `descansando`, `temblor_x`, `temblor_y`, `aterrizando`, `paradas`, `corriendo`, `atacando_en_carrera`, `volteando`, `girando` e `invulnerable` (`aterrizando`, `girando` e `invulnerable`, de solo lectura) son propiedades
+- Hablar: `empezar_a_hablar()` (lo llama un `Npc`) corta el impulso, la curación a medias y el retroceso, y deja al
+  jugador quieto con gravedad (`hablando`) hasta `dejar_de_hablar()`. El tick siguiente también queda quieto: la
+  pulsación que cerró la caja no salta ni ataca. Un golpe, un peligro o morir lo cortan. Mientras habla, el banco no
+  sienta y la entrega de recompensas no responde.
+- `vidas`, `muerto`, `toques_poder`, `rebotes_pogo`, `en_picada`, `golpes_onda`, `descansando`, `hablando`, `temblor_x`, `temblor_y`, `aterrizando`, `paradas`, `corriendo`, `atacando_en_carrera`, `volteando`, `girando` e `invulnerable` (`aterrizando`, `girando` e `invulnerable`, de solo lectura) son propiedades
   públicas: los guiones las leen con `valor Jugador vidas`.
 
 Curar y sensación del golpe:

@@ -1,0 +1,36 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://nucleo/sala.gd" id="1_sala"]
+[ext_resource type="PackedScene" path="res://nucleo/npc.tscn" id="2_npc"]
+[ext_resource type="Resource" path="res://herramientas/salas/fichas/guia_prueba_1.tres" id="3_guia_1"]
+[ext_resource type="Resource" path="res://herramientas/salas/fichas/guia_prueba_2.tres" id="4_guia_2"]
+[ext_resource type="Script" path="res://nucleo/ficha_dialogo.gd" id="5_ficha"]
+
+[sub_resource type="RectangleShape2D" id="forma_suelo"]
+size = Vector2(1600, 80)
+
+[node name="SalaDialogo" type="Node2D"]
+script = ExtResource("1_sala")
+limites = Rect2(0, 0, 1600, 720)
+
+[node name="Entrada" type="Marker2D" parent="."]
+position = Vector2(300, 680)
+
+[node name="Suelo" type="StaticBody2D" parent="."]
+position = Vector2(800, 720)
+
+[node name="Forma" type="CollisionShape2D" parent="Suelo"]
+shape = SubResource("forma_suelo")
+
+[node name="Dibujo" type="ColorRect" parent="Suelo"]
+offset_left = -800.0
+offset_top = -40.0
+offset_right = 800.0
+offset_bottom = 40.0
+mouse_filter = 2
+color = Color(0.25, 0.25, 0.25, 1)
+
+[node name="Guia" parent="." instance=ExtResource("2_npc")]
+position = Vector2(600, 680)
+id = "guia"
+conversaciones = Array[ExtResource("5_ficha")]([ExtResource("3_guia_1"), ExtResource("4_guia_2")])

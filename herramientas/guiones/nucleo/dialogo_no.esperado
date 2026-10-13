@@ -1,0 +1,6 @@
+# «No» cancela: la conversacion no cuenta, no entrega nada y se repetira; el jugador queda libre.
+x 588 1
+valor Jugador hablando false
+valor Guia etapa 0
+senal Guia conversacion_terminada 0
+senal /root/Eventos habilidad_obtenida 0

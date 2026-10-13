@@ -67,7 +67,7 @@
   },
   {
     "id": "validar-salas",
-    "que": "El validador revisa cada sala con id (contenido/salas y herramientas/salas/zonas): id <zona>_<numero> igual al archivo y en la carpeta de su zona, sin repetir; limites con area; Entrada dentro; puertas con id unico, destino existente y de ida y vuelta; bancos con id banco_<id de la sala>; suelos fragiles y coleccionables con id unico en su sala; habilidades_de_prueba vacio en las salas de contenido/",
+    "que": "El validador revisa cada sala con id (contenido/salas y herramientas/salas/zonas): id <zona>_<numero> igual al archivo y en la carpeta de su zona, sin repetir; limites con area; Entrada dentro; puertas con id unico, destino existente y de ida y vuelta; bancos con id banco_<id de la sala>; suelos fragiles, coleccionables, Npc y RetoPreguntas con id unico en su sala; habilidades_de_prueba vacio en las salas de contenido/",
     "comprobacion": "manual: en la zona de prueba, una puerta sin vuelta, un id distinto del archivo, un banco mal nombrado y una Entrada fuera de limites dan cada uno su linea FALLO y salida 1",
     "pasa": true
   },

@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="FichaPregunta" format=3]
+
+[ext_resource type="Script" path="res://nucleo/ficha_pregunta.gd" id="1_pregunta"]
+
+[resource]
+script = ExtResource("1_pregunta")
+pregunta = "¿Qué estructura saca primero lo último que entró?"
+opciones = Array[String](["Cola", "Pila", "Árbol"])
+correcta = 1

@@ -7,7 +7,7 @@
   },
   {
     "id": "caja-gris",
-    "que": "La escena principal es una caja gris que camina y salta con las acciones mover_izquierda, mover_derecha y saltar",
+    "que": "La sala_inicial (donde cae una partida nueva hasta que exista la primera sala real) es una caja gris que camina y salta con las acciones mover_izquierda, mover_derecha y saltar",
     "comprobacion": "herramientas/guiones/nucleo/caja.guion",
     "pasa": true
   },
@@ -79,7 +79,7 @@
   },
   {
     "id": "menu-desarrollo",
-    "que": "Un menu sencillo permite empezar, continuar y, con el modo desarrollador encendido, entrar a la zona de pruebas, en depuracion y en publicacion",
+    "que": "Un menu sencillo permite jugar (elegir una ranura) y, con el modo desarrollador encendido, entrar a la zona de pruebas, en depuracion y en publicacion",
     "comprobacion": "manual: en ventana y en el paquete de publicacion, cada opcion del menu lleva a su escena; la zona de pruebas aparece solo con el modo desarrollador encendido y el modo se recuerda al reabrir el juego",
     "pasa": false
   },
@@ -157,7 +157,7 @@
   },
   {
     "id": "vibracion",
-    "que": "El telefono vibra corto al pegar, al recibir dano, al curarse, al descansar en un banco y al aterrizar duro o de la picada, cada uno con su duracion y su fuerza y con un minimo de ticks entre vibraciones; nada mas vibra. El ajuste vibracion (archivo de ajustes propio, activado por omision) la apaga",
+    "que": "El telefono vibra corto al pegar, al recibir dano, al hacer parry, al curarse, al descansar en un banco y al aterrizar duro o de la picada, cada uno con su duracion y su fuerza y con un minimo de ticks entre vibraciones; nada mas vibra. El ajuste vibracion (archivo de ajustes propio, activado por omision) la apaga",
     "comprobacion": "herramientas/guiones/nucleo/jugador_curar.guion; herramientas/guiones/nucleo/banco_sentarse.guion; herramientas/guiones/nucleo/vibracion_aterrizaje.guion; herramientas/guiones/nucleo/guardado.guion",
     "pasa": true
   },
@@ -193,7 +193,7 @@
   },
   {
     "id": "configuracion-menu",
-    "que": "El menu principal tiene Configuracion con Controles, que abre el mismo editor de botones que la pausa; Atras vuelve un nivel a la vez",
+    "que": "El menu principal tiene Configuracion con Botones tactiles, que abre el mismo editor de botones que la pausa; Atras vuelve un nivel a la vez",
     "comprobacion": "herramientas/guiones/nucleo/menu_configuracion.guion",
     "pasa": true
   },
@@ -235,7 +235,7 @@
   },
   {
     "id": "autoguardado",
-    "que": "Se autoguarda lo obtenido (no la posicion) al obtener una habilidad, vencer a un jefe, recoger un amuleto o un coleccionable, entregar recompensas, morir, salir al menu y pasar a segundo plano; las salas de prueba y los guiones guardan en Partida.RUTA_PRUEBAS",
+    "que": "Se autoguarda lo obtenido (no la posicion) al obtener una habilidad, vencer a un jefe, recoger un amuleto o un coleccionable, entregar recompensas, poner o quitar un amuleto, terminar una conversacion de un Npc, responder en un reto, morir, salir al menu y pasar a segundo plano; las salas de prueba y los guiones guardan en Partida.RUTA_PRUEBAS",
     "comprobacion": "herramientas/guiones/contenido/zona_prueba_coleccionable.guion; herramientas/guiones/nucleo/estado_sala.guion",
     "pasa": true
   },
@@ -243,7 +243,7 @@
     "id": "autoguardado-segundo-plano",
     "que": "Mandar la app a segundo plano en medio de una sala guarda lo obtenido; al reabrir y Continuar se aparece en el ultimo banco con lo obtenido",
     "comprobacion": "manual: en el telefono, con el APK de desarrollo, zona de pruebas -> Prueba 1, cruzar la puerta a Prueba 2 sin tocar nada que guarde y mandar la app al fondo con el boton de inicio; despues, adb shell run-as com.themike54.elpasofinal cat files/prueba_partida.json muestra prueba_2 en salas_visitadas",
-    "pasa": false
+    "pasa": true
   },
   {
     "id": "coleccionables",
@@ -301,7 +301,7 @@
   },
   {
     "id": "configuracion-opciones",
-    "que": "La Configuracion del menu tiene botones del control (reasignar intercambia con la accion que tenia el boton y se guarda; Por omision), vibracion, temblor, volumen, modo desarrollador (muestra la zona de pruebas y se recuerda), Borrar partida con confirmacion y Creditos; cada cambio se guarda al momento y Atras vuelve un nivel",
+    "que": "La Configuracion del menu tiene Audio (volumen general, musica y efectos), Brillo, vibracion, temblor, Recursos, Botones tactiles, botones del control (reasignar intercambia con la accion que tenia el boton y se guarda; Restablecer), modo desarrollador (muestra la zona de pruebas y se recuerda) y Creditos; cada cambio se guarda (las barras al soltarlas) y Atras vuelve un nivel. Borrar una partida esta en las ranuras",
     "comprobacion": "herramientas/guiones/nucleo/menu_configuracion.guion",
     "pasa": true
   },
@@ -346,5 +346,95 @@
     "que": "En Android, si la pantalla no declara 5 o mas toques, una linea discreta abajo en el menu y en Configuracion lo avisa; en PC y en telefonos con 5 o mas toques no sale; el juego no cambia",
     "comprobacion": "herramientas/guiones/nucleo/menu_configuracion.guion",
     "pasa": true
+  },
+  {
+    "id": "ranuras-guardado",
+    "que": "El guardado tiene 4 ranuras independientes (user://partida_1.json a partida_4.json); la partida de antes de las ranuras pasa una vez a la ranura 1 sin pisar nada; al entrar a una ranura valida se copia, Restaurar vuelve a esa copia (tambien desde una ranura danada) y Borrar quita la ranura con su copia",
+    "comprobacion": "herramientas/guiones/nucleo/ranuras.guion",
+    "pasa": true
+  },
+  {
+    "id": "menu-ranuras",
+    "que": "El menu principal tiene Jugar, que abre las 4 ranuras: la vacia dice Nueva partida y empieza en ella; la ocupada dice donde se quedo, vidas maximas, tiempo jugado y un rastro de lo obtenido y continua en ella; la danada y la de otra version no se abren; Borrar y Restaurar piden confirmacion; Atras vuelve un nivel a la vez; entrar a una ranura fija el archivo del autoguardado",
+    "comprobacion": "herramientas/guiones/nucleo/ranuras.guion",
+    "pasa": true
+  },
+  {
+    "id": "ranuras-telefono",
+    "que": "En el telefono las 4 fichas caben en una fila y se leen y se tocan con el pulgar, con y sin el aviso de pocos toques; una partida nueva deja ocupada su ficha y Borrar y Restaurar funcionan con su confirmacion",
+    "comprobacion": "manual: en el S50 y el S20 con el APK de desarrollo: Jugar, ranura 1, un personaje y Empezar (caja gris), Volver al menu, Jugar: la ficha 1 dice Inicio y 0 min; entrar otra vez y volver: aparece Restaurar; Borrar con su confirmacion la deja vacia",
+    "pasa": false
+  },
+  {
+    "id": "audio-y-brillo",
+    "que": "Configuracion tiene Audio, un panel con el volumen general, de musica y de efectos (cada uno en su bus: Master, Musica y Efectos), con barra, - y +, que se guardan; mientras esta abierto suena la musica de prueba y Probar efecto toca uno; y una fila Brillo de 50 a 150 % que oscurece o aclara toda la pantalla y se guarda",
+    "comprobacion": "herramientas/guiones/nucleo/menu_configuracion.guion;herramientas/guiones/nucleo/guardado.guion",
+    "pasa": true
+  },
+  {
+    "id": "audio-y-brillo-telefono",
+    "que": "En el telefono la musica de prueba y el efecto se oyen, cada barra cambia solo su parte y el brillo se ve bien en sus extremos sin tapar los toques",
+    "comprobacion": "manual: en el S50 y el S20 con el APK de desarrollo: Configuracion, Audio: suena la musica; bajar Musica a 0 la calla y Probar efecto sigue sonando; bajar Efectos a 0 calla el efecto; General a 0 calla todo; Brillo en 50 y en 150: la pantalla se oscurece o aclara y los botones siguen respondiendo",
+    "pasa": false
+  },
+  {
+    "id": "amuletos-banco",
+    "que": "Los amuletos se ponen y se quitan solo sentado en un banco, en una pantalla que abre la accion mochila o el boton Amuletos de la pausa; de pie solo se ven; Partida no pone uno que no se tiene, repetido ni mas de MAX_EQUIPADOS, y poner o quitar autoguarda",
+    "comprobacion": "herramientas/guiones/nucleo/amuletos.guion",
+    "pasa": true
+  },
+  {
+    "id": "amuletos-telefono",
+    "que": "En el telefono la pantalla de amuletos se abre desde la pausa, se lee y se toca con el pulgar, y la brujula puesta sentado se ve en el mapa",
+    "comprobacion": "manual: fila Amuletos en el banco de docs/pruebas.md, en el S50 y el S20",
+    "pasa": false
+  },
+  {
+    "id": "personaje-y-nombre",
+    "que": "Una ranura vacia abre Nueva partida: elegir Hombre o Mujer (sin eso Empezar no responde) y un nombre limpio de hasta 12 caracteres (vacio, Alumno o Alumna); la partida guarda personaje y nombre y su ficha lleva el nombre; Atras vuelve a las ranuras",
+    "comprobacion": "herramientas/guiones/nucleo/ranuras.guion",
+    "pasa": true
+  },
+  {
+    "id": "personaje-y-nombre-telefono",
+    "que": "En el telefono el campo del nombre abre el teclado de Android, Enter empieza la partida y la ficha muestra el nombre",
+    "comprobacion": "manual: en el S50 y el S20: Jugar, ranura vacia, Mujer, tocar Nombre y escribir con el teclado del telefono, Enter; Volver al menu, Jugar: la ficha lleva el nombre",
+    "pasa": false
+  },
+  {
+    "id": "dialogo-npc",
+    "que": "Un Npc habla con interactuar: caja abajo con el texto letra por letra, avanzar con interactuar, saltar, atacar o un toque, preguntas con hasta 3 opciones; el jugador queda quieto; terminar contando sube la etapa, entrega una sola vez y autoguarda; No, un golpe o morir cierran sin contar; el validador revisa las fichas y los ids",
+    "comprobacion": "herramientas/guiones/nucleo/dialogo.guion;herramientas/guiones/nucleo/dialogo_completo.guion;herramientas/guiones/nucleo/dialogo_quieto.guion;herramientas/guiones/nucleo/dialogo_no.guion",
+    "pasa": true
+  },
+  {
+    "id": "dialogo-telefono",
+    "que": "En el telefono la caja y sus opciones caben fuera de la muesca, se leen y se tocan con el pulgar, y mientras se habla solo queda el boton de pausa",
+    "comprobacion": "manual: fila Dialogo con el guia de docs/pruebas.md, en el S50 y el S20",
+    "pasa": false
+  },
+  {
+    "id": "reto-preguntas",
+    "que": "Un RetoPreguntas pregunta en la caja de dialogo, en orden, las preguntas que faltan de la ronda (2 o 3 opciones) y dice si se acerto; cada respuesta cuenta y autoguarda; con la meta se gana y la recompensa llega una sola vez; sin ella la ronda empieza otra vez; el estado son numeros en la sala, sin cambiar el guardado; el validador revisa preguntas, meta e ids",
+    "comprobacion": "herramientas/guiones/nucleo/reto.guion",
+    "pasa": true
+  },
+  {
+    "id": "reto-telefono",
+    "que": "En el telefono las preguntas y sus opciones se leen y se tocan con el pulgar, y al ganar se ven las PejeCoins",
+    "comprobacion": "manual: fila Reto de preguntas de docs/pruebas.md, en el S50 y el S20",
+    "pasa": false
+  },
+  {
+    "id": "sonidos-eventos",
+    "que": "Los eventos del juego suenan: salto (senal nueva jugador_salto), golpe dado, dano, parry, curar y banco, en el bus Efectos, desde Sonido en Arranque (no se corta al cambiar de sala), con la ficha de prueba, pocas voces y sin repetir el mismo evento en ticks seguidos salvo dano y parry",
+    "comprobacion": "herramientas/guiones/nucleo/sonido.guion;herramientas/guiones/nucleo/bus_eventos.guion",
+    "pasa": true
+  },
+  {
+    "id": "sonidos-telefono",
+    "que": "En el telefono cada evento se oye, el golpe dado y el recibido se distinguen, nada se corta al cruzar una puerta y el volumen de efectos los baja",
+    "comprobacion": "manual: fila Efectos de los eventos de docs/pruebas.md, en el S50 y el S20",
+    "pasa": false
   }
 ]

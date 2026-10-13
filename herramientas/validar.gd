@@ -3,7 +3,8 @@ extends Node
 # y sale con 1 si alguno no carga. Imprime solo los fallos y un resumen.
 # Existe porque Godot sale con 0 aunque un script no compile. Ademas revisa las salas con id (contenido/salas y
 # las zonas de prueba): id igual al archivo, puertas de ida y vuelta, bancos con su id, Entrada dentro y
-# objetos recordados (suelo fragil, coleccionable) con id unico. En cualquier escena, un DanoContacto que se mueve
+# objetos recordados (suelo fragil, coleccionable, npc, reto de preguntas) con id unico. Revisa tambien la forma de
+# cada FichaDialogo y FichaPregunta, y de los Npc y RetoPreguntas de cualquier escena. En cualquier escena, un DanoContacto que se mueve
 # (dentro de un Vaiven, un enemigo o un cuerpo que se mueve) no puede ser peligro. Las tablas de la zona de pruebas
 # (GRUPOS y OCULTAS) solo nombran escenas que existen.
 const IGNORAR: PackedStringArray = ["addons", "build"]
@@ -55,6 +56,12 @@ func _revisar(ruta: String) -> void:
 	elif recurso is GDScript:
 		if not (recurso as GDScript).can_instantiate():
 			_fallos.append(ruta + " (script con errores)")
+	elif recurso is FichaDialogo:
+		for fallo: String in (recurso as FichaDialogo).fallos():
+			_fallos.append("%s (%s)" % [ruta, fallo])
+	elif recurso is FichaPregunta:
+		for fallo: String in (recurso as FichaPregunta).fallos():
+			_fallos.append("%s (%s)" % [ruta, fallo])
 	elif recurso is PackedScene:
 		var escena: PackedScene = recurso as PackedScene
 		if not escena.can_instantiate():
@@ -69,6 +76,7 @@ func _revisar(ruta: String) -> void:
 				if nodo is Sala:
 					_revisar_presupuesto(ruta, nodo)
 				_revisar_peligros(ruta, nodo)
+				_revisar_npcs(ruta, nodo)
 				nodo.free()
 
 
@@ -211,7 +219,46 @@ func _revisar_sala(ruta: String, nodo: Node) -> void:
 	_salas[sala.id] = {"ruta": ruta, "puertas": puertas}
 
 
-# Id de un objeto que se recuerda en el estado de su sala (suelo fragil, coleccionable): "" si el nodo no es de
+# Cada Npc y cada RetoPreguntas de una escena tiene sus fichas bien formadas y un id que no choca con otras marcas de
+# la sala.
+func _revisar_npcs(ruta: String, raiz: Node) -> void:
+	var npcs: Array[Node] = raiz.find_children("*", "Npc", true, false)
+	if raiz is Npc:
+		npcs.append(raiz)
+	for nodo: Node in npcs:
+		var npc: Npc = nodo as Npc
+		if npc.id.begins_with(Partida.PREFIJO_COLECCIONABLE) or npc.id.begins_with("entregado_"):
+			_fallos.append("%s (el npc %s usa un id reservado: %s)" % [ruta, npc.name, npc.id])
+		# La escena del Npc suelto (nucleo/npc.tscn) no trae conversaciones: las pone cada sala.
+		if npc != raiz and npc.conversaciones.is_empty():
+			_fallos.append("%s (el npc %s no tiene conversaciones)" % [ruta, npc.name])
+		for ficha: FichaDialogo in npc.conversaciones:
+			if ficha == null:
+				_fallos.append("%s (el npc %s tiene una conversacion vacia)" % [ruta, npc.name])
+				continue
+			for fallo: String in ficha.fallos():
+				_fallos.append("%s (npc %s: %s)" % [ruta, npc.name, fallo])
+	var retos: Array[Node] = raiz.find_children("*", "RetoPreguntas", true, false)
+	if raiz is RetoPreguntas:
+		retos.append(raiz)
+	for nodo: Node in retos:
+		var reto: RetoPreguntas = nodo as RetoPreguntas
+		if reto.id.begins_with(Partida.PREFIJO_COLECCIONABLE) or reto.id.begins_with("entregado_"):
+			_fallos.append("%s (el reto %s usa un id reservado: %s)" % [ruta, reto.name, reto.id])
+		# La escena suelta (nucleo/reto_preguntas.tscn) no trae preguntas: las pone cada sala.
+		if reto == raiz:
+			continue
+		if reto.meta < 1 or reto.meta > reto.preguntas.size():
+			_fallos.append("%s (el reto %s pide %d aciertos de %d preguntas)" % [ruta, reto.name, reto.meta, reto.preguntas.size()])
+		for pregunta: FichaPregunta in reto.preguntas:
+			if pregunta == null:
+				_fallos.append("%s (el reto %s tiene una pregunta vacia)" % [ruta, reto.name])
+				continue
+			for fallo: String in pregunta.fallos():
+				_fallos.append("%s (reto %s: %s)" % [ruta, reto.name, fallo])
+
+
+# Id de un objeto que se recuerda en el estado de su sala (suelo fragil, coleccionable, npc, reto): "" si el nodo no es de
 # esos, "?" si lo es y no tiene id.
 func _id_recordado(nodo: Node) -> String:
 	var suelo: SueloFragil = nodo as SueloFragil
@@ -220,6 +267,12 @@ func _id_recordado(nodo: Node) -> String:
 	var coleccionable: Coleccionable = nodo as Coleccionable
 	if coleccionable != null:
 		return coleccionable.id if not coleccionable.id.is_empty() else "?"
+	var npc: Npc = nodo as Npc
+	if npc != null:
+		return npc.id if not npc.id.is_empty() else "?"
+	var reto: RetoPreguntas = nodo as RetoPreguntas
+	if reto != null:
+		return reto.id if not reto.id.is_empty() else "?"
 	return ""
 
 

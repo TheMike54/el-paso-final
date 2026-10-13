@@ -19,8 +19,8 @@ Leer `funciones.json` de esta carpeta: la primera funcionalidad con `"pasa": fal
 | `verificar-entorno.ps1` | Comprueba Godot 4.7.2, `GODOT_PATH`, versión de Claude Code, identidad de git, hook de git y archivos locales ignorados |
 
 ## Reglas
-- El puerto acepta solo órdenes de una lista fija; nunca ejecuta GDScript recibido y solo escribe capturas
-  dentro de `user://`.
+- El puerto solo tiene el modo guion (`--guion=`): no abre conexiones ni recibe órdenes. Si algún día las acepta,
+  solo de una lista fija y escribiendo solo dentro de `user://`.
 - Los guiones siguen `docs/guiones.md`: comprueban lo que importa, con tolerancia; toda corrida automática lleva
   `--fixed-fps 60` y `--quit-after`.
 - Un error puesto a propósito en un `.gd` debe hacer fallar `validar.ps1`; si no falla, el validador está mal.
@@ -29,11 +29,13 @@ Leer `funciones.json` de esta carpeta: la primera funcionalidad con `"pasa": fal
   entrada `validador-peligro-movil`); cada sala respeta el presupuesto de decoración (cifras en `docs/contrato.md`,
   «Recursos»; entrada `validador-presupuesto`); el índice de salas del mapa está al día (entrada
   `mapa-indice` de `mapa/funciones.json`); las tablas de la zona de pruebas (`GRUPOS` y `OCULTAS` de
-  `salas/zona_pruebas.gd`) solo nombran escenas que existen (entrada `validador-zona-pruebas`).
+  `salas/zona_pruebas.gd`) solo nombran escenas que existen (entrada `validador-zona-pruebas`); cada `Npc` y
+  `RetoPreguntas` con conversaciones o preguntas sin fallos e id libre (detalle en `docs/contrato.md`, «Sala»).
 - Los `.ps1`: solo ASCII, sin `$ErrorActionPreference = 'Stop'` alrededor de un ejecutable, probados en
   `powershell.exe` 5.1 y en `pwsh` 7.
 - Salida corta: resumen y fallos; el detalle va a `.godot/validar.log`.
-- El CI y `validar.ps1` comprueban lo mismo: si cambia uno, cambia el otro en el mismo PR.
+- El CI corre la misma validación que `validar.ps1` y además todos los guiones, los mensajes de commit y los
+  archivos locales: si cambia la validación de uno, cambia la del otro en el mismo PR.
 - El hook `.claude/hooks/sin-commit.ps1` es más estricto que la regla escrita: también frena `git revert`,
   `cherry-pick`, `am`, `reset --hard` y `clean` sin `-n`. Si bloquea una de esas órdenes, no es un fallo del hook.
   Su batería de órdenes simuladas es `herramientas/probar-sin-commit.ps1`.
