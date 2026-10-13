@@ -6,23 +6,23 @@ Se sobrescribe (ver `CLAUDE.md`).
 
 - Etapa: núcleo cerrado antes de la primera sala (plan en `planes/cerrados/nucleo-cierre-antes-de-la-sala.md`; la
   prueba con control real es la entrada `entrada-control`).
-- Rama en curso: `feature/nucleo-menu-tactil`, última de la pila sobre `chore/setup` (`fix/telefono-fps-y-controles`,
-  `feature/nucleo-cierre-antes-de-la-sala`, `feature/nucleo-parry-carrera-y-aviso-tactil`, `docs/limpieza-auditoria`
-  y las ramas del núcleo); de `feature/herramientas-puerto-guion` sale también `chore/android-export` (presets de 32
-  y 64 bits). Solo `chore/setup` está subido. Sin planes activos: los de esta etapa están en `planes/cerrados/`.
-- PR en curso: #1, de `chore/setup` a `main`, aprobado el 11-oct-2026 con checks en verde. Siguiente, en orden:
-  fusionarlo con Squash and merge (sin `--delete-branch`: `chore/setup` es la frontera del rebase), rebasar la pila
-  sobre `main` (ensayado antes en un clon), ruleset, y un PR en borrador con la pila. La prueba con control la hacen
-  los otros dos integrantes con un APK fuera del repo y un issue en inglés; la guía para su Claude va en la bóveda.
+- Rama en curso: `feature/nucleo-menu-tactil`, rebasada sobre `main` y subida (30 commits); `chore/android-export`
+  (presets de 32 y 64 bits) rebasada en local, sin subir. Sin planes activos: los de esta etapa están en
+  `planes/cerrados/`.
+- PR en curso: #5, de `feature/nucleo-menu-tactil` a `main`, en borrador con `qa-pending` y `validar` en verde
+  (13-oct-2026). Sale de borrador cuando pasen las pruebas de los issues #3 (tableta y control) y #4 (teléfono y
+  control), con el APK de la prerelease `dev-2026-10-13`; después lo aprueba uno de los otros dos integrantes. El
+  PR #1 se fusionó el 13-oct-2026 (`edfd322`).
 
 ## Preparación del repositorio
 
-Pasos 1, 2, 3, 5, 6 y 8 cumplidos (detalle en git). Abiertos:
+Pasos 1 a 6 y 8 cumplidos (detalle en git). El 4 cerró el 13-oct-2026: ruleset `main` activo (solo por PR, 1
+aprobación, `validar` en verde, solo Squash and merge, sin force push ni borrado y sin excepciones) y un push
+directo a `main` rechazado. Abierto:
 
 | # | Paso | Condición de salida | Estado |
 |---|---|---|---|
-| 4 | GitHub: etiqueta, plantillas, CODEOWNERS, workflows, ajustes y primer PR | El PR sale en rojo con un `.gd` roto y en verde al quitarlo; `qa-pending` se pone al abrir y se quita al aprobar; después, ruleset activo y push directo a `main` rechazado | Rojo y verde vistos; `qa-pending` puesta y quitada (11-oct-2026). Falta: fusión, ruleset, push directo rechazado y ver los guiones en verde en un PR (el paso «Input scripts» ya está en `ci.yml`) |
-| 7 | Clon limpio y las tres máquinas | Solo con el README pasan `verificar-entorno.ps1` y `validar.ps1` en cada máquina | Pasa en una máquina; faltan las de los otros dos integrantes, con el PR #1 fusionado |
+| 7 | Clon limpio y las tres máquinas | Solo con el README pasan `verificar-entorno.ps1` y `validar.ps1` en cada máquina | Pasa en una máquina; las de los otros dos integrantes se comprueban con la revisión del PR #5 |
 
 ## Decisiones técnicas
 
