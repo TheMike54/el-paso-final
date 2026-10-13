@@ -21,34 +21,53 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0.1, 0.12, 0.08, 1)
 
-[node name="Desplazable" type="ScrollContainer" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = 96.0
-offset_bottom = -16.0
-grow_horizontal = 2
-grow_vertical = 2
-follow_focus = true
-horizontal_scroll_mode = 0
+[node name="Marco" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_right = 1152.0
+offset_bottom = 688.0
+theme_override_constants/separation = 12
 
-[node name="Centro" type="CenterContainer" parent="Desplazable"]
+[node name="Arriba" type="HBoxContainer" parent="Marco"]
+layout_mode = 2
+theme_override_constants/separation = 32
+
+[node name="Volver" type="Button" parent="Marco/Arriba"]
+custom_minimum_size = Vector2(240, 108)
+layout_mode = 2
+text = "Volver"
+
+[node name="Titulo" type="Label" parent="Marco/Arriba"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 48
+text = "Zona de pruebas"
+vertical_alignment = 1
+
+[node name="Categorias" type="ScrollContainer" parent="Marco"]
+custom_minimum_size = Vector2(0, 108)
+layout_mode = 2
+follow_focus = true
+horizontal_scroll_mode = 3
+vertical_scroll_mode = 0
+
+[node name="Fila" type="HBoxContainer" parent="Marco/Categorias"]
+layout_mode = 2
+size_flags_horizontal = 6
+theme_override_constants/separation = 12
+
+[node name="Desplazable" type="ScrollContainer" parent="Marco"]
+layout_mode = 2
+size_flags_vertical = 3
+follow_focus = true
+horizontal_scroll_mode = 3
+
+[node name="Centro" type="CenterContainer" parent="Marco/Desplazable"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Lista" type="GridContainer" parent="Desplazable/Centro"]
+[node name="Lista" type="GridContainer" parent="Marco/Desplazable/Centro"]
 layout_mode = 2
 theme_override_constants/h_separation = 16
 theme_override_constants/v_separation = 12
 columns = 3
-
-[node name="Volver" type="Button" parent="."]
-layout_mode = 0
-offset_left = 24.0
-offset_top = 16.0
-offset_right = 264.0
-offset_bottom = 80.0
-theme_override_font_sizes/font_size = 28
-text = "Volver"

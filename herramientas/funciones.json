@@ -82,5 +82,11 @@
     "que": "Cada sala respeta el presupuesto de decoracion: a lo mas 3 emisores de particulas con 60 particulas entre todos, 30 plantas y ninguna luz 2D; si no, FALLO",
     "comprobacion": "manual: en una copia del proyecto, una planta 31 y un PointLight2D en sala_recursos.tscn dan cada uno su FALLO y salida 1; la sala tal cual pasa",
     "pasa": true
+  },
+  {
+    "id": "validador-zona-pruebas",
+    "que": "El validador falla si la tabla de categorias de la zona de pruebas (GRUPOS u OCULTAS) nombra una escena que no existe",
+    "comprobacion": "manual: con sala_pogoX.tscn en GRUPOS de zona_pruebas.gd, validar.ps1 imprime FALLO ... (nombra sala_pogoX.tscn, que no existe) y fallos=1",
+    "pasa": true
   }
 ]

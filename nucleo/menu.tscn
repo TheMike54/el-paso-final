@@ -33,36 +33,38 @@ grow_vertical = 2
 
 [node name="Opciones" type="VBoxContainer" parent="Centro"]
 layout_mode = 2
-theme_override_constants/separation = 16
+theme_override_constants/separation = 20
 
 [node name="Titulo" type="Label" parent="Centro/Opciones"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 56
+theme_override_font_sizes/font_size = 64
 text = "El Paso Final"
 horizontal_alignment = 1
 
 [node name="NuevaPartida" type="Button" parent="Centro/Opciones"]
-custom_minimum_size = Vector2(400, 72)
+custom_minimum_size = Vector2(480, 108)
 layout_mode = 2
-theme_override_font_sizes/font_size = 32
 text = "Nueva partida"
 
 [node name="Continuar" type="Button" parent="Centro/Opciones"]
-custom_minimum_size = Vector2(400, 72)
+custom_minimum_size = Vector2(480, 108)
 layout_mode = 2
-theme_override_font_sizes/font_size = 32
 text = "Continuar"
 
 [node name="Configuracion" type="Button" parent="Centro/Opciones"]
-custom_minimum_size = Vector2(400, 72)
+custom_minimum_size = Vector2(480, 108)
 layout_mode = 2
-theme_override_font_sizes/font_size = 32
 text = "Configuración"
 
-[node name="Estado" type="Label" parent="Centro/Opciones"]
-custom_minimum_size = Vector2(400, 0)
+[node name="ZonaPruebas" type="Button" parent="Centro/Opciones"]
+visible = false
+custom_minimum_size = Vector2(480, 108)
 layout_mode = 2
-theme_override_font_sizes/font_size = 22
+text = "Zona de pruebas"
+
+[node name="Estado" type="Label" parent="Centro/Opciones"]
+custom_minimum_size = Vector2(480, 0)
+layout_mode = 2
 horizontal_alignment = 1
 autowrap_mode = 3
 
@@ -91,23 +93,21 @@ theme_override_constants/separation = 24
 
 [node name="Pregunta" type="Label" parent="Confirmar/Caja"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 36
+theme_override_font_sizes/font_size = 44
 text = "¿Salir del juego?"
 horizontal_alignment = 1
 
 [node name="Botones" type="HBoxContainer" parent="Confirmar/Caja"]
 layout_mode = 2
-theme_override_constants/separation = 24
+theme_override_constants/separation = 64
 alignment = 1
 
 [node name="Si" type="Button" parent="Confirmar/Caja/Botones"]
-custom_minimum_size = Vector2(200, 72)
+custom_minimum_size = Vector2(300, 108)
 layout_mode = 2
-theme_override_font_sizes/font_size = 32
 text = "Salir"
 
 [node name="No" type="Button" parent="Confirmar/Caja/Botones"]
-custom_minimum_size = Vector2(200, 72)
+custom_minimum_size = Vector2(300, 108)
 layout_mode = 2
-theme_override_font_sizes/font_size = 32
 text = "Seguir jugando"

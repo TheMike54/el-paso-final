@@ -1,11 +1,15 @@
+class_name MenuPrincipal
 extends Control
-# Menu principal: Nueva partida, Continuar y Configuracion (nucleo/configuracion.tscn, que con el modo
-# desarrollador muestra la zona de pruebas). Dice el estado de la partida guardada (carga, sin partida,
+# Menu principal: Nueva partida, Continuar, Configuracion (nucleo/configuracion.tscn) y, con el modo desarrollador
+# encendido, la zona de pruebas. Usa el tema tactil de los menus (Tema). Dice el estado de la partida guardada (carga, sin partida,
 # danada u otra version) y pide confirmacion antes de cerrar la app con Atras o con pausa. Atras y pausa
 # vuelven un nivel a la vez: del editor de botones a Configuracion, de ahi al menu, y ahi piden salir. Abajo, el
 # aviso de pocos toques si el telefono lo necesita.
 const ZONA_PRUEBAS: String = "res://herramientas/salas/zona_pruebas.tscn"
 const ESCENA_EDITOR: PackedScene = preload("res://nucleo/editor_controles.tscn")
+
+## Lo pone la zona de pruebas al volver: el menu abre con el foco en su entrada, un nivel atras de la zona.
+static var volver_a_zona: bool = false
 
 ## Sala donde empieza una partida nueva, y por ahora tambien la que se continua.
 @export_file("*.tscn") var sala_inicial: String = ""
@@ -16,6 +20,7 @@ var editor: EditorControles = null
 @onready var _nueva: Button = $Centro/Opciones/NuevaPartida as Button
 @onready var _continuar: Button = $Centro/Opciones/Continuar as Button
 @onready var _configuracion: Button = $Centro/Opciones/Configuracion as Button
+@onready var _zona: Button = $Centro/Opciones/ZonaPruebas as Button
 ## La pantalla de Configuracion; publica para que la prueba la maneje.
 @onready var configuracion: Configuracion = $Configuracion as Configuracion
 @onready var _estado: Label = $Centro/Opciones/Estado as Label
@@ -28,23 +33,31 @@ var _guardada: Guardado.Resultado = null
 
 
 func _ready() -> void:
+	theme = Tema.crear()
 	_confirmar.visible = false
 	_nueva.pressed.connect(_nueva_partida.bind(sala_inicial))
 	_continuar.pressed.connect(_continuar_partida)
 	_configuracion.pressed.connect(abrir_configuracion)
 	configuracion.editor_pedido.connect(abrir_editor)
-	configuracion.zona_pruebas_pedida.connect(_nueva_partida.bind(ZONA_PRUEBAS))
+	_zona.pressed.connect(_nueva_partida.bind(ZONA_PRUEBAS))
 	configuracion.cerrado.connect(_al_cerrar_configuracion)
 	configuracion.partida_borrada.connect(_leer_partida)
 	_si.pressed.connect(get_tree().quit)
 	_no.pressed.connect(_cancelar_salida)
 	_leer_partida()
 	_poner_aviso_toques()
+	_mostrar_zona()
 	_nueva.grab_focus()
-	if Configuracion.abrir_al_volver:
-		Configuracion.abrir_al_volver = false
-		abrir_configuracion()
-		configuracion.enfocar_zona()
+	if volver_a_zona:
+		volver_a_zona = false
+		if _zona.visible:
+			_zona.grab_focus()
+
+
+# La entrada a la zona de pruebas: solo con el modo desarrollador y si la escena existe (en depuracion y en
+# publicacion; ver docs/contrato.md, «Paquete de publicacion»).
+func _mostrar_zona() -> void:
+	_zona.visible = Ajustes.modo_desarrollador and ResourceLoader.exists(ZONA_PRUEBAS)
 
 
 # Telefono con pocos toques a la vez (ver Toques): una linea abajo, encima del fondo y debajo de la confirmacion de
@@ -126,6 +139,7 @@ func abrir_configuracion() -> void:
 
 func _al_cerrar_configuracion() -> void:
 	_centro.visible = true
+	_mostrar_zona()
 	_configuracion.grab_focus()
 
 

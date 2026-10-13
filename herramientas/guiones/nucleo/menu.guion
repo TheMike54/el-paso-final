@@ -1,3 +1,3 @@
-# El juego arranca en el menu (escena principal, sin linea escena): Nueva partida y Configuracion, sin la
-# entrada a la zona de pruebas, que ahora esta en Configuracion con el modo desarrollador.
+# El juego arranca en el menu (escena principal, sin linea escena): Nueva partida y Configuracion. La entrada a la
+# zona de pruebas, en el menu con el modo desarrollador, la comprueba menu_configuracion.guion.
 fin 3

@@ -9,7 +9,7 @@ const REASIGNABLES: Array[StringName] = [&"saltar", &"atacar", &"curar", &"mapa"
 ## Nombre en pantalla de cada boton de un control estandar (indices de JoyButton).
 const NOMBRES: PackedStringArray = ["A / Cruz", "B / Circulo", "X / Cuadrado", "Y / Triangulo", "Select", "Guia", "Start", "Stick izq.", "Stick der.", "LB / L1", "RB / R1", "Arriba", "Abajo", "Izquierda", "Derecha"]
 
-# Boton de cada accion segun project.godot, leido la primera vez: lo que restaura «Por omision».
+# Boton de cada accion segun project.godot, leido la primera vez: lo que restaura «Restablecer».
 static var _por_omision: Dictionary[StringName, int] = {}
 
 

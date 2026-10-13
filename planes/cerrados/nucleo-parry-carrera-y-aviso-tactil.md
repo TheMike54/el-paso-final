@@ -1,4 +1,4 @@
-ACTIVO
+CERRADO
 
 # Núcleo: parry más visible, voltereta del ataque en carrera, rebote en la pared y aviso de pocos toques
 
@@ -66,19 +66,20 @@ dedo en el S50 del 12-oct-2026 y de comparar con Silksong y Hollow Knight (video
   `golpe_borde_sala` (fallan sin el arreglo). **Hecho**: `GUION OK`; `validar` 147/0 y 119 guiones OK.
 - Segunda prueba en el S50 (APK de las 22:05): la recarga, el empuje contra pared y borde y el congelado pasan. La
   persona pidió que la estocada avance más: `velocidad_ataque_carrera` de 900 a 1150 px/s (provisional), por debajo
-  del impulso (1200), unos 52 px más que corriendo en vez de 19. `revisor`: código aprobado; corregidos la
+  del impulso (1200), unos 52 px más que corriendo en vez de 19. Tercera prueba (APK de las 22:50): «hay que subir
+  un poco más», a 1250, por encima del impulso; el tope bajo el impulso era una guarda de Claude, no de la persona. Cuarta prueba (APK de las 23:05): a 1500; después, a 2000. `revisor`: código aprobado; corregidos la
   descripción en `docs/jugador.md` (arriba, pogo y giro no cuentan) y el `.esperado` de `carrera_ataque_recarga`
   (comprueba también que no salga un ataque normal). Decidido con su observación: la voltereta reinicia también la
   recarga del ataque en carrera, como ya reiniciaba la del ataque (fase B); ningún guion lo cubre.
 - El paso del congelado pedía «vencer al muñeco» de la sala de combate, que no tiene vida: pasa a la sala de
   enemigos (`docs/pruebas.md`).
 
-## Falta
-- Repetir con el dedo (APK del 12-oct-2026, 22:05, en el S50): estocada repetida, empuje contra la pared y el borde,
-  y el congelado al pegar, al vencer y al recibir daño.
-- Entradas de `funciones.json` para lo nuevo: aprobadas el 12-oct-2026 y en `true` con sus guiones
-  (`parry-visible`, `carrera-voltereta`, `carrera-rebote-pared`, `aviso-pocos-toques`). El plan se cierra tras la
-  prueba con el dedo.
+## Cierre (12-oct-2026)
+- Con el dedo en el S50 (APK de las 22:05): pasan la recarga de la estocada, el empuje contra la pared y el borde y
+  el congelado. Entradas `parry-visible`, `carrera-voltereta`, `carrera-rebote-pared` y `aviso-pocos-toques` en
+  `true` con sus guiones.
+- La estocada quedó en 2000 px/s, probada por la persona en el S50 (APK de las 23:18): «2000 quedó bien».
+  Provisional; ajustarla es cambiar `velocidad_ataque_carrera` y sus dos `.esperado`, sin plan.
 
 ## Sin cambio, y por qué
 - Impulso repetido en carrera: los «pasitos» de Silksong salen de soltar el botón que mantiene la carrera; aquí la

@@ -6,16 +6,14 @@ Se sobrescribe (ver `CLAUDE.md`).
 
 - Etapa: núcleo cerrado antes de la primera sala (plan en `planes/cerrados/nucleo-cierre-antes-de-la-sala.md`; la
   prueba con control real es la entrada `entrada-control`).
-- Rama en curso: `docs/limpieza-auditoria` (plan cerrado en `planes/cerrados/docs-limpieza-auditoria.md`), sobre
-  `feature/nucleo-parry-carrera-y-aviso-tactil` (plan `planes/activos/nucleo-parry-carrera-y-aviso-tactil.md`), sobre
-  `fix/telefono-fps-y-controles`, `feature/nucleo-cierre-antes-de-la-sala` y las ramas del núcleo hasta
-  `chore/setup`; de `feature/herramientas-puerto-guion` sale también `chore/android-export` (presets de 32 y 64 bits
-  y zona de pruebas en «Publicacion»). Solo `chore/setup` está subido.
-- PR en curso: #1, de `chore/setup` a `main`: aprobado el 11-oct-2026, checks en verde. Decidido el 12-oct-2026
-  (noche), antes de cerrarlo se terminan los pendientes: fusionarlo con Squash and merge (sin `--delete-branch`:
-  `chore/setup` es la frontera del rebase), rebasar la pila sobre `main` (ensayar antes en un clon), ruleset, y un
-  PR con la pila. La prueba con control la hacen los otros dos integrantes en el teléfono, con un APK fuera del repo
-  y un issue en inglés; la guía para su Claude va en la bóveda.
+- Rama en curso: `feature/nucleo-menu-tactil`, última de la pila sobre `chore/setup` (`fix/telefono-fps-y-controles`,
+  `feature/nucleo-cierre-antes-de-la-sala`, `feature/nucleo-parry-carrera-y-aviso-tactil`, `docs/limpieza-auditoria`
+  y las ramas del núcleo); de `feature/herramientas-puerto-guion` sale también `chore/android-export` (presets de 32
+  y 64 bits). Solo `chore/setup` está subido. Sin planes activos: los de esta etapa están en `planes/cerrados/`.
+- PR en curso: #1, de `chore/setup` a `main`, aprobado el 11-oct-2026 con checks en verde. Siguiente, en orden:
+  fusionarlo con Squash and merge (sin `--delete-branch`: `chore/setup` es la frontera del rebase), rebasar la pila
+  sobre `main` (ensayado antes en un clon), ruleset, y un PR en borrador con la pila. La prueba con control la hacen
+  los otros dos integrantes con un APK fuera del repo y un issue en inglés; la guía para su Claude va en la bóveda.
 
 ## Preparación del repositorio
 
@@ -44,17 +42,10 @@ Pasos 1, 2, 3, 5, 6 y 8 cumplidos (detalle en git). Abiertos:
 
 ## Bloqueos y pendientes
 
-- Pruebas con el dedo del 12-oct-2026 (S50) anotadas en `docs/pruebas.md`. Arreglados la estocada repetible y el
-  empuje que sacaba al enemigo de la sala (fase E del plan del parry); falta repetir eso y el congelado con el APK
-  nuevo. El plan del parry se cierra tras esa prueba.
-- Planes sin aprobar para código (12-oct-2026): `planes/activos/nucleo-menu-tactil.md` (menús a 48 dp, reglas para
-  4:3 a 22:9, zona de pruebas en el menú de inicio, aviso «Conecta un control») y
-  `planes/activos/herramientas-zona-pruebas-categorias.md`. La persona aprobó la maqueta y tomó las recomendaciones
-  (zona de pruebas en el menú de inicio, sin grupo «Habilidades»). Van antes del PR (12-oct-2026).
-- Prueba con control (decisión del 12-oct-2026): un integrante con su tableta y control, el otro con su teléfono y
-  control; cada uno anota modelo exacto del dispositivo, Android, modelo del control y qué filas de
-  `docs/pruebas.md` corrió, para comparar.
+- Prueba con control (confirmada el 12-oct-2026): un integrante con su tableta y control, el otro con su teléfono y
+  control, con las filas repartidas entre los dos; cada uno anota modelo exacto del dispositivo, Android, modelo del
+  control y qué filas de `docs/pruebas.md` corrió.
 - Esperan hardware o firma: `menu-desarrollo` y `paquete-publicacion` (keystore), `entrada-control` (control),
   `autoguardado-segundo-plano` y `recursos-medicion-publicacion` (teléfono).
 - Provisionales: salto, combate y daños. Ícono del proyecto: se espera al arte.
-- Después de esta rama: un plan aparte para lo de «Para después» del plan del parry.
+- Después del PR: un plan aparte para lo de «Para después» de `planes/cerrados/nucleo-parry-carrera-y-aviso-tactil.md`.

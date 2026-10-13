@@ -96,7 +96,7 @@ por omisión: los interruptores en `Ajustes.POR_OMISION`; la disposición de los
 |---|---|---|
 | `vibracion` | `true` | Vibrar al pegar, al recibir daño, al parar, al curarse, al descansar y al aterrizar duro |
 | `temblor` | `true` | Temblor de la cámara al aterrizar de una caída (se apaga por mareo). Un archivo sin la clave la deja encendida |
-| `modo_desarrollador` | `false` | Muestra en Configuración la entrada a la zona de pruebas |
+| `modo_desarrollador` | `false` | Muestra en el menú principal la entrada a la zona de pruebas |
 | `volumen` | 1 | Volumen general (bus Master), de 0 a 1; en 0, silencio. Se aplica al cargar (`Ajustes.aplicar_volumen()`) |
 | `recursos` | `"auto"` | Modo de recursos: `auto` (decide la detección), `bajo` o `alto`. Otro valor vuelve a `auto` (ver «Recursos») |
 | `mando` | `{}` | Botones del control que difieren de `project.godot`: `{acción: índice de botón}`. Lo aplica `Mando.aplicar` al cargar |
@@ -471,7 +471,7 @@ Formato, comando y condiciones de fallo: `docs/guiones.md`.
 ## Paquete de publicación
 
 El núcleo no depende de `herramientas/`: las únicas referencias son la carga condicional de `Arranque` (el puerto,
-solo en un build de depuración) y el botón «Zona de pruebas» de la Configuración, que aparece con el modo
+solo en un build de depuración) y el botón «Zona de pruebas» del menú principal, que aparece con el modo
 desarrollador encendido si `herramientas/salas/zona_pruebas.tscn` existe (`ResourceLoader.exists`, sin `preload`),
 en depuración y en publicación. Que la zona viaje en el paquete de publicación lo decide el `exclude_filter` del
 preset «Publicacion» de `export_presets.cfg`.
@@ -482,16 +482,27 @@ preset «Publicacion» de `export_presets.cfg`.
 `Partida`) llevan a la escena de su propiedad `sala_inicial` (hoy la caja gris, que tiene un botón «Volver al menú»
 porque no es una sala y no tiene pausa); Continuar con un banco guardado lleva a la sala de ese banco y pone al jugador en él. Continuar se habilita solo si el guardado es `VALIDA`; con `VACIA`, `DANADA` o
 `INCOMPATIBLE`, el menú dice por qué. «Configuración» (`nucleo/configuracion.tscn`, `class_name Configuracion`,
-instancia `Configuracion` del menú) reemplaza al panel central con: «Botones táctiles» (el mismo editor que la pausa;
-ver «Entrada»), «Botones del control» (reasignación con `Mando`: tocar una acción y presionar el botón del control;
-«Por omisión»), Vibración, Temblor de cámara, Volumen, Recursos (automático, bajo o alto; ver «Recursos»), Modo desarrollador (con él aparece «Zona de pruebas»),
-«Borrar partida» (con confirmación; `Guardado.borrar()`), «Créditos» y «Volver». Cada cambio se guarda al momento.
+instancia `Configuracion` del menú) reemplaza al panel central con, en orden de uso: Volumen (barra con «−» y «+»),
+Vibración, Temblor, Recursos (automático, bajo o alto; ver «Recursos»), «Botones táctiles» (el mismo editor que la
+pausa; ver «Entrada»), «Botones del control» (reasignación con `Mando`: tocar una acción y presionar el botón del
+control; «Restablecer» los devuelve a los de `project.godot`; sin control conectado lo avisa, con `Input.joy_connection_changed`), Modo desarrollador
+(con él el menú muestra «Zona de pruebas»), «Borrar partida» (con confirmación; `Guardado.borrar()`) y «Créditos»;
+«Volver», arriba a la izquierda en cada pantalla. Cada cambio se guarda al momento.
 Atrás y la acción `pausa` vuelven un nivel a la vez (`atras()` del menú y de la Configuración): cierran la lista de
 Recursos (y no hacen nada más si se cerró ese tick o el anterior), cancelan el editor, la espera de un botón y la
 confirmación, de un subpanel vuelven a la lista, de la lista al menú, y en el menú piden
-confirmación antes de cerrar la app. La zona de pruebas es un nivel más: su «Volver», Atrás y `pausa` regresan a la
-Configuración (`Configuracion.abrir_al_volver`, que el menú lee al entrar). Se maneja con toque, teclado y control (el foco empieza en la primera opción de
-cada pantalla). Las opciones nuevas de configuración se agregan a esa escena.
+confirmación antes de cerrar la app. La zona de pruebas es un nivel más: su «Volver», Atrás y `pausa` regresan al menú con
+el foco en su entrada (`MenuPrincipal.volver_a_zona`, que el menú lee al entrar). Se maneja con toque, teclado y
+control (el foco empieza en la primera opción de cada pantalla). Las opciones nuevas de configuración se agregan a
+esa escena.
+
+Tamaños (`nucleo/tema.gd`, `class_name Tema`): el tema de los menús se arma en código (`Tema.crear()`) y se asigna
+solo a sus raíces (menú, que lo hereda la Configuración, pausa y zona de pruebas), no en `project.godot`. Todo lo
+que se toca mide al menos 108 px de alto (48 dp en el Senwa S50), también las opciones de la lista de Recursos;
+letra de 36 en botones y 33 en etiquetas. `Tema.ajustar(control)` pone un panel en el área segura menos 64 px a los
+lados y 16 arriba y abajo, y lo reacomoda al cambiar la ventana. Las cuadrículas de la Configuración toman 2 columnas
+de 420 px en la vista de 1280 (4:3 y 16:9) y 3 desde 1440 (`Configuracion.columnas_para`), y se desplazan si no
+caben en alto. El dorado marca solo el foco; presionado o encendido se ve más claro.
 
 Aviso de pocos toques: `nucleo/toques.gd` (`class_name Toques`, estático) pregunta una vez a Android, con el singleton
 `AndroidRuntime` y `PackageManager.hasSystemFeature`, si la pantalla declara 5 o más toques a la vez

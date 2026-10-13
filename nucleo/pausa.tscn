@@ -24,7 +24,7 @@ anchor_right = 0.5
 anchor_bottom = 0.5
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 16
+theme_override_constants/separation = 20
 
 [node name="Titulo" type="Label" parent="Panel/Opciones"]
 layout_mode = 2
@@ -33,19 +33,16 @@ text = "Pausa"
 horizontal_alignment = 1
 
 [node name="Continuar" type="Button" parent="Panel/Opciones"]
-custom_minimum_size = Vector2(400, 72)
+custom_minimum_size = Vector2(480, 108)
 layout_mode = 2
-theme_override_font_sizes/font_size = 32
 text = "Continuar"
 
 [node name="Controles" type="Button" parent="Panel/Opciones"]
-custom_minimum_size = Vector2(400, 72)
+custom_minimum_size = Vector2(480, 108)
 layout_mode = 2
-theme_override_font_sizes/font_size = 32
 text = "Controles"
 
 [node name="SalirAlMenu" type="Button" parent="Panel/Opciones"]
-custom_minimum_size = Vector2(400, 72)
+custom_minimum_size = Vector2(480, 108)
 layout_mode = 2
-theme_override_font_sizes/font_size = 32
 text = "Salir al menú"

@@ -28,7 +28,8 @@ Leer `funciones.json` de esta carpeta: la primera funcionalidad con `"pasa": fal
   «Sala»; en cualquier escena, un `DanoContacto` con `peligro` dentro de algo que se mueve falla (lo que se mueve solo golpea;
   entrada `validador-peligro-movil`); cada sala respeta el presupuesto de decoración (cifras en `docs/contrato.md`,
   «Recursos»; entrada `validador-presupuesto`); el índice de salas del mapa está al día (entrada
-  `mapa-indice` de `mapa/funciones.json`).
+  `mapa-indice` de `mapa/funciones.json`); las tablas de la zona de pruebas (`GRUPOS` y `OCULTAS` de
+  `salas/zona_pruebas.gd`) solo nombran escenas que existen (entrada `validador-zona-pruebas`).
 - Los `.ps1`: solo ASCII, sin `$ErrorActionPreference = 'Stop'` alrededor de un ejecutable, probados en
   `powershell.exe` 5.1 y en `pwsh` 7.
 - Salida corta: resumen y fallos; el detalle va a `.godot/validar.log`.

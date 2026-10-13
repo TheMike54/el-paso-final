@@ -153,9 +153,9 @@ const ESCENA_PROYECTIL: PackedScene = preload("res://nucleo/proyectil.tscn")
 ## Ticks sin direccion que la carrera aguanta: el pulgar o el stick cruzan el centro (zona muerta) al girar y eso no
 ## es soltar. Mientras, sigue a velocidad completa hacia donde iba.
 @export var ticks_soltar_carrera: int = 4
-## Ataque en carrera: mientras dura, el jugador sale empujado hacia adelante a esta velocidad. Provisional: por debajo
-## de velocidad_impulso, para que la estocada no avance mas que el impulso (la persona la pidio mas larga el 12-oct-2026).
-@export var velocidad_ataque_carrera: float = 1150.0
+## Ataque en carrera: mientras dura, el jugador sale empujado hacia adelante a esta velocidad. Provisional: por encima
+## de velocidad_impulso; la persona la pidio mas larga cuatro veces tras probarla en el S50 (12-oct-2026).
+@export var velocidad_ataque_carrera: float = 2000.0
 ## Ticks desde un ataque en carrera hasta poder hacer otro sin dejar de correr; lo pedido antes se pierde. Provisional:
 ## en Silksong sale uno cada 0,65-0,85 s aunque se presione mas rapido (video del 12-oct-2026).
 @export var ticks_entre_ataques_carrera: int = 42

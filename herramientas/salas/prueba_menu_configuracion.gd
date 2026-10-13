@@ -2,13 +2,15 @@ extends Node
 # Prueba de la Configuracion del menu principal: instancia el menu y recorre menu, Configuracion, sus subpaneles
 # y el editor de controles con Atras (la notificacion de Android) y con la accion pausa, que vuelven un nivel a
 # la vez. Comprueba tambien lo que puede romperse: Listo guarda la disposicion, reasignar un boton del control
-# intercambia con la accion que lo tenia y se guarda, el modo desarrollador muestra la zona de pruebas y se
-# recuerda, borrar la partida la borra, el volumen se guarda y el aviso de pocos toques sale solo cuando toca. Todo en archivos de prueba. Deja casos y fallos
+# intercambia con la accion que lo tenia y se guarda, el modo desarrollador muestra la zona de pruebas en el menu y se
+# recuerda, borrar la partida la borra, el volumen se guarda (tambien con - y +), las columnas segun el ancho de la
+# vista y el aviso de pocos toques sale solo cuando toca. Todo en archivos de prueba. Deja casos y fallos
 # para menu_configuracion.guion. Imprime el resumen y los fallos.
 
 const ESCENA_MENU: PackedScene = preload("res://nucleo/menu.tscn")
 const RUTA_PRUEBA: String = "user://prueba_menu_configuracion.json"
 const RUTA_PARTIDA: String = "user://prueba_menu_partida.json"
+const OPCIONES: String = "Lista/Desplazable/Centro/Opciones/"
 
 var casos: int = 0
 var fallos: int = 0
@@ -37,7 +39,8 @@ func _ready() -> void:
 
 	(menu.get_node(^"Centro/Opciones/Configuracion") as Button).pressed.emit()
 	_caso("Configuracion abre su lista en lugar del menu", config.visible and lista.visible and not centro.visible)
-	_caso("sin el modo desarrollador no se ve la zona de pruebas", not _boton(config, "ZonaPruebas").visible)
+	var zona: Button = menu.get_node(^"Centro/Opciones/ZonaPruebas") as Button
+	_caso("sin el modo desarrollador el menu no muestra la zona de pruebas", not zona.visible)
 	_boton(config, "Controles").pressed.emit()
 	var editor: EditorControles = menu.get("editor") as EditorControles
 	_caso("Botones tactiles abre el editor", editor != null and ControlesTactiles.editando and not config.visible)
@@ -69,6 +72,13 @@ func _ready() -> void:
 	_boton(config, "Mando").pressed.emit()
 	var panel_mando: Control = config.get_node(^"PanelMando") as Control
 	_caso("Botones del control abre su panel", panel_mando.visible and not lista.visible)
+	# Sin control (la PC del guion y el CI) el aviso debe verse; con uno conectado, no. Nace oculto en la escena.
+	_caso("sin control conectado el panel lo avisa", (config.get_node(^"PanelMando/SinControl") as Label).visible == Input.get_connected_joypads().is_empty())
+	# Se pone el aviso al reves antes de avisar: solo vuelve si el panel escucha joy_connection_changed.
+	var sin_control: Label = config.get_node(^"PanelMando/SinControl") as Label
+	sin_control.visible = not Input.get_connected_joypads().is_empty()
+	Input.joy_connection_changed.emit(0, false)
+	_caso("el aviso del control se recalcula al conectar o desconectar uno", (config.get_node(^"PanelMando/SinControl") as Label).visible == Input.get_connected_joypads().is_empty())
 	var saltar: int = Mando.boton_de(&"saltar")
 	var atacar: int = Mando.boton_de(&"atacar")
 	config._esperar_boton(&"saltar")
@@ -93,15 +103,18 @@ func _ready() -> void:
 	config._esperar_boton(&"curar")
 	menu.notification(NOTIFICATION_WM_GO_BACK_REQUEST)
 	_caso("Atras mientras espera un boton cancela la espera y sigue en el panel", config.esperando.is_empty() and panel_mando.visible)
-	(config.get_node(^"PanelMando/Caja/Botones/PorOmision") as Button).pressed.emit()
+	(config.get_node(^"PanelMando/Botones/PorOmision") as Button).pressed.emit()
 	_caso("Por omision devuelve los botones de project.godot", Mando.boton_de(&"saltar") == saltar and Mando.boton_de(&"atacar") == atacar)
 	menu.notification(NOTIFICATION_WM_GO_BACK_REQUEST)
 	_caso("Atras en el panel del control vuelve a la lista", lista.visible and not panel_mando.visible)
 
-	# Modo desarrollador: muestra la zona de pruebas y se recuerda.
-	var modo: CheckButton = config.get_node(^"Lista/Caja/Opciones/ModoDesarrollador") as CheckButton
+	# Modo desarrollador: al volver al menu, este muestra la zona de pruebas; se recuerda.
+	var modo: CheckButton = config.get_node(NodePath(OPCIONES + "ModoDesarrollador")) as CheckButton
 	modo.button_pressed = true
-	_caso("el modo desarrollador muestra la zona de pruebas", _boton(config, "ZonaPruebas").visible)
+	_caso("el interruptor dice su estado con palabras", modo.text.ends_with("sí"))
+	menu.notification(NOTIFICATION_WM_GO_BACK_REQUEST)
+	_caso("con el modo desarrollador el menu muestra la zona de pruebas", zona.visible and centro.visible)
+	(menu.get_node(^"Centro/Opciones/Configuracion") as Button).pressed.emit()
 	Ajustes.modo_desarrollador = false
 	Ajustes.cargar(RUTA_PRUEBA)
 	_caso("el modo desarrollador se recuerda", Ajustes.modo_desarrollador)
@@ -109,8 +122,8 @@ func _ready() -> void:
 	# Vibracion y temblor.
 	var vibracion_real: bool = Ajustes.vibracion
 	var temblor_real: bool = Ajustes.temblor
-	(config.get_node(^"Lista/Caja/Opciones/Vibracion") as CheckButton).button_pressed = not vibracion_real
-	(config.get_node(^"Lista/Caja/Opciones/Temblor") as CheckButton).button_pressed = not temblor_real
+	(config.get_node(NodePath(OPCIONES + "Vibracion")) as CheckButton).button_pressed = not vibracion_real
+	(config.get_node(NodePath(OPCIONES + "Temblor")) as CheckButton).button_pressed = not temblor_real
 	Ajustes.vibracion = vibracion_real
 	Ajustes.temblor = temblor_real
 	Ajustes.cargar(RUTA_PRUEBA)
@@ -120,7 +133,7 @@ func _ready() -> void:
 
 	# Recursos: la opcion elegida se guarda.
 	var recursos_real: String = Ajustes.recursos
-	var opcion_recursos: OptionButton = config.get_node(^"Lista/Caja/Opciones/Recursos") as OptionButton
+	var opcion_recursos: OptionButton = config.get_node(NodePath(OPCIONES + "Recursos")) as OptionButton
 	opcion_recursos.select(1)
 	opcion_recursos.item_selected.emit(1)
 	Ajustes.recursos = Recursos.AUTO
@@ -139,10 +152,14 @@ func _ready() -> void:
 		await get_tree().physics_frame
 
 	# Volumen.
-	(config.get_node(^"Lista/Caja/Opciones/Volumen/Barra") as HSlider).value = 40.0
+	(config.get_node(NodePath(OPCIONES + "Volumen/Medio/Barra")) as HSlider).value = 40.0
 	Ajustes.volumen = 1.0
 	Ajustes.cargar(RUTA_PRUEBA)
 	_caso("el volumen se guarda", is_equal_approx(Ajustes.volumen, 0.4))
+	_boton(config, "Volumen/Mas").pressed.emit()
+	_boton(config, "Volumen/Mas").pressed.emit()
+	_boton(config, "Volumen/Menos").pressed.emit()
+	_caso("+ y - mueven el volumen de 10 en 10 y se guarda", is_equal_approx(Ajustes.volumen, 0.5))
 
 	# Borrar partida, con confirmacion.
 	Guardado.guardar(Partida.a_diccionario(), RUTA_PARTIDA)
@@ -171,17 +188,22 @@ func _ready() -> void:
 	_caso("Atras otra vez cancela la salida", not confirmar.visible and centro.visible)
 
 	(menu.get_node(^"Centro/Opciones/Configuracion") as Button).pressed.emit()
-	_boton(config, "Volver").pressed.emit()
+	(config.get_node(^"Lista/Arriba/Volver") as Button).pressed.emit()
 	_caso("Volver cierra Configuracion", centro.visible and not config.visible)
 
-	# Al volver de la zona de pruebas, el menu se abre en Configuracion (un nivel atras de la zona), una sola vez.
-	Configuracion.abrir_al_volver = true
+	# Al volver de la zona de pruebas, el menu abre con el foco en su entrada (un nivel atras de la zona), una vez.
+	MenuPrincipal.volver_a_zona = true
 	var otro: Control = ESCENA_MENU.instantiate() as Control
 	add_child(otro)
-	var config_otro: Configuracion = otro.get_node(^"Configuracion") as Configuracion
-	_caso("al volver de la zona de pruebas el menu abre Configuracion", config_otro.visible and not (otro.get_node(^"Centro") as Control).visible and not Configuracion.abrir_al_volver)
+	_caso("al volver de la zona de pruebas el menu enfoca su entrada", (otro.get_node(^"Centro/Opciones/ZonaPruebas") as Button).has_focus() and not MenuPrincipal.volver_a_zona)
 	remove_child(otro)
 	otro.free()
+
+	# Columnas segun el ancho util de la vista (720 de alto, de 4:3 a 22:9, menos 2 x 64 de margen).
+	_caso("si el area segura recorta mucho (832) cabe una columna", Configuracion.columnas_para(960.0 - 128.0) == 1)
+	_caso("en la vista de 1280 (4:3 y 16:9) caben dos", Configuracion.columnas_para(1280.0 - 128.0) == 2)
+	_caso("en el S50 (1440) caben tres", Configuracion.columnas_para(1440.0 - 128.0) == 3)
+	_caso("en 22:9 (1760) siguen tres", Configuracion.columnas_para(1760.0 - 128.0) == 3)
 
 	# Aviso de pocos toques: sale abajo si Android dice que la pantalla no reconoce 5 toques; si no, no hay aviso.
 	_caso("sin pocos toques (y en PC) no hay aviso", menu.get_node_or_null(^"AvisoToques") == null)
@@ -207,7 +229,7 @@ func _ready() -> void:
 
 
 func _boton(config: Configuracion, nombre: String) -> Button:
-	return config.get_node(NodePath("Lista/Caja/Opciones/" + nombre)) as Button
+	return config.get_node(NodePath(OPCIONES + nombre)) as Button
 
 
 func _caso(nombre: String, bien: bool) -> void:

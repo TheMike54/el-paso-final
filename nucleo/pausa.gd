@@ -20,6 +20,7 @@ var editor: EditorControles = null
 
 
 func _ready() -> void:
+	_panel.theme = Tema.crear()
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_panel.visible = false
 	_continuar.pressed.connect(cerrar)

@@ -4,10 +4,12 @@ extends Node
 # Existe porque Godot sale con 0 aunque un script no compile. Ademas revisa las salas con id (contenido/salas y
 # las zonas de prueba): id igual al archivo, puertas de ida y vuelta, bancos con su id, Entrada dentro y
 # objetos recordados (suelo fragil, coleccionable) con id unico. En cualquier escena, un DanoContacto que se mueve
-# (dentro de un Vaiven, un enemigo o un cuerpo que se mueve) no puede ser peligro.
+# (dentro de un Vaiven, un enemigo o un cuerpo que se mueve) no puede ser peligro. Las tablas de la zona de pruebas
+# (GRUPOS y OCULTAS) solo nombran escenas que existen.
 const IGNORAR: PackedStringArray = ["addons", "build"]
 const CAMPOS_TEXTO: PackedStringArray = ["id", "que", "comprobacion"]
 const INDICE_MAPA: String = "res://mapa/indice_salas.gd"
+const ZONA_PRUEBAS: String = "res://herramientas/salas/zona_pruebas.gd"
 ## Carpetas donde cada sala lleva id y vive en <carpeta>/<zona>/<id>.tscn.
 const CARPETAS_SALAS: PackedStringArray = [Sala.CARPETA_CONTENIDO, Sala.CARPETA_PRUEBAS]
 var _fallos: PackedStringArray = []
@@ -20,6 +22,7 @@ func _ready() -> void:
 	_recorrer("res://")
 	_revisar_puertas()
 	_revisar_indice_mapa()
+	_revisar_zona_pruebas()
 	for fallo: String in _fallos:
 		print("FALLO ", fallo)
 	print("VALIDACION archivos=%d fallos=%d" % [_total, _fallos.size()])
@@ -232,6 +235,21 @@ func _revisar_indice_mapa() -> void:
 	var coincide: bool = indice.call(&"iguales", nuevo, guardado)
 	if not coincide:
 		_fallos.append("res://mapa/indice_salas.tres (no coincide con las salas: correr herramientas/generar_mapa.tscn)")
+
+
+# Una sala renombrada o borrada no puede quedar en las tablas de la zona de pruebas: dejaria de aparecer sin aviso.
+func _revisar_zona_pruebas() -> void:
+	if not ResourceLoader.exists(ZONA_PRUEBAS):
+		return
+	var constantes: Dictionary = (load(ZONA_PRUEBAS) as Script).get_script_constant_map()
+	var carpeta: String = constantes["CARPETA"]
+	var nombradas: Array = (constantes["OCULTAS"] as PackedStringArray).duplicate()
+	var grupos: Dictionary = constantes["GRUPOS"]
+	for categoria: String in grupos:
+		nombradas.append_array(grupos[categoria] as Array)
+	for sala: String in nombradas:
+		if not ResourceLoader.exists(carpeta + sala):
+			_fallos.append("%s (nombra %s, que no existe)" % [ZONA_PRUEBAS, sala])
 
 
 # Puertas de ida y vuelta entre salas con id: si A lleva a la puerta P de B, B tiene la puerta P y lleva de
