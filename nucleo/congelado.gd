@@ -2,9 +2,9 @@ class_name Congelado
 extends RefCounted
 # Congelado comun (hit-stop), como GameManager.FreezeMoment de Hollow Knight, que baja la escala de tiempo
 # de todo el juego: al recibir dano y al vencer a un enemigo se detienen unos ticks el jugador, los enemigos,
-# los proyectiles, los empujes y la decoracion que se mueve por ticks (las particulas, que corren por tiempo,
-# no). Sin Engine.time_scale (los guiones cuentan ticks): cada una pregunta activo() al empezar su tick. Se mide
-# en cuadros de fisica, asi no hace falta quien lo descuente.
+# los proyectiles, los empujes y la decoracion que se mueve (plantas y niebla; las particulas, que corren por
+# tiempo, no). Sin Engine.time_scale (los guiones cuentan ticks): cada una pregunta activo() al empezar su tick
+# o su cuadro. Se mide en cuadros de fisica, asi no hace falta quien lo descuente.
 
 ## Congelado al vencer a un enemigo: FreezeMoment(1) de Hollow Knight baja en 0,04 s, sostiene 0,03 y sube en
 ## 0,04: unos 4 ticks quietos.

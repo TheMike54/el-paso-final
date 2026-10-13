@@ -362,7 +362,7 @@
   {
     "id": "ranuras-telefono",
     "que": "En el telefono las 4 fichas caben en una fila y se leen y se tocan con el pulgar, con y sin el aviso de pocos toques; una partida nueva deja ocupada su ficha y Borrar y Restaurar funcionan con su confirmacion",
-    "comprobacion": "manual: en el S50 y el S20 con el APK de desarrollo: Jugar, ranura 1, un personaje y Empezar (caja gris), Volver al menu, Jugar: la ficha 1 dice Inicio y 0 min; entrar otra vez y volver: aparece Restaurar; Borrar con su confirmacion la deja vacia",
+    "comprobacion": "manual: en el S50 o el S20 con el APK de desarrollo: Jugar, ranura 1, un personaje y Empezar (caja gris), Volver al menu, Jugar: la ficha 1 dice Inicio y 0 min; entrar otra vez y volver: aparece Restaurar; Borrar con su confirmacion la deja vacia",
     "pasa": true
   },
   {
@@ -374,7 +374,7 @@
   {
     "id": "audio-y-brillo-telefono",
     "que": "En el telefono la musica de prueba y el efecto se oyen, cada barra cambia solo su parte y el brillo se ve bien en sus extremos sin tapar los toques",
-    "comprobacion": "manual: en el S50 y el S20 con el APK de desarrollo: Configuracion, Audio: suena la musica; bajar Musica a 0 la calla y Probar efecto sigue sonando; bajar Efectos a 0 calla el efecto; General a 0 calla todo; Brillo en 50 y en 150: la pantalla se oscurece o aclara y los botones siguen respondiendo",
+    "comprobacion": "manual: en el S50 o el S20 con el APK de desarrollo: Configuracion, Audio: suena la musica; bajar Musica a 0 la calla y Probar efecto sigue sonando; bajar Efectos a 0 calla el efecto; General a 0 calla todo; Brillo en 50 y en 150: la pantalla se oscurece o aclara y los botones siguen respondiendo",
     "pasa": true
   },
   {
@@ -386,7 +386,7 @@
   {
     "id": "amuletos-telefono",
     "que": "En el telefono la pagina Amuletos del marco de menus se abre sentado con el boton Inventario, se lee y se toca con el pulgar, y la brujula puesta sentado se ve en el mapa",
-    "comprobacion": "manual: fila Amuletos en el banco de docs/pruebas.md, en el S50 y el S20",
+    "comprobacion": "manual: fila Amuletos en el banco de docs/pruebas.md, en el S50 o el S20",
     "pasa": true
   },
   {
@@ -398,7 +398,7 @@
   {
     "id": "personaje-y-nombre-telefono",
     "que": "En el telefono el campo del nombre abre el teclado de Android, Enter empieza la partida y la ficha muestra el nombre",
-    "comprobacion": "manual: en el S50 y el S20: Jugar, ranura vacia, Mujer, tocar Nombre y escribir con el teclado del telefono, Enter; Volver al menu, Jugar: la ficha lleva el nombre",
+    "comprobacion": "manual: en el S50 o el S20: Jugar, ranura vacia, Mujer, tocar Nombre y escribir con el teclado del telefono, Enter; Volver al menu, Jugar: la ficha lleva el nombre",
     "pasa": true
   },
   {
@@ -410,7 +410,7 @@
   {
     "id": "dialogo-telefono",
     "que": "En el telefono la caja y sus opciones caben fuera de la muesca, se leen y se tocan con el pulgar, y mientras se habla solo queda el boton de pausa",
-    "comprobacion": "manual: fila Dialogo con el guia de docs/pruebas.md, en el S50 y el S20",
+    "comprobacion": "manual: fila Dialogo con el guia de docs/pruebas.md, en el S50 o el S20",
     "pasa": true
   },
   {
@@ -422,7 +422,7 @@
   {
     "id": "reto-telefono",
     "que": "En el telefono las preguntas y sus opciones se leen y se tocan con el pulgar, y al ganar se ven las PejeCoins",
-    "comprobacion": "manual: fila Reto de preguntas de docs/pruebas.md, en el S50 y el S20",
+    "comprobacion": "manual: fila Reto de preguntas de docs/pruebas.md, en el S50 o el S20",
     "pasa": true
   },
   {
@@ -434,7 +434,7 @@
   {
     "id": "sonidos-telefono",
     "que": "En el telefono cada evento se oye, el golpe dado y el recibido se distinguen, nada se corta al cruzar una puerta y el volumen de efectos los baja",
-    "comprobacion": "manual: fila Efectos de los eventos de docs/pruebas.md, en el S50 y el S20",
+    "comprobacion": "manual: fila Efectos de los eventos de docs/pruebas.md, en el S50 o el S20",
     "pasa": false
   },
   {
@@ -459,6 +459,18 @@
     "id": "marco-menus-telefono",
     "que": "En el telefono el marco de menus se abre con el boton Mapa de pie y con el que sentado dice Inventario, se cambia de pagina con la barra y se cierra con Volver y Atras; la pausa abre Configuracion encima sin un tiron visible; las pastillas, las barras, el altavoz y la pantalla de brillo se usan con el pulgar",
     "comprobacion": "manual: filas Marco de menus en el telefono y Configuracion tactil de docs/pruebas.md, en el S50 y el S20",
+    "pasa": true
+  },
+  {
+    "id": "congelado-decoracion",
+    "que": "La planta y la niebla se detienen durante el congelado comun (golpe, vencer y parry), como en la pausa, y siguen al terminar",
+    "comprobacion": "herramientas/salas/prueba_recursos.gd",
+    "pasa": true
+  },
+  {
+    "id": "mapa-obtener",
+    "que": "Recoger un mapa, en el suelo o como recompensa, pasa por Partida.obtener_mapa: avisa como lo demas que se obtiene y autoguarda; si ya se tenia, no hace nada",
+    "comprobacion": "herramientas/salas/prueba_guardado.gd",
     "pasa": true
   }
 ]

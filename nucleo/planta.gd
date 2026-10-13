@@ -1,8 +1,8 @@
 class_name Planta
 extends Node2D
 # Planta que se mece: rota de un lado a otro con un tiempo propio que avanza en _process, asi se queda quieta
-# en la pausa (el arbol pausado no llama _process; el TIME de un shader si avanzaria). En modo bajo de
-# recursos no se mece. Generica: el dibujo es hijo de la escena; el pivote son los pies de la planta.
+# en la pausa (el arbol pausado no llama _process; el TIME de un shader si avanzaria) y en el congelado comun,
+# como en Hollow Knight. En modo bajo de recursos no se mece. Generica: el dibujo es hijo de la escena; el pivote son los pies de la planta.
 
 ## Grados hacia cada lado y segundos de una ida y vuelta.
 @export var grados: float = 6.0
@@ -23,7 +23,7 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
-	if _quieta or periodo <= 0.0:
+	if _quieta or periodo <= 0.0 or Congelado.activo():
 		return
 	tiempo += delta
 	rotation_degrees = sin(tiempo * TAU / periodo) * grados

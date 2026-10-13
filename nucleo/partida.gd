@@ -72,6 +72,7 @@ func _ready() -> void:
 	Eventos.jugador_muerto.connect(_al_morir)
 	Eventos.habilidad_obtenida.connect(_al_obtener.unbind(1))
 	Eventos.amuleto_obtenido.connect(_al_obtener.unbind(1))
+	Eventos.mapa_obtenido.connect(_al_obtener.unbind(1))
 	Eventos.coleccionable_obtenido.connect(_al_obtener.unbind(1))
 	Eventos.jefe_vencido.connect(_al_vencer_jefe)
 
@@ -133,6 +134,14 @@ func obtener_amuleto(amuleto: StringName) -> void:
 		return
 	amuletos_tenidos.append(amuleto)
 	Eventos.amuleto_obtenido.emit(amuleto)
+
+
+## Suma el mapa de una zona y lo avisa (el aviso autoguarda). Si ya lo tenia, no hace nada.
+func obtener_mapa(zona: String) -> void:
+	if zona.is_empty() or mapas.has(zona):
+		return
+	mapas.append(zona)
+	Eventos.mapa_obtenido.emit(zona)
 
 
 func esta_equipado(amuleto: StringName) -> bool:
@@ -215,8 +224,7 @@ func dar_recompensa(recompensa: Recompensa) -> void:
 		Recompensa.Tipo.HABILIDAD:
 			obtener_habilidad(recompensa.id)
 		Recompensa.Tipo.MAPA:
-			if not mapas.has(String(recompensa.id)):
-				mapas.append(String(recompensa.id))
+			obtener_mapa(String(recompensa.id))
 
 
 ## Al entrar a una sala: queda como visitada.

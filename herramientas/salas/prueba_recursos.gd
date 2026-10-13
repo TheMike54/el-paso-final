@@ -1,7 +1,7 @@
 extends Node
 # Prueba del modo de recursos: la regla de la deteccion (32 bits o poca memoria), el modo en vigor segun el
-# ajuste, que lo prescindible desaparezca solo en bajo, que plantas y niebla se queden quietas en bajo y se
-# muevan en alto, y que el ajuste se guarde (un valor raro vuelve a auto). Deja casos y fallos para
+# ajuste, que lo prescindible desaparezca solo en bajo, que plantas y niebla se queden quietas en bajo y en el
+# congelado comun y se muevan en alto, y que el ajuste se guarde (un valor raro vuelve a auto). Deja casos y fallos para
 # recursos_cuentas.guion. Imprime el resumen y los fallos.
 
 const RUTA: String = "user://prueba_recursos.json"
@@ -43,6 +43,18 @@ func _ready() -> void:
 	niebla = _niebla()
 	niebla._process(1.0)
 	_caso("en alto, la planta se mece y la niebla avanza", planta.rotation != 0.0 and niebla.position.x > 0.0)
+	# El congelado del parry (20 ticks) las detiene; al terminar siguen. Aqui no corren ticks: terminarlo es
+	# reiniciar(), que tambien deja limpia la estatica para lo que corra despues.
+	var tiempo: float = planta.tiempo
+	var posicion: Vector2 = niebla.position
+	Congelado.pedir(20)
+	planta._process(0.6)
+	niebla._process(1.0)
+	_caso("en el congelado la planta y la niebla no avanzan", planta.tiempo == tiempo and niebla.position == posicion)
+	Congelado.reiniciar()
+	planta._process(0.6)
+	niebla._process(1.0)
+	_caso("al terminar el congelado siguen", planta.tiempo > tiempo and niebla.position != posicion)
 
 	Ajustes.recursos = Recursos.ALTO
 	Ajustes.guardar(RUTA)

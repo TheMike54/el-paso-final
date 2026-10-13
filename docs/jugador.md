@@ -130,8 +130,8 @@ Curar y sensación del golpe:
   (`Golpeable.velocidad_retroceso`, `ticks_retroceso`). Al recibir daño (no de un peligro), el jugador se detiene
   `ticks_hit_stop` ticks antes del retroceso.
 - Congelado común (`nucleo/congelado.gd`, `class_name Congelado`, estático), como `FreezeMoment` de Hollow Knight:
-  `Congelado.pedir(ticks)` detiene unos ticks al jugador, a los `Golpeable` empujados y a los proyectiles, que
-  preguntan `Congelado.activo()` al empezar su tick (sin `Engine.time_scale`: los guiones cuentan ticks). Lo piden
+  `Congelado.pedir(ticks)` detiene unos ticks al jugador, a los `Golpeable` empujados, a los proyectiles y a la
+  planta y la niebla, que preguntan `Congelado.activo()` al empezar su tick o su cuadro (sin `Engine.time_scale`: los guiones cuentan ticks). Lo piden
   el daño al jugador (`ticks_hit_stop`), un enemigo vencido (`Congelado.TICKS_AL_VENCER`, 4) y el parry. La sala lo reinicia
   al entrar.
 

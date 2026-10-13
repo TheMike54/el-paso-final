@@ -83,6 +83,24 @@ func _ready() -> void:
 	_caso("continuar empieza sin Inspiracion y sin enemigos vencidos", Partida.inspiracion == 0 and Partida.enemigos_vencidos.is_empty())
 	Partida.reiniciar()
 
+	# Un mapa, en el suelo o como recompensa, pasa por obtener_mapa: autoguarda una vez y queda guardado.
+	var ruta_real: String = Partida.ruta_guardado
+	Partida.ruta_guardado = RUTA
+	var antes: int = Partida.autoguardados
+	Partida.obtener_mapa("raices")
+	_caso("obtener un mapa lo suma y autoguarda", Partida.mapas == ["raices"] and Partida.autoguardados == antes + 1)
+	Partida.obtener_mapa("raices")
+	var recompensa: Recompensa = Recompensa.new()
+	recompensa.tipo = Recompensa.Tipo.MAPA
+	recompensa.id = &"raices"
+	Partida.dar_recompensa(recompensa)
+	_caso("un mapa que ya se tiene, recogido o como recompensa, no hace nada", Partida.mapas.size() == 1 and Partida.autoguardados == antes + 1)
+	Partida.reiniciar()
+	Partida.desde_diccionario(Guardado.cargar(RUTA).partida)
+	_caso("el mapa sigue al recargar", Partida.mapas == ["raices"])
+	Partida.ruta_guardado = ruta_real
+	Partida.reiniciar()
+
 	# Ajustes: archivo propio, valores por omision si falta o esta danado.
 	var ruta_ajustes: String = "user://prueba_ajustes.json"
 	DirAccess.remove_absolute(ruta_ajustes)
