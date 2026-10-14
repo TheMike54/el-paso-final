@@ -43,14 +43,14 @@ color = Color(0.25, 0.25, 0.25, 1)
 [node name="PuertaIzquierda" parent="." instance=ExtResource("2_puerta")]
 position = Vector2(20, 680)
 id = &"izquierda"
-sala_destino = "res://herramientas/salas/zonas/prueba/prueba_1.tscn"
+sala_destino = "prueba_1"
 puerta_destino = &"derecha"
 llegada = Vector2(200, 0)
 
 [node name="PuertaDerecha" parent="." instance=ExtResource("2_puerta")]
 position = Vector2(2380, 680)
 id = &"derecha"
-sala_destino = "res://herramientas/salas/zonas/prueba/prueba_3.tscn"
+sala_destino = "prueba_3"
 puerta_destino = &"izquierda"
 llegada = Vector2(-200, 0)
 

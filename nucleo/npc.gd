@@ -26,6 +26,7 @@ var _jugador: Jugador = null
 
 
 func _ready() -> void:
+	Capas.poner(self, Capas.INTERACCION, Capas.JUGADOR)
 	etapa = Partida.estado_entero(Sala.clave_de(self), id, etapa)
 
 

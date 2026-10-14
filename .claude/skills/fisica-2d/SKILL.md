@@ -46,6 +46,7 @@ El arte no colisiona (decisión cerrada en `CLAUDE.md`): las formas son invisibl
 
 | Regla | Doc | Cómo se comprueba aquí |
 |---|---|---|
+| Capa y máscara de cada cuerpo y área con `Capas.poner(self, capa, mascara)` en su `_ready`, nunca en el `.tscn`; una pieza nueva usa una capa de la tabla de `docs/contrato.md`, «Capas de física», y una capa nueva va ahí, en `nucleo/capas.gd` y en `[layer_names]` de `project.godot` | `tutorials/physics/physics_introduction.rst:115` | Guion `capas_fisica`; Grep de `collision_layer` y `collision_mask` en los `.tscn`: sin resultados |
 | `Area2D` para detectar y para lo que golpea sin más física; `StaticBody2D` para el entorno (`docs/contrato.md`, «Sala») | `tutorials/physics/using_area_2d.rst:95`, `tutorials/physics/physics_introduction.rst:55` | `validar.ps1`; ejemplo `nucleo/coleccionable.gd` |
 | `body_entered` si lo que llega es un cuerpo (el jugador), `area_entered` si es un área (un `Golpeable`) | `tutorials/physics/using_area_2d.rst:63` | Guiones `combate_chico`, `poder_bola`; ejemplo `nucleo/proyectil.gd` |
 | Apagar lo que no debe detectar o ser detectado con `monitoring` / `monitorable`. Convención del repo: dentro del tick, con `set_deferred(&"monitoring", ...)` (`nucleo/jugador.gd`, `nucleo/ataque_enemigo.gd`) | `tutorials/physics/using_area_2d.rst:37` | Guiones `jugador_ataque_y_vida`, `parry` |
@@ -65,8 +66,8 @@ lo cubre el guion `poder_bola`. La documentación dice que un `Area2D` detecta c
 | `intersect_ray` / `intersect_shape` solo dentro de `_physics_process` o lo que este llama; si nace de una entrada, se guarda la intención y se consulta en el tick | `tutorials/physics/ray-casting.rst:42`, `:319` | `validar.ps1` y el guion de la pieza |
 | Extremos en coordenadas globales (`global_position`) | `tutorials/physics/ray-casting.rst:111` | Ejemplo `nucleo/proyectil.gd` |
 | El resultado es un `Dictionary` vacío si no choca: comprobar `is_empty()` antes de leer `collider`, `normal`, `position`; leerlo con cast tipado | `tutorials/physics/ray-casting.rst:125` | `validar.ps1` (tipado); ejemplo `nucleo/golpeable.gd` |
-| Excluir al propio cuerpo o a quien lanza con `exclude = [x.get_rid()]` | `tutorials/physics/ray-casting.rst:204` | Guion `poder_bola` (la bola sale del jugador sin chocar consigo) |
-| Las áreas solo cuentan con `collide_with_areas = true` (por omisión no); fijarlo a propósito | `tutorials/physics/ray-casting.rst:156` | Ejemplos `nucleo/jugador.gd` (true) y `nucleo/proyectil_enemigo.gd` (false) |
+| Cada rayo fija su `collision_mask` con `Capas` (los de sólidos, `Capas.ESCENARIO`): así no choca con quien lo lanza. `exclude = [x.get_rid()]` solo si quien lanza está en una capa que el rayo sí busca | `tutorials/physics/ray-casting.rst:204`, `tutorials/physics/physics_introduction.rst:115` | Guiones `capas_fisica` y `poder_bola` (la bola sale del jugador sin chocar consigo); ejemplo `nucleo/proyectil.gd` |
+| Las áreas solo cuentan con `collide_with_areas = true` (por omisión no): se fija cuando el rayo busca áreas; el que solo busca sólidos lo deja en false | `tutorials/physics/ray-casting.rst:156` | Ejemplos `nucleo/jugador.gd` (la picada, true y máscara `GOLPEABLE`) y `nucleo/proyectil_enemigo.gd` (solo `ESCENARIO`) |
 | Para un rayo fijo que se revisa cada tick basta un nodo `RayCast2D` | `tutorials/physics/ray-casting.rst:16` | `validar.ps1` y el guion de la pieza |
 
 ## Entrada del jugador

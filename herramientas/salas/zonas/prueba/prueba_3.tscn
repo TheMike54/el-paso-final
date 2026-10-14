@@ -43,7 +43,7 @@ color = Color(0.25, 0.25, 0.25, 1)
 [node name="PuertaIzquierda" parent="." instance=ExtResource("2_puerta")]
 position = Vector2(20, 680)
 id = &"izquierda"
-sala_destino = "res://herramientas/salas/zonas/prueba/prueba_2.tscn"
+sala_destino = "prueba_2"
 puerta_destino = &"derecha"
 llegada = Vector2(200, 0)
 
@@ -58,7 +58,7 @@ id = "coleccionable_2"
 [node name="PuertaDerecha" parent="." instance=ExtResource("2_puerta")]
 position = Vector2(1580, 680)
 id = &"derecha"
-sala_destino = "res://herramientas/salas/zonas/prueba/prueba_4.tscn"
+sala_destino = "prueba_4"
 puerta_destino = &"izquierda"
 llegada = Vector2(-200, 0)
 

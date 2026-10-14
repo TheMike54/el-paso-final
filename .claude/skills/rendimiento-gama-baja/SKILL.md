@@ -43,17 +43,22 @@ Texturas (memoria por tamaño: tabla en `tutorials/assets_pipeline/importing_ima
 
 - Ninguna de más de 2048 px por lado (límite del contrato; el móvil no muestra más de 4096,
   `tutorials/assets_pipeline/importing_images.rst:498`). Lo revisa `validar.ps1` (entrada `validador-texturas`).
-- Sin mipmaps en 2D: suben la memoria ~33 %
-  (`tutorials/assets_pipeline/importing_images.rst:390`, `tutorials/rendering/multiple_resolutions.rst:605`).
-  Grep de `mipmaps/generate=true` en los `.import`: debe dar cero.
+- Mipmaps en el arte del mundo (`contenido/` y `herramientas/salas/arte/`), que la cámara puede ver más chico que
+  su tamaño; no en el HUD ni en los menús. Suben la memoria ~33 % (`tutorials/assets_pipeline/importing_images.rst:390`,
+  `tutorials/rendering/multiple_resolutions.rst:605`); el filtro por omisión es lineal con mipmaps
+  (`project.godot`, `default_texture_filter=2`). `validar.ps1` exige los mipmaps en el arte del mundo
+  (`CARPETAS_ARTE_MUNDO` en `herramientas/validar.gd`); que el HUD y los menús no los lleven no lo revisa.
 - Sprites y piezas con alfa en Lossless (`compress/mode=0`); VRAM Compressed da artefactos en 2D
-  (`tutorials/assets_pipeline/importing_images.rst:187`). Los fondos grandes de la sala de arte van hoy en VRAM
-  (`ESTADO.md`) mientras se mide (tabla de abajo); cada uno se revisa en el teléfono.
+  (`tutorials/assets_pipeline/importing_images.rst:187`). `validar.ps1` falla con una imagen
+  del arte del mundo con transparencia en VRAM. Excepción: los fondos translúcidos de la sala de arte (`ALFA_EN_VRAM` en
+  `herramientas/validar.gd`), mientras se mide (tabla de abajo); una excepción nueva va ahí y en `docs/contrato.md`,
+  «Recursos».
 
 Escena y proceso:
 
-- Salas y recursos que se cargan a demanda, como ruta con `@export_file` y `load()`, no como `@export` de un
-  recurso, que carga la sala vecina en cadena (`nucleo/puerta.gd`, `sala_destino`).
+- Salas y recursos que se cargan a demanda, como texto (ruta con `@export_file`, o el id de la sala que
+  `Sala.ruta_de` convierte en ruta, como `sala_destino` en `nucleo/puerta.gd`) y `load()` o
+  `change_scene_to_file()`, no como `@export` de un recurso, que carga la sala vecina en cadena.
   `tutorials/scripting/gdscript/gdscript_exports.rst:373`. Grep de `@export var .*: PackedScene` en salas y puertas.
 - Lo que se instancia en juego, con `const ESCENA_X: PackedScene = preload(...)` e `instantiate()`; nunca
   `load()` dentro de `_physics_process` (`nucleo/jugador.gd`, `ESCENA_PROYECTIL`).
@@ -97,4 +102,4 @@ Ninguno de estos se cambia sin una medida en el teléfono; la decisión queda es
 | Partículas CPU o GPU | FPS con cada una en el S50; la razón de la elección, escrita | `tutorials/2d/particle_systems_2d.rst:28` |
 | Fondo en VRAM o Lossless | Artefactos visibles y memoria (`dumpsys meminfo`) | `tutorials/assets_pipeline/importing_images.rst:187`, `:260` |
 | Calentar shaders y partículas | Tirón al primer uso de un efecto con el APK recién instalado; si lo hay, mostrarlo un cuadro durante el fundido de entrada (Compatibility no tiene ubershaders) | `tutorials/performance/pipeline_compilations.rst:15`, `tutorials/rendering/jitter_stutter.rst:93` |
-| Cambio de sala | Tiempo en negro de `change_scene_to_file`; carga en segundo plano solo si se nota | `tutorials/scripting/scene_tree.rst:189`, `tutorials/io/background_loading.rst:14`; guion `nucleo/cambio_de_sala` |
+| Cambio de sala | Tiempo en negro de `change_scene_to_file`: el APK de desarrollo imprime `SALA <clave> carga_ms=<n>` (`adb logcat`); carga en segundo plano solo si se nota | `tutorials/scripting/scene_tree.rst:189`, `tutorials/io/background_loading.rst:14`; guion `nucleo/cambio_de_sala` |

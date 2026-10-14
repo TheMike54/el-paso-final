@@ -10,6 +10,10 @@ extends Area2D
 @export var peligro: bool = false
 
 
+func _ready() -> void:
+	Capas.poner(self, Capas.DANINO, Capas.JUGADOR)
+
+
 func _physics_process(_delta: float) -> void:
 	for cuerpo: Node2D in get_overlapping_bodies():
 		var jugador: Jugador = cuerpo as Jugador

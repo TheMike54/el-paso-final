@@ -20,6 +20,10 @@ var _ticks_empujado: int = 0
 var _sentido: float = 0.0
 
 
+func _ready() -> void:
+	Capas.poner(self, Capas.GOLPEABLE, 0)
+
+
 func recibir_golpe(atacante: Node2D, dano: int = 1) -> void:
 	golpes += 1
 	dano_recibido += dano
@@ -56,20 +60,13 @@ func _paso_libre(paso: float) -> float:
 	var centro: Vector2 = forma.global_position
 	var sentido: float = signf(paso)
 	var libre: float = absf(paso)
-	var espacio: PhysicsDirectSpaceState2D = get_world_2d().direct_space_state
-	var excluir: Array[RID] = []
-	for _i: int in range(4):
-		var consulta: PhysicsRayQueryParameters2D = PhysicsRayQueryParameters2D.create(
-				centro, centro + Vector2(sentido * (mitad + libre), 0.0))
-		consulta.exclude = excluir
-		var choque: Dictionary = espacio.intersect_ray(consulta)
-		if choque.is_empty():
-			break
-		if choque["collider"] is StaticBody2D:
-			var punto: Vector2 = choque["position"] as Vector2
-			libre = minf(libre, maxf(absf(punto.x - centro.x) - mitad, 0.0))
-			break
-		excluir.append(choque["rid"] as RID)
+	var consulta: PhysicsRayQueryParameters2D = PhysicsRayQueryParameters2D.create(
+			centro, centro + Vector2(sentido * (mitad + libre), 0.0))
+	consulta.collision_mask = Capas.ESCENARIO
+	var choque: Dictionary = get_world_2d().direct_space_state.intersect_ray(consulta)
+	if not choque.is_empty():
+		var punto: Vector2 = choque["position"] as Vector2
+		libre = minf(libre, maxf(absf(punto.x - centro.x) - mitad, 0.0))
 	var sala: Sala = _sala()
 	if sala != null:
 		var limites: Rect2 = Rect2(sala.global_position + sala.limites.position, sala.limites.size)

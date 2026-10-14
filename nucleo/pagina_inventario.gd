@@ -6,7 +6,7 @@ extends CanvasLayer
 
 const CAPA: int = 20
 ## El arma es la habilidad pluma: sin ella no se ataca.
-const ARMA: StringName = &"pluma"
+const ARMA: StringName = Habilidades.PLUMA
 
 ## A la vista dentro del marco. Publico para los guiones.
 var abierta: bool = false

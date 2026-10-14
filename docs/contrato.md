@@ -22,6 +22,8 @@ Valores de `project.godot`. No se cambian sin actualizar esta tabla.
 | Texturas | Ninguna de más de 2048 px por lado (lo revisa el validador) | Memoria en gama baja |
 | Solo 2D | `Arranque` pone `disable_3d` en la vista raíz | La vista no prepara nada de 3D; un nodo 3D no se vería |
 | Compresión de texturas | `textures/vram_compression/import_etc2_astc=true` | Godot no exporta a Android sin ella |
+| Filtro de texturas | `textures/canvas_textures/default_texture_filter=2` (lineal con mipmaps) | La vista de 1280×720 se encoge en pantallas más chicas; el arte del mundo lleva mipmaps (ver «Recursos») |
+| Capas de física | `layer_names/2d_physics/layer_1` a `layer_7` | Nombres en el editor; la tabla, en «Capas de física» |
 | Id del paquete Android | `com.themike54.elpasofinal` | Identidad estable de la app instalada |
 
 ## Ciclo de vida
@@ -67,15 +69,18 @@ Valores de `project.godot`. No se cambian sin actualizar esta tabla.
 
 | `Guardado.Estado` | Cuándo |
 |---|---|
-| `VALIDA` | El archivo es JSON, su `version` es `VERSION` y `partida` tiene todos los campos del esquema con su tipo |
+| `VALIDA` | El archivo es JSON, su `version` es `VERSION` y `partida` tiene todos los campos del esquema con su tipo; los de `NUEVOS` que faltan se rellenan con su valor por omisión |
 | `VACIA` | No hay archivo: partida nueva. Un `.tmp` sobrante de un cierre a la mitad no cuenta |
-| `DANADA` | No es JSON, no es un objeto, falta `version` o no es número, `partida` no es un objeto, o le falta un campo o tiene otro tipo |
-| `INCOMPATIBLE` | `version` es un número distinto de `VERSION`, más nuevo o más viejo. No hay migración |
+| `DANADA` | No es JSON, no es un objeto, falta `version` o no es número, `partida` no es un objeto, o le falta un campo o tiene otro tipo (un campo de `NUEVOS` con otro tipo también) |
+| `INCOMPATIBLE` | `version` es más nueva que `VERSION` (el juego no la sabe leer) o más vieja y sin su función de conversión (hoy no hay ninguna: la 3 es la primera que llegó a la QA) |
 
 - Cuatro ranuras: `user://partida_1.json` a `partida_4.json`. `RUTA` (`user://partida.json`) es la partida de antes de
   las ranuras: el menú la pasa a la ranura 1 al abrir (`migrar`), y `Banco` la usa como centinela. `VERSION` es 3.
 - Esquema de la versión 3 (`Guardado.ESQUEMA`), copiado de Hollow Knight y Silksong (lo del jugador como listas de
-  ids; lo de cada sala con clave sala + objeto). Un campo nuevo cambia el esquema y `VERSION` en el mismo cambio.
+  ids; lo de cada sala con clave sala + objeto). Un campo nuevo va a `Guardado.NUEVOS` con su valor por
+  omisión en forma de JSON (`0.0`, `Array` sin tipo): al cargar, `Guardado.completar` lo rellena en una partida que
+  no lo tiene, sin subir `VERSION` (decisión del 14-oct-2026). `VERSION` sube solo cuando cambia la forma de un campo
+  que ya existe, y en el mismo cambio se escribe la función que convierte la partida de la versión anterior.
 
   | Campo | Tipo | Qué guarda |
   |---|---|---|
@@ -153,11 +158,10 @@ por omisión: los de sí o no en `Ajustes.POR_OMISION`; la disposición de los b
   vive fuera de las salas, así nada se corta al cruzar una puerta o salir al menú. Escucha `jugador_salto`,
   `enemigo_golpeado`, `jugador_danado`, `parry`, `jugador_curado` y `descanso_en_banco` y toca, en el bus `Efectos`, el
   efecto de su `FichaSonidos` (`nucleo/ficha_sonidos.gd`: un `AudioStream` por evento, su tono y una variación al
-  azar). Hoy la ficha es la de prueba, `nucleo/sonidos/sonidos_prueba.tres`; dónde vivirá la del juego está por
-  decidir.
+  azar). Hoy la ficha es la de prueba, `nucleo/sonidos/sonidos_prueba.tres`, la única que hay.
   `voces` (4) a la vez, cada nuevo en la voz siguiente; el mismo evento no suena dos veces en menos de
   `ticks_entre_iguales` (3), salvo daño y parry. Sin pantalla cuenta pero no toca. `pedidos`, `tocados` y `ultimo`
-  son públicas. La música por zona todavía no existe.
+  son públicas. La música por zona, como se decidió el 14-oct-2026, va en «Contenido que viene».
 - En Android, `vibrate_handheld` necesita el permiso `VIBRATE` en el preset de exportación (los presets de Android están en la rama
   `chore/android-export` hasta fusionarla); sin él no vibra. Un
   teléfono sin control de fuerza solo respeta la duración.
@@ -181,7 +185,7 @@ Autoload `Partida` (`nucleo/partida.gd`): lo que sobrevive al cambio de sala. Un
 | `dar_recompensa(recompensa)` | Entrega una `Recompensa` (PejeCoins, vida máxima, amuleto, habilidad o el mapa de una zona, con `obtener_mapa`) |
 | `ruta_guardado` | Archivo del banco y del autoguardado: `RUTA_PRUEBAS` (`user://prueba_partida.json`) por omisión, para que guiones y zona de pruebas no pisen la partida real; entrar a una ranura lo cambia a la ruta de esa ranura |
 | `autoguardar()`, `autoguardados` | Guarda en `ruta_guardado` sin tocar el banco y emite `partida_guardada`. Lo llaman los avisos `habilidad_obtenida`, `amuleto_obtenido`, `mapa_obtenido`, `coleccionable_obtenido`, `jefe_vencido` (que además anota el jefe) y `jugador_muerto`; «Salir al menú» de la pausa; la entrega de recompensas; poner o quitar un amuleto; terminar contando una conversación de un `Npc`; cada respuesta de un `RetoPreguntas`; y `NOTIFICATION_APPLICATION_PAUSED` o `NOTIFICATION_APPLICATION_FOCUS_OUT` con una sala abierta. `autoguardados` los cuenta |
-| `habilidades`, `tiene(id)` | `Array[StringName]` con las habilidades obtenidas, y si una está |
+| `habilidades`, `tiene(id)` | `Array[StringName]` con las habilidades obtenidas, y si una está. Los ids están en `nucleo/habilidades.gd` (`class_name Habilidades`, una constante por habilidad y `TODAS`); el código usa las constantes, no el texto. `obtener_habilidad` con un id que no está en `TODAS` imprime un `ERROR:` y no lo suma. El validador revisa que cada habilidad de un `ObjetoHabilidad`, de una `Recompensa` (de una entrega, un reto o una ficha de diálogo) y de `habilidades_de_prueba` esté en `TODAS`. Los ids no se renombran: los guarda la partida. Amuletos y jefes llevarán su id en su ficha cuando exista el primero |
 | `enemigos_vencidos`, `vencer(clave)`, `fue_vencido(clave)` | Claves (`"<clave de la sala>#<id>"`) de los enemigos fuertes vencidos desde el último descanso o la última muerte. Se borra al oír `descanso_en_banco` o `jugador_muerto` y en `reiniciar()`; no se guarda |
 | `inspiracion`, `ganar_inspiracion(n)` | Recurso de curación (0 a `INSPIRACION_MAXIMA`, 99); no se guarda, se reinicia con la partida y se vacía al oír `jugador_muerto`. Cada cambio emite `inspiracion_cambiada` |
 | `reiniciar()` | Partida nueva: la llaman una ranura vacía y la zona de pruebas |
@@ -226,6 +230,17 @@ Configuración vale desde la sala siguiente. Elegir alto en un teléfono débil 
   13-oct-2026, dos salas de pruebas bajaban de 60 a ~50 FPS con él (detalle en `docs/pruebas.md`, «Medir antes de
   optimizar»; no se separó cuánto es de cada rectángulo). Una sala cuyo fondo puede ser negro va sin `Fondo`; el
   núcleo no tiene otra forma de dar un color de fondo. El validador no lo revisa.
+- Tamaño del arte (decisión del 14-oct-2026): se pinta al tamaño en que se ve en la vista de 1280×720 (1x; el
+  personaje mide 160 px) y no se encoge en la escena. Ninguna imagen pasa de 2048 px por lado.
+- Importación del arte del mundo (`contenido/` y `herramientas/salas/arte/`; lo revisa el validador leyendo cada
+  `.import`): Mipmaps > Generate encendido, porque la vista se encoge en las pantallas más chicas
+  (`tutorials/assets_pipeline/importing_images.rst:373-393`; en la sala de arte, medido el 13-oct-2026 en el S50,
+  34,1 → 34,3 FPS y el APK +1,8 MB). Compresión Lossless por omisión; VRAM Compressed solo en una imagen sin
+  transparencia, como los fondos opacos grandes (`importing_images.rst:185-189`: en 2D deja artefactos). Excepción
+  decidida el 13-oct-2026: `fondo1`, `fondo2`, `lejana1` y `suelo` de la sala de arte, con transparencia, van en
+  VRAM (`ALFA_EN_VRAM` en `herramientas/validar.gd`). El HUD y los menús van sin mipmaps.
+- Filtro por omisión del lienzo: lineal con mipmaps (`rendering/textures/canvas_textures/default_texture_filter`
+  = 2 en `project.godot`).
 
 ## Bus de eventos
 
@@ -366,7 +381,7 @@ Una sala es una escena cuya raíz es un `Node2D` con `nucleo/sala.gd` (`class_na
 | Suelos y plataformas | `StaticBody2D` sólidos por todos lados: el núcleo no ofrece plataformas atravesables desde abajo (`one_way_collision`), decidido el 07-oct-2026 |
 | Controles, pausa, marco de menús, vibración, fundido, interfaz y mapa | También los crea la sala en su `_ready`: `ControlesTactiles`, `Pausa`, `Marco` (`MarcoMenus`), `Inventario` (`PaginaInventario`), `Amuletos` (`PantallaAmuletos`), `Vibracion`, `Fundido` y, si existen, `interfaz/interfaz.tscn` y `mapa/pantalla_mapa.tscn` (con `load()`, para que el núcleo no dependa de esos bloques; ver «Interfaz» y «Mapa») |
 | Propiedad `posicion_mapa` (`Vector2`) | Esquina de la sala en el mapa del mundo, en px: el mapa la dibuja en `posicion_mapa + limites`. Las salas de una zona se acomodan como se recorren. Cambiarla obliga a regenerar el índice del mapa |
-| Propiedad `habilidades_de_prueba` (`Array[StringName]`) | Solo salas de prueba: habilidades que la sala da en silencio al entrar (sin aviso ni autoguardado). Las de `herramientas/salas/` dan `pluma`, salvo la de combate chico (donde se recoge), la de capas y la del diálogo. El validador la exige vacía en `contenido/` |
+| Propiedad `habilidades_de_prueba` (`Array[StringName]`) | Solo salas de prueba: habilidades que la sala da en silencio al entrar (sin aviso ni autoguardado). Las de `herramientas/salas/` dan `pluma`, salvo la de combate chico (donde se recoge), la del diálogo y la del reto. El validador la exige vacía en `contenido/` |
 | Puertas (opcionales) | Instancias de `nucleo/puerta.tscn` (`class_name Puerta`, `Area2D`), hijas directas de la raíz. Ver abajo |
 | Capas de fondo y de frente (opcionales) | Nodos `Parallax2D` hijos de la raíz. `scroll_scale` menor que 1 para el fondo (más lejos, más lento) y mayor que 1 para el frente; `z_index` negativo para el fondo y positivo para el frente |
 
@@ -378,17 +393,22 @@ Una sala es una escena cuya raíz es un `Node2D` con `nucleo/sala.gd` (`class_na
 - `Sala.ruta_de(id)` (estática) da la escena de un id (primero `contenido/`, después la zona de prueba si existe);
   una ruta `res://` pasa tal cual. `Sala.zona_de(id)` da su zona. `clave()` es el id de la sala o, si no tiene, su
   ruta: lo que guardan `Partida.sala`, la clave de los enemigos fuertes y `cambio_de_sala`.
+- Los ids de sala no se renumeran nunca, aunque una sala se quite: los guardan la partida y el mapa. Una sala nueva
+  toma el siguiente número libre de su zona.
 - Convenciones de ids: puertas por su lado (`izquierda`, `derecha`, `arriba`, `abajo`; dos del mismo lado,
   `derecha_2`); banco `banco_<id de la sala>`; objetos que se recuerdan, un nombre corto único dentro de la sala.
 - El validador revisa cada sala con id: id `<zona>_<número>` igual al archivo, en la carpeta de su zona y sin
-  repetir; `limites` con área; `Entrada` dentro de `limites`; cada puerta con id único y destino existente; puertas
+  repetir; `limites` con área; `Entrada` dentro de `limites`; cada puerta con id único y destino existente, nombrado por id; puertas
   de ida y vuelta (si A lleva a la puerta P de B, P lleva de vuelta a la misma puerta de A); bancos con id
   `banco_<id>`; la raíz de cada escena de esas carpetas es una `Sala`; suelos frágiles, coleccionables, `Npc` y
   `RetoPreguntas` con id (sin él, falla) único en la sala; en `contenido/`, `habilidades_de_prueba`
   vacío. En cualquier escena, además, cada `Npc` tiene conversaciones, ninguna vacía, un id que no empieza con `coleccionable` ni
   `entregado_` y fichas sin fallos (`FichaDialogo.fallos()`, que también revisa cada `.tres` de ficha suelto); cada
   `RetoPreguntas`, un id igual de libre, `meta` entre 1 y el número de preguntas y preguntas sin fallos
-  (`FichaPregunta.fallos()`, también en cada `.tres` suelto). Esta
+  (`FichaPregunta.fallos()`, también en cada `.tres` suelto); cada puerta lleva a un id de sala o a una ruta `res://`
+  que existen, y nunca a la ruta de una sala con id (una puerta en `contenido/` o en una zona de prueba nombra su
+  destino por id, así una sala se puede mover de carpeta); cada habilidad de un `ObjetoHabilidad`, de una recompensa y
+  de `habilidades_de_prueba` está en `Habilidades.TODAS`. Esta
   es la lista completa de lo que revisa en las salas (`herramientas/validar.gd`).
 - Una capa se desplaza en proporción a la cámara: su posición es el borde de la cámara por `1 - scroll_scale`
   (medido en un guion el 06-oct-2026). Para que no queden huecos, el contenido de una capa cubre, en cada eje,
@@ -417,14 +437,16 @@ Cambio de sala:
 | Propiedad de `Puerta` | Qué es |
 |---|---|
 | `id` | Texto único dentro de su sala |
-| `sala_destino` | Ruta `res://` de la escena de la sala a la que lleva |
+| `sala_destino` | Id de la sala a la que lleva (`prueba_2`); la puerta cambia a `Sala.ruta_de(sala_destino)`. Una ruta `res://` solo para ir a una sala de prueba suelta, sin id |
 | `puerta_destino` | `id` de la puerta de la sala destino donde aparece el jugador |
 | `llegada` | Dónde aparece el jugador al llegar por esta puerta, relativo a ella; fuera de su área para no rebotar |
 
 - Cuando el jugador entra al área de una puerta, la pantalla funde a negro (`Fundido.TICKS_OSCURECER` ticks, con el
   jugador todavía en la sala), sigue en negro `Fundido.TICKS_EN_NEGRO_PUERTA` ticks y después la puerta guarda `puerta_destino` en `Sala.puerta_llegada` (variable
   estática) y cambia de escena en diferido; la sala nueva empieza en negro y aclara. Si el jugador muere mientras
-  funde, la puerta no cambia de sala: manda la muerte. La sala nueva pone al jugador en `llegada` de esa puerta. Si no la
+  funde, la puerta no cambia de sala: manda la muerte. En un build de depuración, el primer tick de la sala nueva imprime
+  `SALA <clave> carga_ms=<n>`: lo que pasó desde que la puerta pidió el cambio (`Sala.cambio_pedido_ms`). Las salas no
+  se cargan en segundo plano; se reconsidera si una puerta pasa de ~0,5 s en el S50 con salas reales. La sala nueva pone al jugador en `llegada` de esa puerta. Si no la
   encuentra, imprime un `ERROR:` y lo pone en `Entrada`. Ese error ocurre al correr: lo atrapa un guion que cruza
   la puerta, no `validar.ps1`.
 - El área de la puerta mide 40×160 y el salto sube 200 px: una puerta en el borde de `limites` lleva detrás un
@@ -485,6 +507,23 @@ ataca es un script que la ficha referencia (`comportamiento`), en `contenido/ene
 - Débil: reaparece solo, porque la sala se instancia de nuevo cada vez que se entra. Fuerte: al vencerlo,
   `Partida.vencer(clave())` lo anota y, mientras siga anotado, no aparece al entrar a su sala. La lista se borra
   al descansar en un banco y al morir el jugador (como los semipersistentes de Hollow Knight).
+- Enemigos nuevos (decisión del 14-oct-2026): con estas mismas piezas (`Golpeable`, `DanoContacto`, comportamiento en
+  la ficha); sus estados, con un `enum` mientras sean pocos; las zonas de golpe, formas invisibles aparte del dibujo;
+  la animación, con `AnimatedSprite2D`.
+- Jefes (misma fecha): sin base común hasta que exista el segundo. La arena se cierra con una pared que se quita al
+  vencerlo; morir en la arena lleva al banco, abre la arena y el jefe empieza de nuevo.
+
+## Contenido que viene
+
+Decisiones del 14-oct-2026 para lo que aún no existe; cada una se vuelve código con su primer caso.
+
+- Salas: Claude escribe cada sala completa como `.tscn` (formas, puertas, objetos y decoración); la persona la revisa
+  en el editor si quiere.
+- Audio: efectos en WAV y música en Ogg Vorbis; cada zona dice su música en su ficha y la toca un nodo que vive
+  fuera de las salas, para que no se corte al cruzar una puerta.
+- Exportación: APK directo; una sola máquina exporta las versiones; la clave de publicación la genera la persona y
+  se guarda fuera del repo.
+- Idioma: solo español en la v1; cada texto se escribe completo, sin frases armadas a pedazos.
 
 ## Interfaz
 
@@ -567,6 +606,27 @@ Bloque `mapa/`: no conoce ninguna zona; dibuja lo que hay y, si no hay nada, no 
 | `pantalla_encima` | Una pantalla abierta sobre el juego (hoy, `MarcoMenus`) con `bloquea_pausa() -> bool` | La `Pausa`: no se abre (con `pausa`, Atrás ni al perder el foco) mientras una diga que bloquea, ni en el tick en que se cerró |
 | `pagina_marco` | Las páginas del marco de menús: `PaginaInventario`, `PantallaAmuletos` y `PantallaMapa` | `MarcoMenus`, que las ordena y las muestra (ver «Marco de menús») |
 
+## Capas de física
+
+Nombradas en `project.godot` (`layer_names/2d_physics/`) y con sus constantes en `nucleo/capas.gd`
+(`class_name Capas`). Cada pieza se pone en la suya y fija su máscara en `_ready` con `Capas.poner(self, capa,
+mascara)`: no se fijan en los `.tscn`, así una sala no puede olvidarlas. Así lo propone
+`tutorials/physics/physics_introduction.rst:115-155`.
+
+| Capa | Nombre | Quién está en ella | Su máscara |
+|---|---|---|---|
+| 1 | `escenario` | Todo `StaticBody2D` (suelos, paredes, `SueloFragil`). Es la capa por omisión: las formas de las salas no la fijan | — |
+| 2 | `jugador` | El cuerpo del `Jugador` y el de la caja gris | `escenario` |
+| 3 | `golpeable` | `Golpeable` y `Cortable` | `Golpeable`: ninguna; `Cortable`: `jugador` (se sacude al pasar) |
+| 4 | `danino` | `DanoContacto` y lo que hereda de él (`AtaqueEnemigo`, `ProyectilEnemigo`) | `jugador` |
+| 5 | `interaccion` | `Puerta`, `Banco`, `Coleccionable`, `ObjetoHabilidad`, `ObjetoMapa`, `Npc`, `RetoPreguntas`, `EntregaRecompensas` y el interruptor de la brújula | `jugador` |
+| 6 | `ataque_jugador` | El área `Ataque` del jugador y su `Proyectil` | `Ataque`: `golpeable` y `danino` (parry y pogo); `Proyectil`: `golpeable` |
+| 7 | `cuerpo_enemigo` | Reservada para el primer enemigo que camine con física (`CharacterBody2D`), que miraría `escenario` | — |
+
+- Los rayos y consultas directas fijan su máscara: los del `Golpeable`, la bola, su salida desde el jugador y el
+  `ProyectilEnemigo` miran `escenario`; la onda de la caída en picada, `golpeable`.
+- Una pieza nueva que detecta o es detectada entra a esta tabla y a `prueba_capas_fisica.gd` en el mismo cambio.
+
 ## Capas de dibujo
 
 | Capa | Qué | Dónde |
@@ -634,7 +694,8 @@ cambio se guarda al momento; las barras, al soltarlas.
 Atrás y la acción `pausa` vuelven un nivel a la vez (`atras()` del menú y de la Configuración): cancelan el editor, la espera de un botón y la
 confirmación, de un subpanel vuelven a la lista, de «Nueva partida» a las ranuras, de la lista o de las ranuras al menú, y en el menú piden
 confirmación antes de cerrar la app. La zona de pruebas es un nivel más: su «Volver», Atrás y `pausa` regresan al menú con
-el foco en su entrada (`MenuPrincipal.volver_a_zona`, que el menú lee al entrar). Se maneja con toque, teclado y
+el foco en su entrada (`MenuPrincipal.volver_a_zona`, que el menú lee al entrar). Quien vuelve al menú (pausa, «Volver al
+menú» de la caja gris, zona de pruebas) usa `MenuPrincipal.RUTA`. Se maneja con toque, teclado y
 control (el foco empieza en la primera opción de cada pantalla). Las opciones nuevas de configuración se agregan a
 esa escena.
 

@@ -29,6 +29,7 @@ var _nodo_entero: Node2D = null
 
 
 func _ready() -> void:
+	Capas.poner(self, Capas.GOLPEABLE, Capas.JUGADOR)
 	_nodo_entero = get_node_or_null(entero) as Node2D
 	var cortada: CanvasItem = get_node_or_null(version_cortada) as CanvasItem
 	if cortada != null:

@@ -9,6 +9,7 @@ extends Area2D
 
 
 func _ready() -> void:
+	Capas.poner(self, Capas.INTERACCION, Capas.JUGADOR)
 	if zona.is_empty():
 		var sala: Sala = owner as Sala
 		if sala != null:

@@ -17,13 +17,12 @@ const COLOR: Color = Color(0.75, 0.75, 0.8)
 
 ## Sentido en x: 1 a la derecha, -1 a la izquierda. Lo fija quien lo lanza.
 var sentido: float = 1.0
-## Cuerpo que lo lanza: el rayo no lo cuenta como solido.
-var lanzador: CollisionObject2D = null
 
 var _golpeados: Array[Golpeable] = []
 
 
 func _ready() -> void:
+	Capas.poner(self, Capas.ATAQUE_JUGADOR, Capas.GOLPEABLE)
 	area_entered.connect(_al_tocar_area)
 
 
@@ -35,8 +34,7 @@ func _physics_process(delta: float) -> void:
 	var paso: float = sentido * velocidad * delta
 	var frente: Vector2 = global_position + Vector2(paso + sentido * TAMANO.x / 2.0, 0.0)
 	var consulta: PhysicsRayQueryParameters2D = PhysicsRayQueryParameters2D.create(global_position, frente)
-	if is_instance_valid(lanzador):
-		consulta.exclude = [lanzador.get_rid()]
+	consulta.collision_mask = Capas.ESCENARIO
 	if not get_world_2d().direct_space_state.intersect_ray(consulta).is_empty():
 		queue_free()
 		return

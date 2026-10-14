@@ -37,7 +37,7 @@ const COLOR_BOTON: Color = Color(1.0, 1.0, 1.0, 0.5)
 const COLOR_PRESIONADO: Color = Color(1.0, 1.0, 1.0, 0.25)
 ## Botones que solo existen con una habilidad: accion -> habilidad de Partida. Sin ella no se
 ## dibujan ni responden, y los demas no se mueven.
-const HABILIDAD_DE_BOTON: Dictionary[StringName, StringName] = {&"impulso": &"impulso", &"atacar": &"pluma"}
+const HABILIDAD_DE_BOTON: Dictionary[StringName, StringName] = {&"impulso": Habilidades.IMPULSO, &"atacar": Habilidades.PLUMA}
 ## Segmentos de cada aro y tamano unico de las etiquetas: en el S50 el dibujo de los controles costaba
 ## ~3,5 FPS jugando (medido el 12-oct-2026), sobre todo por intercalar aros y letras de tres tamanos.
 const SEGMENTOS_ARCO: int = 24

@@ -15,6 +15,10 @@ const PREFIJO_ENTREGADO: String = "entregado_"
 var entregadas: int = 0
 
 
+func _ready() -> void:
+	Capas.poner(self, Capas.INTERACCION, Capas.JUGADOR)
+
+
 func _physics_process(_delta: float) -> void:
 	if not Input.is_action_just_pressed(&"interactuar"):
 		return

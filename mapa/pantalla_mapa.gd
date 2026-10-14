@@ -6,7 +6,7 @@ extends CanvasLayer
 # con el amuleto brujula equipado. La carga la sala con load() si existe: el nucleo no depende de este bloque.
 
 const CAPA: int = 20
-const PLUMA: StringName = &"pluma_mapa"
+const PLUMA: StringName = Habilidades.PLUMA_MAPA
 const BRUJULA: StringName = &"brujula"
 
 ## Mapa completo a la vista en el marco (juego detenido) y mapa rapido a la vista. Publicas para los guiones.

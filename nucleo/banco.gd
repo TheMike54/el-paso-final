@@ -11,6 +11,10 @@ extends Area2D
 ## partida en curso; una sala de prueba puede fijar otro para no tocar la partida real.
 @export var ruta_guardado: String = Guardado.RUTA
 
+func _ready() -> void:
+	Capas.poner(self, Capas.INTERACCION, Capas.JUGADOR)
+
+
 func _physics_process(_delta: float) -> void:
 	if not Input.is_action_just_pressed(&"interactuar"):
 		return

@@ -13,6 +13,7 @@ var _ticks_aviso: int = 0
 
 
 func _ready() -> void:
+	Capas.poner(self, Capas.INTERACCION, Capas.JUGADOR)
 	body_entered.connect(_al_entrar)
 	# Se crea aqui y no al declararla: el validador instancia la escena sin _ready y la etiqueta quedaria huerfana.
 	_aviso = Label.new()

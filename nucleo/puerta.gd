@@ -6,8 +6,8 @@ extends Area2D
 
 ## Id de la puerta, unico dentro de su sala.
 @export var id: StringName = &""
-## Escena de la sala a la que lleva.
-@export_file("*.tscn") var sala_destino: String = ""
+## Sala a la que lleva: su id (prueba_2), o su ruta res:// solo si es una sala de prueba suelta sin id.
+@export var sala_destino: String = ""
 ## Id de la puerta de la sala destino donde aparece el jugador.
 @export var puerta_destino: StringName = &""
 ## Donde aparece el jugador al llegar por esta puerta, relativo a ella. Fuera de su area, para no rebotar.
@@ -20,6 +20,7 @@ var _ticks_para_cambiar: int = 0
 
 
 func _ready() -> void:
+	Capas.poner(self, Capas.INTERACCION, Capas.JUGADOR)
 	body_entered.connect(_al_entrar)
 
 
@@ -41,5 +42,6 @@ func _physics_process(_delta: float) -> void:
 		if _jugador.muerto:
 			return
 		Sala.puerta_llegada = puerta_destino
+		Sala.cambio_pedido_ms = Time.get_ticks_msec()
 		# Diferido: no se cambia de escena dentro de una llamada de la fisica.
-		get_tree().change_scene_to_file.call_deferred(sala_destino)
+		get_tree().change_scene_to_file.call_deferred(Sala.ruta_de(sala_destino))

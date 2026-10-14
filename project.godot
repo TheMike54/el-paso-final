@@ -119,8 +119,19 @@ pausa={
 ]
 }
 
+[layer_names]
+
+2d_physics/layer_1="escenario"
+2d_physics/layer_2="jugador"
+2d_physics/layer_3="golpeable"
+2d_physics/layer_4="danino"
+2d_physics/layer_5="interaccion"
+2d_physics/layer_6="ataque_jugador"
+2d_physics/layer_7="cuerpo_enemigo"
+
 [rendering]
 
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
+textures/canvas_textures/default_texture_filter=2
 textures/vram_compression/import_etc2_astc=true

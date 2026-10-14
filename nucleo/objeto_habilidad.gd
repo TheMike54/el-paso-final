@@ -4,11 +4,12 @@ extends Area2D
 # Eventos.habilidad_obtenida (que autoguarda) y el objeto desaparece. Si la partida ya la tiene, no aparece. Lo usan
 # las salas de prueba de cada habilidad; en el juego lo daran los jefes.
 
-## Id de la habilidad: pluma (el arma), impulso, salto_en_pared, doble_salto, proyectil o caida_en_picada.
+## Id de la habilidad: una de Habilidades.TODAS (el validador lo revisa).
 @export var habilidad: StringName = &""
 
 
 func _ready() -> void:
+	Capas.poner(self, Capas.INTERACCION, Capas.JUGADOR)
 	if Partida.tiene(habilidad):
 		queue_free()
 		return

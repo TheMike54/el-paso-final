@@ -12,6 +12,7 @@ const COLOR: Color = Color(0.95, 0.8, 0.3)
 
 
 func _ready() -> void:
+	Capas.poner(self, Capas.INTERACCION, Capas.JUGADOR)
 	if not id.begins_with(Partida.PREFIJO_COLECCIONABLE):
 		push_error("Coleccionable %s: el id debe empezar con '%s'" % [name, Partida.PREFIJO_COLECCIONABLE])
 	if Partida.estado_de(Sala.clave_de(self), id) != null:

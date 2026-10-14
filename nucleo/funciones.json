@@ -477,12 +477,36 @@
     "id": "pared-tras-puerta",
     "que": "Cada puerta en el borde de una sala tiene una pared invisible detras: saltar justo antes de la puerta cambia de sala en vez de pasarla por encima",
     "comprobacion": "herramientas/guiones/nucleo/puerta_salto_a.guion;herramientas/guiones/nucleo/puerta_salto_b.guion;herramientas/guiones/nucleo/sala_puerta_a_pared.guion",
-    "pasa": false
+    "pasa": true
   },
   {
     "id": "foco-ultima-entrada",
     "que": "Los menus dan el foco con Tema.dar_foco: el recuadro se dibuja solo si lo ultimo que se uso fue un control o el teclado (UltimaEntrada), no tras un toque",
     "comprobacion": "herramientas/guiones/nucleo/menu_configuracion.guion",
-    "pasa": false
+    "pasa": true
+  },
+  {
+    "id": "capas-fisica",
+    "que": "Cada cuerpo, area y rayo del nucleo esta en una capa de fisica con nombre (Capas) y solo busca las capas que le tocan: el jugador no choca con lo que se toca ni con su propio ataque, y los rayos de solidos solo ven el escenario",
+    "comprobacion": "herramientas/guiones/nucleo/capas_fisica.guion;herramientas/guiones/nucleo/poder_bola.guion",
+    "pasa": true
+  },
+  {
+    "id": "agarre-pared-altura",
+    "que": "altura_agarre_pared (0 por omision) pide que la pared llegue a esa fraccion del cuerpo para agarrarse; con 0 basta cualquier contacto, como Hollow Knight",
+    "comprobacion": "herramientas/guiones/nucleo/agarre_pared.guion",
+    "pasa": true
+  },
+  {
+    "id": "puertas-por-id",
+    "que": "Cada puerta de las zonas guarda en sala_destino el id de la sala y la resuelve con Sala.ruta_de al cruzar: se llega a la sala correcta",
+    "comprobacion": "herramientas/guiones/contenido/zona_prueba_puertas.guion",
+    "pasa": true
+  },
+  {
+    "id": "guardado-campos-nuevos",
+    "que": "Un campo nuevo de la partida se agrega en Guardado.NUEVOS con su valor por omision: una partida guardada sin el campo se carga con ese valor, sin subir la version",
+    "comprobacion": "herramientas/guiones/nucleo/guardado.guion",
+    "pasa": true
   }
 ]

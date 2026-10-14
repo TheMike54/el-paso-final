@@ -31,16 +31,18 @@ ese mismo banco con las mismas vidas y las mismas habilidades.
 | Historia | Intro con imágenes fijas y escena de los sinodales |
 | Zonas | Las dos primeras, completas: tres enemigos, raíces con espinas, un mini jefe opcional y el jefe de la zona |
 | Progresión | La habilidad de impulso, el arma base y un amuleto |
-| Sistemas | Cuatro vidas, curación, bancos y guardado, mochila, y un reto de preguntas para recuperar lo perdido al morir |
+| Sistemas | Cuatro vidas, curación, bancos y guardado, lo perdido al morir (mochila), y un reto de preguntas para recuperar lo perdido al morir |
 | Personajes | Un personaje guía que entrega el arma y el mapa de la primera zona |
 | Teléfono | Controles táctiles personalizables y modo de bajo detalle para gama baja |
+| Idioma | Solo español (decisión del 14-oct-2026) |
 | Desarrollo | Zona de pruebas básica: pasillo de mecánicas, arena de jefes y panel de trucos. Viaja también en la versión publicada y aparece con el modo desarrollador (`docs/contrato.md`, «Paquete de publicación») |
 
 ## Qué se aplaza a propósito
 
 Las zonas restantes y el final con los sinodales; las demás habilidades; la tienda y el minijuego de apuestas;
 las mejoras del arma; el viaje rápido entre estaciones; los personajes secundarios restantes; la música
-completa; el fondo animado del menú.
+completa; el fondo animado del menú. Fuera de la v1 (decisiones del 13-oct-2026): inventario de objetos, «sobrecarga»
+de amuletos y logros; el dash hacia abajo se descartó (le quitaría su papel a la caída en picada).
 
 ## Cómo se construye
 

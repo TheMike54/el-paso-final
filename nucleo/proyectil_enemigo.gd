@@ -29,10 +29,8 @@ func _physics_process(delta: float) -> void:
 	var paso: Vector2 = _direccion * velocidad * delta
 	var frente: Vector2 = global_position + paso + _direccion * TAMANO.x / 2.0
 	var consulta: PhysicsRayQueryParameters2D = PhysicsRayQueryParameters2D.create(global_position, frente)
-	consulta.collide_with_areas = false
-	var golpe: Dictionary = get_world_2d().direct_space_state.intersect_ray(consulta)
-	# El jugador es un cuerpo: el rayo lo encuentra, pero no es un solido del escenario.
-	if not golpe.is_empty() and not golpe["collider"] is Jugador:
+	consulta.collision_mask = Capas.ESCENARIO
+	if not get_world_2d().direct_space_state.intersect_ray(consulta).is_empty():
 		queue_free()
 		return
 	position += paso

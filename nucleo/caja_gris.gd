@@ -9,6 +9,10 @@ const TAMANO: Vector2 = Vector2(80.0, 160.0)
 const COLOR: Color = Color(0.55, 0.55, 0.55)
 
 
+func _ready() -> void:
+	Capas.poner(self, Capas.JUGADOR, Capas.ESCENARIO)
+
+
 func _physics_process(delta: float) -> void:
 	velocity.x = Input.get_axis(&"mover_izquierda", &"mover_derecha") * VELOCIDAD
 	if not is_on_floor():

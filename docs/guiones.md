@@ -44,4 +44,6 @@ corre el puerto de depuración (`herramientas/puerto_depuracion.gd`), en local y
   decimales.
 - Lo que tiene muchos casos de lógica va en una escena de prueba (`herramientas/salas/prueba_<nombre>.gd`) que
   hereda por ruta `herramientas/salas/prueba_base.gd`: cuenta con `_caso(nombre, bien)`, imprime solo los fallos y
-  `_resumen()`, y su guion lee `valor . casos` y `valor . fallos`.
+  `_resumen()`, y su guion lee `valor . casos` y `valor . fallos`. La base trae además `_esperar(ticks)`,
+  `_presionar(accion)` y `_escribir(ruta, texto)`. `prueba_control.gd`, `prueba_vista.gd` y `prueba_foco.gd` no
+  heredan de ella.

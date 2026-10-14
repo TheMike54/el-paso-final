@@ -122,8 +122,12 @@ func tiene(habilidad: StringName) -> bool:
 	return habilidades.has(habilidad)
 
 
-## Suma una habilidad y lo avisa (el aviso autoguarda). Si ya la tenia, no hace nada.
+## Suma una habilidad y lo avisa (el aviso autoguarda). Si ya la tenia, no hace nada; un id que no esta en
+## Habilidades.TODAS es un error de la sala o de la ficha y no se suma.
 func obtener_habilidad(habilidad: StringName) -> void:
+	if not Habilidades.TODAS.has(habilidad):
+		push_error("Partida.obtener_habilidad: '%s' no es una habilidad (Habilidades.TODAS)" % habilidad)
+		return
 	if tiene(habilidad):
 		return
 	habilidades.append(habilidad)
@@ -252,7 +256,7 @@ func visitar(clave_sala: String) -> void:
 # mapa las salas visitadas de las zonas cuyo mapa se tiene (como la Pluma de Hollow Knight y Silksong).
 func _al_descansar(_banco: StringName) -> void:
 	enemigos_vencidos.clear()
-	if not tiene(&"pluma_mapa"):
+	if not tiene(Habilidades.PLUMA_MAPA):
 		return
 	for visitada: String in salas_visitadas:
 		if not salas_mapeadas.has(visitada) and mapas.has(Sala.zona_de(visitada)):

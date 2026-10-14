@@ -28,7 +28,12 @@ Leer `funciones.json` de esta carpeta.
   lado (entrada `validador-texturas`); el índice de salas del mapa está al día (entrada
   `mapa-indice` de `mapa/funciones.json`); las tablas de la zona de pruebas (`GRUPOS` y `OCULTAS` de
   `herramientas/salas/zona_pruebas.gd`) solo nombran escenas que existen (entrada `validador-zona-pruebas`); cada `Npc` y
-  `RetoPreguntas` con conversaciones o preguntas sin fallos e id libre (detalle en `docs/contrato.md`, «Sala»).
+  `RetoPreguntas` con conversaciones o preguntas sin fallos e id libre (detalle en `docs/contrato.md`, «Sala»);
+  cada `Puerta` lleva en `sala_destino` el id de una sala que existe, nunca la ruta de una sala con id (una ruta
+  `res://` solo a una sala de prueba suelta, sin id); cada habilidad que se da (objetos, recompensas y `habilidades_de_prueba`) está en
+  `Habilidades.TODAS` (entrada `validador-habilidades`); el arte del mundo (`CARPETAS_ARTE_MUNDO`) se importa con
+  mipmaps y, si tiene transparencia, sin VRAM Compressed, salvo lo que lista `ALFA_EN_VRAM` (entrada
+  `validador-importacion`; reglas en `docs/contrato.md`, «Recursos»).
 - Los `.ps1`, además de lo que dice el raíz: sin `$ErrorActionPreference = 'Stop'` alrededor de un ejecutable.
 - El detalle de `validar.ps1` va a `.godot/validar.log`.
 - El CI corre la misma validación que `validar.ps1` y además todos los guiones, los mensajes de commit y los

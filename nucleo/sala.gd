@@ -23,6 +23,10 @@ const MARGEN_FONDO: float = 280.0
 static var puerta_llegada: StringName = &""
 ## Verdadero si el jugador debe aparecer en el banco Partida.banco de la proxima sala.
 static var llegada_a_banco: bool = false
+## Time.get_ticks_msec() cuando una puerta pidio el cambio de escena; -1 si no hay uno en curso. En un build de
+## depuracion, el primer tick de la sala nueva imprime cuanto tardo (decision del 14-oct-2026: se mide en el S50
+## antes de pensar en cargar en segundo plano).
+static var cambio_pedido_ms: int = -1
 
 ## Carpeta de las salas del juego: contenido/salas/<zona>/<id>.tscn.
 const CARPETA_CONTENIDO: String = "res://contenido/salas/"
@@ -147,6 +151,10 @@ func _al_morir_el_jugador() -> void:
 
 
 func _physics_process(_delta: float) -> void:
+	if cambio_pedido_ms >= 0:
+		if OS.is_debug_build():
+			print("SALA %s carga_ms=%d" % [clave(), Time.get_ticks_msec() - cambio_pedido_ms])
+		cambio_pedido_ms = -1
 	if _ticks_para_reaparecer == 0:
 		return
 	_ticks_para_reaparecer -= 1

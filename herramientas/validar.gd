@@ -6,7 +6,9 @@ extends Node
 # objetos recordados (suelo fragil, coleccionable, npc, reto de preguntas) con id unico. Revisa tambien la forma de
 # cada FichaDialogo y FichaPregunta, y de los Npc y RetoPreguntas de cualquier escena. En cualquier escena, un DanoContacto que se mueve
 # (dentro de un Vaiven, un enemigo o un cuerpo que se mueve) no puede ser peligro. Las tablas de la zona de pruebas
-# (GRUPOS y OCULTAS) solo nombran escenas que existen. Ninguna imagen pasa de 2048 px por lado.
+# (GRUPOS y OCULTAS) solo nombran escenas que existen. Ninguna imagen pasa de 2048 px por lado. Cada puerta lleva a un
+# destino que existe, por id si es una sala con id; cada id de habilidad esta en Habilidades.TODAS; el arte del
+# mundo se importa con mipmaps y en VRAM solo sin transparencia.
 const IGNORAR: PackedStringArray = ["addons", "build"]
 const CAMPOS_TEXTO: PackedStringArray = ["id", "que", "comprobacion"]
 const INDICE_MAPA: String = "res://mapa/indice_salas.gd"
@@ -56,12 +58,47 @@ const IMAGENES: PackedStringArray = ["png", "jpg", "jpeg", "webp", "svg"]
 const MAXIMO_LADO_TEXTURA: int = 2048
 
 
+## Arte del mundo: el de las salas del juego y el de la sala de arte. El HUD y los menus no llevan mipmaps.
+const CARPETAS_ARTE_MUNDO: PackedStringArray = ["res://contenido/", "res://herramientas/salas/arte/"]
+## Imagenes con transparencia que van comprimidas en VRAM por excepcion (fondos de la sala de arte, decidido el
+## 13-oct-2026). Una excepcion nueva se anota aqui y en docs/contrato.md, «Recursos».
+const ALFA_EN_VRAM: PackedStringArray = [
+	"res://herramientas/salas/arte/fondo1.png",
+	"res://herramientas/salas/arte/fondo2.png",
+	"res://herramientas/salas/arte/lejana1.png",
+	"res://herramientas/salas/arte/suelo.png",
+]
+## compress/mode de un .import: 2 es VRAM Compressed.
+const MODO_VRAM: int = 2
+
+
 func _revisar_imagen(ruta: String) -> void:
 	var textura: Texture2D = ResourceLoader.load(ruta) as Texture2D
 	if textura == null:
 		_fallos.append(ruta + " (imagen que no carga como textura)")
 	elif textura.get_width() > MAXIMO_LADO_TEXTURA or textura.get_height() > MAXIMO_LADO_TEXTURA:
 		_fallos.append("%s (%dx%d px: el maximo es %d por lado)" % [ruta, textura.get_width(), textura.get_height(), MAXIMO_LADO_TEXTURA])
+	for carpeta: String in CARPETAS_ARTE_MUNDO:
+		if ruta.begins_with(carpeta):
+			_revisar_importacion(ruta)
+
+
+# Importacion del arte del mundo (tutorials/assets_pipeline/importing_images.rst:185-189 y :373-393): con mipmaps,
+# porque la vista de 1280x720 se encoge en las pantallas mas chicas; Lossless por omision y VRAM Compressed solo en
+# una imagen sin transparencia (en 2D, VRAM deja artefactos que se notan mas en los bordes translucidos).
+func _revisar_importacion(ruta: String) -> void:
+	var importado: ConfigFile = ConfigFile.new()
+	if importado.load(ruta + ".import") != OK:
+		_fallos.append(ruta + " (sin .import)")
+		return
+	if not (importado.get_value("params", "mipmaps/generate", false) as bool):
+		_fallos.append(ruta + " (arte del mundo sin mipmaps: Mipmaps > Generate al importar)")
+	if (importado.get_value("params", "compress/mode", 0) as int) != MODO_VRAM or ALFA_EN_VRAM.has(ruta):
+		return
+	# Se lee el archivo original: la textura importada en VRAM ya viene comprimida.
+	var imagen: Image = Image.load_from_file(ProjectSettings.globalize_path(ruta))
+	if imagen != null and imagen.detect_alpha() != Image.ALPHA_NONE:
+		_fallos.append(ruta + " (tiene transparencia y va en VRAM Compressed: Lossless, o excepcion en ALFA_EN_VRAM)")
 
 
 func _revisar(ruta: String) -> void:
@@ -89,9 +126,13 @@ func _revisar(ruta: String) -> void:
 			else:
 				if _es_carpeta_de_salas(ruta):
 					_revisar_sala(ruta, nodo)
+				else:
+					for puerta: Node in nodo.find_children("*", "Puerta", true, false):
+						_destino_de_puerta(ruta, puerta as Puerta)
 				if nodo is Sala:
 					_revisar_presupuesto(ruta, nodo)
 				_revisar_peligros(ruta, nodo)
+				_revisar_habilidades(ruta, nodo)
 				_revisar_npcs(ruta, nodo)
 				nodo.free()
 
@@ -254,6 +295,54 @@ func _es_carpeta_de_salas(ruta: String) -> bool:
 	return false
 
 
+# Ruta de la escena a la que lleva una puerta. sala_destino es el id de una sala o, para una sala de prueba suelta,
+# su ruta res://. Anota el fallo y devuelve "" si el destino no existe, si no es id ni ruta o si es la ruta de una
+# sala con id (esas se nombran por su id). No usa Sala.ruta_de con lo que no es id: su push_error haria fallar la
+# validacion sin decir de que puerta viene.
+func _destino_de_puerta(ruta: String, puerta: Puerta) -> String:
+	var destino: String = puerta.sala_destino
+	var motivo: String = ""
+	if destino.begins_with("res://"):
+		if _es_carpeta_de_salas(destino):
+			motivo = "usa la ruta %s: una sala con id se nombra por su id" % destino
+	elif Sala.zona_de(destino).is_empty():
+		motivo = "lleva a '%s', que no es un id de sala ni una ruta res://" % destino
+	else:
+		destino = Sala.ruta_de(destino)
+	if motivo.is_empty() and not ResourceLoader.exists(destino):
+		motivo = "lleva a %s, que no existe" % destino
+	if not motivo.is_empty():
+		_fallos.append("%s (la puerta %s %s)" % [ruta, puerta.id, motivo])
+		return ""
+	return destino
+
+
+# Cada id de habilidad de una escena esta en Habilidades.TODAS: el de un ObjetoHabilidad puesto en una sala, el de las recompensas de
+# una EntregaRecompensas o un RetoPreguntas y los de habilidades_de_prueba. Las de un Npc las revisa
+# FichaDialogo.fallos().
+func _revisar_habilidades(ruta: String, raiz: Node) -> void:
+	var nodos: Array[Node] = raiz.find_children("*", "", true, false)
+	nodos.push_front(raiz)
+	for nodo: Node in nodos:
+		var ids: Array[StringName] = []
+		var recompensas: Array[Recompensa] = []
+		# La escena de la pieza sola (nucleo/objeto_habilidad.tscn) va sin habilidad: la pone la sala que la usa.
+		if nodo is ObjetoHabilidad and nodo != raiz:
+			ids.append((nodo as ObjetoHabilidad).habilidad)
+		elif nodo is EntregaRecompensas:
+			recompensas = (nodo as EntregaRecompensas).recompensas
+		elif nodo is RetoPreguntas:
+			recompensas.append((nodo as RetoPreguntas).recompensa)
+		elif nodo is Sala:
+			ids.append_array((nodo as Sala).habilidades_de_prueba)
+		for recompensa: Recompensa in recompensas:
+			if recompensa != null and recompensa.tipo == Recompensa.Tipo.HABILIDAD:
+				ids.append(recompensa.id)
+		for id: StringName in ids:
+			if not Habilidades.TODAS.has(id):
+				_fallos.append("%s (%s: '%s' no es una habilidad de Habilidades.TODAS)" % [ruta, nodo.name, id])
+
+
 # Una sala del juego o de una zona de prueba: raiz Sala con id <zona>_<numero> igual al archivo, en la carpeta de su
 # zona y sin repetir; limites con area; Entrada dentro de limites; puertas con id unico y destino existente; bancos
 # con id banco_<id de la sala>.
@@ -295,10 +384,10 @@ func _revisar_sala(ruta: String, nodo: Node) -> void:
 		if puerta != null:
 			if puerta.id.is_empty() or puertas.has(String(puerta.id)):
 				_fallos.append("%s (puerta %s sin id o con id repetido)" % [ruta, puerta.name])
-			elif not ResourceLoader.exists(puerta.sala_destino):
-				_fallos.append("%s (la puerta %s lleva a %s, que no existe)" % [ruta, puerta.id, puerta.sala_destino])
 			else:
-				puertas[String(puerta.id)] = [puerta.sala_destino, String(puerta.puerta_destino)]
+				var destino: String = _destino_de_puerta(ruta, puerta)
+				if not destino.is_empty():
+					puertas[String(puerta.id)] = [destino, String(puerta.puerta_destino)]
 		var banco: Banco = hijo as Banco
 		if banco != null and banco.id != "banco_" + sala.id:
 			_fallos.append("%s (el banco %s debe tener id banco_%s)" % [ruta, banco.id, sala.id])

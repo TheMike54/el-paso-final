@@ -100,5 +100,17 @@
     "que": "El validador falla si una sala tiene mas de 2 capas translucidas grandes (alfa efectivo menor que 1 y al menos un cuarto de 1280x720, con la escala de sus padres)",
     "comprobacion": "manual: en una copia del proyecto, tres ColorRect de 800x400 con modulate alfa 0.5 en sala_recursos.tscn dan FALLO ... (3 capas translucidas grandes ...); con dos, mas una opaca, una chica y una escalada a 0.25, fallos=0; la transparencia heredada de un padre cuenta; tambien dan FALLO tres capas con color alfa 0.5 (sin modulate), tres ColorRect anclados a pantalla completa dentro de un CanvasLayer y tres TextureRect sin offsets (miden su textura); no cuentan los anclados dentro de un Node2D; sala_recursos y sala_arte solas, fallos=0",
     "pasa": true
+  },
+  {
+    "id": "validador-habilidades",
+    "que": "El validador falla si un ObjetoHabilidad, una recompensa de habilidad (entrega o reto) o habilidades_de_prueba de una sala nombra una habilidad que no esta en Habilidades.TODAS",
+    "comprobacion": "manual: en una copia del proyecto, poner \"salto_doble_x\" en habilidades_de_prueba de una sala da FALLO con la ruta de la sala y el id; sin el cambio, fallos=0",
+    "pasa": true
+  },
+  {
+    "id": "validador-importacion",
+    "que": "El validador falla si una imagen del arte del mundo (CARPETAS_ARTE_MUNDO) se importa sin mipmaps, o con transparencia en VRAM Compressed y fuera de ALFA_EN_VRAM",
+    "comprobacion": "manual: en una copia del proyecto, mipmaps/generate=false en el .import de una imagen de herramientas/salas/arte/ da FALLO (sin mipmaps); compress/mode=2 en el de una con transparencia que no esta en ALFA_EN_VRAM da FALLO (tiene transparencia y va en VRAM Compressed); sin los cambios, fallos=0",
+    "pasa": true
   }
 ]

@@ -51,6 +51,7 @@ var _aciertos_al_acabar: int = 0
 
 
 func _ready() -> void:
+	Capas.poner(self, Capas.INTERACCION, Capas.JUGADOR)
 	var clave: String = Sala.clave_de(self)
 	gano = Partida.estado_de(clave, id) == true
 	indice = Partida.estado_entero(clave, id + "_indice", 0)

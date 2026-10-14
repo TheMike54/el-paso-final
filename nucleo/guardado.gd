@@ -39,6 +39,10 @@ const ESQUEMA: Dictionary[String, int] = {
 	"nombre": TYPE_STRING,
 	"tiempo_jugado": TYPE_FLOAT,
 }
+## Campos agregados despues de la version 3, con su valor por omision como queda al leer el JSON (0.0 y no 0, Array
+## sin tipo): una partida que no los tiene se rellena al cargar en vez de quedar danada. Hoy ninguno. Cambiar la
+## forma de un campo que ya existe no va aqui: sube VERSION y lleva su funcion de conversion.
+const NUEVOS: Dictionary[String, Variant] = {}
 
 
 ## Lo que devuelve cargar(): el estado y, solo si es VALIDA, la partida.
@@ -109,6 +113,8 @@ static func cargar(ruta: String = RUTA) -> Resultado:
 	if typeof(version) != TYPE_FLOAT:
 		return Resultado.new(Estado.DANADA)
 	var numero: float = version
+	# Mas nueva que el juego: no se sabe leer. Mas vieja: tambien, mientras no haya su funcion de conversion (hoy
+	# ninguna; la 3 es la primera que llego a la QA).
 	if numero != VERSION:
 		return Resultado.new(Estado.INCOMPATIBLE)
 	var contenido: Variant = sobre.get("partida")
@@ -118,8 +124,27 @@ static func cargar(ruta: String = RUTA) -> Resultado:
 	for campo: String in ESQUEMA:
 		if not partida.has(campo) or typeof(partida[campo]) != ESQUEMA[campo]:
 			return Resultado.new(Estado.DANADA)
+	if not completar(partida, NUEVOS):
+		return Resultado.new(Estado.DANADA)
 	# El banco va vacio (sin descansar) o con su sala y su id.
 	var banco: Dictionary = partida["banco"]
 	if not banco.is_empty() and (typeof(banco.get("sala")) != TYPE_STRING or typeof(banco.get("id")) != TYPE_STRING):
 		return Resultado.new(Estado.DANADA)
 	return Resultado.new(Estado.VALIDA, partida)
+
+
+## Rellena en la partida los campos de nuevos que le faltan, cada uno con una copia de su valor por omision (el de
+## NUEVOS no se comparte). Devuelve false si alguno esta con otro tipo. Recibe nuevos para que la prueba pase los suyos.
+static func completar(partida: Dictionary, nuevos: Dictionary[String, Variant]) -> bool:
+	for campo: String in nuevos:
+		var por_omision: Variant = nuevos[campo]
+		if not partida.has(campo):
+			if por_omision is Array:
+				partida[campo] = (por_omision as Array).duplicate(true)
+			elif por_omision is Dictionary:
+				partida[campo] = (por_omision as Dictionary).duplicate(true)
+			else:
+				partida[campo] = por_omision
+		elif typeof(partida[campo]) != typeof(por_omision):
+			return false
+	return true

@@ -42,7 +42,7 @@ color = Color(0.25, 0.25, 0.25, 1)
 [node name="PuertaIzquierda" parent="." instance=ExtResource("2_puerta")]
 position = Vector2(20, 1400)
 id = &"izquierda"
-sala_destino = "res://herramientas/salas/zonas/mapa/mapa_1.tscn"
+sala_destino = "mapa_1"
 puerta_destino = &"derecha"
 llegada = Vector2(200, 0)
 

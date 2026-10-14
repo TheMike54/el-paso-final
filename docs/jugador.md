@@ -61,6 +61,7 @@ Todos los valores son propiedades exportadas del jugador y se ajustan en la zona
 | `velocidad_despegue_pared` | 420 px/s | Velocidad horizontal con que el salto en pared despega de ella |
 | `ticks_despegue_pared` | 8 | Ticks tras el salto en pared en que la entrada horizontal no manda |
 | `ticks_coyote_pared` | 3 | Ticks después de dejar la pared en que `saltar` todavía es un salto en pared |
+| `altura_agarre_pared` | 0 | Fracción de la altura del cuerpo, desde los pies, a la que tiene que haber pared para sostenerse y saltar de ella (un rayo a esa altura). En 0 basta cualquier contacto, aunque el 70 % del cuerpo quede por encima de la esquina; la dificultad de la esquina se queda así (decisión del 14-oct-2026). En 0,5 deja de agarrarse con más de medio cuerpo por encima. Hollow Knight (código decompilado) cuenta la pared con un rayo desde el centro o desde los pies: con los pies en la pared sigue agarrado, como aquí en 0. Silksong sube sola a la cornisa al llegar al borde |
 | `velocidad_picada` | 1800 px/s | Velocidad de la caída en picada, sin el tope de `velocidad_caida_max` |
 | `dano_picada` | 3 | Daño de la onda al aterrizar de la picada a cada `Golpeable` que toca |
 | `onda_picada` | (320, 120) px | Tamaño de esa onda, centrada a lo ancho en los pies |
@@ -137,17 +138,20 @@ Curar y sensación del golpe:
   el daño al jugador (`ticks_hit_stop`), un enemigo vencido (`Congelado.TICKS_AL_VENCER`, 4) y el parry. La sala lo reinicia
   al entrar.
 
-Habilidades (solo si `Partida.tiene(&"<id>")`):
+Habilidades (solo si `Partida.tiene(<id>)`; los ids son las constantes de `nucleo/habilidades.gd`, `class_name Habilidades`):
 
 | Id | Qué hace |
 |---|---|
+| `pluma` | El arma: sin ella `atacar` no hace nada y el botón táctil de atacar no se dibuja |
+| `pluma_mapa` | Al descansar en un banco, dibuja en el mapa las salas visitadas de las zonas cuyo mapa se tiene (como la Pluma de Hollow Knight) |
 | `impulso` | La acción `impulso` lanza al jugador hacia donde mira, sin gravedad, `ticks_impulso` ticks; recarga `ticks_recarga_impulso`. En el aire, uno hasta tocar el suelo o una pared. Nunca hacia abajo ni solo con el joystick. Corta la voltereta y un rebote a medias. Si al terminar hay dirección, empieza la carrera (`corriendo`) a `velocidad_carrera` hacia ella, en el suelo o en el aire: sigue hasta soltar la dirección más de `ticks_soltar_carrera` ticks, chocar con una pared (con un rebote corto hacia atrás y un saltito), curarse, recibir daño, la picada, sentarse en un banco o el aterrizaje duro; saltar la conserva (salto largo); pedir el otro lado la gira (`girando`, `ticks_giro_carrera`) sin apagarla, y un impulso, despegue o rebote a mitad del giro lo cancela (al volver, si la dirección se opone, empieza otro); en carrera el impulso sale hacia el joystick; atacar al frente en carrera (no durante el giro) es un ataque en carrera (`atacando_en_carrera`): empuja a `velocidad_ataque_carrera`, se dibuja como una estocada y no rebota al golpear; otro ataque al frente pedido en carrera antes de `ticks_entre_ataques_carrera` se pierde (ni estocada ni ataque normal) y la carrera sigue; hacia arriba, el pogo y el pedido durante el giro salen como siempre, y la voltereta reinicia esa recarga. Si golpea un `Golpeable`, corta la carrera y empieza la voltereta (`volteando`, como Silksong con el blasón de cazadora): sale hacia arriba `altura_voltereta` y hacia adelante a `velocidad_voltereta` (el joystick la dirige), con el doble salto y el impulso en el aire de vuelta, como el pogo; el golpe corta un impulso en curso y el siguiente ataque sale en cuanto termina el actual, sin esperar `ticks_entre_ataques` (Silksong: el ataque en carrera reinicia la recarga); acaba al tocar el suelo (camina: la carrera vuelve solo con otro impulso), al atacar, con un impulso, un daño o una pared |
 | `salto_en_pared` | En el aire, cayendo y empujando hacia una pared, el jugador se sostiene y desliza a `velocidad_deslizar_pared` (`en_pared`). Tocándola y empujando hacia ella, suba o baje (y hasta `ticks_coyote_pared` después), `saltar` da un salto completo y lo despega hacia el lado contrario: así se sube por una sola pared o de una pared a la otra. Recupera el impulso y el doble salto |
 | `doble_salto` | `saltar` recién presionada en el aire, fuera del tiempo coyote, da un segundo salto con las mismas reglas; se recupera al tocar el suelo o sostenerse en una pared |
 | `caida_en_picada` | `curar` recién presionada con `mover_abajo`, con `Partida.inspiracion >= costo_poder`, gasta ese costo en el mismo tick (sin esperar a saber si es un toque). En el aire, el jugador cae enseguida recto a `velocidad_picada`, sin control, hasta tocar el suelo (`en_picada`, propiedad pública). En el suelo, primero un saltito de `altura_saltito_picada` y `ticks_carga_picada` quieto en su cima, y después la caída. Un `SueloFragil` que toca se rompe y la caída sigue. Corta un ataque a medias. No recibe daño desde que empieza hasta `ticks_invulnerable_picada` después de aterrizar (un peligro sí quita vida y lo devuelve al punto seguro). Al aterrizar, una onda de `onda_picada` golpea con `dano_picada` a cada `Golpeable` que toca, sin dar Inspiración |
 | `proyectil` | Un toque del botón de poderes, con `Partida.inspiracion >= costo_poder` y pasados `ticks_recarga_bola` desde la anterior, gasta ese costo y lanza la bola (`nucleo/proyectil.tscn`) hacia donde mira, en el suelo o en el aire. Nombre técnico neutro |
 
-- `nucleo/objeto_habilidad.tscn` (`class_name ObjetoHabilidad`): al tocarlo, suma su `habilidad` a `Partida.habilidades`,
-  emite `Eventos.habilidad_obtenida` y desaparece; si la partida ya la tiene, no aparece.
+- `nucleo/objeto_habilidad.tscn` (`class_name ObjetoHabilidad`): al tocarlo, llama a `Partida.obtener_habilidad` con su
+  `habilidad` (suma, emite `Eventos.habilidad_obtenida` y rechaza un id fuera de `Habilidades.TODAS`) y desaparece; si
+  la partida ya la tiene, no aparece.
 - Prioridad del movimiento horizontal: retroceso del golpe recibido, impulso, despegue de la pared, rebote (al
   golpear, al parar o contra la pared), voltereta, carrera y por último la entrada.

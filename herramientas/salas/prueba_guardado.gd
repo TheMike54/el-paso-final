@@ -59,6 +59,18 @@ func _ready() -> void:
 	banco_roto["banco"] = {"sala": "raices_1"}
 	_danada("banco sin id", JSON.stringify({"version": Guardado.VERSION, "partida": banco_roto}))
 
+	# Campos nuevos con valor por omision (Guardado.NUEVOS), con una lista de prueba.
+	var nuevos: Dictionary[String, Variant] = {"cuenta": 0.0, "lista": []}
+	var sin_nuevos: Dictionary = PARTIDA.duplicate(true)
+	_caso("completar rellena los campos nuevos que faltan", Guardado.completar(sin_nuevos, nuevos) and _vale(sin_nuevos["cuenta"], 0.0) and _vale(sin_nuevos["lista"], []))
+	(sin_nuevos["lista"] as Array).append("x")
+	_caso("el valor rellenado es una copia, no el de la lista", (nuevos["lista"] as Array).is_empty())
+	var con_nuevos: Dictionary = PARTIDA.duplicate(true)
+	con_nuevos["cuenta"] = 7.0
+	_caso("completar deja un campo nuevo que ya esta", Guardado.completar(con_nuevos, nuevos) and _vale(con_nuevos["cuenta"], 7.0))
+	con_nuevos["lista"] = "x"
+	_caso("un campo nuevo con otro tipo no completa (DANADA al cargar)", not Guardado.completar(con_nuevos, nuevos))
+
 	# El estado de la partida se guarda y se carga entero.
 	Partida.reiniciar()
 	Partida.vidas_maximas = 5

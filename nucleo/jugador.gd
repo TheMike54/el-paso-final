@@ -34,6 +34,8 @@ const ANCHO_ESTOCADA: float = 6.0
 const TICKS_VUELTA: int = 24
 const ANCHO_GIRANDO: float = 40.0
 const NUNCA: int = 1000000
+## Cuanto mas alla del borde del cuerpo busca la pared el rayo de altura_agarre_pared, en px.
+const ALCANCE_AGARRE: float = 4.0
 const ESCENA_PROYECTIL: PackedScene = preload("res://nucleo/proyectil.tscn")
 
 @export_group("Movimiento")
@@ -180,6 +182,10 @@ const ESCENA_PROYECTIL: PackedScene = preload("res://nucleo/proyectil.tscn")
 @export var ticks_despegue_pared: int = 8
 ## Ticks despues de dejar de tocar la pared en que saltar todavia es un salto en pared.
 @export var ticks_coyote_pared: int = 3
+## Fraccion de la altura del cuerpo, contada desde los pies, a la que tiene que haber pared para sostenerse y
+## saltar de ella. 0: basta cualquier contacto (asi se juega hoy, decidido el 14-oct-2026); con 0,5 deja de
+## agarrarse con mas de medio cuerpo por encima de la esquina de arriba.
+@export_range(0.0, 1.0) var altura_agarre_pared: float = 0.0
 
 @export_group("Temblor al aterrizar")
 ## Ticks seguidos cayendo a velocidad_caida_max desde los que aterrizar es un aterrizaje duro (el
@@ -265,6 +271,7 @@ var puede_interactuar: bool:
 		return is_on_floor() and not muerto and not descansando and not aterrizando and not hablando
 
 @onready var _camara: Camera2D = $Camara as Camera2D
+@onready var _forma: CollisionShape2D = $Forma as CollisionShape2D
 @onready var _ataque: Area2D = $Ataque as Area2D
 @onready var _forma_ataque: CollisionShape2D = $Ataque/Forma as CollisionShape2D
 
@@ -351,6 +358,8 @@ var _velocidad_camara_y: float = 0.0
 
 
 func _ready() -> void:
+	Capas.poner(self, Capas.JUGADOR, Capas.ESCENARIO)
+	Capas.poner(_ataque, Capas.ATAQUE_JUGADOR, Capas.GOLPEABLE | Capas.DANINO)
 	# La camara se mueve a mano (_seguir_con_camara): deja de heredar la posicion del jugador.
 	_altura_camara = _camara.position
 	_camara.top_level = true
@@ -629,7 +638,9 @@ func _saltos(en_suelo: bool, eje: float) -> void:
 	# Contra la pared: en el aire, tocandola y empujando hacia ella (salto_en_pared), suba o baje.
 	# Sostenido (deslizando) solo al caer. Saltar sale aunque se haya dejado de tocar hace poco.
 	var normal: float = get_wall_normal().x if is_on_wall() else 0.0
-	var contra_pared: bool = Partida.tiene(&"salto_en_pared") and not en_suelo and normal != 0.0 \
+	if normal != 0.0 and altura_agarre_pared > 0.0 and not _pared_a_la_altura(normal):
+		normal = 0.0
+	var contra_pared: bool = Partida.tiene(Habilidades.SALTO_EN_PARED) and not en_suelo and normal != 0.0 \
 			and signf(eje) == -normal and _ticks_impulsando == 0
 	if contra_pared:
 		_ticks_sin_pared = 0
@@ -654,7 +665,7 @@ func _saltos(en_suelo: bool, eje: float) -> void:
 		_mirando = _normal_pared
 		_ticks_sin_pared = NUNCA
 		en_pared = false
-	elif Partida.tiene(&"doble_salto") and _doble_salto_disponible and _ticks_desde_pulsar == 0:
+	elif Partida.tiene(Habilidades.DOBLE_SALTO) and _doble_salto_disponible and _ticks_desde_pulsar == 0:
 		_doble_salto_disponible = false
 		_saltar()
 	elif _subiendo:
@@ -688,7 +699,7 @@ func _seguir_subiendo() -> void:
 func _impulsar() -> void:
 	var pedido: bool = Input.is_action_just_pressed(&"impulso") or _impulso_en_cola
 	_impulso_en_cola = false
-	if not Partida.tiene(&"impulso") or not pedido:
+	if not Partida.tiene(Habilidades.IMPULSO) or not pedido:
 		return
 	if _ticks_hasta_impulso > 0 or _ticks_retrocediendo > 0 or not _impulso_en_el_aire:
 		return
@@ -739,7 +750,7 @@ func _boton_poderes(en_suelo: bool) -> bool:
 
 
 func _puede_picar() -> bool:
-	return Partida.tiene(&"caida_en_picada") and Partida.inspiracion >= costo_poder
+	return Partida.tiene(Habilidades.CAIDA_EN_PICADA) and Partida.inspiracion >= costo_poder
 
 
 # Picada desde el suelo: un saltito de altura_saltito_picada, ticks_carga_picada quieto en su cima y
@@ -821,6 +832,7 @@ func _onda() -> void:
 	consulta.transform = Transform2D(0.0, global_position + Vector2(0.0, -onda_picada.y / 2.0))
 	consulta.collide_with_areas = true
 	consulta.collide_with_bodies = false
+	consulta.collision_mask = Capas.GOLPEABLE
 	for choque: Dictionary in get_world_2d().direct_space_state.intersect_shape(consulta):
 		var golpeable: Golpeable = choque["collider"] as Golpeable
 		if golpeable != null:
@@ -828,10 +840,22 @@ func _onda() -> void:
 			golpes_onda += 1
 
 
+# Hay pared a altura_agarre_pared del cuerpo, del lado contrario a la normal: un rayo desde el centro del cuerpo
+# hasta un poco mas alla de su borde, a esa altura.
+func _pared_a_la_altura(normal: float) -> bool:
+	var rectangulo: Rect2 = _forma.shape.get_rect()
+	var altura: float = _forma.position.y + rectangulo.end.y - rectangulo.size.y * altura_agarre_pared
+	var desde: Vector2 = global_position + Vector2(_forma.position.x, altura)
+	var hasta: Vector2 = desde + Vector2(-normal * (rectangulo.size.x / 2.0 + ALCANCE_AGARRE), 0.0)
+	var consulta: PhysicsRayQueryParameters2D = PhysicsRayQueryParameters2D.create(desde, hasta)
+	consulta.collision_mask = Capas.ESCENARIO
+	return not get_world_2d().direct_space_state.intersect_ray(consulta).is_empty()
+
+
 # Toque del boton de poderes: con la habilidad proyectil y Inspiracion, lanza la bola hacia donde
 # mira, en el suelo o en el aire. Se agrega a la sala en diferido, fuera del paso de la fisica.
 func _lanzar_poder() -> void:
-	if not Partida.tiene(&"proyectil") or Partida.inspiracion < costo_poder or _ticks_hasta_bola > 0:
+	if not Partida.tiene(Habilidades.PROYECTIL) or Partida.inspiracion < costo_poder or _ticks_hasta_bola > 0:
 		return
 	Partida.inspiracion -= costo_poder
 	_ticks_hasta_bola = ticks_recarga_bola
@@ -841,12 +865,11 @@ func _lanzar_poder() -> void:
 	var desde: Vector2 = global_position + Vector2(0.0, salida_proyectil.y)
 	var hasta: Vector2 = global_position + Vector2(salida_proyectil.x * _mirando + _mirando * Proyectil.TAMANO.x / 2.0, salida_proyectil.y)
 	var consulta: PhysicsRayQueryParameters2D = PhysicsRayQueryParameters2D.create(desde, hasta)
-	consulta.exclude = [get_rid()]
+	consulta.collision_mask = Capas.ESCENARIO
 	if not get_world_2d().direct_space_state.intersect_ray(consulta).is_empty():
 		return
 	var bola: Proyectil = ESCENA_PROYECTIL.instantiate() as Proyectil
 	bola.sentido = _mirando
-	bola.lanzador = self
 	bola.position = salida
 	get_parent().add_child.call_deferred(bola)
 
@@ -893,7 +916,7 @@ func _cortar_curacion() -> void:
 func _atacar() -> void:
 	_ticks_hasta_ataque = maxi(_ticks_hasta_ataque - 1, 0)
 	_ticks_hasta_ataque_carrera = maxi(_ticks_hasta_ataque_carrera - 1, 0)
-	var pedido: bool = Partida.tiene(&"pluma") and _ticks_desde_atacar <= ticks_ataque_en_cola and _ticks_hasta_ataque == 0
+	var pedido: bool = Partida.tiene(Habilidades.PLUMA) and _ticks_desde_atacar <= ticks_ataque_en_cola and _ticks_hasta_ataque == 0
 	# En carrera, el ataque pedido durante la recarga del ataque en carrera se pierde: ni estocada ni ataque normal,
 	# y se sigue corriendo (Silksong). Hacia arriba o el pogo no cuentan como ataque en carrera.
 	if pedido and corriendo and _ticks_girando == 0 and _ticks_hasta_ataque_carrera > 0 \
