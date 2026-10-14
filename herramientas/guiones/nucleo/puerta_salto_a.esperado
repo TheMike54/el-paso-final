@@ -1,0 +1,3 @@
+# La pared de detras lo detiene, cae dentro del area y cruza a la sala B con las cuatro vidas.
+escena res://herramientas/salas/sala_puerta_b.tscn
+valor Jugador vidas 4

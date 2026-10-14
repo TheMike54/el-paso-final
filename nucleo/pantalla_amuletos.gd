@@ -90,7 +90,7 @@ func _mostrar() -> void:
 		botones[amuleto] = boton
 	_actualizar()
 	if not botones.is_empty():
-		botones[Partida.amuletos_tenidos[0]].grab_focus()
+		Tema.dar_foco(botones[Partida.amuletos_tenidos[0]])
 
 
 func _actualizar() -> void:

@@ -464,13 +464,25 @@
   {
     "id": "congelado-decoracion",
     "que": "La planta y la niebla se detienen durante el congelado comun (golpe, vencer y parry), como en la pausa, y siguen al terminar",
-    "comprobacion": "herramientas/salas/prueba_recursos.gd",
+    "comprobacion": "herramientas/guiones/nucleo/recursos_cuentas.guion",
     "pasa": true
   },
   {
     "id": "mapa-obtener",
     "que": "Recoger un mapa, en el suelo o como recompensa, pasa por Partida.obtener_mapa: avisa como lo demas que se obtiene y autoguarda; si ya se tenia, no hace nada",
-    "comprobacion": "herramientas/salas/prueba_guardado.gd",
+    "comprobacion": "herramientas/guiones/nucleo/guardado.guion",
     "pasa": true
+  },
+  {
+    "id": "pared-tras-puerta",
+    "que": "Cada puerta en el borde de una sala tiene una pared invisible detras: saltar justo antes de la puerta cambia de sala en vez de pasarla por encima",
+    "comprobacion": "herramientas/guiones/nucleo/puerta_salto_a.guion;herramientas/guiones/nucleo/puerta_salto_b.guion;herramientas/guiones/nucleo/sala_puerta_a_pared.guion",
+    "pasa": false
+  },
+  {
+    "id": "foco-ultima-entrada",
+    "que": "Los menus dan el foco con Tema.dar_foco: el recuadro se dibuja solo si lo ultimo que se uso fue un control o el teclado (UltimaEntrada), no tras un toque",
+    "comprobacion": "herramientas/guiones/nucleo/menu_configuracion.guion",
+    "pasa": false
   }
 ]

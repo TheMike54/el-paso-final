@@ -88,7 +88,7 @@ func mostrar_en_marco() -> void:
 	rapido = false
 	acercado = true
 	_mostrar()
-	_menos.grab_focus()
+	Tema.dar_foco(_menos)
 
 
 func ocultar_de_marco() -> void:

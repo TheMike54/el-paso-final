@@ -93,7 +93,7 @@ func atras() -> void:
 		return
 	if _confirmar.visible:
 		_ver_confirmacion(false)
-		(_borrar[_numero_accion - 1] if _accion == Accion.BORRAR else _restaurar[_numero_accion - 1]).grab_focus()
+		Tema.dar_foco(_borrar[_numero_accion - 1] if _accion == Accion.BORRAR else _restaurar[_numero_accion - 1])
 	else:
 		visible = false
 		cerrado.emit()
@@ -110,7 +110,7 @@ func pedir(accion: Accion, numero: int) -> void:
 		_pregunta.text = "¿Volver la partida %d al inicio de la última sesión?" % numero
 		_si.text = "Restaurar"
 	_ver_confirmacion(true)
-	_no.grab_focus()
+	Tema.dar_foco(_no)
 
 
 # Con la confirmacion abierta las fichas se ocultan, como el menu en la de salir: si no, con teclado o control el
@@ -213,9 +213,9 @@ func _pintar(numero: int) -> void:
 func _enfocar(numero: int) -> void:
 	var principal: Button = _principales[numero - 1]
 	if not principal.disabled:
-		principal.grab_focus()
+		Tema.dar_foco(principal)
 	else:
-		_borrar[numero - 1].grab_focus()
+		Tema.dar_foco(_borrar[numero - 1])
 
 
 # El marco ocupa el area util (Tema) menos la franja reservada abajo.

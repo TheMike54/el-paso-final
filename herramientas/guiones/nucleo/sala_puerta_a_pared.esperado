@@ -1,0 +1,5 @@
+# Contra la pared: su cara derecha esta en x=40 y el cuerpo mide 80 de ancho, asi que x=80.
+x 80 2
+y 680 1
+en_suelo true
+valor Jugador vidas 4

@@ -7,6 +7,9 @@
 [sub_resource type="RectangleShape2D" id="forma_suelo"]
 size = Vector2(1600, 80)
 
+[sub_resource type="RectangleShape2D" id="forma_pared_puerta"]
+size = Vector2(40, 720)
+
 [node name="Prueba3" type="Node2D"]
 script = ExtResource("1_sala")
 habilidades_de_prueba = Array[StringName]([&"pluma"])
@@ -58,3 +61,15 @@ id = &"derecha"
 sala_destino = "res://herramientas/salas/zonas/prueba/prueba_4.tscn"
 puerta_destino = &"izquierda"
 llegada = Vector2(-200, 0)
+
+[node name="ParedTrasPuertaIzquierda" type="StaticBody2D" parent="."]
+position = Vector2(-20, 360)
+
+[node name="Forma" type="CollisionShape2D" parent="ParedTrasPuertaIzquierda"]
+shape = SubResource("forma_pared_puerta")
+
+[node name="ParedTrasPuertaDerecha" type="StaticBody2D" parent="."]
+position = Vector2(1620, 360)
+
+[node name="Forma" type="CollisionShape2D" parent="ParedTrasPuertaDerecha"]
+shape = SubResource("forma_pared_puerta")

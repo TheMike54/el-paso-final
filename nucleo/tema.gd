@@ -2,7 +2,7 @@ class_name Tema
 extends RefCounted
 # Tema de los menus (menu principal, Configuracion, pausa y zona de pruebas): botones de 108 px de alto, que en el
 # telefono mas chico probado (Senwa S50, densidad 240) son los 48 dp que pide Android, letra de 36 px y el foco
-# visible. Se arma en codigo y se asigna solo a las raices de los menus, asi no toca la interfaz del juego. Da
+# dorado (visible tras usar control o teclado, Tema.dar_foco). Se arma en codigo y se asigna solo a las raices de los menus, asi no toca la interfaz del juego. Da
 # tambien las columnas segun el ancho de la vista (1280 en 4:3 y 16:9, porque ahi crece el alto, hasta 1760 en
 # 22:9) y el area util dentro del area segura.
 
@@ -27,6 +27,9 @@ const ALTO_LETRA: float = 50.0
 const FONDO_BOTON: Color = Color(0.17, 0.17, 0.2, 1.0)
 const BORDE_BOTON: Color = Color(0.27, 0.27, 0.3, 1.0)
 const FOCO: Color = Color(0.88, 0.69, 0.29, 1.0)
+## Lo encendido o lleno (pastilla «Sí», lo lleno de las barras): verde y no el dorado, que es solo del foco; si no, con
+## el control no se sabe donde esta el foco. Provisional, como FOCO.
+const ENCENDIDO: Color = Color(0.3, 0.6, 0.42, 1.0)
 ## Barra ancha (volumen y brillo): nombre de la variacion, grosor de la pista y diametro del pomo, en px de la vista.
 const BARRA_ANCHA: StringName = &"BarraAncha"
 const GROSOR_PISTA: float = 24.0
@@ -80,6 +83,13 @@ static func area_util(vista: Vector2) -> Rect2:
 	return segura.grow_individual(-MARGEN_LATERAL, -MARGEN_VERTICAL, -MARGEN_LATERAL, -MARGEN_VERTICAL)
 
 
+## Pone el foco en un control de un menu. Si lo ultimo que se uso fue el dedo no lo dibuja (grab_focus con
+## hide_focus): con el dedo no hace falta el recuadro, y la primera flecha o el primer movimiento del control lo
+## muestra (`classes/class_control.rst:38`). Si fue un control o el teclado, se ve desde que se abre el menu.
+static func dar_foco(control: Control) -> void:
+	control.grab_focus(not UltimaEntrada.con_control)
+
+
 ## Acomoda un Control de pantalla completa al area util de su vista, ahora, cada vez que la ventana cambia y cada vez
 ## que cambia su minimo: una etiqueta con ajuste de linea lo infla un momento al armarse y, sin esto, se quedaba
 ## alto de mas (1298 px en una vista de 720, 12-oct-2026). Se llama una vez, en el _ready del control; se
@@ -101,7 +111,7 @@ static func _ajustar_ya(control: Control) -> void:
 	control.size = area.size
 
 
-## Variacion BARRA_ANCHA de HSlider (volumen y brillo, mockup del 13-oct-2026): pista gruesa, lo lleno en dorado y un
+## Variacion BARRA_ANCHA de HSlider (volumen y brillo, mockup del 13-oct-2026): pista gruesa, lo lleno en verde y un
 ## pomo redondo de POMO px. Una variacion y no el HSlider del tema: las barras del editor de botones no cambian.
 static func _barra_ancha(tema: Theme, foco: StyleBoxFlat) -> void:
 	tema.set_type_variation(BARRA_ANCHA, &"HSlider")
@@ -111,7 +121,7 @@ static func _barra_ancha(tema: Theme, foco: StyleBoxFlat) -> void:
 	pista.content_margin_top = GROSOR_PISTA / 2.0
 	pista.content_margin_bottom = GROSOR_PISTA / 2.0
 	var lleno: StyleBoxFlat = pista.duplicate() as StyleBoxFlat
-	lleno.bg_color = FOCO
+	lleno.bg_color = ENCENDIDO
 	tema.set_stylebox(&"slider", BARRA_ANCHA, pista)
 	tema.set_stylebox(&"grabber_area", BARRA_ANCHA, lleno)
 	tema.set_stylebox(&"grabber_area_highlight", BARRA_ANCHA, lleno)

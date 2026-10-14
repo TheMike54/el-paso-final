@@ -59,11 +59,11 @@ func _ready() -> void:
 	_no.pressed.connect(_cancelar_salida)
 	_poner_aviso_toques()
 	_mostrar_zona()
-	_jugar.grab_focus()
+	Tema.dar_foco(_jugar)
 	if volver_a_zona:
 		volver_a_zona = false
 		if _zona.visible:
-			_zona.grab_focus()
+			Tema.dar_foco(_zona)
 
 
 # La entrada a la zona de pruebas: solo con el modo desarrollador y si la escena existe (en depuracion y en
@@ -183,7 +183,7 @@ func abrir_ranuras() -> void:
 
 func _al_cerrar_ranuras() -> void:
 	_centro.visible = true
-	_jugar.grab_focus()
+	Tema.dar_foco(_jugar)
 
 
 func abrir_configuracion() -> void:
@@ -194,7 +194,7 @@ func abrir_configuracion() -> void:
 func _al_cerrar_configuracion() -> void:
 	_centro.visible = true
 	_mostrar_zona()
-	_configuracion.grab_focus()
+	Tema.dar_foco(_configuracion)
 
 
 ## El editor de botones tactiles, sobre el fondo del menu (la pausa abre el mismo); al cerrarlo vuelve Configuracion.
@@ -217,7 +217,7 @@ func _pedir_salida() -> void:
 	else:
 		_confirmar.visible = true
 		_centro.visible = false
-		_no.grab_focus()
+		Tema.dar_foco(_no)
 
 
 ## Sale del juego avisando antes el cierre a todo el arbol, como al cerrar la ventana: quit() solo no lo avisa y
@@ -230,7 +230,7 @@ func salir() -> void:
 func _cancelar_salida() -> void:
 	_confirmar.visible = false
 	_centro.visible = true
-	_jugar.grab_focus()
+	Tema.dar_foco(_jugar)
 
 
 func _ir(escena: String) -> void:

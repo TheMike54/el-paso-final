@@ -7,6 +7,9 @@
 [sub_resource type="RectangleShape2D" id="forma_suelo"]
 size = Vector2(2400, 80)
 
+[sub_resource type="RectangleShape2D" id="forma_pared_puerta"]
+size = Vector2(40, 720)
+
 [node name="Prueba2" type="Node2D"]
 script = ExtResource("1_sala")
 habilidades_de_prueba = Array[StringName]([&"pluma"])
@@ -54,3 +57,15 @@ llegada = Vector2(-200, 0)
 [node name="Coleccionable" parent="." instance=ExtResource("9_coleccionable")]
 position = Vector2(1200, 680)
 id = "coleccionable"
+
+[node name="ParedTrasPuertaIzquierda" type="StaticBody2D" parent="."]
+position = Vector2(-20, 360)
+
+[node name="Forma" type="CollisionShape2D" parent="ParedTrasPuertaIzquierda"]
+shape = SubResource("forma_pared_puerta")
+
+[node name="ParedTrasPuertaDerecha" type="StaticBody2D" parent="."]
+position = Vector2(2420, 360)
+
+[node name="Forma" type="CollisionShape2D" parent="ParedTrasPuertaDerecha"]
+shape = SubResource("forma_pared_puerta")

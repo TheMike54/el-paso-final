@@ -89,7 +89,7 @@ func abrir() -> void:
 	abierta = true
 	_panel.visible = true
 	get_tree().paused = true
-	_continuar.grab_focus()
+	Tema.dar_foco(_continuar)
 
 
 func cerrar() -> void:
@@ -137,7 +137,7 @@ func _fondo_configuracion() -> Control:
 func _al_cerrar_configuracion() -> void:
 	_fondo_configuracion().visible = false
 	_panel.visible = abierta
-	_boton_configuracion.grab_focus()
+	Tema.dar_foco(_boton_configuracion)
 
 
 ## Abre el editor de botones tactiles encima del juego detenido (lo pide Configuracion); al cerrarlo vuelve a
@@ -163,7 +163,7 @@ func _al_cerrar_editor() -> void:
 		configuracion.volver_del_editor()
 	else:
 		_panel.visible = abierta
-		_boton_configuracion.grab_focus()
+		Tema.dar_foco(_boton_configuracion)
 
 
 # Salir al menu guarda lo obtenido (no la posicion): al continuar se aparece en el ultimo banco.

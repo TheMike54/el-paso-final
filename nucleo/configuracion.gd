@@ -165,7 +165,7 @@ func abrir() -> void:
 	_mostrar_aviso_recursos()
 	visible = true
 	_mostrar(_lista)
-	_audio.grab_focus()
+	Tema.dar_foco(_audio)
 	# Seguir el foco bajaba la lista unos 20 px y cortaba la primera fila (vista de 1280x720, 12-oct-2026).
 	_desplazable.set_deferred(&"scroll_vertical", 0)
 
@@ -212,20 +212,20 @@ func atras() -> void:
 	if not esperando.is_empty():
 		esperando = &""
 		_aviso_mando.text = ""
-		_botones_mando[Mando.REASIGNABLES[0]].grab_focus()
+		Tema.dar_foco(_botones_mando[Mando.REASIGNABLES[0]])
 	elif _panel_mando.visible:
 		_mostrar(_lista)
-		_mando.grab_focus()
+		Tema.dar_foco(_mando)
 	elif _panel_audio.visible:
 		_mostrar(_lista)
-		_audio.grab_focus()
+		Tema.dar_foco(_audio)
 	elif _panel_brillo.visible:
 		_mostrar(_lista)
 		_poner_valores()
-		_brillo.grab_focus()
+		Tema.dar_foco(_brillo)
 	elif _panel_creditos.visible:
 		_mostrar(_lista)
-		_creditos.grab_focus()
+		Tema.dar_foco(_creditos)
 	else:
 		_guardar_barras()
 		visible = false
@@ -236,7 +236,7 @@ func atras() -> void:
 func volver_del_editor() -> void:
 	visible = true
 	_mostrar(_lista)
-	_controles.grab_focus()
+	Tema.dar_foco(_controles)
 
 
 func _mostrar(panel: Control) -> void:
@@ -417,7 +417,7 @@ func _abrir_audio() -> void:
 	# Poner los valores no es un cambio del jugador: no se guarda por eso.
 	_barra_sin_guardar = false
 	_mostrar(_panel_audio)
-	_barras_audio["General"].grab_focus()
+	Tema.dar_foco(_barras_audio["General"])
 	_desplazable_audio().set_deferred(&"scroll_vertical", 0)
 
 
@@ -589,7 +589,7 @@ func _abrir_brillo() -> void:
 	_barra_brillo.value = roundf(Ajustes.brillo * 100.0)
 	_barra_sin_guardar = false
 	_mostrar(_panel_brillo)
-	_barra_brillo.grab_focus()
+	Tema.dar_foco(_barra_brillo)
 
 
 func _al_cambiar_brillo(valor: float) -> void:
@@ -621,7 +621,7 @@ func _abrir_mando() -> void:
 	_aviso_mando.text = ""
 	_mostrar_sin_control()
 	_poner_nombres_mando()
-	_botones_mando[Mando.REASIGNABLES[0]].grab_focus()
+	Tema.dar_foco(_botones_mando[Mando.REASIGNABLES[0]])
 	_desplazable_mando.set_deferred(&"scroll_vertical", 0)
 
 
@@ -656,7 +656,7 @@ func recibir_boton(boton: int) -> void:
 	_aviso_mando.text = ""
 	_poner_nombres_mando()
 	_guardar()
-	_botones_mando[accion].grab_focus()
+	Tema.dar_foco(_botones_mando[accion])
 
 
 func _input(evento: InputEvent) -> void:
@@ -664,6 +664,9 @@ func _input(evento: InputEvent) -> void:
 		return
 	var boton: InputEventJoypadButton = evento as InputEventJoypadButton
 	if boton != null and boton.pressed:
+		# Se consume aqui, antes de que UltimaEntrada lo vea: se anota a mano para que el foco que pone
+		# recibir_boton se dibuje (se acaba de usar el control).
+		UltimaEntrada.anotar(boton)
 		recibir_boton(boton.button_index)
 		get_viewport().set_input_as_handled()
 
@@ -676,4 +679,4 @@ func _mando_por_omision() -> void:
 
 func _abrir_creditos() -> void:
 	_mostrar(_panel_creditos)
-	_volver_creditos.grab_focus()
+	Tema.dar_foco(_volver_creditos)

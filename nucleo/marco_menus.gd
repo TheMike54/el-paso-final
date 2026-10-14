@@ -166,7 +166,7 @@ func _ver(id: StringName) -> void:
 	# Si la pagina no tomo el foco (sin nada que tocar), lo toma Volver: con el control siempre hay foco.
 	var foco: Control = get_viewport().gui_get_focus_owner()
 	if foco == null or not foco.is_visible_in_tree():
-		_volver.grab_focus()
+		Tema.dar_foco(_volver)
 
 
 func _buscar_paginas() -> void:

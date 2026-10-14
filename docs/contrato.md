@@ -192,7 +192,7 @@ Autoload `Partida` (`nucleo/partida.gd`): lo que sobrevive al cambio de sala. Un
 |---|---|---|
 | `Eventos` | `nucleo/eventos.gd` | Bus de eventos: solo declara las señales de «Bus de eventos». Va antes de `Arranque` para existir cuando arranca todo lo demás |
 | `Partida` | `nucleo/partida.gd` | Estado de la partida (ver «Estado de la partida»). Va después de `Eventos` y antes de `Arranque` |
-| `Arranque` | `nucleo/arranque.gd` | Pone el color de borrado en negro, carga los ajustes y, con pantalla, crea la capa `Brillo` y aplica el rango de la vista al arrancar y, diferido al final del cuadro, al cambiar el tamaño de la ventana (`proporcion_minima` y `proporcion_maxima`, exportadas). Imprime `ARRANQUE depuracion=<bool> puerto=<bool>` y, solo en un build de depuración y si el archivo viaja en el paquete, carga con `load()` el puerto de depuración como hijo suyo (`PuertoDepuracion`). También crea `Sonido` (ver «Ajustes y vibración»), con o sin pantalla |
+| `Arranque` | `nucleo/arranque.gd` | Pone el color de borrado en negro, carga los ajustes y, con pantalla, crea la capa `Brillo` y aplica el rango de la vista al arrancar y, diferido al final del cuadro, al cambiar el tamaño de la ventana (`proporcion_minima` y `proporcion_maxima`, exportadas). Imprime `ARRANQUE depuracion=<bool> puerto=<bool>` y, solo en un build de depuración y si el archivo viaja en el paquete, carga con `load()` el puerto de depuración como hijo suyo (`PuertoDepuracion`). También crea `Sonido` (ver «Ajustes y vibración») y `UltimaEntrada` (ver «Menú», párrafo «Tamaños»), con o sin pantalla |
 
 - Un autoload nuevo se agrega a esta tabla en el mismo cambio.
 - Nada de `herramientas/` es autoload ni se carga con `preload`: el juego debe arrancar sin esa carpeta.
@@ -421,6 +421,9 @@ Cambio de sala:
   funde, la puerta no cambia de sala: manda la muerte. La sala nueva pone al jugador en `llegada` de esa puerta. Si no la
   encuentra, imprime un `ERROR:` y lo pone en `Entrada`. Ese error ocurre al correr: lo atrapa un guion que cruza
   la puerta, no `validar.ps1`.
+- El área de la puerta mide 40×160 y el salto sube 200 px: una puerta en el borde de `limites` lleva detrás un
+  `StaticBody2D` invisible, fuera de los límites y del alto de la sala (`ParedTrasPuerta`). Sin él, un salto la
+  pasa por encima y el jugador cae fuera de la sala (`docs/errores/2026-10-14-salto-sobre-puerta.md`).
 - Lo que sobrevive al cambio de sala vive en `Partida` (ver «Estado de la partida»).
 
 Bancos:
@@ -617,8 +620,8 @@ pausa; ver «Entrada»), «Botones del control» (reasignación con `Mando`: toc
 control; «Restablecer» los devuelve a los de `project.godot`; sin control conectado lo avisa, con `Input.joy_connection_changed`), Modo desarrollador
 (con él el menú muestra «Zona de pruebas»; no aparece abierta desde la pausa, `en_partida`) y «Créditos»;
 «Volver», arriba a la izquierda en cada pantalla. Cada opción es un `BotonValor` (`nucleo/boton_valor.gd`): el nombre
-a la izquierda y el valor a la derecha, en una pastilla («Sí» dorada, «No» gris, Recursos en azul, con la letra más
-chica si no cabe) o «›» si abre otra pantalla; sin interruptores, y se toca el botón entero. Las barras anchas
+a la izquierda y el valor a la derecha, en una pastilla («Sí» verde, `Tema.ENCENDIDO`, como lo lleno de las barras; «No» gris, Recursos en azul,
+con la letra más chica si no cabe) o «›» si abre otra pantalla; sin interruptores, y se toca el botón entero. Las barras anchas
 (variación `Tema.BARRA_ANCHA` de `HSlider`) saltan al punto tocado y se arrastran; con teclado o control, izquierda y
 derecha las mueven de 10 en 10. Desde la pausa, cambiar Recursos avisa que vale al entrar a la sala siguiente. Cada
 cambio se guarda al momento; las barras, al soltarlas.
@@ -635,7 +638,12 @@ que se toca mide al menos 108 px de alto (48 dp en el Senwa S50);
 letra de 36 en botones y 33 en etiquetas. `Tema.ajustar(control)` pone un panel en el área segura menos 64 px a los
 lados y 16 arriba y abajo, y lo reacomoda al cambiar la ventana. Las cuadrículas de la Configuración toman 2 columnas
 de 420 px en la vista de 1280 (4:3 y 16:9) y 3 desde 1440 (`Configuracion.columnas_para`), y se desplazan si no
-caben en alto. El borde dorado marca solo el foco; presionado se ve más claro.
+caben en alto. El borde dorado (`Tema.FOCO`) marca solo el foco: ningún estado lo usa; presionado se ve más claro. Los menús ponen el foco con
+`Tema.dar_foco(control)`: si lo último que se usó fue el dedo o el ratón no se dibuja, aunque haya un control
+conectado, y la primera flecha o el primer movimiento del control lo muestra; si fue un control o el teclado, se ve
+desde que se abre el menú. Lo último que se usó lo anota `UltimaEntrada` (`nucleo/ultima_entrada.gd`, nodo que crea
+`Arranque`, también en pausa): `UltimaEntrada.con_control`, que al arrancar vale `true` si ya hay un control
+conectado.
 
 Los menús hechos de piezas repetidas (ranuras, nueva partida, marco y sus páginas, partes de Configuración como el
 brillo) se arman en código y no en un `.tscn`: las fichas son iguales y su número sale de los datos. El resto es

@@ -122,7 +122,7 @@ func _mostrar(categoria: String) -> void:
 		boton.pressed.connect(_ir.bind(ruta))
 		_lista.add_child(boton)
 	_acomodar_columnas()
-	(_lista.get_child(0) as Button).grab_focus()
+	Tema.dar_foco(_lista.get_child(0) as Button)
 
 
 func _acomodar_columnas() -> void:

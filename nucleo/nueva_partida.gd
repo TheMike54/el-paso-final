@@ -54,7 +54,7 @@ func abrir(ranura: int) -> void:
 	_titulo.text = "Nueva partida %d" % ranura
 	_pintar()
 	visible = true
-	botones[PERSONAJES[0]].grab_focus()
+	Tema.dar_foco(botones[PERSONAJES[0]])
 
 
 func atras() -> void:

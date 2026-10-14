@@ -1,6 +1,6 @@
 extends Node
-# Autoload de arranque del nucleo. Carga los ajustes, crea la capa del brillo y los efectos (Sonido, que asi no
-# muere al cambiar de escena) y, solo si el build es de depuracion y el
+# Autoload de arranque del nucleo. Carga los ajustes, crea la capa del brillo, los efectos (Sonido, que asi no
+# muere al cambiar de escena) y UltimaEntrada (si se usa el dedo o un control) y, solo si el build es de depuracion y el
 # archivo viajo en el paquete, el puerto de depuracion: herramientas/ viaja tambien en
 # publicacion (zona de pruebas con el modo desarrollador), pero el puerto nunca corre ahi.
 const RUTA_PUERTO: String = "res://herramientas/puerto_depuracion.gd"
@@ -25,6 +25,10 @@ func _ready() -> void:
 		var brillo: Brillo = Brillo.new()
 		brillo.name = "Brillo"
 		add_child(brillo)
+	# Lo ultimo que se uso (dedo o control) decide si un menu dibuja su foco (Tema.dar_foco).
+	var ultima: UltimaEntrada = UltimaEntrada.new()
+	ultima.name = "UltimaEntrada"
+	add_child(ultima)
 	# Tambien sin pantalla: los guiones leen sus cuentas; ahi no toca nada.
 	var sonido: Sonido = Sonido.new()
 	sonido.name = "Sonido"

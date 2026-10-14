@@ -41,6 +41,28 @@ func _ready() -> void:
 
 	(menu.get_node(^"Centro/Opciones/Configuracion") as Button).pressed.emit()
 	_caso("Configuracion abre su lista en lugar del menu", config.visible and lista.visible and not centro.visible)
+	# Si lo ultimo que se uso no fue un control ni el teclado (UltimaEntrada), el foco esta en Audio pero no se dibuja;
+	# la primera flecha lo muestra.
+	var audio: Button = _boton(config, "Audio")
+	_caso("tras el dedo, el foco existe y no se dibuja", audio.has_focus() and not audio.has_focus(true))
+	_tecla(&"ui_down")
+	var con_foco: Control = get_viewport().gui_get_focus_owner()
+	_caso("la primera flecha dibuja el foco", con_foco != null and con_foco.has_focus(true))
+	# Lo ultimo que se uso decide: tras un boton del control el foco se dibuja aunque antes se tocara con el dedo.
+	var boton_control: InputEventJoypadButton = InputEventJoypadButton.new()
+	boton_control.pressed = true
+	UltimaEntrada.anotar(boton_control)
+	Tema.dar_foco(audio)
+	_caso("tras usar el control, el menu dibuja el foco", audio.has_focus(true))
+	var toque: InputEventScreenTouch = InputEventScreenTouch.new()
+	toque.pressed = true
+	UltimaEntrada.anotar(toque)
+	Tema.dar_foco(audio)
+	_caso("tras tocar con el dedo, aunque haya control, el foco no se dibuja", audio.has_focus() and not audio.has_focus(true))
+	var stick: InputEventJoypadMotion = InputEventJoypadMotion.new()
+	stick.axis_value = 0.2
+	UltimaEntrada.anotar(stick)
+	_caso("un stick apenas movido no cuenta como usar el control", not UltimaEntrada.con_control)
 	var zona: Button = menu.get_node(^"Centro/Opciones/ZonaPruebas") as Button
 	_caso("sin el modo desarrollador el menu no muestra la zona de pruebas", not zona.visible)
 	_boton(config, "Controles").pressed.emit()
@@ -116,7 +138,7 @@ func _ready() -> void:
 	var modo: BotonValor = config.get_node(NodePath(OPCIONES + "ModoDesarrollador")) as BotonValor
 	_caso("las opciones de si o no son botones con pastilla, sin interruptor", modo != null and not modo.toggle_mode and modo.valor == "No" and modo.estilo == BotonValor.Estilo.NO)
 	modo.pressed.emit()
-	_caso("tocar el boton cambia el valor y la pastilla dice Si en dorado", Ajustes.modo_desarrollador and modo.valor == "Sí" and modo.estilo == BotonValor.Estilo.SI)
+	_caso("tocar el boton cambia el valor y la pastilla queda en Si", Ajustes.modo_desarrollador and modo.valor == "Sí" and modo.estilo == BotonValor.Estilo.SI)
 	menu.notification(NOTIFICATION_WM_GO_BACK_REQUEST)
 	_caso("con el modo desarrollador el menu muestra la zona de pruebas", zona.visible and centro.visible)
 	(menu.get_node(^"Centro/Opciones/Configuracion") as Button).pressed.emit()

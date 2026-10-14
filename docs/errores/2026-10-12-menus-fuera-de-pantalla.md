@@ -22,7 +22,7 @@ Fecha: 2026-10-12. Rama `feature/nucleo-menu-tactil`.
 - `horizontal_scroll_mode = 3` (permitido, sin barra) en las listas de Configuración, del control y de la zona.
 - `Tema.ajustar` reacomoda el panel también con `minimum_size_changed`.
 - Además, el dorado del estado encendido se confundía con el foco: presionado y encendido se ven más claros y el
-  dorado queda solo para el foco.
+  dorado queda solo para el foco. Desde el 14-oct-2026 lo encendido es verde (`Tema.ENCENDIDO`).
 
 ## Qué lo cubre ahora
 Las columnas por ancho, los casos de `menu_configuracion.guion` (`Configuracion.columnas_para`). Lo visual no lo

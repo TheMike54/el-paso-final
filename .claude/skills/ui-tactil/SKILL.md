@@ -23,7 +23,7 @@ toque los comprueba un guion o una prueba manual en el teléfono.
 | Se aplica con `control.theme_type_variation = Tema.NOMBRE` (vacía = solo el tipo base) | `tutorials/ui/gui_theme_type_variations.rst:66` | Grep de `theme_type_variation`; guion `menu_configuracion` |
 | `add_theme_*_override` solo para acomodo (separaciones, márgenes); el aspecto sale del tema | `tutorials/ui/gui_skinning.rst:172`, `tutorials/ui/gui_containers.rst:98` | Grep de `add_theme_` en el archivo cambiado: solo separaciones y márgenes |
 | Un `Control` propio bajo una raíz de menú lee fuente, tamaño y stylebox con `get_theme_*` (ejemplo: `nucleo/boton_valor.gd`, `_draw`) | `tutorials/ui/gui_skinning.rst:36` | Guion `menu_configuracion` |
-| El stylebox `focus` es un contorno sin relleno (`Tema.FOCO`): se dibuja encima de `normal` o `pressed`. El dorado marca solo el foco | `tutorials/ui/gui_skinning.rst:92` | Guion `pausa_foco`; prueba manual con teclado o control |
+| El stylebox `focus` es un contorno sin relleno (`Tema.FOCO`): se dibuja encima de `normal` o `pressed`. El foco se da con `Tema.dar_foco(control)`, nunca con `grab_focus()` directo: se dibuja solo si lo último que se usó fue un control o el teclado (`UltimaEntrada.con_control`); tras un toque se da oculto. Su color sale de `Tema.FOCO`; lo encendido o lleno (pastilla «Sí», barras) usa `Tema.ENCENDIDO`, o con el control no se sabe dónde está el foco | `tutorials/ui/gui_skinning.rst:92` | Guiones `pausa_foco`, `menu_configuracion`; prueba manual con teclado o control |
 | Un `Control` propio que puede tomar el foco muestra un indicador; el que no debe tomarlo lleva `focus_mode = Control.FOCUS_NONE` (`nucleo/caja_dialogo.gd`) | `tutorials/ui/custom_gui_controls.rst:41` | Guiones `pausa_foco`, `dialogo` |
 | El tamaño de letra va en el tema o en el nodo (`Tema.LETRA`, `Tema.LETRA_CHICA`, `Tema.LETRA_TITULO`), no en un recurso de fuente por tamaño. Las medidas de `Tema` (`ALTO_LETRA`) son de la fuente por omisión: al cambiar de fuente se vuelven a medir | `tutorials/ui/gui_using_fonts.rst:20` | Prueba manual en el teléfono |
 
@@ -84,7 +84,7 @@ toque los comprueba un guion o una prueba manual en el teléfono.
   `Control` a pantalla completa en `STOP` se come los toques de los demás. — `tutorials/inputs/inputevent.rst:92`.
   Guiones `dialogo`, `controles_tactiles`.
 - El teclado y el control solo llegan al `Control` con foco y no suben por el árbol: por eso cada pantalla hace
-  `grab_focus()` en su primera opción y los menús leen acciones con `Input.is_action_just_pressed` en el tick
+  `Tema.dar_foco()` en su primera opción y los menús leen acciones con `Input.is_action_just_pressed` en el tick
   (`nucleo/pausa.gd`, `nucleo/marco_menus.gd`). — `tutorials/inputs/inputevent.rst:136`. Guiones `pausa_foco`,
   `controles_configurables`.
 
