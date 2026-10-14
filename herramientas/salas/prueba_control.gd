@@ -25,6 +25,14 @@ func _ready() -> void:
 	_eje(JOY_AXIS_LEFT_X, 0.1, [])
 	_eje(JOY_AXIS_TRIGGER_LEFT, 1.0, [])
 	_boton(JOY_BUTTON_RIGHT_SHOULDER, &"pagina_siguiente")
+	# A (Cruz) pulsa el boton con foco de los menus: Godot no pone ningun boton del control en ui_accept.
+	var aceptar: InputEventJoypadButton = InputEventJoypadButton.new()
+	aceptar.button_index = JOY_BUTTON_A
+	aceptar.pressed = true
+	casos += 1
+	if not aceptar.is_action_pressed(&"ui_accept"):
+		fallos += 1
+		print("FALLO control: boton %d no acepta en los menus (ui_accept)" % JOY_BUTTON_A)
 	print("PRUEBAS control casos=%d fallos=%d" % [casos, fallos])
 
 

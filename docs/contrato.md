@@ -280,6 +280,9 @@ letra de la distribución. Una acción nueva se agrega a `project.godot` y a est
   ajustes viejos guardaron como `mochila`. El campo `mochila` del guardado (lo perdido al morir) no cambió.
 - LB es `mapa_rapido` y también `pagina_anterior`: el mapa rápido solo responde con el juego andando y las páginas
   solo con el marco de menús abierto, que lo detiene. Las dos acciones de página no se reasignan.
+- A / Cruz también es `ui_accept`, la acción con la que un menú pulsa el botón que tiene el foco: Godot 4.7.2 no
+  le pone ningún botón del control, así que `project.godot` la redefine con sus tres teclas (Enter, Enter del
+  teclado numérico y Espacio) y A. No se reasigna: si el jugador mueve `saltar` a otro botón, A sigue aceptando.
 
 - `interactuar` y `mover_arriba` comparten tecla y las dos se activan juntas. Son acciones aparte para
   reasignarlas por separado; junto a algo con que interactuar, la lógica del jugador decide cuál vale.
