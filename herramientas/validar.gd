@@ -313,7 +313,7 @@ func _revisar_npcs(ruta: String, raiz: Node) -> void:
 		npcs.append(raiz)
 	for nodo: Node in npcs:
 		var npc: Npc = nodo as Npc
-		if npc.id.begins_with(Partida.PREFIJO_COLECCIONABLE) or npc.id.begins_with("entregado_"):
+		if npc.id.begins_with(Partida.PREFIJO_COLECCIONABLE) or npc.id.begins_with(EntregaRecompensas.PREFIJO_ENTREGADO):
 			_fallos.append("%s (el npc %s usa un id reservado: %s)" % [ruta, npc.name, npc.id])
 		# La escena del Npc suelto (nucleo/npc.tscn) no trae conversaciones: las pone cada sala.
 		if npc != raiz and npc.conversaciones.is_empty():
@@ -329,7 +329,7 @@ func _revisar_npcs(ruta: String, raiz: Node) -> void:
 		retos.append(raiz)
 	for nodo: Node in retos:
 		var reto: RetoPreguntas = nodo as RetoPreguntas
-		if reto.id.begins_with(Partida.PREFIJO_COLECCIONABLE) or reto.id.begins_with("entregado_"):
+		if reto.id.begins_with(Partida.PREFIJO_COLECCIONABLE) or reto.id.begins_with(EntregaRecompensas.PREFIJO_ENTREGADO):
 			_fallos.append("%s (el reto %s usa un id reservado: %s)" % [ruta, reto.name, reto.id])
 		# La escena suelta (nucleo/reto_preguntas.tscn) no trae preguntas: las pone cada sala.
 		if reto == raiz:

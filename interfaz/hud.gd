@@ -7,12 +7,9 @@ extends Control
 ## Centro del grupo en la distribucion inicial del diseno: fraccion de una pantalla 16:9, anclado
 ## arriba a la izquierda y medido en el lado corto, como los botones tactiles.
 const CENTRO: Vector2 = Vector2(0.17, 0.12)
-const PROPORCION_REFERENCIA: float = 16.0 / 9.0
 ## Lado de un corazon y separacion, en fraccion del lado corto.
 const LADO_CORAZON: float = 0.06
 const SEPARACION: float = 0.015
-## Inspiracion de un bloque: lo que da un golpe (Jugador.inspiracion_por_golpe).
-const INSPIRACION_POR_BLOQUE: int = 11
 const ALTO_BLOQUE: float = 0.022
 ## Ticks que se ve el icono de guardado: 2 s.
 const TICKS_AVISO: int = 120
@@ -43,7 +40,7 @@ func _ready() -> void:
 	vidas_maximas = Partida.vidas_maximas
 	inspiracion = Partida.inspiracion
 	inspiracion_maxima = Partida.INSPIRACION_MAXIMA
-	bloques_llenos = inspiracion / INSPIRACION_POR_BLOQUE
+	bloques_llenos = inspiracion / Partida.INSPIRACION_POR_GOLPE
 	monedas = Partida.monedas
 	Eventos.vidas_cambiadas.connect(_al_cambiar_vidas)
 	Eventos.monedas_cambiadas.connect(_al_cambiar_monedas)
@@ -66,7 +63,7 @@ func _al_cambiar_vidas(nuevas: int, maximas: int) -> void:
 func _al_cambiar_inspiracion(nueva: int, maxima: int) -> void:
 	inspiracion = nueva
 	inspiracion_maxima = maxima
-	bloques_llenos = inspiracion / INSPIRACION_POR_BLOQUE
+	bloques_llenos = inspiracion / Partida.INSPIRACION_POR_GOLPE
 	queue_redraw()
 
 
@@ -101,7 +98,7 @@ func _draw() -> void:
 	var arriba: float = _arriba(corto)
 	for i: int in range(vidas_maximas):
 		_corazon(Vector2(izquierda + i * paso + lado / 2.0, arriba + lado / 2.0), lado, i < vidas)
-	var bloques: int = inspiracion_maxima / INSPIRACION_POR_BLOQUE
+	var bloques: int = inspiracion_maxima / Partida.INSPIRACION_POR_GOLPE
 	var fuente: Font = ThemeDB.fallback_font
 	var tamano_letra: int = maxi(14, roundi(0.035 * corto))
 	if bloques > 0:
@@ -111,7 +108,7 @@ func _draw() -> void:
 		for i: int in range(bloques):
 			var x: float = izquierda + i * (ancho_bloque + separacion_bloque)
 			draw_rect(Rect2(x, y, ancho_bloque, ALTO_BLOQUE * corto), COLOR_VACIO)
-			var lleno: float = clampf(float(inspiracion - i * INSPIRACION_POR_BLOQUE) / INSPIRACION_POR_BLOQUE, 0.0, 1.0)
+			var lleno: float = clampf(float(inspiracion - i * Partida.INSPIRACION_POR_GOLPE) / Partida.INSPIRACION_POR_GOLPE, 0.0, 1.0)
 			if lleno > 0.0:
 				draw_rect(Rect2(x, y, ancho_bloque * lleno, ALTO_BLOQUE * corto), COLOR_LLENO)
 	draw_string(fuente, Vector2(izquierda, _base_monedas(corto)), "%d PejeCoins" % monedas,
@@ -126,7 +123,7 @@ func _ancho_inicial(corto: float) -> float:
 
 
 func _izquierda(corto: float) -> float:
-	return CENTRO.x * PROPORCION_REFERENCIA * corto - _ancho_inicial(corto) / 2.0
+	return CENTRO.x * Vista.PROPORCION_BASE * corto - _ancho_inicial(corto) / 2.0
 
 
 func _arriba(corto: float) -> float:

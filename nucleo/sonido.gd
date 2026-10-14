@@ -7,7 +7,6 @@ extends Node
 ## Por ahora, la de los sonidos de prueba. Donde vivira la del juego (en contenido/ seria una excepcion nueva de
 ## nucleo/CLAUDE.md) lo decide la persona.
 const FICHA_PRUEBA: String = "res://nucleo/sonidos/sonidos_prueba.tres"
-const BUS: StringName = &"Efectos"
 
 ## Efectos a la vez. Van en rueda: el siguiente toma la voz que empezo hace mas tiempo, aunque otra ya este libre.
 @export var voces: int = 4
@@ -36,7 +35,7 @@ func _ready() -> void:
 		ficha = load(FICHA_PRUEBA) as FichaSonidos
 	for i: int in range(voces):
 		var reproductor: AudioStreamPlayer = AudioStreamPlayer.new()
-		reproductor.bus = BUS
+		reproductor.bus = Ajustes.BUS_EFECTOS
 		add_child(reproductor)
 		_reproductores.append(reproductor)
 	# Metodos y no funciones anonimas, como en Vibracion.

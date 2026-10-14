@@ -16,7 +16,7 @@ const ACCIONES_AVANZAR: Array[StringName] = [&"interactuar", &"saltar", &"atacar
 const ALTO_CAJA: float = 200.0
 const ANCHO_MAXIMO: float = 1100.0
 const ANCHO_OPCION: float = 300.0
-const COLOR_QUIEN: Color = Color(0.88, 0.69, 0.29, 1.0)
+const COLOR_QUIEN: Color = Tema.DORADO
 
 ## 2 ticks por letra: 30 letras por segundo.
 @export var ticks_por_letra: int = 2
@@ -203,13 +203,11 @@ func _armar() -> void:
 	_caja.add_child(contenido)
 	_quien = Label.new()
 	_quien.name = "Quien"
-	_quien.add_theme_font_size_override(&"font_size", Tema.LETRA_CHICA)
 	_quien.add_theme_color_override(&"font_color", COLOR_QUIEN)
 	_quien.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	contenido.add_child(_quien)
 	_texto = Label.new()
 	_texto.name = "Texto"
-	_texto.add_theme_font_size_override(&"font_size", Tema.LETRA_CHICA)
 	_texto.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_texto.visible_characters_behavior = TextServer.VC_CHARS_AFTER_SHAPING
 	_texto.size_flags_vertical = Control.SIZE_EXPAND_FILL

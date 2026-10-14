@@ -33,7 +33,6 @@ const ZONA_JOYSTICK: Rect2 = Rect2(0.0, 0.3, 0.45, 0.7)
 ## Radio del joystick y zona muerta, en fraccion del lado corto y del radio.
 const RADIO_JOYSTICK: float = 0.12
 const ZONA_MUERTA: float = 0.2
-const PROPORCION_REFERENCIA: float = 16.0 / 9.0
 const COLOR_BOTON: Color = Color(1.0, 1.0, 1.0, 0.5)
 const COLOR_PRESIONADO: Color = Color(1.0, 1.0, 1.0, 0.25)
 ## Botones que solo existen con una habilidad: accion -> habilidad de Partida. Sin ella no se
@@ -263,7 +262,7 @@ func _etiqueta(i: int) -> String:
 
 
 func _sentado() -> bool:
-	var jugador: Jugador = get_tree().get_first_node_in_group(&"jugador") as Jugador
+	var jugador: Jugador = get_tree().get_first_node_in_group(Jugador.GRUPO) as Jugador
 	return jugador != null and jugador.descansando
 
 

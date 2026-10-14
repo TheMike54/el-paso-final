@@ -2,9 +2,10 @@ class_name Tema
 extends RefCounted
 # Tema de los menus (menu principal, Configuracion, pausa y zona de pruebas): botones de 108 px de alto, que en el
 # telefono mas chico probado (Senwa S50, densidad 240) son los 48 dp que pide Android, letra de 36 px y el foco
-# dorado (visible tras usar control o teclado, Tema.dar_foco). Se arma en codigo y se asigna solo a las raices de los menus, asi no toca la interfaz del juego. Da
-# tambien las columnas segun el ancho de la vista (1280 en 4:3 y 16:9, porque ahi crece el alto, hasta 1760 en
-# 22:9) y el area util dentro del area segura.
+# dorado (visible tras usar control o teclado, Tema.dar_foco). Se arma en codigo y se asigna solo a las raices de
+# los menus, asi no toca la interfaz del juego. Da tambien las columnas segun el ancho de la vista (1280 en 4:3 y
+# 16:9, porque ahi crece el alto, hasta 1760 en 22:9), el area util dentro del area segura y las piezas que repiten
+# los menus armados en codigo (boton, barra de arriba con Volver y titulo).
 
 ## Alto minimo de todo lo que se toca, en px de la vista.
 const ALTO_TOQUE: float = 108.0
@@ -17,6 +18,10 @@ const SEPARACION_FILAS: float = 12.0
 ## Margen minimo alrededor del menu, dentro del area segura: nada pegado a las orillas.
 const MARGEN_LATERAL: float = 64.0
 const MARGEN_VERTICAL: float = 16.0
+## Ancho de Volver y separacion de la barra de arriba de cada menu. configuracion.tscn y zona_pruebas.tscn
+## repiten estos numeros en su vista previa del editor: un .tscn no cita constantes.
+const ANCHO_VOLVER: float = 240.0
+const SEPARACION_ARRIBA: int = 32
 ## Letra de botones (16 dp en el S50) y de etiquetas y avisos (14 dp).
 const LETRA: int = 36
 const LETRA_CHICA: int = 33
@@ -26,7 +31,9 @@ const ALTO_LETRA: float = 50.0
 
 const FONDO_BOTON: Color = Color(0.17, 0.17, 0.2, 1.0)
 const BORDE_BOTON: Color = Color(0.27, 0.27, 0.3, 1.0)
-const FOCO: Color = Color(0.88, 0.69, 0.29, 1.0)
+## Dorado comun: el foco y el nombre de quien habla.
+const DORADO: Color = Color(0.88, 0.69, 0.29, 1.0)
+const FOCO: Color = DORADO
 ## Lo encendido o lleno (pastilla «Sí», lo lleno de las barras): verde y no el dorado, que es solo del foco; si no, con
 ## el control no se sabe donde esta el foco. Provisional, como FOCO.
 const ENCENDIDO: Color = Color(0.3, 0.6, 0.42, 1.0)
@@ -88,6 +95,41 @@ static func area_util(vista: Vector2) -> Rect2:
 ## muestra (`classes/class_control.rst:38`). Si fue un control o el teclado, se ve desde que se abre el menu.
 static func dar_foco(control: Control) -> void:
 	control.grab_focus(not UltimaEntrada.con_control)
+
+
+## El area util menos la franja de abajo que reserva quien abre el menu (el aviso de recursos).
+static func area_menu(vista: Vector2, reservado_abajo: float) -> Rect2:
+	var area: Rect2 = area_util(vista)
+	if reservado_abajo > 0.0:
+		area.end.y = minf(area.end.y, vista.y - reservado_abajo)
+	return area
+
+
+static func boton(texto: String, tamano: Vector2) -> Button:
+	var nuevo: Button = Button.new()
+	nuevo.text = texto
+	nuevo.custom_minimum_size = tamano
+	return nuevo
+
+
+## Barra de arriba de un menu armado en codigo: Volver a la izquierda y el titulo. Sus hijos se llaman Volver y
+## Titulo, para quien necesite tomarlos.
+static func barra_arriba(titulo: String, al_volver: Callable) -> HBoxContainer:
+	var arriba: HBoxContainer = HBoxContainer.new()
+	arriba.name = "Arriba"
+	arriba.add_theme_constant_override(&"separation", SEPARACION_ARRIBA)
+	var volver: Button = boton("Volver", Vector2(ANCHO_VOLVER, ALTO_TOQUE))
+	volver.name = "Volver"
+	volver.pressed.connect(al_volver)
+	arriba.add_child(volver)
+	var etiqueta: Label = Label.new()
+	etiqueta.name = "Titulo"
+	etiqueta.text = titulo
+	etiqueta.add_theme_font_size_override(&"font_size", LETRA_TITULO)
+	etiqueta.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	etiqueta.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	arriba.add_child(etiqueta)
+	return arriba
 
 
 ## Acomoda un Control de pantalla completa al area util de su vista, ahora, cada vez que la ventana cambia y cada vez

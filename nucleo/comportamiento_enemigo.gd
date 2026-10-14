@@ -22,7 +22,7 @@ func actuar() -> void:
 
 ## El jugador de la sala, o null.
 func jugador() -> Jugador:
-	return get_tree().get_first_node_in_group(&"jugador") as Jugador
+	return get_tree().get_first_node_in_group(Jugador.GRUPO) as Jugador
 
 
 ## Ataque separado del cuerpo, hijo del enemigo: un rectangulo relativo a sus pies que dana durante ticks.

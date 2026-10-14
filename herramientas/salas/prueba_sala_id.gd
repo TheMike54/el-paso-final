@@ -1,11 +1,9 @@
-extends Node
+extends "res://herramientas/salas/prueba_base.gd"
 # Prueba de los ids de sala: Sala.ruta_de, Sala.zona_de y que una sala con id avise cambio_de_sala con su
 # id. Corre los casos al entrar y deja la cuenta en "casos" y "fallos", que sala_id.guion lee con la
 # clave valor. Imprime el resumen y solo los que fallan.
 const PRUEBA_2: String = "res://herramientas/salas/zonas/prueba/prueba_2.tscn"
 
-var casos: int = 0
-var fallos: int = 0
 var _sala_avisada: String = ""
 
 
@@ -24,15 +22,8 @@ func _ready() -> void:
 	_caso("clave() de una sala con id es su id", sala.clave() == "prueba_2")
 	Eventos.cambio_de_sala.disconnect(_al_cambiar_de_sala)
 	sala.free()
-	print("PRUEBAS sala_id casos=%d fallos=%d" % [casos, fallos])
+	_resumen()
 
 
 func _al_cambiar_de_sala(sala: String, _puerta: StringName) -> void:
 	_sala_avisada = sala
-
-
-func _caso(nombre: String, bien: bool) -> void:
-	casos += 1
-	if not bien:
-		fallos += 1
-		print("FALLO sala_id: %s" % nombre)

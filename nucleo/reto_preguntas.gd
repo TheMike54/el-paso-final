@@ -26,12 +26,15 @@ const ALTURA_AVISO: float = 184.0
 @export var meta: int = 1
 ## Se entrega al ganar, una sola vez; puede faltar.
 @export var recompensa: Recompensa = null
+## Lo que dice al acertar una pregunta.
 @export var texto_correcto: String = "¡Correcto!"
 ## %s es la respuesta correcta.
 @export var texto_incorrecto: String = "No. Era: %s."
+## Lo que dice al llegar a la meta; la recompensa ya se entrego al responder.
 @export var texto_ganaste: String = "¡Lo lograste! Toma."
 ## %d: aciertos, preguntas y meta.
 @export var texto_otra_vez: String = "Acertaste %d de %d; hacen falta %d. Empieza otra vez."
+## Lo que dice si se vuelve a hablar despues de ganar.
 @export var texto_ganado: String = "Ya respondiste todo."
 
 ## Pregunta de la ronda que sigue, aciertos de la ronda y si ya se gano; publicas para las pruebas y los guiones.
@@ -50,8 +53,8 @@ var _aciertos_al_acabar: int = 0
 func _ready() -> void:
 	var clave: String = Sala.clave_de(self)
 	gano = Partida.estado_de(clave, id) == true
-	indice = _numero(Partida.estado_de(clave, id + "_indice"))
-	aciertos = _numero(Partida.estado_de(clave, id + "_aciertos"))
+	indice = Partida.estado_entero(clave, id + "_indice", 0)
+	aciertos = Partida.estado_entero(clave, id + "_aciertos", 0)
 	# Si cambiaron las preguntas y lo guardado ya no cabe, la ronda empieza otra vez.
 	if indice < 0 or indice >= preguntas.size() or aciertos < 0 or aciertos > indice:
 		indice = 0
@@ -63,20 +66,12 @@ func _physics_process(_delta: float) -> void:
 		if not is_instance_valid(_jugador) or not _jugador.hablando or _jugador.muerto:
 			_cerrar()
 		return
-	var jugador: Jugador = _quien_puede_hablar()
+	var jugador: Jugador = Jugador.encima_de(self)
 	if (jugador != null) != cerca:
 		cerca = jugador != null
 		queue_redraw()
 	if jugador != null and Input.is_action_just_pressed(&"interactuar") and not Congelado.activo():
 		_empezar(jugador)
-
-
-func _quien_puede_hablar() -> Jugador:
-	for cuerpo: Node2D in get_overlapping_bodies():
-		var jugador: Jugador = cuerpo as Jugador
-		if jugador != null and jugador.puede_interactuar:
-			return jugador
-	return null
 
 
 ## La pregunta que toca; null si ya se gano o no hay preguntas.
@@ -188,10 +183,6 @@ func _cerrar() -> void:
 		caja.ficha = null
 		caja.queue_free()
 		caja = null
-
-
-func _numero(valor: Variant) -> int:
-	return int(valor as float) if valor is int or valor is float else 0
 
 
 # Forma provisional: un atril y, si se puede hablar, un triangulo encima.

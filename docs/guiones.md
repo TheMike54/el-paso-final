@@ -42,3 +42,6 @@ corre el puerto de depuración (`herramientas/puerto_depuracion.gd`), en local y
   `InputMap` o si el estado no coincide.
 - Un guion comprueba lo que importa (llegó, está en el suelo, cambió de sala) con tolerancia; no todos los
   decimales.
+- Lo que tiene muchos casos de lógica va en una escena de prueba (`herramientas/salas/prueba_<nombre>.gd`) que
+  hereda por ruta `herramientas/salas/prueba_base.gd`: cuenta con `_caso(nombre, bien)`, imprime solo los fallos y
+  `_resumen()`, y su guion lee `valor . casos` y `valor . fallos`.

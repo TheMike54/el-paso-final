@@ -26,7 +26,7 @@ static func por_omision() -> DisposicionControles:
 	for i: int in range(ControlesTactiles.ACCIONES.size()):
 		var ancla: Vector2 = ControlesTactiles.ANCLAS[i]
 		d.anclas.append(ancla)
-		d.desplazamientos.append((ControlesTactiles.CENTROS[i] - ancla) * Vector2(ControlesTactiles.PROPORCION_REFERENCIA, 1.0))
+		d.desplazamientos.append((ControlesTactiles.CENTROS[i] - ancla) * Vector2(Vista.PROPORCION_BASE, 1.0))
 		d.escalas.append(1.0)
 	return d
 

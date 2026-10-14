@@ -4,7 +4,6 @@ extends Control
 # sala que no esta en GRUPOS ni en OCULTAS aparece sola en «Otras». Se llega desde el menu principal con el modo
 # desarrollador encendido, en depuracion y en publicacion; Volver, Atras y pausa regresan a ese menu.
 const CARPETA: String = "res://herramientas/salas/"
-const MENU: String = "res://nucleo/menu.tscn"
 ## Salas de cada categoria, en el orden en que se muestran (rutas desde CARPETA). validar.gd falla si una no existe.
 ## Nombres cortos: con los largos la fila media 1481 px y en el S50 caben 1312.
 const GRUPOS: Dictionary = {
@@ -69,7 +68,7 @@ func _notification(que: int) -> void:
 ## Regresa al menu principal, de donde se llega aqui.
 func volver() -> void:
 	MenuPrincipal.volver_a_zona = true
-	get_tree().change_scene_to_file(MENU)
+	get_tree().change_scene_to_file(MenuPrincipal.RUTA)
 
 
 ## Columnas de botones de sala que caben en un ancho: de 2 a 4.

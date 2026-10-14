@@ -62,7 +62,7 @@ func ocultar_de_marco() -> void:
 
 ## Sentado en un banco de esta sala.
 func puede_cambiar() -> bool:
-	var jugador: Jugador = get_tree().get_first_node_in_group(&"jugador") as Jugador
+	var jugador: Jugador = get_tree().get_first_node_in_group(Jugador.GRUPO) as Jugador
 	return jugador != null and jugador.descansando
 
 

@@ -1,4 +1,4 @@
-extends Node
+extends "res://herramientas/salas/prueba_base.gd"
 # Prueba de los controles tactiles sin pantalla: crea la capa, le pasa toques y arrastres
 # simulados y revisa que acciones del InputMap quedan presionadas y con que fuerza. Deja en
 # "casos" y "fallos" el resultado para controles_tactiles.guion. No sustituye la prueba en el
@@ -6,9 +6,6 @@ extends Node
 const ESCENA_CONTROLES: PackedScene = preload("res://nucleo/controles_tactiles.tscn")
 const ESCENA_JUGADOR: PackedScene = preload("res://nucleo/jugador.tscn")
 const MOVIMIENTOS: Array[StringName] = [&"mover_izquierda", &"mover_derecha", &"mover_arriba", &"mover_abajo"]
-
-var casos: int = 0
-var fallos: int = 0
 
 
 func _ready() -> void:
@@ -143,7 +140,7 @@ func _ready() -> void:
 	add_child(nueva)
 	_caso("tras pasar por el menu no queda movimiento presionado", _ninguna_movida())
 
-	print("PRUEBAS controles_tactiles casos=%d fallos=%d" % [casos, fallos])
+	_resumen()
 
 
 # Quita la capa de controles y pone otra en el mismo cuadro, como hace una sala nueva.
@@ -177,8 +174,6 @@ func _ninguna_movida() -> bool:
 	return true
 
 
-func _caso(nombre: String, bien: bool) -> void:
-	casos += 1
-	if not bien:
-		fallos += 1
-		print("FALLO controles_tactiles: %s" % nombre)
+# Imprime "controles_tactiles", como su guion, y no el nombre del archivo.
+func _nombre() -> String:
+	return "controles_tactiles"

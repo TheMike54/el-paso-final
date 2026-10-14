@@ -5,6 +5,8 @@ extends Control
 # de antes de las ranuras a la ranura 1, y pide confirmacion antes de cerrar la app con Atras o con pausa. Atras y
 # pausa vuelven un nivel a la vez: del editor de botones a Configuracion, de Nueva partida a las ranuras, de las ranuras o de Configuracion al menu,
 # y ahi piden salir. Abajo, el aviso de pocos toques si el telefono lo necesita.
+## Escena del menu principal: a ella vuelven la pausa, la zona de pruebas y el boton de volver al menu.
+const RUTA: String = "res://nucleo/menu.tscn"
 const ZONA_PRUEBAS: String = "res://herramientas/salas/zona_pruebas.tscn"
 const ESCENA_EDITOR: PackedScene = preload("res://nucleo/editor_controles.tscn")
 

@@ -4,6 +4,9 @@ extends CharacterBody2D
 # con toda su logica en _physics_process y las reglas de docs/jugador.md. Las habilidades solo
 # funcionan si Partida las tiene. Cada valor se exporta para afinarlo en la zona de pruebas.
 # Avisa al resto del juego por el bus Eventos.
+## Grupo de lo que controla la persona: el Jugador y tambien la caja gris (nucleo/caja_gris.tscn), que no es un
+## Jugador. Lo pone cada escena en groups; quien lo busca usa get_first_node_in_group(GRUPO).
+const GRUPO: StringName = &"jugador"
 const TAMANO: Vector2 = Vector2(80.0, 160.0)
 const COLOR: Color = Color(0.85, 0.85, 0.9)
 const COLOR_INVULNERABLE: Color = Color(0.85, 0.85, 0.9, 0.4)
@@ -112,7 +115,7 @@ const ESCENA_PROYECTIL: PackedScene = preload("res://nucleo/proyectil.tscn")
 ## Ticks manteniendo curar para recuperar una vida. Soltar o recibir dano antes la pierde.
 @export var ticks_curacion: int = 60
 ## Inspiracion que gana cada golpe a algo golpeable.
-@export var inspiracion_por_golpe: int = 11
+@export var inspiracion_por_golpe: int = preload("res://nucleo/partida.gd").INSPIRACION_POR_GOLPE
 
 @export_group("Poderes")
 ## Ticks manteniendo curar a partir de los cuales es mantener (curar) y no un toque (lanzar el poder).
@@ -1155,6 +1158,15 @@ func _colocar_tras_peligro(punto: Vector2) -> void:
 	temblor_y = 0.0
 	_camara.offset = Vector2.ZERO
 	_colocar_camara()
+
+
+## El jugador que esta encima de un area y puede interactuar (banco, Npc, reto, entrega); null si no hay.
+static func encima_de(area: Area2D) -> Jugador:
+	for cuerpo: Node2D in area.get_overlapping_bodies():
+		var jugador: Jugador = cuerpo as Jugador
+		if jugador != null and jugador.puede_interactuar:
+			return jugador
+	return null
 
 
 ## Lo llama el banco al descansar: el jugador se acomoda sobre el (en su x) y se queda sentado.

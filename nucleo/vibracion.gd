@@ -9,8 +9,11 @@ extends Node
 @export var al_pegar: Vector2 = Vector2(25.0, 0.35)
 ## Parry: mas fuerte que pegar, mas corto que recibir dano. Sin fuente.
 @export var al_parar: Vector2 = Vector2(45.0, 0.6)
+## Al recibir dano.
 @export var al_recibir_dano: Vector2 = Vector2(60.0, 0.8)
+## Al recuperar una vida curandose.
 @export var al_curarse: Vector2 = Vector2(40.0, 0.45)
+## Al sentarse en un banco.
 @export var al_descansar: Vector2 = Vector2(70.0, 0.5)
 ## Aterrizaje duro y aterrizaje de la picada: la mas fuerte. Sin fuente.
 @export var al_aterrizar: Vector2 = Vector2(80.0, 0.9)

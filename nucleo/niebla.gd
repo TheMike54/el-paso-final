@@ -4,7 +4,9 @@ extends Node2D
 # vuelven al llegar a recorrido, asi se queda quieta en la pausa y en el congelado comun. En modo bajo de
 # recursos no se mueve. No colisiona ni tapa avisos de peligro: va en una capa de fondo o de frente con z_index.
 
+## Velocidad de las franjas, en px/s.
 @export var velocidad: float = 20.0
+## Distancia, en px, tras la que cada franja vuelve a su lugar.
 @export var recorrido: float = 400.0
 
 var _quieta: bool = false

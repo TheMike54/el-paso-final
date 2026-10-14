@@ -14,10 +14,9 @@ extends Area2D
 func _physics_process(_delta: float) -> void:
 	if not Input.is_action_just_pressed(&"interactuar"):
 		return
-	for cuerpo: Node2D in get_overlapping_bodies():
-		var jugador: Jugador = cuerpo as Jugador
-		if jugador != null and jugador.puede_interactuar:
-			descansar(jugador)
+	var jugador: Jugador = Jugador.encima_de(self)
+	if jugador != null:
+		descansar(jugador)
 
 
 func descansar(jugador: Jugador = null) -> void:

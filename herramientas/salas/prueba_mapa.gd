@@ -1,4 +1,4 @@
-extends Node
+extends "res://herramientas/salas/prueba_base.gd"
 # Prueba del mapa: las cuentas de DatosMapa (que salas se dibujan, el rectangulo que abarcan, como se encaja en la
 # pantalla) y la pantalla sobre la sala mapa_1 de la zona de prueba: sin la pluma_mapa no hay nada, el banco dibuja
 # lo visitado de las zonas cuyo mapa se tiene, acercado y alejado, la brujula, y que el mapa, como pagina del marco
@@ -6,9 +6,6 @@ extends Node
 
 const SALA: String = "res://herramientas/salas/zonas/mapa/mapa_1.tscn"
 const RUTA: String = "user://prueba_mapa.json"
-
-var casos: int = 0
-var fallos: int = 0
 
 
 func _ready() -> void:
@@ -88,7 +85,7 @@ func _ready() -> void:
 	for ruta: String in [RUTA, RUTA + ".tmp"]:
 		if FileAccess.file_exists(ruta):
 			DirAccess.remove_absolute(ruta)
-	print("PRUEBAS mapa casos=%d fallos=%d" % [casos, fallos])
+	_resumen()
 
 
 func _cuentas() -> void:
@@ -102,10 +99,3 @@ func _cuentas() -> void:
 	var esquina: Vector2 = t * Vector2(0, 0)
 	var opuesta: Vector2 = t * Vector2(200, 100)
 	_caso("encajar llena el ancho util sin deformar y centra", is_equal_approx(t.x.x, 4.0) and is_equal_approx(t.y.y, 4.0) and esquina.is_equal_approx(Vector2(100, 300)) and opuesta.is_equal_approx(Vector2(900, 700)))
-
-
-func _caso(nombre: String, bien: bool) -> void:
-	casos += 1
-	if not bien:
-		fallos += 1
-		print("FALLO mapa: %s" % nombre)

@@ -1,11 +1,16 @@
 class_name Guardado
 extends RefCounted
-# Guarda y carga la partida como JSON con numero de version. Escribe en un archivo temporal y
-# despues lo renombra, para que un cierre a la mitad nunca deje la partida danada. Al cargar
+# Guarda y carga la partida como JSON con numero de version. Escribe con Archivo (a un temporal que
+# despues renombra), para que un cierre a la mitad nunca deje la partida danada. Al cargar
 # distingue partida valida, sin partida, archivo danado y version incompatible. Hay 4 ranuras de partida, cada una
 # con su copia de la ultima sesion para Restaurar.
 
-enum Estado { VALIDA, VACIA, DANADA, INCOMPATIBLE }
+enum Estado {
+	VALIDA,
+	VACIA,
+	DANADA,
+	INCOMPATIBLE,
+}
 
 const VERSION: int = 3
 ## Partida de antes de las ranuras: se pasa una vez a la ranura 1 (migrar). Banco la usa como centinela.
@@ -47,16 +52,7 @@ class Resultado:
 
 
 static func guardar(partida: Dictionary, ruta: String = RUTA) -> Error:
-	var temporal: String = ruta + ".tmp"
-	var archivo: FileAccess = FileAccess.open(temporal, FileAccess.WRITE)
-	if archivo == null:
-		return FileAccess.get_open_error()
-	archivo.store_string(JSON.stringify({"version": VERSION, "partida": partida}, "\t"))
-	var error: Error = archivo.get_error()
-	archivo.close()
-	if error != OK:
-		return error
-	return DirAccess.rename_absolute(temporal, ruta)
+	return Archivo.escribir_atomico(ruta, JSON.stringify({"version": VERSION, "partida": partida}, "\t"))
 
 
 static func ruta_ranura(numero: int) -> String:
@@ -86,12 +82,7 @@ static func migrar(desde: String, hacia: String) -> Error:
 static func respaldar(ruta: String) -> Error:
 	if cargar(ruta).estado != Estado.VALIDA:
 		return ERR_INVALID_DATA
-	# Al temporal y despues renombrada, como guardar: una copia cortada a la mitad no queda como copia.
-	var temporal: String = ruta + RESPALDO + ".tmp"
-	var error: Error = DirAccess.copy_absolute(ruta, temporal)
-	if error != OK:
-		return error
-	return DirAccess.rename_absolute(temporal, ruta + RESPALDO)
+	return Archivo.copiar_atomico(ruta, ruta + RESPALDO)
 
 
 ## Si hay una copia valida a la que volver.
@@ -99,16 +90,11 @@ static func tiene_respaldo(ruta: String) -> bool:
 	return cargar(ruta + RESPALDO).estado == Estado.VALIDA
 
 
-## Vuelve la partida a su copia, solo si la copia es valida. Copia al temporal y lo renombra, como guardar: un cierre
-## a la mitad no la dana.
+## Vuelve la partida a su copia, solo si la copia es valida. Atomica, como guardar: un cierre a la mitad no la dana.
 static func restaurar(ruta: String) -> Error:
 	if not tiene_respaldo(ruta):
 		return ERR_FILE_NOT_FOUND
-	var temporal: String = ruta + ".tmp"
-	var error: Error = DirAccess.copy_absolute(ruta + RESPALDO, temporal)
-	if error != OK:
-		return error
-	return DirAccess.rename_absolute(temporal, ruta)
+	return Archivo.copiar_atomico(ruta + RESPALDO, ruta)
 
 
 static func cargar(ruta: String = RUTA) -> Resultado:

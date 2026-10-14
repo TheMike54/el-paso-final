@@ -5,6 +5,7 @@ extends Node2D
 # Golpeable y dana al jugador por contacto. Vencido, emite Eventos.enemigo_vencido y desaparece; si es
 # fuerte, Partida lo recuerda hasta el proximo descanso y no vuelve a aparecer en su sala.
 
+## Vida, dano, tamano y reaparicion del enemigo: los datos, en una ficha .tres.
 @export var ficha: FichaEnemigo
 ## Id del ejemplar, unico dentro de su sala: junto con la clave de la sala lo identifica.
 @export var id: StringName = &""

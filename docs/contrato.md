@@ -43,6 +43,8 @@ Valores de `project.godot`. No se cambian sin actualizar esta tabla.
   no es `null`), la acción `pausa` no hace nada y Atrás es Cancelar. Con Configuración abierta, `pausa` y Atrás
   vuelven un nivel en ella (`Configuracion.atras()`).
 - El guardado se escribe en un archivo temporal y después se renombra: un cierre a la mitad no daña la partida.
+  Lo hace `Archivo` (`escribir_atomico(ruta, texto)` y `copiar_atomico(desde, hacia)`, con el temporal
+  `<destino>.tmp`), que usan la partida, su copia y los ajustes: todo archivo nuevo de `user://` pasa por ella.
 - Los ajustes del jugador van en su propio archivo, no en la partida (ver «Ajustes y vibración»).
 - El guardado es JSON con número de versión. Al cargar se distinguen partida válida, archivo dañado y partida de
   una versión incompatible, más el caso sin partida guardada (ver «Guardado»).
@@ -172,8 +174,8 @@ Autoload `Partida` (`nucleo/partida.gd`): lo que sobrevive al cambio de sala. Un
 | `monedas` | PejeCoins; cada cambio emite `monedas_cambiadas` |
 | `salas_visitadas`, `visitar(clave)` | Claves de las salas visitadas; la sala se anota al entrar |
 | `salas_mapeadas` | Al oír `descanso_en_banco`, con la habilidad `pluma_mapa`, pasan aquí las visitadas cuya zona está en `mapas` (como la Pluma de Hollow Knight y Silksong) |
-| `salas`, `estado_de(sala, objeto)`, `marcar(sala, objeto, valor := true)` | Estado por sala. `estado_de` da `null` si no hay nada. Lo usan `SueloFragil`, `Coleccionable`, `Npc` (su etapa, un número) y `RetoPreguntas` (`<id>`, `<id>_indice` y `<id>_aciertos`) con su `id` y la clave de su sala (`Sala.clave_de(nodo)`) |
-| `total_coleccionables()` | Marcas de todas las salas cuyo id empieza con `PREFIJO_COLECCIONABLE` (`coleccionable`) |
+| `salas`, `estado_de(sala, objeto)`, `estado_entero(sala, objeto, por_omision)`, `marcar(sala, objeto, valor := true)` | Estado por sala. `estado_de` da `null` si no hay nada; `estado_entero` da un número aunque el JSON lo haya vuelto `float`, o `por_omision`. Lo usan `SueloFragil`, `Coleccionable`, `Npc` (su etapa, un número) y `RetoPreguntas` (`<id>`, `<id>_indice` y `<id>_aciertos`) con su `id` y la clave de su sala (`Sala.clave_de(nodo)`) |
+| `total_coleccionables()`, `contar_coleccionables(salas)` | Marcas de todas las salas cuyo id empieza con `PREFIJO_COLECCIONABLE` (`coleccionable`); la segunda cuenta un estado de salas leído de un archivo (la ficha de una ranura) e ignora lo que no es diccionario |
 | `obtener_habilidad(id)`, `obtener_amuleto(id)`, `obtener_mapa(zona)` | Suman y emiten `habilidad_obtenida`, `amuleto_obtenido` o `mapa_obtenido` (si ya estaba, nada). Nada escribe `mapas` directo: el `ObjetoMapa` y `dar_recompensa` pasan por `obtener_mapa` |
 | `MAX_EQUIPADOS`, `puede_equipar(id)`, `equipar(id)`, `desequipar(id)`, `esta_equipado(id)` | Poner un amuleto exige tenerlo, que no esté puesto y que haya lugar (`MAX_EQUIPADOS`, 3, provisional hasta que haya carga). `equipar` y `desequipar` devuelven `false` si no pueden y, si cambian algo, autoguardan. Dónde se puede (sentado en un banco) lo decide la pantalla de los amuletos: `Partida` no conoce al jugador. Nada escribe `amuletos_equipados` directo |
 | `dar_recompensa(recompensa)` | Entrega una `Recompensa` (PejeCoins, vida máxima, amuleto, habilidad o el mapa de una zona, con `obtener_mapa`) |
@@ -220,6 +222,10 @@ Configuración vale desde la sala siguiente. Elegir alto en un teléfono débil 
   presupuesto a propósito (hasta 12 emisores y ~500 partículas en alto): es la sala para medir el rendimiento.
 - `herramientas/salas/sala_recursos.tscn` llena el presupuesto (2 nieblas, 30 plantas, 3 emisores, 6 cortables;
   prescindibles una niebla, dos emisores y cuatro cortables) para medir los FPS en bajo y en alto.
+- Un `Fondo` opaco (con el `FondoExtendido` que crea, ver «Fondo extendido») cuesta en el S50: medido el
+  13-oct-2026, dos salas de pruebas bajaban de 60 a ~50 FPS con él (detalle en `docs/pruebas.md`, «Medir antes de
+  optimizar»; no se separó cuánto es de cada rectángulo). Una sala cuyo fondo puede ser negro va sin `Fondo`; el
+  núcleo no tiene otra forma de dar un color de fondo. El validador no lo revisa.
 
 ## Bus de eventos
 
@@ -298,7 +304,7 @@ letra de la distribución. Una acción nueva se agrega a `project.godot` y a est
   `editando`). Joystick invisible en la zona de abajo a la izquierda (aparece donde se pone el dedo; da fuerza de 0
   a 1 a `mover_*`, con zona muerta de 0,2; hacia arriba también da `interactuar`, como la flecha arriba) y botones Saltar, Atacar, Curar, Impulso, Pausa y Mapa en la
   distribución inicial (no hay botón de inventario: el de Mapa tiene doble uso, de pie dice «Mapa» y da `mapa`, y
-  sentado en un banco (`Jugador.descansando`, leído del grupo `jugador`) dice «Inventario» y da `inventario`; al
+  sentado en un banco (`Jugador.descansando`, leído del grupo `jugador`, `Jugador.GRUPO`) dice «Inventario» y da `inventario`; al
   soltar se suelta la acción que se presionó); Impulso solo mientras `Partida.tiene(&"impulso")` y Atacar mientras `Partida.tiene(&"pluma")` (sin la habilidad no se dibuja ni responde,
   y un dedo encima se suelta al perderla; la tabla `HABILIDAD_DE_BOTON` dice qué botón pide qué habilidad). Anclados a su esquina y medidos en proporción del lado corto. Se ocultan con una tecla o
   el control y reaparecen al tocar la pantalla. Los dedos se recuerdan entre salas (variables estáticas): un dedo
@@ -334,7 +340,7 @@ El jugador (propiedades, combate, curar, habilidades y prioridad del movimiento)
 | `nucleo/golpeable.gd` (`class_name Golpeable`, `Area2D`) | Hijo de lo que el ataque o la bola pueden golpear, con su forma. `recibir_golpe(atacante, dano := 1)` cuenta `golpes` y `dano_recibido`, empuja a su padre lejos del atacante (`velocidad_retroceso` 240 px/s, `ticks_retroceso` 6; 0 para que no se mueva; golpeado justo desde arriba no se empuja) sin meter su forma en un `StaticBody2D` (lo busca con un rayo a media altura) ni sacarla de los `limites` de su `Sala`: al topar, el empuje se acaba, emite su señal `golpeado(atacante, dano)` y `Eventos.enemigo_golpeado` con su padre |
 | `nucleo/suelo_fragil.gd` (`class_name SueloFragil`, `StaticBody2D`) | Sólido que se pisa como cualquier otro y que rompe la caída en picada (`romper()`: `roto` y desaparece). Va en la sala con su forma y su dibujo. Con `id` (obligatorio en las salas con id) se marca en el estado de su sala al romperse y ya no aparece al entrar |
 | `nucleo/coleccionable.tscn` (`class_name Coleccionable`, `Area2D`) | Al tocarlo el jugador vivo: se marca en el estado de su sala, emite `coleccionable_obtenido` (autoguarda) y desaparece; marcado, no aparece. `id` único en la sala que empieza con `coleccionable`. Gris, sin tema |
-| `nucleo/entrega_recompensas.gd` (`class_name EntregaRecompensas`, `Area2D`) | Con el jugador encima y `Jugador.puede_interactuar` (la misma regla del `Npc`), `interactuar` entrega cada `Recompensa` de su lista cuya `cantidad` ya se juntó y no se entregó (marca `entregado_<cantidad>` en su sala) y autoguarda. `entregadas` las cuenta |
+| `nucleo/entrega_recompensas.gd` (`class_name EntregaRecompensas`, `Area2D`) | Con el jugador encima y `Jugador.puede_interactuar` (la misma regla del `Npc`), `interactuar` entrega cada `Recompensa` de su lista cuya `cantidad` ya se juntó y no se entregó (marca `PREFIJO_ENTREGADO` + cantidad, `entregado_<cantidad>`, en su sala) y autoguarda. `entregadas` las cuenta |
 | `nucleo/recompensa.gd` (`class_name Recompensa`, `Resource`) | `cantidad`, `tipo` (`MONEDAS`, `VIDA_MAXIMA`, `AMULETO`, `HABILIDAD`, `MAPA`; el orden no cambia porque se guarda como número), `monto` e `id` (en `MAPA`, la zona) |
 | `nucleo/npc.tscn` (`class_name Npc`, `Area2D`) | Personaje con quien se habla. Con el jugador encima, en el suelo y libre (sin morir, sentarse, aterrizar duro ni hablar ya), un triángulo encima avisa e `interactuar` abre una `CajaDialogo` con la conversación de su `etapa` y llama `Jugador.empezar_a_hablar()`. `conversaciones` tiene una `FichaDialogo` por etapa. Terminar contando sube la etapa, la marca en el estado de su sala (`id` único en la sala, que no empieza con `coleccionable` ni `entregado_`), entrega las recompensas de esa ficha una sola vez y autoguarda; terminada la última, se repite sin entregar. Sin contar (`CANCELAR`), un golpe, un peligro o morir la cierran sin cambiar nada. Emite `conversacion_terminada(etapa)`; `etapa`, `cerca` y `caja` son públicas. Forma provisional: un rectángulo |
 | `nucleo/caja_dialogo.gd` (`class_name CajaDialogo`, `CanvasLayer` capa 12) | Caja abajo de la pantalla, dentro del área segura: quién habla y el texto letra por letra (`ticks_por_letra`, 2). `interactuar`, `saltar`, `atacar` o tocar la caja completan la línea y, completa, pasan a la siguiente; la pulsación que la abrió no cuenta. Las opciones de una pregunta van en fila encima de la caja: izquierda y derecha cambian la marcada y se toma con las mismas acciones o tocándola; con opciones a la vista, tocar la caja no elige. Emite `terminada(contar)` y, al tomar una opción, `opcion_elegida(linea, opcion)` antes de pasar a su destino. Corre con el juego: la pausa y el mapa la detienen. Mientras existe, `ControlesTactiles.hablando` es verdadero. `linea`, `letras_visibles`, `completa` y `elegida` son públicas |
@@ -489,9 +495,9 @@ con un `Control` `Hud` (`interfaz/hud.gd`, `class_name Hud`). La sala lo carga c
 - Se entera de todo por el bus (`vidas_cambiadas`, `inspiracion_cambiada`, `partida_guardada`) y lee `Partida` una
   sola vez al crearse, para el primer cuadro. Nunca lee al jugador.
 - Corazones arriba a la izquierda, uno por vida máxima, llenos o vacíos; debajo, la barra de Inspiración en bloques
-  de 11 (lo que da un golpe) hasta `INSPIRACION_MAXIMA`, con el bloque a medias dibujado a medias. Centro del grupo
-  en (17 %, 12 %) de una pantalla 16:9, anclado arriba a la izquierda y medido en el lado corto; una vida más crece
-  hacia la derecha.
+  de `Partida.INSPIRACION_POR_GOLPE` (11, lo que da un golpe por omisión) hasta `INSPIRACION_MAXIMA`, con el bloque
+  a medias dibujado a medias. Centro del grupo en (17 %, 12 %) de una pantalla 16:9 (`Vista.PROPORCION_BASE`),
+  anclado arriba a la izquierda y medido en el lado corto; una vida más crece hacia la derecha.
 - PejeCoins bajo la barra (`monedas_cambiadas`).
 - Ícono de guardado provisional (un rombo que gira) bajo las PejeCoins, alineado a la izquierda del grupo, durante
   2 s después de `partida_guardada`. Es un nodo propio que gira con `rotation`: no redibuja el resto de la interfaz.
@@ -557,7 +563,7 @@ Bloque `mapa/`: no conoce ninguna zona; dibuja lo que hay y, si no hay nada, no 
 
 | Grupo | Quién lo lleva | Quién lo usa |
 |---|---|---|
-| `jugador` | El cuerpo que controla la persona: el `Jugador` que crea la sala, o la caja gris (`sala_inicial`) | El puerto de depuración (posición y si está en el suelo), `ComportamientoEnemigo.jugador()` y, en pruebas, `medidor_camara.gd` y `prueba_peligro_anti_bucle.gd` |
+| `jugador` | El cuerpo que controla la persona: el `Jugador` que crea la sala, o la caja gris (`sala_inicial`) | El puerto de depuración (posición y si está en el suelo), `ComportamientoEnemigo.jugador()`, los controles táctiles, el marco de menús, la pantalla de amuletos, la del mapa y, en pruebas, `medidor_camara.gd` y `prueba_peligro_anti_bucle.gd` |
 | `pantalla_encima` | Una pantalla abierta sobre el juego (hoy, `MarcoMenus`) con `bloquea_pausa() -> bool` | La `Pausa`: no se abre (con `pausa`, Atrás ni al perder el foco) mientras una diga que bloquea, ni en el tick en que se cerró |
 | `pagina_marco` | Las páginas del marco de menús: `PaginaInventario`, `PantallaAmuletos` y `PantallaMapa` | `MarcoMenus`, que las ordena y las muestra (ver «Marco de menús») |
 

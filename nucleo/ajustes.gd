@@ -132,15 +132,18 @@ static func aplicar_brillo() -> void:
 		Brillo.instancia.poner(brillo)
 
 
-## Escribe a un temporal y lo renombra, como el guardado de la partida.
+## Escribe con Archivo (a un temporal que despues renombra), como el guardado de la partida.
 static func guardar(ruta: String = RUTA) -> Error:
-	var temporal: String = ruta + ".tmp"
-	var archivo: FileAccess = FileAccess.open(temporal, FileAccess.WRITE)
-	if archivo == null:
-		return FileAccess.get_open_error()
-	archivo.store_string(JSON.stringify({"version": VERSION, "ajustes": {"vibracion": vibracion, "temblor": temblor, "modo_desarrollador": modo_desarrollador, "volumen": volumen, "volumen_musica": volumen_musica, "volumen_efectos": volumen_efectos, "brillo": brillo, "recursos": recursos, "controles": disposicion.a_diccionario(), "mando": Mando.a_diccionario()}}, "\t"))
-	var error: Error = archivo.get_error()
-	archivo.close()
-	if error != OK:
-		return error
-	return DirAccess.rename_absolute(temporal, ruta)
+	var ajustes: Dictionary = {
+		"vibracion": vibracion,
+		"temblor": temblor,
+		"modo_desarrollador": modo_desarrollador,
+		"volumen": volumen,
+		"volumen_musica": volumen_musica,
+		"volumen_efectos": volumen_efectos,
+		"brillo": brillo,
+		"recursos": recursos,
+		"controles": disposicion.a_diccionario(),
+		"mando": Mando.a_diccionario(),
+	}
+	return Archivo.escribir_atomico(ruta, JSON.stringify({"version": VERSION, "ajustes": ajustes}, "\t"))

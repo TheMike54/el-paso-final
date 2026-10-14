@@ -1,13 +1,10 @@
-extends Node
+extends "res://herramientas/salas/prueba_base.gd"
 # Prueba de los amuletos: Partida pone y quita solo lo que se tiene y con lugar, y autoguarda; la pagina Amuletos del
 # marco de menus deja cambiarlos solo sentado en un banco y de pie solo los muestra. Deja casos y fallos para
 # amuletos.guion e imprime el resumen.
 
 const ESCENA_JUGADOR: PackedScene = preload("res://nucleo/jugador.tscn")
 const RUTA: String = "user://prueba_amuletos.json"
-
-var casos: int = 0
-var fallos: int = 0
 
 
 func _ready() -> void:
@@ -62,11 +59,4 @@ func _ready() -> void:
 	Partida.reiniciar()
 	Partida.ruta_guardado = ruta_real
 	DirAccess.remove_absolute(RUTA)
-	print("PRUEBAS amuletos casos=%d fallos=%d" % [casos, fallos])
-
-
-func _caso(nombre: String, bien: bool) -> void:
-	casos += 1
-	if not bien:
-		fallos += 1
-		print("FALLO amuletos: %s" % nombre)
+	_resumen()

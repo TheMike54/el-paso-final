@@ -5,6 +5,9 @@ extends Area2D
 # entrego antes. Cada entrega queda marcada en el estado de su sala (entregado_<cantidad>) y autoguarda.
 # Va como hija directa de la raiz de una sala, con su forma.
 
+## Las marcas de las entregas en el estado de la sala empiezan asi; un Npc o un reto no usan ese id.
+const PREFIJO_ENTREGADO: String = "entregado_"
+
 ## Recompensas por cantidad, de menor a mayor.
 @export var recompensas: Array[Recompensa] = []
 
@@ -15,11 +18,8 @@ var entregadas: int = 0
 func _physics_process(_delta: float) -> void:
 	if not Input.is_action_just_pressed(&"interactuar"):
 		return
-	for cuerpo: Node2D in get_overlapping_bodies():
-		var jugador: Jugador = cuerpo as Jugador
-		if jugador != null and jugador.puede_interactuar:
-			entregar()
-			return
+	if Jugador.encima_de(self) != null:
+		entregar()
 
 
 ## Entrega lo pendiente; devuelve cuantas recompensas dio.
@@ -28,7 +28,7 @@ func entregar() -> int:
 	var total: int = Partida.total_coleccionables()
 	var dadas: int = 0
 	for recompensa: Recompensa in recompensas:
-		var marca: String = "entregado_%d" % recompensa.cantidad
+		var marca: String = PREFIJO_ENTREGADO + str(recompensa.cantidad)
 		if recompensa.cantidad > total or Partida.estado_de(sala, marca) != null:
 			continue
 		Partida.marcar(sala, marca)

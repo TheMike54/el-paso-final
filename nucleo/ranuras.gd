@@ -8,7 +8,10 @@ extends Control
 signal elegida(numero: int)
 signal cerrado()
 
-enum Accion { BORRAR, RESTAURAR }
+enum Accion {
+	BORRAR,
+	RESTAURAR,
+}
 
 ## Ancho de una ficha: 4 en fila caben desde la vista de 1280 (1152 utiles).
 const ANCHO_FICHA: float = 270.0
@@ -170,14 +173,7 @@ static func tiempo_texto(segundos: float) -> String:
 ## Cuadritos del rastro: uno por habilidad, jefe y coleccionable obtenidos.
 static func pasos(partida: Dictionary) -> int:
 	var total: int = (partida.get("habilidades", []) as Array).size() + (partida.get("jefes", []) as Array).size()
-	var salas: Dictionary = partida.get("salas", {}) as Dictionary
-	for clave: Variant in salas:
-		var estado: Variant = salas[clave]
-		if estado is Dictionary:
-			for objeto: Variant in estado as Dictionary:
-				if str(objeto).begins_with(Partida.PREFIJO_COLECCIONABLE):
-					total += 1
-	return total
+	return total + Partida.contar_coleccionables(partida.get("salas", {}) as Dictionary)
 
 
 func _pintar(numero: int) -> void:
@@ -221,9 +217,7 @@ func _enfocar(numero: int) -> void:
 # El marco ocupa el area util (Tema) menos la franja reservada abajo.
 func _acomodar() -> void:
 	var vista: Vector2 = get_viewport_rect().size
-	var area: Rect2 = Tema.area_util(vista)
-	if reservado_abajo > 0.0:
-		area.end.y = minf(area.end.y, vista.y - reservado_abajo)
+	var area: Rect2 = Tema.area_menu(vista, reservado_abajo)
 	_marco.position = area.position
 	_marco.size = area.size
 	_fichas.columns = columnas_para(area.size.x)
@@ -234,20 +228,9 @@ func _armar() -> void:
 	_marco.name = "Marco"
 	_marco.add_theme_constant_override(&"separation", int(Tema.SEPARACION_FILAS))
 	add_child(_marco)
-	var arriba: HBoxContainer = HBoxContainer.new()
-	arriba.name = "Arriba"
-	arriba.add_theme_constant_override(&"separation", 32)
+	var arriba: HBoxContainer = Tema.barra_arriba("Elige una partida", atras)
 	_marco.add_child(arriba)
-	_volver = _boton("Volver", Vector2(240.0, Tema.ALTO_TOQUE))
-	_volver.name = "Volver"
-	_volver.pressed.connect(atras)
-	arriba.add_child(_volver)
-	var titulo: Label = Label.new()
-	titulo.text = "Elige una partida"
-	titulo.add_theme_font_size_override(&"font_size", Tema.LETRA_TITULO)
-	titulo.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	titulo.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	arriba.add_child(titulo)
+	_volver = arriba.get_node(^"Volver") as Button
 	# Con el area segura muy recortada las fichas van en 2x2 y pueden no caber a lo alto: se desplazan.
 	var desplazable: ScrollContainer = ScrollContainer.new()
 	desplazable.name = "Desplazable"
@@ -274,7 +257,7 @@ func _armar_ficha(numero: int) -> void:
 	ficha.name = "Ficha%d" % numero
 	ficha.add_theme_constant_override(&"separation", int(SEPARACION_FICHA))
 	_fichas.add_child(ficha)
-	var principal: Button = _boton("", Vector2(ANCHO_FICHA, ALTO_PRINCIPAL))
+	var principal: Button = Tema.boton("", Vector2(ANCHO_FICHA, ALTO_PRINCIPAL))
 	principal.name = "Principal"
 	principal.pressed.connect(elegida.emit.bind(numero))
 	ficha.add_child(principal)
@@ -311,11 +294,11 @@ func _armar_ficha(numero: int) -> void:
 	rastro.add_theme_constant_override(&"h_separation", SEPARACION_PASO)
 	rastro.add_theme_constant_override(&"v_separation", SEPARACION_PASO)
 	contenido.add_child(rastro)
-	var borrar: Button = _boton("Borrar", Vector2(ANCHO_FICHA, Tema.ALTO_TOQUE))
+	var borrar: Button = Tema.boton("Borrar", Vector2(ANCHO_FICHA, Tema.ALTO_TOQUE))
 	borrar.name = "Borrar"
 	borrar.pressed.connect(pedir.bind(Accion.BORRAR, numero))
 	ficha.add_child(borrar)
-	var restaurar: Button = _boton("Restaurar", Vector2(ANCHO_FICHA, Tema.ALTO_TOQUE))
+	var restaurar: Button = Tema.boton("Restaurar", Vector2(ANCHO_FICHA, Tema.ALTO_TOQUE))
 	restaurar.name = "Restaurar"
 	restaurar.pressed.connect(pedir.bind(Accion.RESTAURAR, numero))
 	ficha.add_child(restaurar)
@@ -349,18 +332,11 @@ func _armar_confirmacion() -> void:
 	botones.add_theme_constant_override(&"separation", 64)
 	botones.alignment = BoxContainer.ALIGNMENT_CENTER
 	caja.add_child(botones)
-	_si = _boton("Borrar", Vector2(300.0, Tema.ALTO_TOQUE))
+	_si = Tema.boton("Borrar", Vector2(300.0, Tema.ALTO_TOQUE))
 	_si.name = "Si"
 	_si.pressed.connect(confirmar)
 	botones.add_child(_si)
-	_no = _boton("Cancelar", Vector2(300.0, Tema.ALTO_TOQUE))
+	_no = Tema.boton("Cancelar", Vector2(300.0, Tema.ALTO_TOQUE))
 	_no.name = "No"
 	_no.pressed.connect(atras)
 	botones.add_child(_no)
-
-
-func _boton(texto: String, tamano: Vector2) -> Button:
-	var boton: Button = Button.new()
-	boton.text = texto
-	boton.custom_minimum_size = tamano
-	return boton

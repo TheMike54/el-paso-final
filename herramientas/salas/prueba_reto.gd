@@ -1,4 +1,4 @@
-extends Node
+extends "res://herramientas/salas/prueba_base.gd"
 # Prueba del reto de preguntas: el validador de preguntas atrapa cada forma mala; responder cuenta, recuerda y
 # autoguarda; una ronda perdida vuelve a empezar sin premio y una ganada da la recompensa una sola vez; lo guardado se
 # lee al entrar y un estado que ya no cabe empieza de nuevo; con la caja, cada respuesta dice si acerto y el final
@@ -8,8 +8,6 @@ const ESCENA_SALA: PackedScene = preload("res://herramientas/salas/sala_reto.tsc
 const PREGUNTA_1: FichaPregunta = preload("res://herramientas/salas/fichas/pregunta_prueba_1.tres")
 const RUTA: String = "user://prueba_reto.json"
 
-var casos: int = 0
-var fallos: int = 0
 var _ganados: int = 0
 
 
@@ -32,15 +30,15 @@ func _ready() -> void:
 
 	# Respuestas, sin caja (preguntas: correcta 1, 1 y 0; meta 2).
 	var antes: int = Partida.autoguardados
-	_caso("una respuesta mala cuenta, se recuerda y autoguarda", not reto.responder(0) and reto.indice == 1 and reto.aciertos == 0 and _numero(clave, "reto_indice") == 1 and Partida.autoguardados == antes + 1)
+	_caso("una respuesta mala cuenta, se recuerda y autoguarda", not reto.responder(0) and reto.indice == 1 and reto.aciertos == 0 and Partida.estado_entero(clave, "reto_indice", -1) == 1 and Partida.autoguardados == antes + 1)
 	reto.responder(0)
 	var monedas: int = Partida.monedas
-	_caso("acabar la ronda sin la meta la empieza otra vez sin premio", reto.responder(0) and reto.indice == 0 and reto.aciertos == 0 and not reto.gano and Partida.monedas == monedas and _numero(clave, "reto_aciertos") == 0)
+	_caso("acabar la ronda sin la meta la empieza otra vez sin premio", reto.responder(0) and reto.indice == 0 and reto.aciertos == 0 and not reto.gano and Partida.monedas == monedas and Partida.estado_entero(clave, "reto_aciertos", -1) == 0)
 	reto.responder(1)
 	_caso("una buena suma un acierto", reto.indice == 1 and reto.aciertos == 1)
 	reto.responder(1)
 	reto.responder(2)
-	_caso("acabar la ronda con la meta gana y entrega una vez", reto.gano and Partida.monedas == monedas + 50 and _numero(clave, "reto") == -1 and Partida.estado_de(clave, "reto") is bool and _ganados == 1)
+	_caso("acabar la ronda con la meta gana y entrega una vez", reto.gano and Partida.monedas == monedas + 50 and Partida.estado_entero(clave, "reto", -1) == -1 and Partida.estado_de(clave, "reto") is bool and _ganados == 1)
 	_caso("ganado no pregunta ni entrega otra vez", reto.pregunta_actual() == null and not reto.responder(0) and Partida.monedas == monedas + 50 and _ganados == 1)
 	var otro: RetoPreguntas = RetoPreguntas.new()
 	otro.id = "reto"
@@ -74,8 +72,7 @@ func _ready() -> void:
 	_ganados = 0
 	monedas = Partida.monedas
 	jugador.global_position = Vector2(reto.global_position.x, 600.0)
-	for i: int in range(40):
-		await get_tree().physics_frame
+	await _esperar(40)
 	await _presionar(&"interactuar")
 	var caja: CajaDialogo = reto.caja
 	_caso("interactuar abre la caja con tres preguntas, sus respuestas y el final", caja != null and jugador.hablando and caja.ficha.lineas.size() == 7)
@@ -114,7 +111,7 @@ func _cerrar(sala: Sala, ruta_real: String) -> void:
 	Partida.reiniciar()
 	Partida.ruta_guardado = ruta_real
 	DirAccess.remove_absolute(RUTA)
-	print("PRUEBAS reto casos=%d fallos=%d" % [casos, fallos])
+	_resumen()
 
 
 func _pregunta(texto: String, opciones: Array[String], correcta: int) -> FichaPregunta:
@@ -125,25 +122,5 @@ func _pregunta(texto: String, opciones: Array[String], correcta: int) -> FichaPr
 	return pregunta
 
 
-func _numero(clave: String, objeto: String) -> int:
-	var valor: Variant = Partida.estado_de(clave, objeto)
-	return int(valor as float) if valor is int or valor is float else -1
-
-
 func _al_ganar() -> void:
 	_ganados += 1
-
-
-func _presionar(accion: StringName) -> void:
-	Input.action_press(accion)
-	await get_tree().physics_frame
-	await get_tree().physics_frame
-	Input.action_release(accion)
-	await get_tree().physics_frame
-
-
-func _caso(nombre: String, bien: bool) -> void:
-	casos += 1
-	if not bien:
-		fallos += 1
-		print("FALLO reto: %s" % nombre)

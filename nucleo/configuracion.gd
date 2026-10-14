@@ -464,22 +464,9 @@ func _armar_brillo() -> void:
 	_columna_brillo.name = "Columna"
 	_columna_brillo.add_theme_constant_override(&"separation", int(Tema.SEPARACION_FILAS))
 	_panel_brillo.add_child(_columna_brillo)
-	var arriba: HBoxContainer = HBoxContainer.new()
-	arriba.name = "Arriba"
-	arriba.add_theme_constant_override(&"separation", 32)
+	var arriba: HBoxContainer = Tema.barra_arriba("Brillo", atras)
 	_columna_brillo.add_child(arriba)
-	_volver_brillo = Button.new()
-	_volver_brillo.name = "Volver"
-	_volver_brillo.text = "Volver"
-	_volver_brillo.custom_minimum_size = Vector2(240.0, Tema.ALTO_TOQUE)
-	_volver_brillo.pressed.connect(atras)
-	arriba.add_child(_volver_brillo)
-	var titulo: Label = Label.new()
-	titulo.text = "Brillo"
-	titulo.add_theme_font_size_override(&"font_size", Tema.LETRA_TITULO)
-	titulo.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	titulo.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	arriba.add_child(titulo)
+	_volver_brillo = arriba.get_node(^"Volver") as Button
 	var centro: CenterContainer = CenterContainer.new()
 	centro.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	centro.mouse_filter = Control.MOUSE_FILTER_IGNORE

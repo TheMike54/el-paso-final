@@ -7,8 +7,11 @@ extends Resource
 
 const RUTA: String = "res://mapa/indice_salas.tres"
 
+## Rectangulo de cada sala en el mapa del mundo, por id.
 @export var rectangulos: Dictionary[String, Rect2] = {}
+## Escena de cada sala, por id.
 @export var rutas: Dictionary[String, String] = {}
+## Dibujo del mapa de cada sala, por id; puede faltar.
 @export var dibujos: Dictionary[String, String] = {}
 
 

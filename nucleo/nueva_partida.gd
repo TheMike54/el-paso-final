@@ -102,9 +102,7 @@ func _pintar() -> void:
 
 func _acomodar() -> void:
 	var vista: Vector2 = get_viewport_rect().size
-	var area: Rect2 = Tema.area_util(vista)
-	if reservado_abajo > 0.0:
-		area.end.y = minf(area.end.y, vista.y - reservado_abajo)
+	var area: Rect2 = Tema.area_menu(vista, reservado_abajo)
 	_marco.position = area.position
 	_marco.size = area.size
 	_arriba_base = area.position.y
@@ -131,19 +129,9 @@ func _armar() -> void:
 	_marco.name = "Marco"
 	_marco.add_theme_constant_override(&"separation", int(Tema.SEPARACION_FILAS))
 	add_child(_marco)
-	var arriba: HBoxContainer = HBoxContainer.new()
-	arriba.name = "Arriba"
-	arriba.add_theme_constant_override(&"separation", 32)
+	var arriba: HBoxContainer = Tema.barra_arriba("", atras)
 	_marco.add_child(arriba)
-	var volver: Button = _boton("Volver", Vector2(240.0, Tema.ALTO_TOQUE))
-	volver.name = "Volver"
-	volver.pressed.connect(atras)
-	arriba.add_child(volver)
-	_titulo = Label.new()
-	_titulo.add_theme_font_size_override(&"font_size", Tema.LETRA_TITULO)
-	_titulo.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	_titulo.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	arriba.add_child(_titulo)
+	_titulo = arriba.get_node(^"Titulo") as Label
 	var centro: CenterContainer = CenterContainer.new()
 	centro.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_marco.add_child(centro)
@@ -156,7 +144,7 @@ func _armar() -> void:
 	personajes.add_theme_constant_override(&"separation", int(Tema.SEPARACION))
 	filas.add_child(personajes)
 	for cual: String in PERSONAJES:
-		var boton: Button = _boton(cual.capitalize(), Tema.CELDA)
+		var boton: Button = Tema.boton(cual.capitalize(), Tema.CELDA)
 		boton.name = cual.capitalize()
 		boton.toggle_mode = true
 		boton.pressed.connect(elegir.bind(cual))
@@ -173,7 +161,7 @@ func _armar() -> void:
 	campo.alignment = HORIZONTAL_ALIGNMENT_CENTER
 	campo.text_submitted.connect(_al_enviar)
 	filas.add_child(campo)
-	empezar_boton = _boton("Empezar", Vector2(Tema.CELDA.x * 2.0 + Tema.SEPARACION, Tema.ALTO_TOQUE))
+	empezar_boton = Tema.boton("Empezar", Vector2(Tema.CELDA.x * 2.0 + Tema.SEPARACION, Tema.ALTO_TOQUE))
 	empezar_boton.name = "Empezar"
 	empezar_boton.pressed.connect(empezar)
 	filas.add_child(empezar_boton)
@@ -183,10 +171,3 @@ func _armar() -> void:
 func _al_enviar(_texto: String) -> void:
 	campo.release_focus()
 	empezar()
-
-
-func _boton(texto: String, tamano: Vector2) -> Button:
-	var boton: Button = Button.new()
-	boton.text = texto
-	boton.custom_minimum_size = tamano
-	return boton

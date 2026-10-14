@@ -1,4 +1,4 @@
-extends Node
+extends "res://herramientas/salas/prueba_base.gd"
 # Prueba de la Configuracion del menu principal: instancia el menu y recorre menu, Configuracion, sus subpaneles
 # y el editor de controles con Atras (la notificacion de Android) y con la accion pausa, que vuelven un nivel a
 # la vez. Comprueba tambien lo que puede romperse: Listo guarda la disposicion, reasignar un boton del control
@@ -11,9 +11,6 @@ extends Node
 const ESCENA_MENU: PackedScene = preload("res://nucleo/menu.tscn")
 const RUTA_PRUEBA: String = "user://prueba_menu_configuracion.json"
 const OPCIONES: String = "Lista/Desplazable/Centro/Opciones/"
-
-var casos: int = 0
-var fallos: int = 0
 
 
 func _ready() -> void:
@@ -76,8 +73,7 @@ func _ready() -> void:
 
 	_boton(config, "Controles").pressed.emit()
 	Input.action_press(&"pausa")
-	await get_tree().physics_frame
-	await get_tree().physics_frame
+	await _esperar(2)
 	Input.action_release(&"pausa")
 	await get_tree().process_frame
 	_caso("la accion pausa con el editor abierto tambien vuelve a Configuracion", menu.get("editor") == null and config.visible)
@@ -114,8 +110,7 @@ func _ready() -> void:
 	config._esperar_boton(&"saltar")
 	config.recibir_boton(Mando.boton_de(&"saltar"))
 	Input.action_press(&"pausa")
-	await get_tree().physics_frame
-	await get_tree().physics_frame
+	await _esperar(2)
 	Input.action_release(&"pausa")
 	_caso("y el panel del control sigue abierto tras ese Start", panel_mando.visible and config.visible)
 	Mando.asignar(&"saltar", 999)
@@ -182,8 +177,7 @@ func _ready() -> void:
 	config.en_partida = false
 	config.abrir()
 	Ajustes.recursos = recursos_real
-	for i: int in range(3):
-		await get_tree().physics_frame
+	await _esperar(3)
 
 	# Audio: un panel con tres barras anchas, cada una en su ajuste y en su bus, con altavoz.
 	_boton(config, "Audio").pressed.emit()
@@ -327,7 +321,7 @@ func _ready() -> void:
 	Ajustes.brillo = brillo_real
 	Ajustes.aplicar_volumen()
 	Mando.aplicar(mando_real)
-	print("PRUEBAS menu_configuracion casos=%d fallos=%d" % [casos, fallos])
+	_resumen()
 
 
 func _barra_audio(config: Configuracion, nombre: String) -> HSlider:
@@ -348,10 +342,3 @@ func _tecla(accion: StringName) -> void:
 
 func _boton(config: Configuracion, nombre: String) -> Button:
 	return config.get_node(NodePath(OPCIONES + nombre)) as Button
-
-
-func _caso(nombre: String, bien: bool) -> void:
-	casos += 1
-	if not bien:
-		fallos += 1
-		print("FALLO menu_configuracion: %s" % nombre)

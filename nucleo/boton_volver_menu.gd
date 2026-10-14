@@ -2,7 +2,6 @@ extends Button
 # Boton «Volver al menu» de la caja gris: la caja no es una sala y no tiene pausa, asi que sin
 # el boton solo se salia cerrando la app. Sin foco, para que Espacio o Enter no lo activen
 # mientras se juega con el teclado; solo responde al toque o al clic.
-const MENU: String = "res://nucleo/menu.tscn"
 
 
 func _ready() -> void:
@@ -11,4 +10,4 @@ func _ready() -> void:
 
 
 func _volver_al_menu() -> void:
-	get_tree().change_scene_to_file(MENU)
+	get_tree().change_scene_to_file(MenuPrincipal.RUTA)

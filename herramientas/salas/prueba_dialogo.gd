@@ -1,4 +1,4 @@
-extends Node
+extends "res://herramientas/salas/prueba_base.gd"
 # Prueba del dialogo: el validador de fichas atrapa cada forma mala; el Npc sube de etapa, entrega una sola vez,
 # repite la ultima y recuerda la etapa en Partida; la caja escribe letra por letra, se completa y avanza con las
 # acciones, recorre las opciones y CANCELAR no cuenta; un golpe corta la charla. Deja casos y fallos para
@@ -8,8 +8,6 @@ const ESCENA_SALA: PackedScene = preload("res://herramientas/salas/sala_dialogo.
 const FICHA_1: FichaDialogo = preload("res://herramientas/salas/fichas/guia_prueba_1.tres")
 const RUTA: String = "user://prueba_dialogo.json"
 
-var casos: int = 0
-var fallos: int = 0
 var _terminadas: int = 0
 
 
@@ -45,7 +43,7 @@ func _ready() -> void:
 	_caso("terminar sin contar no sube la etapa ni entrega", npc.etapa == 0 and not Partida.tiene(&"pluma_mapa") and _terminadas == 0)
 	var antes: int = Partida.autoguardados
 	npc.terminar(true)
-	_caso("terminar contando sube la etapa, la recuerda, entrega y autoguarda", npc.etapa == 1 and _etapa_guardada(clave) == 1 and Partida.tiene(&"pluma_mapa") and Partida.mapas.has("prueba") and Partida.autoguardados > antes and _terminadas == 1)
+	_caso("terminar contando sube la etapa, la recuerda, entrega y autoguarda", npc.etapa == 1 and Partida.estado_entero(clave, "guia", -1) == 1 and Partida.tiene(&"pluma_mapa") and Partida.mapas.has("prueba") and Partida.autoguardados > antes and _terminadas == 1)
 	_caso("en la etapa 1 toca la segunda", npc.conversacion() == npc.conversaciones[1])
 	npc.terminar(true)
 	antes = Partida.autoguardados
@@ -63,8 +61,7 @@ func _ready() -> void:
 	npc.etapa = 0
 	_terminadas = 0
 	jugador.global_position = Vector2(npc.global_position.x, 600.0)
-	for i: int in range(40):
-		await get_tree().physics_frame
+	await _esperar(40)
 	await _presionar(&"interactuar")
 	var caja: CajaDialogo = npc.caja
 	_caso("interactuar encima del guia abre la caja y el jugador habla", caja != null and jugador.hablando and ControlesTactiles.hablando)
@@ -74,8 +71,7 @@ func _ready() -> void:
 	_caso("la pulsacion que abrio la caja no completa la linea", not caja.completa and caja.letras_visibles < 3)
 	var x: float = jugador.global_position.x
 	Input.action_press(&"mover_derecha")
-	for i: int in range(10):
-		await get_tree().physics_frame
+	await _esperar(10)
 	Input.action_release(&"mover_derecha")
 	_caso("las letras van saliendo y el jugador no camina", caja.letras_visibles > 2 and is_equal_approx(jugador.global_position.x, x))
 	await _presionar(&"saltar")
@@ -85,8 +81,7 @@ func _ready() -> void:
 	await _presionar(&"interactuar")
 	_caso("en la pregunta empieza marcada la primera opcion", caja.completa and caja.elegida == 0)
 	(caja.get_node(^"Raiz/Caja") as Button).pressed.emit()
-	await get_tree().physics_frame
-	await get_tree().physics_frame
+	await _esperar(2)
 	_caso("con opciones, tocar la caja no elige", caja.linea == 1 and npc.caja != null)
 	await _presionar(&"mover_derecha")
 	await _presionar(&"mover_derecha")
@@ -104,8 +99,7 @@ func _ready() -> void:
 	_caso("con Si se llega a la ultima linea", npc.caja != null and npc.caja.linea == 2 and npc.caja.completa)
 	jugador.recibir_dano(1, npc.global_position.x - 100.0)
 	Input.action_press(&"saltar")
-	await get_tree().physics_frame
-	await get_tree().physics_frame
+	await _esperar(2)
 	Input.action_release(&"saltar")
 	await get_tree().physics_frame
 	_caso("un golpe en el tick que cerraba la caja la cierra sin contar", npc.caja == null and not jugador.hablando and npc.etapa == 0 and _terminadas == 0)
@@ -119,7 +113,7 @@ func _cerrar(sala: Sala, ruta_real: String) -> void:
 	Partida.reiniciar()
 	Partida.ruta_guardado = ruta_real
 	DirAccess.remove_absolute(RUTA)
-	print("PRUEBAS dialogo casos=%d fallos=%d" % [casos, fallos])
+	_resumen()
 
 
 func _linea(texto: String, opciones: Array[String], destinos: Array[int]) -> LineaDialogo:
@@ -130,25 +124,5 @@ func _linea(texto: String, opciones: Array[String], destinos: Array[int]) -> Lin
 	return linea
 
 
-func _etapa_guardada(clave: String) -> int:
-	var valor: Variant = Partida.estado_de(clave, "guia")
-	return int(valor as float) if valor is int or valor is float else -1
-
-
 func _al_terminar_conversacion(_etapa: int) -> void:
 	_terminadas += 1
-
-
-func _presionar(accion: StringName) -> void:
-	Input.action_press(accion)
-	await get_tree().physics_frame
-	await get_tree().physics_frame
-	Input.action_release(accion)
-	await get_tree().physics_frame
-
-
-func _caso(nombre: String, bien: bool) -> void:
-	casos += 1
-	if not bien:
-		fallos += 1
-		print("FALLO dialogo: %s" % nombre)

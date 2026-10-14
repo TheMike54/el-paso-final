@@ -5,7 +5,9 @@ extends Resource
 
 const MIN_OPCIONES: int = 2
 
+## El texto de la pregunta.
 @export_multiline var pregunta: String = ""
+## Entre MIN_OPCIONES y 3 respuestas, en el orden en que se muestran.
 @export var opciones: Array[String] = []
 ## Indice de la opcion correcta dentro de opciones.
 @export var correcta: int = 0

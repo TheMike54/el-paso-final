@@ -26,9 +26,7 @@ var _jugador: Jugador = null
 
 
 func _ready() -> void:
-	var guardada: Variant = Partida.estado_de(Sala.clave_de(self), id)
-	if guardada is int or guardada is float:
-		etapa = int(guardada as float)
+	etapa = Partida.estado_entero(Sala.clave_de(self), id, etapa)
 
 
 func _physics_process(_delta: float) -> void:
@@ -36,20 +34,12 @@ func _physics_process(_delta: float) -> void:
 		if not is_instance_valid(_jugador) or not _jugador.hablando or _jugador.muerto:
 			_cerrar()
 		return
-	var jugador: Jugador = _quien_puede_hablar()
+	var jugador: Jugador = Jugador.encima_de(self)
 	if (jugador != null) != cerca:
 		cerca = jugador != null
 		queue_redraw()
 	if jugador != null and Input.is_action_just_pressed(&"interactuar") and not Congelado.activo():
 		_empezar(jugador)
-
-
-func _quien_puede_hablar() -> Jugador:
-	for cuerpo: Node2D in get_overlapping_bodies():
-		var jugador: Jugador = cuerpo as Jugador
-		if jugador != null and jugador.puede_interactuar:
-			return jugador
-	return null
 
 
 ## La conversacion que toca en esta etapa (la ultima si ya se terminaron todas).

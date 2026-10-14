@@ -10,7 +10,12 @@ const COLOR_AVISO: Color = Color(1.0, 1.0, 1.0, 0.55)
 const TAMANO_LETRA: int = 20
 const MARGEN_ABAJO: float = 24.0
 
-enum Respuesta { SIN_PREGUNTAR, MUCHOS, POCOS, NO_SE_SABE }
+enum Respuesta {
+	SIN_PREGUNTAR,
+	MUCHOS,
+	POCOS,
+	NO_SE_SABE,
+}
 
 static var _respuesta: Respuesta = Respuesta.SIN_PREGUNTAR
 

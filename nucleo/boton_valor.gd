@@ -5,7 +5,12 @@ extends Button
 # interruptores (mockup del 13-oct-2026): el boton entero se toca, y el valor se lee con palabras, no con la forma
 # de un interruptor. El boton no cambia nada solo: quien lo usa decide que hace el toque y le pone el valor.
 
-enum Estilo { SI, NO, NEUTRO, ENLACE }
+enum Estilo {
+	SI,
+	NO,
+	NEUTRO,
+	ENLACE,
+}
 
 const ALTO_PASTILLA: float = 64.0
 const RELLENO_PASTILLA: float = 20.0

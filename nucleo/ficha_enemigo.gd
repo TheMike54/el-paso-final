@@ -5,7 +5,10 @@ extends Resource
 # que le queda a cada ejemplar vive en su Enemigo, no aqui.
 
 ## Debil: reaparece al salir y volver a entrar a la sala. Fuerte: solo despues de descansar en un banco.
-enum Reaparicion { AL_VOLVER_A_ENTRAR, AL_DESCANSAR }
+enum Reaparicion {
+	AL_VOLVER_A_ENTRAR,
+	AL_DESCANSAR,
+}
 
 ## Id del tipo de enemigo, estable: es lo que emite Eventos.enemigo_vencido.
 @export var id: StringName = &""
@@ -17,6 +20,7 @@ enum Reaparicion { AL_VOLVER_A_ENTRAR, AL_DESCANSAR }
 @export var tamano: Vector2 = Vector2(80.0, 80.0)
 ## Color de la caja gris mientras no hay arte.
 @export var color: Color = Color(0.55, 0.55, 0.58)
+## Cuando vuelve tras vencerlo: al volver a entrar a la sala (comun) o al descansar (fuerte).
 @export var reaparicion: Reaparicion = Reaparicion.AL_VOLVER_A_ENTRAR
 ## Script que hereda de ComportamientoEnemigo (los del juego en contenido/enemigos/). Vacio: se queda quieto.
 @export var comportamiento: GDScript = null

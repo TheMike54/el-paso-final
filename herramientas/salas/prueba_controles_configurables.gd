@@ -1,4 +1,4 @@
-extends Node
+extends "res://herramientas/salas/prueba_base.gd"
 # Prueba de los botones tactiles configurables sin pantalla: la cuenta de DisposicionControles (meter un
 # boton en el area, ancla, tamano minimo, area segura en la vista), guardar y volver a leer en un archivo
 # de prueba, un archivo sin la clave controles, los toques sobre un boton movido y el editor manejado con
@@ -10,9 +10,6 @@ const RUTA_PRUEBA: String = "user://prueba_controles_configurables.json"
 const TAMANO: Vector2 = Vector2(1600.0, 720.0)
 const SALTAR: int = 0
 
-var casos: int = 0
-var fallos: int = 0
-
 
 func _ready() -> void:
 	_cuenta()
@@ -21,14 +18,14 @@ func _ready() -> void:
 	await _editor()
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(RUTA_PRUEBA))
 	Ajustes.disposicion = DisposicionControles.por_omision()
-	print("PRUEBAS controles_configurables casos=%d fallos=%d" % [casos, fallos])
+	_resumen()
 
 
 func _cuenta() -> void:
 	var omision: DisposicionControles = DisposicionControles.por_omision()
 	var igual: bool = true
 	for i: int in range(ControlesTactiles.ACCIONES.size()):
-		var antes: Vector2 = ControlesTactiles.ANCLAS[i] * TAMANO + (ControlesTactiles.CENTROS[i] - ControlesTactiles.ANCLAS[i]) * Vector2(ControlesTactiles.PROPORCION_REFERENCIA, 1.0) * TAMANO.y
+		var antes: Vector2 = ControlesTactiles.ANCLAS[i] * TAMANO + (ControlesTactiles.CENTROS[i] - ControlesTactiles.ANCLAS[i]) * Vector2(Vista.PROPORCION_BASE, 1.0) * TAMANO.y
 		igual = igual and omision.centro(i, TAMANO).is_equal_approx(antes)
 	_caso("la distribucion por omision es la de antes del editor", igual)
 
@@ -77,12 +74,12 @@ func _archivo() -> void:
 	_caso("guardar y volver a leer da la misma disposicion", Ajustes.disposicion.igual_a(d))
 	_caso("guardar los controles no cambia los otros ajustes", not Ajustes.temblor)
 
-	_escribir('{"version": 1, "ajustes": {"vibracion": false}}')
+	_escribir(RUTA_PRUEBA, '{"version": 1, "ajustes": {"vibracion": false}}')
 	Ajustes.cargar(RUTA_PRUEBA)
 	_caso("un archivo sin la clave controles deja la disposicion por omision", Ajustes.disposicion.igual_a(DisposicionControles.por_omision()))
 	_caso("y lee los demas ajustes", not Ajustes.vibracion)
 
-	_escribir('{"version": 1, "ajustes": {"controles": {"opacidad": 0.01, "botones": {"saltar": {"ancla": [3, 3], "desplazamiento": [0.1, 0.1], "escala": 1.0}, "atacar": {"ancla": [0, 1], "desplazamiento": [0.3, -0.2], "escala": 7}}}}}')
+	_escribir(RUTA_PRUEBA, '{"version": 1, "ajustes": {"controles": {"opacidad": 0.01, "botones": {"saltar": {"ancla": [3, 3], "desplazamiento": [0.1, 0.1], "escala": 1.0}, "atacar": {"ancla": [0, 1], "desplazamiento": [0.3, -0.2], "escala": 7}}}}}')
 	Ajustes.cargar(RUTA_PRUEBA)
 	var omision: DisposicionControles = DisposicionControles.por_omision()
 	_caso("un boton con un ancla que no es esquina se queda en su lugar", Ajustes.disposicion.anclas[SALTAR] == omision.anclas[SALTAR])
@@ -178,12 +175,6 @@ func _dentro(d: DisposicionControles, i: int, area: Rect2, radio_minimo: float) 
 	return c.x - r >= area.position.x - margen and c.x + r <= area.end.x + margen and c.y - r >= area.position.y - margen and c.y + r <= area.end.y + margen
 
 
-func _escribir(texto: String) -> void:
-	var archivo: FileAccess = FileAccess.open(RUTA_PRUEBA, FileAccess.WRITE)
-	archivo.store_string(texto)
-	archivo.close()
-
-
 func _tocar(c: ControlesTactiles, dedo: int, posicion: Vector2, presionado: bool) -> void:
 	var toque: InputEventScreenTouch = InputEventScreenTouch.new()
 	toque.index = dedo
@@ -204,10 +195,3 @@ func _mover(e: EditorControles, posicion: Vector2) -> void:
 	var movimiento: InputEventMouseMotion = InputEventMouseMotion.new()
 	movimiento.position = posicion
 	e.procesar(movimiento)
-
-
-func _caso(nombre: String, bien: bool) -> void:
-	casos += 1
-	if not bien:
-		fallos += 1
-		print("FALLO controles_configurables: %s" % nombre)

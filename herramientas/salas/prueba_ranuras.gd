@@ -1,4 +1,4 @@
-extends Node
+extends "res://herramientas/salas/prueba_base.gd"
 # Prueba de las ranuras de partida: rutas independientes, la partida de antes de las ranuras pasa una vez a la ranura
 # 1 sin pisar nada, la copia y Restaurar, Borrar quita tambien la copia, el texto de cada ficha y, con el menu, que
 # cada estado se muestre, que borrar pida confirmacion, que Atras vuelva un nivel y que entrar a una ranura fije la
@@ -13,9 +13,6 @@ const PARTIDA: Dictionary = {"banco": {}, "vidas_maximas": 5, "habilidades": ["i
 		"salas_visitadas": ["prueba_1", "prueba_2"], "salas_mapeadas": [],
 		"salas": {"prueba_2": {"coleccionable_1": true, "suelo": true}}, "personaje": "", "nombre": "",
 		"tiempo_jugado": 3900.0}
-
-var casos: int = 0
-var fallos: int = 0
 
 
 func _ready() -> void:
@@ -68,7 +65,7 @@ func _ready() -> void:
 
 	await _probar_menu()
 	_limpiar()
-	print("PRUEBAS ranuras casos=%d fallos=%d" % [casos, fallos])
+	_resumen()
 
 
 func _probar_menu() -> void:
@@ -202,20 +199,7 @@ func _detalle(ranuras: Ranuras, numero: int) -> String:
 	return (_ficha(ranuras, numero, "Principal").find_child("Detalle", true, false) as Label).text
 
 
-func _escribir(ruta: String, texto: String) -> void:
-	var archivo: FileAccess = FileAccess.open(ruta, FileAccess.WRITE)
-	archivo.store_string(texto)
-	archivo.close()
-
-
 func _limpiar() -> void:
 	for numero: int in range(1, Guardado.RANURAS + 1):
 		Guardado.borrar(FORMATO % numero)
 	Guardado.borrar(VIEJA)
-
-
-func _caso(nombre: String, bien: bool) -> void:
-	casos += 1
-	if not bien:
-		fallos += 1
-		print("FALLO ranuras: %s" % nombre)

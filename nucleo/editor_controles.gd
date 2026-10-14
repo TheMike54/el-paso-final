@@ -7,7 +7,6 @@ extends Control
 
 signal cerrado
 
-const COLOR_BOTON: Color = Color(1.0, 1.0, 1.0, 0.5)
 const COLOR_SELECCION: Color = Color(1.0, 0.85, 0.3, 0.9)
 const TEXTO_RESTAURAR: String = "Restaurar"
 const TEXTO_CONFIRMAR: String = "¿Restaurar? Toca otra vez"
@@ -168,7 +167,7 @@ func _quitar_confirmacion() -> void:
 
 func _draw() -> void:
 	var fuente: Font = ThemeDB.fallback_font
-	var color: Color = Color(COLOR_BOTON, COLOR_BOTON.a * copia.opacidad)
+	var color: Color = Color(ControlesTactiles.COLOR_BOTON, ControlesTactiles.COLOR_BOTON.a * copia.opacidad)
 	for i: int in range(ControlesTactiles.ACCIONES.size()):
 		var c: Vector2 = copia.centro(i, size)
 		var r: float = copia.radio(i, size, _radio_minimo)

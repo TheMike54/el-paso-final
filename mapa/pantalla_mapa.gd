@@ -119,7 +119,7 @@ func _seguir_jugador() -> void:
 	var sala: Sala = get_parent() as Sala
 	if sala == null:
 		return
-	var jugador: Node2D = get_tree().get_first_node_in_group(&"jugador") as Node2D
+	var jugador: Node2D = get_tree().get_first_node_in_group(Jugador.GRUPO) as Node2D
 	if jugador != null:
 		lienzo.mover_marcador(sala.posicion_mapa + jugador.position)
 
@@ -146,7 +146,7 @@ func _mostrar() -> void:
 	var marcador: Vector2 = Vector2.ZERO
 	var con_marcador: bool = false
 	if sala != null and _indice.rectangulos.has(sala.id) and Partida.amuletos_equipados.has(BRUJULA):
-		var jugador: Node2D = get_tree().get_first_node_in_group(&"jugador") as Node2D
+		var jugador: Node2D = get_tree().get_first_node_in_group(Jugador.GRUPO) as Node2D
 		if jugador != null:
 			marcador = sala.posicion_mapa + jugador.position
 			con_marcador = true

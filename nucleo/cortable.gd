@@ -13,6 +13,7 @@ signal cortado()
 @export var version_cortada: NodePath = ^"Cortado"
 ## Trozos que suelta al cortarse (0: ninguno).
 @export var trozos: int = 4
+## Color de los trozos mientras no hay arte.
 @export var color_trozos: Color = Color(0.35, 0.55, 0.3)
 ## Grados que se inclina al pasar el jugador y ticks que dura la sacudida.
 @export var grados_sacudida: float = 12.0

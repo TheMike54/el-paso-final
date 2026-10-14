@@ -14,7 +14,6 @@ const CAPA: int = 21
 const ALTO_BARRA: float = Tema.ALTO_TOQUE + 2.0 * Tema.MARGEN_VERTICAL
 ## Orden del ciclo por id de pagina; una pagina que no esta aqui va al final.
 const ORDEN: Array[StringName] = [&"inventario", &"amuletos", &"mapa"]
-const ANCHO_VOLVER: float = 240.0
 
 ## Abierto (juego detenido) y la pagina a la vista. Publicos para los guiones.
 var abierta: bool = false
@@ -43,7 +42,7 @@ func _ready() -> void:
 	add_child(barra)
 	_volver = _boton(barra, "Volver", cerrar)
 	_volver.name = "Volver"
-	_volver.custom_minimum_size.x = ANCHO_VOLVER
+	_volver.custom_minimum_size.x = Tema.ANCHO_VOLVER
 	barra.add_child(_relleno())
 	_anterior = _boton(barra, "", cambiar.bind(-1))
 	_anterior.name = "Anterior"
@@ -59,7 +58,7 @@ func _ready() -> void:
 	barra.add_child(_relleno())
 	# Del ancho de Volver, para que el titulo quede al centro de la pantalla.
 	var contrapeso: Control = Control.new()
-	contrapeso.custom_minimum_size.x = ANCHO_VOLVER
+	contrapeso.custom_minimum_size.x = Tema.ANCHO_VOLVER
 	contrapeso.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	barra.add_child(contrapeso)
 	visible = false
@@ -199,5 +198,5 @@ func _titulo_de(nodo: Node) -> String:
 
 
 func _sentado() -> bool:
-	var jugador: Jugador = get_tree().get_first_node_in_group(&"jugador") as Jugador
+	var jugador: Jugador = get_tree().get_first_node_in_group(Jugador.GRUPO) as Jugador
 	return jugador != null and jugador.descansando

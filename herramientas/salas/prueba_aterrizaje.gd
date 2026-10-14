@@ -1,4 +1,4 @@
-extends Node
+extends "res://herramientas/salas/prueba_base.gd"
 # Prueba del aterrizaje duro: al entrar crea un jugador y comprueba, llamando a sus metodos, que el
 # bloqueo empieza quieto, que lo cortan un golpe, un peligro, sentarse y morir (tambien en el mismo
 # tick del aterrizaje) y que la picada no lo empieza: asi nunca deja atrapado al jugador. Deja la
@@ -6,9 +6,6 @@ extends Node
 
 const ESCENA_JUGADOR: PackedScene = preload("res://nucleo/jugador.tscn")
 const PUNTO: Vector2 = Vector2(200.0, 300.0)
-
-var casos: int = 0
-var fallos: int = 0
 
 
 func _ready() -> void:
@@ -75,7 +72,7 @@ func _ready() -> void:
 
 	jugador.free()
 	Partida.llenar_vidas()
-	print("PRUEBAS aterrizaje casos=%d fallos=%d" % [casos, fallos])
+	_resumen()
 
 
 # Un peligro deja al jugador quieto donde lo toco mientras la pantalla funde a negro: los ticks del fundido
@@ -90,10 +87,3 @@ func _preparar_aterrizaje(jugador: Jugador) -> void:
 	jugador._en_suelo_antes = false
 	jugador._ticks_a_tope = jugador.ticks_caida_dura
 	jugador._ticks_temblando = 0
-
-
-func _caso(nombre: String, bien: bool) -> void:
-	casos += 1
-	if not bien:
-		fallos += 1
-		print("FALLO aterrizaje: %s" % nombre)

@@ -1,4 +1,4 @@
-extends Node
+extends "res://herramientas/salas/prueba_base.gd"
 # Prueba del modo de recursos: la regla de la deteccion (32 bits o poca memoria), el modo en vigor segun el
 # ajuste, que lo prescindible desaparezca solo en bajo, que plantas y niebla se queden quietas en bajo y en el
 # congelado comun y se muevan en alto, y que el ajuste se guarde (un valor raro vuelve a auto). Deja casos y fallos para
@@ -6,9 +6,6 @@ extends Node
 
 const RUTA: String = "user://prueba_recursos.json"
 const GB: int = 1024 * 1024 * 1024
-
-var casos: int = 0
-var fallos: int = 0
 
 
 func _ready() -> void:
@@ -71,7 +68,7 @@ func _ready() -> void:
 			DirAccess.remove_absolute(ruta)
 	Ajustes.cargar()
 	Ajustes.recursos = real
-	print("PRUEBAS recursos casos=%d fallos=%d" % [casos, fallos])
+	_resumen()
 
 
 func _con_prescindible() -> Node2D:
@@ -91,10 +88,3 @@ func _niebla() -> Niebla:
 	var niebla: Niebla = Niebla.new()
 	add_child(niebla)
 	return niebla
-
-
-func _caso(nombre: String, bien: bool) -> void:
-	casos += 1
-	if not bien:
-		fallos += 1
-		print("FALLO recursos: %s" % nombre)

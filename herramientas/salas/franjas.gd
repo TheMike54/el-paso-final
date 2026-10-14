@@ -9,6 +9,7 @@ extends Node2D
 @export var separacion: float = 320.0
 ## Ancho de cada franja, en px.
 @export var ancho: float = 80.0
+## Color de las franjas.
 @export var color_franja: Color = Color(0.3, 0.3, 0.4)
 ## Color que llena todo el area debajo de las franjas. Transparente: sin base.
 @export var color_base: Color = Color(0.0, 0.0, 0.0, 0.0)

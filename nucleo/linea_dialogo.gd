@@ -9,7 +9,9 @@ const CANCELAR: int = -2
 ## Opciones que caben en fila.
 const MAX_OPCIONES: int = 3
 
+## Quien habla; vacio, sin nombre.
 @export var quien: String = ""
+## Lo que dice, completo (sin armar frases a pedazos).
 @export_multiline var texto: String = ""
 ## Vacio: avanzar pasa a la linea siguiente (o termina contando si es la ultima).
 @export var opciones: Array[String] = []

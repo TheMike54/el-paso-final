@@ -1,4 +1,4 @@
-extends Node
+extends "res://herramientas/salas/prueba_base.gd"
 # Prueba del guardado (y de los ajustes y la vibracion, que tambien son datos del telefono): al
 # entrar, corre los casos sobre archivos propios en user:// y deja en "casos" y "fallos" el
 # resultado, que guardado.guion lee con la clave valor. Imprime el resumen y solo los que fallan.
@@ -7,9 +7,6 @@ const PARTIDA: Dictionary = {"banco": {"sala": "raices_1", "id": "banco_raices_1
 		"habilidades": ["impulso"], "jefes": [], "amuletos_tenidos": [], "amuletos_equipados": [], "monedas": 0,
 		"mochila": {}, "mapas": ["raices"], "salas_visitadas": ["raices_1"], "salas_mapeadas": [],
 		"salas": {"raices_1": {"examenes_1": true, "ascensor": 2}}, "personaje": "", "nombre": "", "tiempo_jugado": 12.5}
-
-var casos: int = 0
-var fallos: int = 0
 
 
 func _ready() -> void:
@@ -173,14 +170,7 @@ func _ready() -> void:
 	Ajustes.vibracion = Ajustes.POR_OMISION["vibracion"]
 
 	_borrar()
-	print("PRUEBAS guardado casos=%d fallos=%d" % [casos, fallos])
-
-
-func _caso(nombre: String, bien: bool) -> void:
-	casos += 1
-	if not bien:
-		fallos += 1
-		print("FALLO guardado: %s" % nombre)
+	_resumen()
 
 
 func _danada(nombre: String, contenido: String) -> void:
@@ -193,12 +183,6 @@ func _danada(nombre: String, contenido: String) -> void:
 func _igual(a: Dictionary, b: Dictionary) -> bool:
 	var esperada: Variant = JSON.parse_string(JSON.stringify(b))
 	return JSON.stringify(a, "", true) == JSON.stringify(esperada, "", true)
-
-
-func _escribir(ruta: String, contenido: String) -> void:
-	var archivo: FileAccess = FileAccess.open(ruta, FileAccess.WRITE)
-	archivo.store_string(contenido)
-	archivo.close()
 
 
 func _borrar() -> void:

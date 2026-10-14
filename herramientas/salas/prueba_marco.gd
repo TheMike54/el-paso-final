@@ -1,4 +1,4 @@
-extends Node
+extends "res://herramientas/salas/prueba_base.gd"
 # Prueba del marco de menus: en que pagina abre de pie y sentado, el ciclo con las acciones y con los botones de la
 # barra, que cierre con pausa, Atras, Volver y la misma accion sin abrir la pausa, que detenga el juego, que sin el
 # bloque mapa queden dos paginas, lo que muestra la pagina Inventario y la pausa con Configuracion encima. Arma las
@@ -9,9 +9,6 @@ const ESCENA_JUGADOR: PackedScene = preload("res://nucleo/jugador.tscn")
 const ESCENA_PAUSA: PackedScene = preload("res://nucleo/pausa.tscn")
 const MAPA: String = "res://mapa/pantalla_mapa.tscn"
 const RUTA: String = "user://prueba_marco.json"
-
-var casos: int = 0
-var fallos: int = 0
 
 
 func _ready() -> void:
@@ -134,19 +131,4 @@ func _ready() -> void:
 	for ruta: String in [RUTA, RUTA + ".tmp"]:
 		if FileAccess.file_exists(ruta):
 			DirAccess.remove_absolute(ruta)
-	print("PRUEBAS marco casos=%d fallos=%d" % [casos, fallos])
-
-
-func _presionar(accion: StringName) -> void:
-	Input.action_press(accion)
-	await get_tree().physics_frame
-	await get_tree().physics_frame
-	Input.action_release(accion)
-	await get_tree().physics_frame
-
-
-func _caso(nombre: String, bien: bool) -> void:
-	casos += 1
-	if not bien:
-		fallos += 1
-		print("FALLO marco: %s" % nombre)
+	_resumen()

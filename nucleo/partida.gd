@@ -6,6 +6,8 @@ extends Node
 
 const VIDAS_MAXIMAS_INICIALES: int = 4
 const INSPIRACION_MAXIMA: int = 99
+## Inspiracion que da un golpe por omision y lo que vale un bloque de la barra del HUD.
+const INSPIRACION_POR_GOLPE: int = 11
 ## Amuletos puestos a la vez. Provisional: la carga de cada amuleto llega cuando haya tres con efecto.
 const MAX_EQUIPADOS: int = 3
 ## Los ids de los coleccionables empiezan asi: el total se cuenta con las marcas de las salas.
@@ -191,6 +193,13 @@ func estado_de(clave_sala: String, objeto: String) -> Variant:
 	return estado.get(objeto)
 
 
+## Un numero del estado de una sala, o por_omision si no hay nada o no es numero. El JSON devuelve los enteros
+## como float: por eso no basta con "as int".
+func estado_entero(clave_sala: String, objeto: String, por_omision: int) -> int:
+	var valor: Variant = estado_de(clave_sala, objeto)
+	return int(valor as float) if valor is int or valor is float else por_omision
+
+
 ## Recuerda un objeto de una sala (true o un numero). Se escribe en el siguiente guardado.
 func marcar(clave_sala: String, objeto: String, valor: Variant = true) -> void:
 	if clave_sala.is_empty():
@@ -203,12 +212,18 @@ func marcar(clave_sala: String, objeto: String, valor: Variant = true) -> void:
 
 ## Coleccionables juntados: las marcas de todas las salas cuyo id empieza con PREFIJO_COLECCIONABLE.
 func total_coleccionables() -> int:
+	return contar_coleccionables(salas)
+
+
+## Lo mismo sobre un estado de salas leido de un archivo (la ficha de una ranura): ignora lo que no es diccionario.
+func contar_coleccionables(salas_leidas: Dictionary) -> int:
 	var total: int = 0
-	for clave_sala: String in salas:
-		var estado: Dictionary = salas[clave_sala]
-		for objeto: Variant in estado:
-			if str(objeto).begins_with(PREFIJO_COLECCIONABLE):
-				total += 1
+	for clave_sala: Variant in salas_leidas:
+		var estado: Variant = salas_leidas[clave_sala]
+		if estado is Dictionary:
+			for objeto: Variant in estado as Dictionary:
+				if str(objeto).begins_with(PREFIJO_COLECCIONABLE):
+					total += 1
 	return total
 
 

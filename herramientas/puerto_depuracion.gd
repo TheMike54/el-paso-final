@@ -3,7 +3,6 @@ extends Node
 # estado con el archivo .esperado. Imprime "GUION OK" o "GUION FALLA" y sale con 0 o 1.
 # No es autoload: lo carga nucleo/arranque.gd solo en builds de depuracion, y sin el
 # argumento --guion= no hace nada. Asi el CI comprueba una sala sin abrir ventana.
-const GRUPO_JUGADOR: StringName = &"jugador"
 const TOLERANCIA: float = 0.5
 
 var _ruta: String = ""
@@ -180,7 +179,7 @@ func _lineas(ruta: String) -> PackedStringArray:
 # Compara cada linea del esperado con el estado actual. Devuelve las diferencias.
 func _comparar() -> PackedStringArray:
 	var diferencias: PackedStringArray = []
-	var jugador: Node2D = get_tree().get_first_node_in_group(GRUPO_JUGADOR) as Node2D
+	var jugador: Node2D = get_tree().get_first_node_in_group(Jugador.GRUPO) as Node2D
 	var escena: Node = get_tree().current_scene
 	var k: int = 0
 	for partes: PackedStringArray in _esperado:
@@ -198,7 +197,7 @@ func _comparar() -> PackedStringArray:
 				diferencias.append("senal %s %s esperado=%s obtenido=%d" % [partes[1], partes[2], partes[3], _conteos[k]])
 			k += 1
 		elif jugador == null:
-			diferencias.append("%s: no hay un nodo en el grupo '%s'" % [clave, GRUPO_JUGADOR])
+			diferencias.append("%s: no hay un nodo en el grupo '%s'" % [clave, Jugador.GRUPO])
 		elif clave == "en_suelo":
 			var cuerpo: CharacterBody2D = jugador as CharacterBody2D
 			var en_suelo: String = str(cuerpo != null and cuerpo.is_on_floor())

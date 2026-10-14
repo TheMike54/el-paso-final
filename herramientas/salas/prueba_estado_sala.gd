@@ -1,4 +1,4 @@
-extends Node
+extends "res://herramientas/salas/prueba_base.gd"
 # Prueba del estado por sala y del autoguardado: suelo fragil y coleccionable que se recuerdan, entrega de
 # recompensas por cantidad, salas visitadas y dibujadas en el mapa al descansar con la pluma del mapa, y los
 # momentos que autoguardan. Corre los casos al entrar y deja la cuenta en "casos" y "fallos", que
@@ -6,9 +6,6 @@ extends Node
 const RUTA: String = "user://prueba_estado_sala.json"
 const PRUEBA_3: String = "res://herramientas/salas/zonas/prueba/prueba_3.tscn"
 const ESCENA_COLECCIONABLE: PackedScene = preload("res://nucleo/coleccionable.tscn")
-
-var casos: int = 0
-var fallos: int = 0
 
 
 func _ready() -> void:
@@ -122,7 +119,7 @@ func _ready() -> void:
 	_borrar()
 	Partida.reiniciar()
 	Partida.ruta_guardado = Partida.RUTA_PRUEBAS
-	print("PRUEBAS estado_sala casos=%d fallos=%d" % [casos, fallos])
+	_resumen()
 
 
 func _recompensa(cantidad: int, tipo: Recompensa.Tipo, monto: int, id: StringName = &"") -> Recompensa:
@@ -132,13 +129,6 @@ func _recompensa(cantidad: int, tipo: Recompensa.Tipo, monto: int, id: StringNam
 	recompensa.monto = monto
 	recompensa.id = id
 	return recompensa
-
-
-func _caso(nombre: String, bien: bool) -> void:
-	casos += 1
-	if not bien:
-		fallos += 1
-		print("FALLO estado_sala: %s" % nombre)
 
 
 func _borrar() -> void:

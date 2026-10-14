@@ -1,11 +1,8 @@
-extends Node
+extends "res://herramientas/salas/prueba_base.gd"
 # Prueba de las cuentas del combate chico que un guion no mide al tick: el congelado comun (el mas largo
 # gana, se acaba solo y la sala lo reinicia) y que morir vacie la Inspiracion. Corre los casos al entrar y
 # deja la cuenta en "casos" y "fallos", que combate_chico_cuentas.guion lee. Imprime el resumen y los fallos.
 const RUTA: String = "user://prueba_combate_chico.json"
-
-var casos: int = 0
-var fallos: int = 0
 
 
 func _ready() -> void:
@@ -30,11 +27,4 @@ func _ready() -> void:
 			DirAccess.remove_absolute(ruta)
 	Partida.reiniciar()
 	Partida.ruta_guardado = Partida.RUTA_PRUEBAS
-	print("PRUEBAS combate_chico casos=%d fallos=%d" % [casos, fallos])
-
-
-func _caso(nombre: String, bien: bool) -> void:
-	casos += 1
-	if not bien:
-		fallos += 1
-		print("FALLO combate_chico: %s" % nombre)
+	_resumen()

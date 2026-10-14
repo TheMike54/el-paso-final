@@ -42,7 +42,7 @@ Todos los valores son propiedades exportadas del jugador y se ajustan en la zona
 | `velocidad_rebote_al_golpear` | 240 px/s | Velocidad de ese empuje |
 | `costo_curacion` | 33 | Inspiración que cuesta curar una vida |
 | `ticks_curacion` | 60 | Ticks de curación para recuperar una vida, contados desde `ticks_mantener_poder` |
-| `inspiracion_por_golpe` | 11 | Inspiración que gana cada golpe a algo golpeable |
+| `inspiracion_por_golpe` | 11 (`Partida.INSPIRACION_POR_GOLPE`, que también mide los bloques del HUD) | Inspiración que gana cada golpe a algo golpeable |
 | `ticks_mantener_poder` | 10 | Ticks manteniendo `curar` a partir de los cuales es mantener (curar) y no un toque (poder) |
 | `costo_poder` | 33 | Inspiración que cuesta cada poder |
 | `salida_proyectil` | (60, −90) px | Dónde sale la bola, relativo a los pies del jugador mirando a la derecha |
@@ -116,6 +116,8 @@ Combate:
 - `vidas`, `muerto`, `toques_poder`, `rebotes_pogo`, `en_picada`, `golpes_onda`, `descansando`, `hablando`, `temblor_x`, `temblor_y`, `aterrizando`, `paradas`, `corriendo`, `atacando_en_carrera`, `volteando`, `girando`, `invulnerable` y `puede_interactuar` (`aterrizando`, `girando`, `invulnerable` y `puede_interactuar`, de solo
   lectura) son propiedades públicas: los guiones las leen con `valor Jugador vidas`. `puede_interactuar` es la regla
   única del banco, el `Npc`, el reto y la entrega: en el suelo, vivo, de pie, sin aterrizaje duro ni conversación.
+  Los cuatro la consultan con `Jugador.encima_de(area)`, que da el jugador encima del área que cumple la regla, o
+  `null`.
 
 Curar y sensación del golpe:
 

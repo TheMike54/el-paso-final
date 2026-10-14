@@ -34,7 +34,7 @@ func _ready() -> void:
 # Corre antes que el jugador (esta antes en el arbol): lee la posicion y la camara del tick anterior.
 func _physics_process(_delta: float) -> void:
 	if _jugador == null:
-		_jugador = get_tree().get_first_node_in_group(&"jugador") as CharacterBody2D
+		_jugador = get_tree().get_first_node_in_group(Jugador.GRUPO) as CharacterBody2D
 		if _jugador == null:
 			return
 		_camara = _jugador.get_node_or_null(^"Camara") as Camera2D
