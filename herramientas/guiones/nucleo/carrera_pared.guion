@@ -1,0 +1,6 @@
+# Chocar con la pared de la derecha apaga la carrera aunque siga la direccion.
+escena res://herramientas/salas/sala_carrera.tscn
+2 mover_derecha press
+10 impulso press
+11 impulso release
+fin 400

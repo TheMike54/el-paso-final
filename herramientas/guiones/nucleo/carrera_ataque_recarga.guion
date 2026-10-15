@@ -1,0 +1,11 @@
+# Dos ataques en carrera seguidos: el segundo, pedido 20 ticks despues del primero (ya paso la recarga del ataque
+# normal), se pierde porque la del ataque en carrera es mas larga (Silksong: uno cada 0,65-0,85 s). Sigue corriendo.
+escena res://herramientas/salas/sala_carrera.tscn
+2 mover_derecha press
+10 impulso press
+11 impulso release
+40 atacar press
+41 atacar release
+60 atacar press
+61 atacar release
+fin 64

@@ -1,0 +1,16 @@
+# Como poder_bola.guion, pero camina hasta quedar pegado al pilar (x=1110) y toca curar ahi: la
+# salida de la bola queda dentro del pilar.
+escena res://herramientas/salas/sala_bola.tscn
+2 mover_izquierda press
+3 mover_izquierda release
+6 atacar press
+7 atacar release
+30 atacar press
+31 atacar release
+54 atacar press
+55 atacar release
+70 mover_derecha press
+230 mover_derecha release
+240 curar press
+245 curar release
+fin 300

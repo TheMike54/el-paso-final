@@ -1,0 +1,5 @@
+# La caida de la cornisa de la sala de caida: aterrizaje duro en el cuadro 122.
+escena res://herramientas/salas/sala_caida.tscn
+2 mover_derecha press
+70 mover_derecha release
+fin 125

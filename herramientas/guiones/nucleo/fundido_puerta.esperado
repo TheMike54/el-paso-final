@@ -1,0 +1,4 @@
+# En B desde el cuadro 72, en negro; 8 cuadros despues va a mitad de aclarar (1 - 8/15). Sin el fundido
+# de la sala, la opacidad seria 0.
+escena res://herramientas/salas/sala_puerta_b.tscn
+valor Fundido opacidad 0.47 0.02

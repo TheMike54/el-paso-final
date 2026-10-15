@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://btlil0p7ys8wl"]
+
+[ext_resource type="Script" uid="uid://d1lcf20wlphto" path="res://nucleo/controles_tactiles.gd" id="1_controles"]
+
+[node name="ControlesTactiles" type="CanvasLayer"]
+process_mode = 3
+layer = 5
+
+[node name="Controles" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_controles")

@@ -33,24 +33,84 @@
     "id": "etiqueta-qa-pending",
     "que": "La etiqueta qa-pending se pone al abrir el PR y se quita cuando lo aprueba un integrante",
     "comprobacion": "manual: gh pr view muestra la etiqueta tras abrir el PR y deja de mostrarla tras la aprobacion",
-    "pasa": false
+    "pasa": true
   },
   {
     "id": "puerto-guion",
     "que": "El puerto de depuracion corre un guion de entradas, lo compara con su .esperado e imprime GUION OK o GUION FALLA; falla si falta el guion o la accion",
     "comprobacion": "herramientas/guiones/nucleo/caja.guion",
-    "pasa": false
+    "pasa": true
   },
   {
-    "id": "paquete-sin-herramientas",
-    "que": "El paquete de publicacion no contiene herramientas/ y arranca sin el puerto de depuracion",
-    "comprobacion": "manual: el paquete exportado con el preset de publicacion arranca en headless e imprime que el puerto no existe, sin errores",
+    "id": "paquete-publicacion",
+    "que": "El paquete de publicacion arranca sin el puerto de depuracion aunque herramientas/ viaje; la zona de pruebas solo aparece con el modo desarrollador",
+    "comprobacion": "manual: el paquete exportado en release con el preset de publicacion arranca sin el puerto (no responde a --guion=) y la zona aparece solo con el modo desarrollador encendido",
     "pasa": false
   },
   {
     "id": "validar-funciones-json",
     "que": "El validador revisa cada funciones.json: JSON valido, campos id, que, comprobacion y pasa, y archivo de comprobacion presente en toda entrada con pasa true",
     "comprobacion": "manual: una entrada con pasa true cuyo archivo de comprobacion no existe hace salir a validar.ps1 con 1",
-    "pasa": false
+    "pasa": true
+  },
+  {
+    "id": "hook-al-compactar",
+    "que": "Tras compactar, el hook SessionStart reinyecta la rama, git status --short, ESTADO.md con acentos correctos y la lista de planes activos",
+    "comprobacion": "manual: tras reiniciar la sesion y correr /compact, Claude repite la rama y la primera linea de Ahora de ESTADO.md sin haberlos leido",
+    "pasa": true
+  },
+  {
+    "id": "puerto-guion-salas",
+    "que": "El guion puede pedir una escena con la linea escena, el .esperado lee propiedades con valor y cuenta senales con senal, y el puerto sigue contando con el juego en pausa; una escena, nodo o senal inexistentes hacen fallar el guion",
+    "comprobacion": "herramientas/guiones/nucleo/jugador_ataque_y_vida.guion",
+    "pasa": true
+  },
+  {
+    "id": "validar-salas",
+    "que": "El validador revisa cada sala con id (contenido/salas y herramientas/salas/zonas): id <zona>_<numero> igual al archivo y en la carpeta de su zona, sin repetir; limites con area; Entrada dentro; puertas con id unico, destino existente y de ida y vuelta; bancos con id banco_<id de la sala>; suelos fragiles, coleccionables, Npc y RetoPreguntas con id unico en su sala; habilidades_de_prueba vacio en las salas de contenido/",
+    "comprobacion": "manual: en la zona de prueba, una puerta sin vuelta, un id distinto del archivo, un banco mal nombrado y una Entrada fuera de limites dan cada uno su linea FALLO y salida 1",
+    "pasa": true
+  },
+  {
+    "id": "validador-peligro-movil",
+    "que": "En cualquier escena, un DanoContacto con peligro dentro de un Vaiven, un Enemigo, un PathFollow2D o un cuerpo que se mueve da FALLO: lo que se mueve solo golpea",
+    "comprobacion": "manual: en una copia del proyecto, peligro = true en Sierra/Dano de sala_peligro_movil.tscn da FALLO (Dano se mueve con Sierra) y salida 1; un pincho fijo de la misma sala no falla",
+    "pasa": true
+  },
+  {
+    "id": "validador-presupuesto",
+    "que": "Cada sala respeta el presupuesto de decoracion: a lo mas 3 emisores de particulas con 60 particulas entre todos, 30 plantas y ninguna luz 2D; si no, FALLO",
+    "comprobacion": "manual: en una copia del proyecto, una planta 31 y un PointLight2D en sala_recursos.tscn dan cada uno su FALLO y salida 1; la sala tal cual pasa",
+    "pasa": true
+  },
+  {
+    "id": "validador-zona-pruebas",
+    "que": "El validador falla si la tabla de categorias de la zona de pruebas (GRUPOS u OCULTAS) nombra una escena que no existe",
+    "comprobacion": "manual: con sala_pogoX.tscn en GRUPOS de zona_pruebas.gd, validar.ps1 imprime FALLO ... (nombra sala_pogoX.tscn, que no existe) y fallos=1",
+    "pasa": true
+  },
+  {
+    "id": "validador-texturas",
+    "que": "El validador falla si una imagen del proyecto (png, jpg, webp, svg) pasa de 2048 px de ancho o de alto",
+    "comprobacion": "manual: en una copia del proyecto, un PNG de 4096x8 px en herramientas/salas/arte/ da FALLO ... (4096x8 px: el maximo es 2048 por lado); sin el, fallos=0",
+    "pasa": true
+  },
+  {
+    "id": "validador-capas-translucidas",
+    "que": "El validador falla si una sala tiene mas de 2 capas translucidas grandes (alfa efectivo menor que 1 y al menos un cuarto de 1280x720, con la escala de sus padres)",
+    "comprobacion": "manual: en una copia del proyecto, tres ColorRect de 800x400 con modulate alfa 0.5 en sala_recursos.tscn dan FALLO ... (3 capas translucidas grandes ...); con dos, mas una opaca, una chica y una escalada a 0.25, fallos=0; la transparencia heredada de un padre cuenta; tambien dan FALLO tres capas con color alfa 0.5 (sin modulate), tres ColorRect anclados a pantalla completa dentro de un CanvasLayer y tres TextureRect sin offsets (miden su textura); no cuentan los anclados dentro de un Node2D; sala_recursos y sala_arte solas, fallos=0",
+    "pasa": true
+  },
+  {
+    "id": "validador-habilidades",
+    "que": "El validador falla si un ObjetoHabilidad, una recompensa de habilidad (entrega o reto) o habilidades_de_prueba de una sala nombra una habilidad que no esta en Habilidades.TODAS",
+    "comprobacion": "manual: en una copia del proyecto, poner \"salto_doble_x\" en habilidades_de_prueba de una sala da FALLO con la ruta de la sala y el id; sin el cambio, fallos=0",
+    "pasa": true
+  },
+  {
+    "id": "validador-importacion",
+    "que": "El validador falla si una imagen del arte del mundo (CARPETAS_ARTE_MUNDO) se importa sin mipmaps, o con transparencia en VRAM Compressed y fuera de ALFA_EN_VRAM",
+    "comprobacion": "manual: en una copia del proyecto, mipmaps/generate=false en el .import de una imagen de herramientas/salas/arte/ da FALLO (sin mipmaps); compress/mode=2 en el de una con transparencia que no esta en ALFA_EN_VRAM da FALLO (tiene transparencia y va en VRAM Compressed); sin los cambios, fallos=0",
+    "pasa": true
   }
 ]

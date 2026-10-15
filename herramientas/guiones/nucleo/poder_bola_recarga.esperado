@@ -1,0 +1,4 @@
+# Los dos toques cuentan, pero el segundo llega antes de ticks_recarga_bola (18) y no lanza nada:
+# solo se gasta una bola. Sin la recarga se gastarian las dos (inspiracion 0).
+valor Jugador toques_poder 2
+valor /root/Partida inspiracion 33

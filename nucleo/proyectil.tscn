@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://cop773saoy81s"]
+
+[ext_resource type="Script" uid="uid://df3ewniikyhro" path="res://nucleo/proyectil.gd" id="1_proyectil"]
+
+[sub_resource type="RectangleShape2D" id="forma_proyectil"]
+size = Vector2(60, 40)
+
+[node name="Proyectil" type="Area2D"]
+monitorable = false
+script = ExtResource("1_proyectil")
+
+[node name="Forma" type="CollisionShape2D" parent="."]
+shape = SubResource("forma_proyectil")

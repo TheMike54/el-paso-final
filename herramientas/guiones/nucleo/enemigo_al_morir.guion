@@ -1,0 +1,4 @@
+# La escena de prueba marca un enemigo fuerte como vencido, emite la muerte del jugador y el descanso por
+# el bus, y deja la cuenta en sus propiedades.
+escena res://herramientas/salas/sala_enemigo_al_morir.tscn
+fin 3

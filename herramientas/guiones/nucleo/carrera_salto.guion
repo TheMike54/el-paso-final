@@ -1,0 +1,8 @@
+# Saltar en carrera conserva la velocidad en el aire (salto largo).
+escena res://herramientas/salas/sala_carrera.tscn
+2 mover_derecha press
+10 impulso press
+11 impulso release
+30 saltar press
+40 saltar release
+fin 50

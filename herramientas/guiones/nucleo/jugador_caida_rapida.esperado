@@ -1,0 +1,3 @@
+# Pasados los primeros distancia_caida_inicial px (240) ya cae a velocidad_caida_max (1200 px/s).
+y 934 2
+valor Jugador velocity:y 1200 1

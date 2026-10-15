@@ -1,0 +1,9 @@
+# Igual que pausa.guion, pero en el cuadro 25 presiona pausa otra vez: la pausa se cierra y el
+# jugador vuelve a caminar.
+escena res://herramientas/salas/sala_movimiento.tscn
+2 mover_derecha press
+10 pausa press
+11 pausa release
+25 pausa press
+26 pausa release
+fin 40

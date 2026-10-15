@@ -1,0 +1,23 @@
+# De vuelta en A. Cada linea "senal" falla tambien si la senal no existe en el bus, asi que
+# este archivo revisa que estan las veinte de la lista de docs/contrato.md.
+escena res://herramientas/salas/sala_puerta_a.tscn
+senal /root/Eventos cambio_de_sala 2
+senal /root/Eventos jugador_danado 0
+senal /root/Eventos jugador_muerto 0
+senal /root/Eventos jugador_curado 0
+senal /root/Eventos vidas_cambiadas 0
+senal /root/Eventos inspiracion_cambiada 0
+senal /root/Eventos descanso_en_banco 0
+senal /root/Eventos partida_guardada 0
+senal /root/Eventos enemigo_golpeado 0
+senal /root/Eventos enemigo_vencido 0
+senal /root/Eventos habilidad_obtenida 0
+senal /root/Eventos jefe_vencido 0
+senal /root/Eventos jugador_aterrizo 0
+senal /root/Eventos jugador_salto 0
+senal /root/Eventos parry 0
+senal /root/Eventos amuleto_obtenido 0
+senal /root/Eventos mapa_obtenido 0
+senal /root/Eventos coleccionable_obtenido 0
+senal /root/Eventos monedas_cambiadas 0
+senal /root/Eventos fundido_pedido 2

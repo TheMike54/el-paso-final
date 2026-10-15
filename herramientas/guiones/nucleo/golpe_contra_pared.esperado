@@ -1,0 +1,3 @@
+# Contra la pared el muneco se queda con su cara derecha en x=1160 (centro en 1120).
+valor Muneco position:x 1120 1
+escena res://herramientas/salas/sala_golpe.tscn

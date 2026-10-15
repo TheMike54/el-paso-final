@@ -1,0 +1,4 @@
+# Sigue con las 3 vidas del golpe y nunca empezo a curarse.
+valor Jugador vidas 3
+valor /root/Partida inspiracion 0
+valor Jugador curando false

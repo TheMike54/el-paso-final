@@ -1,0 +1,111 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" uid="uid://k7a08bqsbqd0" path="res://nucleo/sala.gd" id="1_sala"]
+[ext_resource type="PackedScene" uid="uid://cantrdqq1cwy8" path="res://nucleo/puerta.tscn" id="2_puerta"]
+[ext_resource type="Script" path="res://nucleo/vitrina_coleccionables.gd" id="3_vitrina"]
+[ext_resource type="Script" path="res://nucleo/entrega_recompensas.gd" id="4_entrega"]
+[ext_resource type="Script" path="res://nucleo/recompensa.gd" id="5_recompensa"]
+
+[sub_resource type="RectangleShape2D" id="forma_suelo"]
+size = Vector2(1600, 80)
+
+[sub_resource type="RectangleShape2D" id="forma_entrega"]
+size = Vector2(120, 160)
+
+[sub_resource type="Resource" id="recompensa_1"]
+script = ExtResource("5_recompensa")
+cantidad = 1
+monto = 100
+
+[sub_resource type="Resource" id="recompensa_2"]
+script = ExtResource("5_recompensa")
+cantidad = 2
+tipo = 2
+id = &"amuleto_prueba"
+
+[sub_resource type="Resource" id="recompensa_3"]
+script = ExtResource("5_recompensa")
+cantidad = 3
+tipo = 1
+monto = 1
+
+[sub_resource type="RectangleShape2D" id="forma_pared_puerta"]
+size = Vector2(40, 720)
+
+[node name="Prueba4" type="Node2D"]
+script = ExtResource("1_sala")
+habilidades_de_prueba = Array[StringName]([&"pluma"])
+id = "prueba_4"
+posicion_mapa = Vector2(5600, 0)
+limites = Rect2(0, 0, 1600, 720)
+
+[node name="Fondo" type="ColorRect" parent="."]
+offset_right = 1600.0
+offset_bottom = 720.0
+mouse_filter = 2
+color = Color(0.12, 0.13, 0.16, 1)
+
+[node name="Entrada" type="Marker2D" parent="."]
+position = Vector2(300, 680)
+
+[node name="Suelo" type="StaticBody2D" parent="."]
+position = Vector2(800, 720)
+
+[node name="Forma" type="CollisionShape2D" parent="Suelo"]
+shape = SubResource("forma_suelo")
+
+[node name="Dibujo" type="ColorRect" parent="Suelo"]
+offset_left = -800.0
+offset_top = -40.0
+offset_right = 800.0
+offset_bottom = 40.0
+mouse_filter = 2
+color = Color(0.25, 0.25, 0.25, 1)
+
+[node name="PuertaIzquierda" parent="." instance=ExtResource("2_puerta")]
+position = Vector2(20, 680)
+id = &"izquierda"
+sala_destino = "prueba_3"
+puerta_destino = &"derecha"
+llegada = Vector2(200, 0)
+
+[node name="PuertaDerecha" parent="." instance=ExtResource("2_puerta")]
+position = Vector2(1580, 680)
+id = &"derecha"
+sala_destino = "mapa_1"
+puerta_destino = &"izquierda"
+llegada = Vector2(-200, 0)
+
+[node name="Vitrina" type="Node2D" parent="."]
+position = Vector2(560, 200)
+script = ExtResource("3_vitrina")
+total_del_juego = 3
+por_fila = 3
+
+[node name="Entrega" type="Area2D" parent="."]
+position = Vector2(1200, 680)
+script = ExtResource("4_entrega")
+recompensas = Array[ExtResource("5_recompensa")]([SubResource("recompensa_1"), SubResource("recompensa_2"), SubResource("recompensa_3")])
+
+[node name="Forma" type="CollisionShape2D" parent="Entrega"]
+position = Vector2(0, -80)
+shape = SubResource("forma_entrega")
+
+[node name="Dibujo" type="ColorRect" parent="Entrega"]
+offset_left = -60.0
+offset_top = -160.0
+offset_right = 60.0
+mouse_filter = 2
+color = Color(0.45, 0.35, 0.55, 1)
+
+[node name="ParedTrasPuertaIzquierda" type="StaticBody2D" parent="."]
+position = Vector2(-20, 360)
+
+[node name="Forma" type="CollisionShape2D" parent="ParedTrasPuertaIzquierda"]
+shape = SubResource("forma_pared_puerta")
+
+[node name="ParedTrasPuertaDerecha" type="StaticBody2D" parent="."]
+position = Vector2(1620, 360)
+
+[node name="Forma" type="CollisionShape2D" parent="ParedTrasPuertaDerecha"]
+shape = SubResource("forma_pared_puerta")

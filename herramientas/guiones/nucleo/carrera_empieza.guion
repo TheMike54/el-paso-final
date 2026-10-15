@@ -1,0 +1,6 @@
+# Con direccion, el impulso termina en carrera: 2,1 veces caminar.
+escena res://herramientas/salas/sala_carrera.tscn
+2 mover_derecha press
+10 impulso press
+11 impulso release
+fin 40

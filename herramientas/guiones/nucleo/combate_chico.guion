@@ -1,0 +1,20 @@
+# Sala de combate chico: sin la pluma el ataque no sale (el pasto de al lado queda entero). Camina a la
+# derecha sobre ese pasto (se sacude), recoge la pluma y corta el segundo pasto. Debajo del muneco alto
+# ataca hacia arriba y vuelve a presionar atacar 15 ticks despues, antes de poder atacar otra vez: la
+# cola del ataque lo hace salir en cuanto se puede y el muneco recibe dos golpes.
+escena res://herramientas/salas/sala_combate_chico.tscn
+2 atacar press
+3 atacar release
+10 mover_derecha press
+110 mover_derecha release
+115 atacar press
+116 atacar release
+140 mover_derecha press
+207 mover_derecha release
+215 mover_arriba press
+216 atacar press
+217 atacar release
+231 atacar press
+232 atacar release
+250 mover_arriba release
+fin 270

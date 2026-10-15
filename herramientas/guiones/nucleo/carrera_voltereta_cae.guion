@@ -1,0 +1,9 @@
+# Tras la voltereta del ataque en carrera, el jugador pasa por encima del muneco (x 2600) y cae del otro lado
+# caminando: la carrera no vuelve sin otro impulso aunque siga la direccion.
+escena res://herramientas/salas/sala_carrera.tscn
+2 mover_derecha press
+10 impulso press
+11 impulso release
+170 atacar press
+171 atacar release
+fin 230

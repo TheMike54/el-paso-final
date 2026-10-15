@@ -1,0 +1,8 @@
+# Atacar en carrera empuja hacia adelante mientras dura el ataque.
+escena res://herramientas/salas/sala_carrera.tscn
+2 mover_derecha press
+10 impulso press
+11 impulso release
+40 atacar press
+41 atacar release
+fin 44

@@ -1,0 +1,7 @@
+# Un rebote, ninguna vida perdida, y en el aire sobre los pinchos (x=1128). Sin el pogo el jugador
+# los tocaria: 3 vidas y de vuelta al suelo firme de la izquierda.
+valor Jugador rebotes_pogo 1
+valor Jugador vidas 4
+x 1128 2
+y 484 2
+en_suelo false

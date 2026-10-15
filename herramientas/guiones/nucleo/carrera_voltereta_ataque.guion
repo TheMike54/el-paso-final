@@ -1,0 +1,11 @@
+# Atacar durante la voltereta la cancela: el jugador sigue en el aire, ya sin voltereta, y en horizontal manda
+# otra vez el joystick (caminar).
+escena res://herramientas/salas/sala_carrera.tscn
+2 mover_derecha press
+10 impulso press
+11 impulso release
+170 atacar press
+171 atacar release
+182 atacar press
+183 atacar release
+fin 186

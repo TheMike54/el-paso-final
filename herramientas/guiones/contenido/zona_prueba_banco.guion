@@ -1,0 +1,7 @@
+# Descansar en el banco de prueba_1 guarda en Partida la clave de la sala (su id), no su ruta.
+escena res://herramientas/salas/zonas/prueba/prueba_1.tscn
+1 mover_derecha press
+50 mover_derecha release
+60 interactuar press
+62 interactuar release
+fin 80

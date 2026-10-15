@@ -1,0 +1,8 @@
+# En la sala del pogo el jugador camina hacia los pinchos: el primero le quita una vida (cuadro 31) y
+# el segundo contacto (67), dentro del anti-bucle, lo lleva a la llegada mientras presiona curar. Suelta
+# curar mientras sigue congelado ahi.
+escena res://herramientas/salas/sala_pogo.tscn
+2 mover_derecha press
+64 curar press
+75 curar release
+fin 95

@@ -1,0 +1,4 @@
+# Romper el suelo fragil no es aterrizar: sigue en picada y la camara no tiembla. Si temblara al
+# romperlo, a esta altura temblor_y seria -8,89 (medido el 07-oct-2026).
+valor Jugador en_picada true
+valor Jugador temblor_y 0 0.01

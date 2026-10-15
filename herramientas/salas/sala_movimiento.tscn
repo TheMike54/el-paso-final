@@ -1,0 +1,45 @@
+[gd_scene format=3 uid="uid://cfrmuuwtfl7ph"]
+
+[ext_resource type="Script" uid="uid://k7a08bqsbqd0" path="res://nucleo/sala.gd" id="1_sala"]
+
+[sub_resource type="RectangleShape2D" id="forma_plataforma"]
+size = Vector2(640, 80)
+
+[sub_resource type="RectangleShape2D" id="forma_suelo"]
+size = Vector2(2400, 80)
+
+[node name="SalaMovimiento" type="Node2D"]
+script = ExtResource("1_sala")
+habilidades_de_prueba = Array[StringName]([&"pluma"])
+limites = Rect2(0, 0, 2400, 760)
+
+[node name="Entrada" type="Marker2D" parent="."]
+position = Vector2(200, 480)
+
+[node name="Plataforma" type="StaticBody2D" parent="."]
+position = Vector2(320, 520)
+
+[node name="Forma" type="CollisionShape2D" parent="Plataforma"]
+shape = SubResource("forma_plataforma")
+
+[node name="Dibujo" type="ColorRect" parent="Plataforma"]
+offset_left = -320.0
+offset_top = -40.0
+offset_right = 320.0
+offset_bottom = 40.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.3, 1)
+
+[node name="Suelo" type="StaticBody2D" parent="."]
+position = Vector2(1200, 720)
+
+[node name="Forma" type="CollisionShape2D" parent="Suelo"]
+shape = SubResource("forma_suelo")
+
+[node name="Dibujo" type="ColorRect" parent="Suelo"]
+offset_left = -1200.0
+offset_top = -40.0
+offset_right = 1200.0
+offset_bottom = 40.0
+mouse_filter = 2
+color = Color(0.25, 0.25, 0.25, 1)

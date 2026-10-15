@@ -1,0 +1,8 @@
+# Terminado el giro, la carrera sigue hacia el otro lado a velocidad completa.
+escena res://herramientas/salas/sala_carrera.tscn
+2 mover_derecha press
+10 impulso press
+11 impulso release
+40 mover_derecha release
+40 mover_izquierda press
+fin 60

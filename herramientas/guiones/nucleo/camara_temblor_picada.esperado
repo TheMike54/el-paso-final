@@ -1,0 +1,5 @@
+# Tercer tick del temblor de la picada, ya en el piso de abajo (y=1160). Sin el temblor seria 0.
+y 1160 1
+en_suelo true
+valor Jugador temblor_y -17.78 0.05
+valor Jugador temblor_x 5.93 0.05

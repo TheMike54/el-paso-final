@@ -1,0 +1,6 @@
+# En la sala A el jugador camina a la izquierda mas de lo que mide la sala. La pared izquierda lo detiene
+# dentro de los limites; sin ella caia por la orilla y perdia una vida.
+escena res://herramientas/salas/sala_puerta_a.tscn
+2 mover_izquierda press
+400 mover_izquierda release
+fin 420

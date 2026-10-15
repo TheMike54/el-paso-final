@@ -1,0 +1,71 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" uid="uid://k7a08bqsbqd0" path="res://nucleo/sala.gd" id="1_sala"]
+[ext_resource type="Script" uid="uid://dmunerkne8s1e" path="res://nucleo/golpeable.gd" id="2_golpeable"]
+[ext_resource type="PackedScene" uid="uid://ru6ttknobjs5" path="res://nucleo/objeto_habilidad.tscn" id="3_objeto"]
+[ext_resource type="PackedScene" path="res://nucleo/cortable.tscn" id="4_cortable"]
+
+[sub_resource type="RectangleShape2D" id="forma_suelo"]
+size = Vector2(2400, 80)
+
+[sub_resource type="RectangleShape2D" id="forma_alto"]
+size = Vector2(80, 60)
+
+[node name="SalaCombateChico" type="Node2D"]
+script = ExtResource("1_sala")
+limites = Rect2(0, 0, 2400, 720)
+
+[node name="Entrada" type="Marker2D" parent="."]
+position = Vector2(300, 680)
+
+[node name="Suelo" type="StaticBody2D" parent="."]
+position = Vector2(1200, 720)
+
+[node name="Forma" type="CollisionShape2D" parent="Suelo"]
+shape = SubResource("forma_suelo")
+
+[node name="Dibujo" type="ColorRect" parent="Suelo"]
+offset_left = -1200.0
+offset_top = -40.0
+offset_right = 1200.0
+offset_bottom = 40.0
+mouse_filter = 2
+color = Color(0.25, 0.25, 0.25, 1)
+
+[node name="CortableA" parent="." instance=ExtResource("4_cortable")]
+position = Vector2(400, 680)
+
+[node name="Pluma" parent="." instance=ExtResource("3_objeto")]
+position = Vector2(700, 680)
+habilidad = &"pluma"
+
+[node name="CortableB" parent="." instance=ExtResource("4_cortable")]
+position = Vector2(1000, 680)
+
+[node name="MunecoAlto" type="Node2D" parent="."]
+position = Vector2(1300, 680)
+
+[node name="Dibujo" type="ColorRect" parent="MunecoAlto"]
+offset_left = -40.0
+offset_top = -260.0
+offset_right = 40.0
+offset_bottom = -200.0
+mouse_filter = 2
+color = Color(0.45, 0.6, 0.4, 1)
+
+[node name="Golpeable" type="Area2D" parent="MunecoAlto"]
+script = ExtResource("2_golpeable")
+velocidad_retroceso = 0.0
+
+[node name="Forma" type="CollisionShape2D" parent="MunecoAlto/Golpeable"]
+position = Vector2(0, -230)
+shape = SubResource("forma_alto")
+
+[node name="Cortable1" parent="." instance=ExtResource("4_cortable")]
+position = Vector2(1700, 680)
+
+[node name="Cortable2" parent="." instance=ExtResource("4_cortable")]
+position = Vector2(1780, 680)
+
+[node name="Cortable3" parent="." instance=ExtResource("4_cortable")]
+position = Vector2(1860, 680)

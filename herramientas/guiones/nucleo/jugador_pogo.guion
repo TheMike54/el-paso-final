@@ -1,0 +1,12 @@
+# En la sala del pogo el jugador camina a la derecha y salta hacia los pinchos. Cayendo, mantiene
+# abajo y ataca: el golpe hacia abajo toca los pinchos y lo hace rebotar antes de que el cuerpo
+# los toque.
+escena res://herramientas/salas/sala_pogo.tscn
+2 mover_derecha press
+20 saltar press
+40 saltar release
+50 mover_abajo press
+54 atacar press
+55 atacar release
+60 mover_abajo release
+fin 90

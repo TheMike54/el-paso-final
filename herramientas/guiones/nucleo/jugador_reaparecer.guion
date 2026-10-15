@@ -1,0 +1,6 @@
+# En la sala de combate el jugador empuja contra el bloque rojo hasta perder las cuatro vidas.
+# Muerto se queda oscuro 1,5 s y despues la sala lo hace reaparecer en su Entrada.
+escena res://herramientas/salas/sala_combate.tscn
+30 mover_derecha press
+300 mover_derecha release
+fin 420

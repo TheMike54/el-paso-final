@@ -1,0 +1,10 @@
+# En la sala del impulso el jugador presiona impulso sin la habilidad (no pasa nada), camina hasta
+# el objeto de la habilidad (x=500) y se impulsa hacia la derecha.
+escena res://herramientas/salas/sala_impulso.tscn
+5 impulso press
+6 impulso release
+10 mover_derecha press
+40 mover_derecha release
+50 impulso press
+51 impulso release
+fin 70

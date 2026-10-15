@@ -1,0 +1,9 @@
+# Descanso una vez, murio una vez y reaparecio en el banco con las vidas llenas. El banco quedo en
+# Partida (y en el guardado de prueba, user://prueba_banco.json).
+escena res://herramientas/salas/sala_banco.tscn
+x 600 1
+en_suelo true
+valor Jugador vidas 4
+valor /root/Partida banco banco_prueba
+senal /root/Eventos descanso_en_banco 1
+senal /root/Eventos jugador_muerto 1

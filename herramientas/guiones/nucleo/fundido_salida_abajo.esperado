@@ -1,0 +1,5 @@
+# Un cuadro antes seguia abajo (x=998) con la capa a 8/9. Revisando la salida despues de mover (como antes
+# del arreglo), aqui seguiria en x=998 con la capa en negro y pasaria al punto un tick tarde.
+x 752 2
+valor Fundido opacidad 1 0.01
+valor Jugador vidas 3

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="FichaEnemigo" format=3 uid="uid://c30ncwiohwjx5"]
+
+[ext_resource type="Script" uid="uid://dd7k60u0x8ibk" path="res://nucleo/ficha_enemigo.gd" id="1_ficha"]
+[ext_resource type="Script" path="res://herramientas/salas/comportamientos/muneco_que_ataca.gd" id="2_comportamiento"]
+
+[resource]
+script = ExtResource("1_ficha")
+id = &"muneco_que_ataca"
+vida = 99
+dano_contacto = 1
+tamano = Vector2(80, 160)
+color = Color(0.45, 0.6, 0.4, 1)
+reaparicion = 0
+comportamiento = ExtResource("2_comportamiento")

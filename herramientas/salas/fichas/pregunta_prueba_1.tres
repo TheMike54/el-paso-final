@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="FichaPregunta" format=3]
+
+[ext_resource type="Script" path="res://nucleo/ficha_pregunta.gd" id="1_pregunta"]
+
+[resource]
+script = ExtResource("1_pregunta")
+pregunta = "¿Cuántos bits tiene un byte?"
+opciones = Array[String](["4", "8", "16"])
+correcta = 1

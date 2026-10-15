@@ -1,0 +1,11 @@
+# En la sala de combate el jugador mira a la izquierda y ataca al muneco una vez. Despues camina
+# a la derecha sin soltar hasta el bloque rojo: cada golpe lo empuja hacia atras, vuelve a entrar
+# al acabarse la invulnerabilidad y al cuarto golpe muere. En el cuadro 300 sigue muerto: la
+# reaparicion llega despues (jugador_reaparecer.guion).
+escena res://herramientas/salas/sala_combate.tscn
+2 mover_izquierda press
+3 mover_izquierda release
+6 atacar press
+7 atacar release
+30 mover_derecha press
+fin 300

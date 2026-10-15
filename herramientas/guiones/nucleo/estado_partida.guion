@@ -1,0 +1,8 @@
+# En la sala de combate el jugador recibe un golpe del bloque rojo (queda con 3 vidas) y camina a
+# la izquierda hasta la puerta, que lo lleva a la sala de puertas A. Las vidas no se reinician.
+escena res://herramientas/salas/sala_combate.tscn
+2 mover_derecha press
+62 mover_derecha release
+80 mover_izquierda press
+240 mover_izquierda release
+fin 260

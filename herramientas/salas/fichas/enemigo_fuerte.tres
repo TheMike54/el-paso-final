@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="FichaEnemigo" format=3 uid="uid://hxjvhbe3y1wc"]
+
+[ext_resource type="Script" uid="uid://dd7k60u0x8ibk" path="res://nucleo/ficha_enemigo.gd" id="1_ficha"]
+
+[resource]
+script = ExtResource("1_ficha")
+id = &"fuerte_prueba"
+vida = 3
+dano_contacto = 1
+tamano = Vector2(120, 160)
+color = Color(0.42, 0.42, 0.46, 1)
+reaparicion = 1

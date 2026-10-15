@@ -1,0 +1,5 @@
+# Hablando, mover_derecha no lo mueve: sigue junto al guia, con la primera linea a medias.
+x 588 1
+valor Jugador hablando true
+valor Guia/Caja completa false
+valor Guia/Caja linea 0

@@ -1,0 +1,4 @@
+# La escena de prueba del aterrizaje duro corre sus casos al entrar (empieza quieto; lo cortan un
+# golpe, un peligro, sentarse y morir, tambien en el mismo tick) y deja la cuenta en sus propiedades.
+escena res://herramientas/salas/sala_aterrizaje.tscn
+fin 2

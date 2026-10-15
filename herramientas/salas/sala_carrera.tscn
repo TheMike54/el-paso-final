@@ -1,0 +1,90 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" uid="uid://k7a08bqsbqd0" path="res://nucleo/sala.gd" id="1_sala"]
+[ext_resource type="Script" uid="uid://dmunerkne8s1e" path="res://nucleo/golpeable.gd" id="2_golpeable"]
+[ext_resource type="Script" uid="uid://hxki5pjykj50" path="res://herramientas/salas/franjas.gd" id="3_franjas"]
+
+[sub_resource type="RectangleShape2D" id="forma_suelo"]
+size = Vector2(4000, 80)
+
+[sub_resource type="RectangleShape2D" id="forma_muneco"]
+size = Vector2(60, 120)
+
+[sub_resource type="RectangleShape2D" id="forma_pared"]
+size = Vector2(80, 720)
+
+[node name="SalaCarrera" type="Node2D"]
+script = ExtResource("1_sala")
+limites = Rect2(0, 0, 4000, 720)
+habilidades_de_prueba = Array[StringName]([&"pluma", &"impulso"])
+
+[node name="Marcas" type="Node2D" parent="."]
+script = ExtResource("3_franjas")
+area = Rect2(80, 520, 3480, 160)
+separacion = 200.0
+ancho = 12.0
+color_franja = Color(0.35, 0.35, 0.45, 1)
+
+[node name="Entrada" type="Marker2D" parent="."]
+position = Vector2(300, 680)
+
+[node name="Suelo" type="StaticBody2D" parent="."]
+position = Vector2(2000, 720)
+
+[node name="Forma" type="CollisionShape2D" parent="Suelo"]
+shape = SubResource("forma_suelo")
+
+[node name="Dibujo" type="ColorRect" parent="Suelo"]
+offset_left = -2000.0
+offset_top = -40.0
+offset_right = 2000.0
+offset_bottom = 40.0
+mouse_filter = 2
+color = Color(0.25, 0.25, 0.25, 1)
+
+[node name="ParedIzquierda" type="StaticBody2D" parent="."]
+position = Vector2(40, 360)
+
+[node name="Forma" type="CollisionShape2D" parent="ParedIzquierda"]
+shape = SubResource("forma_pared")
+
+[node name="Dibujo" type="ColorRect" parent="ParedIzquierda"]
+offset_left = -40.0
+offset_top = -360.0
+offset_right = 40.0
+offset_bottom = 360.0
+mouse_filter = 2
+color = Color(0.15, 0.15, 0.18, 1)
+
+[node name="ParedDerecha" type="StaticBody2D" parent="."]
+position = Vector2(3600, 360)
+
+[node name="Forma" type="CollisionShape2D" parent="ParedDerecha"]
+shape = SubResource("forma_pared")
+
+[node name="Dibujo" type="ColorRect" parent="ParedDerecha"]
+offset_left = -40.0
+offset_top = -360.0
+offset_right = 40.0
+offset_bottom = 360.0
+mouse_filter = 2
+color = Color(0.15, 0.15, 0.18, 1)
+
+[node name="Muneco" type="Node2D" parent="."]
+position = Vector2(2600, 680)
+
+[node name="Dibujo" type="ColorRect" parent="Muneco"]
+offset_left = -30.0
+offset_top = -140.0
+offset_right = 30.0
+offset_bottom = -20.0
+mouse_filter = 2
+color = Color(0.45, 0.6, 0.4, 1)
+
+[node name="Golpeable" type="Area2D" parent="Muneco"]
+script = ExtResource("2_golpeable")
+velocidad_retroceso = 0.0
+
+[node name="Forma" type="CollisionShape2D" parent="Muneco/Golpeable"]
+position = Vector2(0, -80)
+shape = SubResource("forma_muneco")

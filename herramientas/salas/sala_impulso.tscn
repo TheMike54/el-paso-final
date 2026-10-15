@@ -1,0 +1,95 @@
+[gd_scene format=3 uid="uid://cmcrhf6d4g11v"]
+
+[ext_resource type="Script" uid="uid://k7a08bqsbqd0" path="res://nucleo/sala.gd" id="1_sala"]
+[ext_resource type="Script" uid="uid://jy2tkfmforul" path="res://nucleo/dano_contacto.gd" id="3_dano"]
+[ext_resource type="PackedScene" uid="uid://ru6ttknobjs5" path="res://nucleo/objeto_habilidad.tscn" id="4_objeto"]
+
+[sub_resource type="RectangleShape2D" id="forma_0"]
+size = Vector2(900, 260)
+
+[sub_resource type="RectangleShape2D" id="forma_1"]
+size = Vector2(1100, 260)
+
+[sub_resource type="RectangleShape2D" id="forma_2"]
+size = Vector2(400, 40)
+
+[sub_resource type="RectangleShape2D" id="forma_pinchos"]
+size = Vector2(400, 40)
+
+[node name="SalaImpulso" type="Node2D"]
+script = ExtResource("1_sala")
+habilidades_de_prueba = Array[StringName]([&"pluma"])
+limites = Rect2(0, 0, 2400, 940)
+
+[node name="Fondo" type="ColorRect" parent="."]
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 2400.0
+offset_bottom = 940.0
+mouse_filter = 2
+color = Color(0.12, 0.12, 0.14, 1)
+
+[node name="Entrada" type="Marker2D" parent="."]
+position = Vector2(300, 680)
+
+[node name="Solido0" type="StaticBody2D" parent="."]
+position = Vector2(450, 810)
+
+[node name="Forma" type="CollisionShape2D" parent="Solido0"]
+shape = SubResource("forma_0")
+
+[node name="Dibujo" type="ColorRect" parent="Solido0"]
+offset_left = -450.0
+offset_top = -130.0
+offset_right = 450.0
+offset_bottom = 130.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="Solido1" type="StaticBody2D" parent="."]
+position = Vector2(1850, 810)
+
+[node name="Forma" type="CollisionShape2D" parent="Solido1"]
+shape = SubResource("forma_1")
+
+[node name="Dibujo" type="ColorRect" parent="Solido1"]
+offset_left = -550.0
+offset_top = -130.0
+offset_right = 550.0
+offset_bottom = 130.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="Solido2" type="StaticBody2D" parent="."]
+position = Vector2(1100, 920)
+
+[node name="Forma" type="CollisionShape2D" parent="Solido2"]
+shape = SubResource("forma_2")
+
+[node name="Dibujo" type="ColorRect" parent="Solido2"]
+offset_left = -200.0
+offset_top = -20.0
+offset_right = 200.0
+offset_bottom = 20.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="Objeto" parent="." instance=ExtResource("4_objeto")]
+position = Vector2(500, 680)
+habilidad = &"impulso"
+
+[node name="Pinchos" type="Area2D" parent="."]
+position = Vector2(1100, 900)
+script = ExtResource("3_dano")
+peligro = true
+
+[node name="Forma" type="CollisionShape2D" parent="Pinchos"]
+position = Vector2(0, -20)
+shape = SubResource("forma_pinchos")
+
+[node name="Dibujo" type="ColorRect" parent="Pinchos"]
+offset_left = -200.0
+offset_top = -40.0
+offset_right = 200.0
+mouse_filter = 2
+color = Color(0.7, 0.2, 0.2, 1)

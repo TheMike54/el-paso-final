@@ -1,0 +1,11 @@
+# Ataque en carrera durante un segundo impulso que golpea al muneco: el golpe corta el impulso, la voltereta despega
+# y al caer el jugador camina (antes, el impulso anulaba el despegue y la carrera volvia sola).
+escena res://herramientas/salas/sala_carrera.tscn
+2 mover_derecha press
+10 impulso press
+11 impulso release
+163 impulso press
+164 impulso release
+166 atacar press
+167 atacar release
+fin 230

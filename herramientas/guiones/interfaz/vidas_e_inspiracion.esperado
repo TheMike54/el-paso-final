@@ -1,0 +1,7 @@
+# La interfaz muestra 3 de 4 corazones y 3 bloques llenos (33 de Inspiracion, 11 por bloque) de 9.
+# Lo supo por el bus: si no escuchara vidas_cambiadas e inspiracion_cambiada, seguiria en 4 y 0.
+valor Interfaz/Hud vidas 3
+valor Interfaz/Hud vidas_maximas 4
+valor Interfaz/Hud inspiracion 33
+valor Interfaz/Hud bloques_llenos 3
+valor Interfaz/Hud inspiracion_maxima 99

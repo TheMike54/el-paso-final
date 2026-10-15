@@ -1,0 +1,5 @@
+# El jugador camina a la derecha contra el bloque rojo de la sala de combate y se queda empujando.
+# En el cuadro 90 ya recibio el primer golpe y sigue dentro de su invulnerabilidad.
+escena res://herramientas/salas/sala_combate.tscn
+2 mover_derecha press
+fin 90

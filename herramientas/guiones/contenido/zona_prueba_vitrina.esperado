@@ -1,0 +1,6 @@
+escena res://herramientas/salas/zonas/prueba/prueba_4.tscn
+valor Entrega entregadas 2
+valor /root/Partida monedas 100
+valor /root/Partida vidas_maximas 4
+valor Vitrina juntados 2
+valor Interfaz/Hud monedas 100

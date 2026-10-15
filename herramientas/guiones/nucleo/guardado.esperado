@@ -1,0 +1,4 @@
+# Los 53 casos de herramientas/salas/prueba_guardado.gd corrieron y ninguno fallo. Cada caso
+# que falla imprime una linea "FALLO guardado: <caso>".
+valor . casos 53
+valor . fallos 0

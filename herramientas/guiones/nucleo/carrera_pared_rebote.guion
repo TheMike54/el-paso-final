@@ -1,0 +1,7 @@
+# Chocar corriendo con la pared de la derecha (hacia el tick 257) corta la carrera con un rebote corto hacia atras
+# y un saltito (Silksong), aunque siga la direccion hacia la pared.
+escena res://herramientas/salas/sala_carrera.tscn
+2 mover_derecha press
+10 impulso press
+11 impulso release
+fin 261

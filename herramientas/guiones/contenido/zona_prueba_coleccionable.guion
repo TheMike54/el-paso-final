@@ -1,0 +1,6 @@
+# Zona de prueba: caminar sobre el coleccionable de prueba_2 lo toma, lo marca en la sala, autoguarda y
+# muestra el icono de guardado.
+escena res://herramientas/salas/zonas/prueba/prueba_2.tscn
+1 mover_derecha press
+170 mover_derecha release
+fin 200

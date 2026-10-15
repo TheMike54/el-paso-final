@@ -1,0 +1,248 @@
+[gd_scene format=3 uid="uid://bfg53786ab33n"]
+
+[ext_resource type="Script" uid="uid://dp5jqdvhw30hj" path="res://nucleo/configuracion.gd" id="1_configuracion"]
+[ext_resource type="Script" uid="uid://xdh8gd5iuplu" path="res://nucleo/boton_valor.gd" id="2_boton_valor"]
+
+[node name="Configuracion" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_configuracion")
+
+[node name="Lista" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_right = 1152.0
+offset_bottom = 688.0
+theme_override_constants/separation = 12
+
+[node name="Arriba" type="HBoxContainer" parent="Lista"]
+layout_mode = 2
+theme_override_constants/separation = 32
+
+[node name="Volver" type="Button" parent="Lista/Arriba"]
+custom_minimum_size = Vector2(240, 108)
+layout_mode = 2
+text = "Volver"
+
+[node name="Titulo" type="Label" parent="Lista/Arriba"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 48
+text = "Configuración"
+vertical_alignment = 1
+
+[node name="Desplazable" type="ScrollContainer" parent="Lista"]
+layout_mode = 2
+size_flags_vertical = 3
+follow_focus = true
+horizontal_scroll_mode = 3
+
+[node name="Centro" type="CenterContainer" parent="Lista/Desplazable"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Opciones" type="GridContainer" parent="Lista/Desplazable/Centro"]
+layout_mode = 2
+theme_override_constants/h_separation = 16
+theme_override_constants/v_separation = 12
+columns = 3
+
+[node name="Audio" type="Button" parent="Lista/Desplazable/Centro/Opciones"]
+custom_minimum_size = Vector2(420, 108)
+layout_mode = 2
+text = "Audio"
+script = ExtResource("2_boton_valor")
+
+[node name="Brillo" type="Button" parent="Lista/Desplazable/Centro/Opciones"]
+custom_minimum_size = Vector2(420, 108)
+layout_mode = 2
+text = "Brillo"
+script = ExtResource("2_boton_valor")
+
+[node name="Vibracion" type="Button" parent="Lista/Desplazable/Centro/Opciones"]
+custom_minimum_size = Vector2(420, 108)
+layout_mode = 2
+text = "Vibración"
+script = ExtResource("2_boton_valor")
+
+[node name="Temblor" type="Button" parent="Lista/Desplazable/Centro/Opciones"]
+custom_minimum_size = Vector2(420, 108)
+layout_mode = 2
+text = "Temblor"
+script = ExtResource("2_boton_valor")
+
+[node name="Recursos" type="Button" parent="Lista/Desplazable/Centro/Opciones"]
+custom_minimum_size = Vector2(420, 108)
+layout_mode = 2
+text = "Recursos"
+script = ExtResource("2_boton_valor")
+
+[node name="Controles" type="Button" parent="Lista/Desplazable/Centro/Opciones"]
+custom_minimum_size = Vector2(420, 108)
+layout_mode = 2
+text = "Botones táctiles"
+script = ExtResource("2_boton_valor")
+
+[node name="Mando" type="Button" parent="Lista/Desplazable/Centro/Opciones"]
+custom_minimum_size = Vector2(420, 108)
+layout_mode = 2
+text = "Botones del control"
+script = ExtResource("2_boton_valor")
+
+[node name="ModoDesarrollador" type="Button" parent="Lista/Desplazable/Centro/Opciones"]
+custom_minimum_size = Vector2(420, 108)
+layout_mode = 2
+text = "Desarrollador"
+script = ExtResource("2_boton_valor")
+
+[node name="Creditos" type="Button" parent="Lista/Desplazable/Centro/Opciones"]
+custom_minimum_size = Vector2(420, 108)
+layout_mode = 2
+text = "Créditos"
+script = ExtResource("2_boton_valor")
+
+[node name="AvisoRecursos" type="Label" parent="Lista"]
+visible = false
+layout_mode = 2
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="PanelMando" type="VBoxContainer" parent="."]
+visible = false
+layout_mode = 0
+offset_right = 1152.0
+offset_bottom = 688.0
+theme_override_constants/separation = 12
+
+[node name="Arriba" type="HBoxContainer" parent="PanelMando"]
+layout_mode = 2
+theme_override_constants/separation = 32
+
+[node name="Volver" type="Button" parent="PanelMando/Arriba"]
+custom_minimum_size = Vector2(240, 108)
+layout_mode = 2
+text = "Volver"
+
+[node name="Titulo" type="Label" parent="PanelMando/Arriba"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 48
+text = "Botones del control"
+vertical_alignment = 1
+
+[node name="SinControl" type="Label" parent="PanelMando"]
+visible = false
+layout_mode = 2
+text = "Conecta un control para cambiar sus botones."
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="Aviso" type="Label" parent="PanelMando"]
+layout_mode = 2
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="Desplazable" type="ScrollContainer" parent="PanelMando"]
+layout_mode = 2
+size_flags_vertical = 3
+follow_focus = true
+horizontal_scroll_mode = 3
+
+[node name="Centro" type="CenterContainer" parent="PanelMando/Desplazable"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Filas" type="GridContainer" parent="PanelMando/Desplazable/Centro"]
+layout_mode = 2
+theme_override_constants/h_separation = 16
+theme_override_constants/v_separation = 12
+columns = 3
+
+[node name="Botones" type="HBoxContainer" parent="PanelMando"]
+layout_mode = 2
+alignment = 1
+
+[node name="PorOmision" type="Button" parent="PanelMando/Botones"]
+custom_minimum_size = Vector2(300, 108)
+layout_mode = 2
+text = "Restablecer"
+
+[node name="PanelAudio" type="VBoxContainer" parent="."]
+visible = false
+layout_mode = 0
+offset_right = 1152.0
+offset_bottom = 688.0
+theme_override_constants/separation = 12
+
+[node name="Arriba" type="HBoxContainer" parent="PanelAudio"]
+layout_mode = 2
+theme_override_constants/separation = 32
+
+[node name="Volver" type="Button" parent="PanelAudio/Arriba"]
+custom_minimum_size = Vector2(240, 108)
+layout_mode = 2
+text = "Volver"
+
+[node name="Titulo" type="Label" parent="PanelAudio/Arriba"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 48
+text = "Audio"
+vertical_alignment = 1
+
+[node name="Desplazable" type="ScrollContainer" parent="PanelAudio"]
+layout_mode = 2
+size_flags_vertical = 3
+follow_focus = true
+horizontal_scroll_mode = 3
+
+[node name="Centro" type="CenterContainer" parent="PanelAudio/Desplazable"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Filas" type="VBoxContainer" parent="PanelAudio/Desplazable/Centro"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="PanelCreditos" type="VBoxContainer" parent="."]
+visible = false
+layout_mode = 0
+offset_right = 1152.0
+offset_bottom = 688.0
+theme_override_constants/separation = 12
+
+[node name="Arriba" type="HBoxContainer" parent="PanelCreditos"]
+layout_mode = 2
+theme_override_constants/separation = 32
+
+[node name="Volver" type="Button" parent="PanelCreditos/Arriba"]
+custom_minimum_size = Vector2(240, 108)
+layout_mode = 2
+text = "Volver"
+
+[node name="Titulo" type="Label" parent="PanelCreditos/Arriba"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 48
+text = "Créditos"
+vertical_alignment = 1
+
+[node name="Centro" type="CenterContainer" parent="PanelCreditos"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Texto" type="Label" parent="PanelCreditos/Centro"]
+custom_minimum_size = Vector2(800, 0)
+layout_mode = 2
+text = "El Paso Final
+Desarrollo de Aplicaciones Móviles Nativas, ESCOM-IPN
+
+Hecho con Godot Engine (licencia MIT): godotengine.org/license"
+horizontal_alignment = 1
+autowrap_mode = 3

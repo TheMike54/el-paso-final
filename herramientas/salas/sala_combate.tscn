@@ -1,0 +1,101 @@
+[gd_scene format=3 uid="uid://cd0lgqsccucv6"]
+
+[ext_resource type="Script" uid="uid://k7a08bqsbqd0" path="res://nucleo/sala.gd" id="1_sala"]
+[ext_resource type="Script" uid="uid://dmunerkne8s1e" path="res://nucleo/golpeable.gd" id="2_golpeable"]
+[ext_resource type="Script" uid="uid://jy2tkfmforul" path="res://nucleo/dano_contacto.gd" id="3_dano"]
+[ext_resource type="PackedScene" uid="uid://cantrdqq1cwy8" path="res://nucleo/puerta.tscn" id="4_puerta"]
+
+[sub_resource type="RectangleShape2D" id="forma_suelo"]
+size = Vector2(2000, 80)
+
+[sub_resource type="RectangleShape2D" id="forma_muneco"]
+size = Vector2(80, 160)
+
+[sub_resource type="RectangleShape2D" id="forma_bloque"]
+size = Vector2(80, 160)
+
+[sub_resource type="RectangleShape2D" id="forma_pared"]
+size = Vector2(40, 720)
+
+[sub_resource type="RectangleShape2D" id="forma_pared_puerta"]
+size = Vector2(40, 720)
+
+[node name="SalaCombate" type="Node2D"]
+script = ExtResource("1_sala")
+habilidades_de_prueba = Array[StringName]([&"pluma"])
+limites = Rect2(0, 0, 2000, 720)
+
+[node name="Entrada" type="Marker2D" parent="."]
+position = Vector2(600, 680)
+
+[node name="Suelo" type="StaticBody2D" parent="."]
+position = Vector2(1000, 720)
+
+[node name="Forma" type="CollisionShape2D" parent="Suelo"]
+shape = SubResource("forma_suelo")
+
+[node name="Dibujo" type="ColorRect" parent="Suelo"]
+offset_left = -1000.0
+offset_top = -40.0
+offset_right = 1000.0
+offset_bottom = 40.0
+mouse_filter = 2
+color = Color(0.25, 0.25, 0.25, 1)
+
+[node name="Muneco" type="Node2D" parent="."]
+position = Vector2(500, 680)
+
+[node name="Dibujo" type="ColorRect" parent="Muneco"]
+offset_left = -40.0
+offset_top = -160.0
+offset_right = 40.0
+mouse_filter = 2
+color = Color(0.45, 0.6, 0.4, 1)
+
+[node name="Golpeable" type="Area2D" parent="Muneco"]
+script = ExtResource("2_golpeable")
+
+[node name="Forma" type="CollisionShape2D" parent="Muneco/Golpeable"]
+position = Vector2(0, -80)
+shape = SubResource("forma_muneco")
+
+[node name="Pared" type="StaticBody2D" parent="."]
+position = Vector2(1060, 360)
+
+[node name="Forma" type="CollisionShape2D" parent="Pared"]
+shape = SubResource("forma_pared")
+
+[node name="Dibujo" type="ColorRect" parent="Pared"]
+offset_left = -20.0
+offset_top = -360.0
+offset_right = 20.0
+offset_bottom = 360.0
+mouse_filter = 2
+color = Color(0.15, 0.15, 0.18, 1)
+
+[node name="BloqueDanino" type="Area2D" parent="."]
+position = Vector2(1000, 680)
+script = ExtResource("3_dano")
+
+[node name="Forma" type="CollisionShape2D" parent="BloqueDanino"]
+position = Vector2(0, -80)
+shape = SubResource("forma_bloque")
+
+[node name="Dibujo" type="ColorRect" parent="BloqueDanino"]
+offset_left = -40.0
+offset_top = -160.0
+offset_right = 40.0
+mouse_filter = 2
+color = Color(0.7, 0.2, 0.2, 1)
+
+[node name="PuertaIzquierda" parent="." instance=ExtResource("4_puerta")]
+position = Vector2(20, 680)
+id = &"izquierda"
+sala_destino = "res://herramientas/salas/sala_puerta_a.tscn"
+puerta_destino = &"derecha"
+
+[node name="ParedTrasPuertaIzquierda" type="StaticBody2D" parent="."]
+position = Vector2(-20, 360)
+
+[node name="Forma" type="CollisionShape2D" parent="ParedTrasPuertaIzquierda"]
+shape = SubResource("forma_pared_puerta")

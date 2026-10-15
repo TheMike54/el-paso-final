@@ -1,0 +1,37 @@
+[gd_resource type="Resource" script_class="FichaDialogo" format=3]
+
+[ext_resource type="Script" path="res://nucleo/ficha_dialogo.gd" id="1_ficha"]
+[ext_resource type="Script" path="res://nucleo/linea_dialogo.gd" id="2_linea"]
+[ext_resource type="Script" path="res://nucleo/recompensa.gd" id="3_recompensa"]
+
+[sub_resource type="Resource" id="linea_1"]
+script = ExtResource("2_linea")
+quien = "Guía"
+texto = "Hola, alumno."
+
+[sub_resource type="Resource" id="linea_2"]
+script = ExtResource("2_linea")
+quien = "Guía"
+texto = "¿Quieres el mapa?"
+opciones = Array[String](["Sí", "No"])
+destinos = Array[int]([2, -2])
+
+[sub_resource type="Resource" id="linea_3"]
+script = ExtResource("2_linea")
+quien = "Guía"
+texto = "Toma, y suerte."
+
+[sub_resource type="Resource" id="recompensa_pluma"]
+script = ExtResource("3_recompensa")
+tipo = 3
+id = &"pluma_mapa"
+
+[sub_resource type="Resource" id="recompensa_mapa"]
+script = ExtResource("3_recompensa")
+tipo = 4
+id = &"prueba"
+
+[resource]
+script = ExtResource("1_ficha")
+lineas = Array[ExtResource("2_linea")]([SubResource("linea_1"), SubResource("linea_2"), SubResource("linea_3")])
+recompensas = Array[ExtResource("3_recompensa")]([SubResource("recompensa_pluma"), SubResource("recompensa_mapa")])

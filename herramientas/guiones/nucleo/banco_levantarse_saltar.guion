@@ -1,0 +1,9 @@
+# Como banco_sentarse.guion y despues, sentado, presiona saltar.
+escena res://herramientas/salas/sala_banco.tscn
+2 mover_derecha press
+50 mover_derecha release
+55 interactuar press
+56 interactuar release
+70 saltar press
+75 saltar release
+fin 80

@@ -1,0 +1,5 @@
+en_suelo false
+valor Muneco/Golpeable golpes 1
+valor Jugador volteando true
+valor Jugador corriendo false
+valor Jugador velocity:x 480 1

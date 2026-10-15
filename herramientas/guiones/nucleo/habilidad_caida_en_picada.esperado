@@ -1,0 +1,17 @@
+# El suelo fragil se rompio y el jugador cayo recto (x=1038) hasta el piso de abajo (y=1160), con
+# la Inspiracion gastada. Sin romperlo, la picada terminaria sobre el piso de arriba (y=680).
+x 1038 2
+y 1160 1
+en_suelo true
+valor Jugador en_picada false
+valor /root/Partida inspiracion 0
+
+# Antes en habilidad_caida_en_picada_onda.guion:
+# Al aterrizar, la onda (dano_picada 3) vence al enemigo, que tiene 2 de vida. El jugador lo toco
+# en los ultimos cuadros de la caida sin perder vida: la picada no recibe dano. Sin la onda el
+# enemigo seguiria ahi; sin la invulnerabilidad de la caida, el jugador tendria 3 vidas. La de
+# despues de aterrizar la comprueba habilidad_caida_en_picada_invulnerable.guion.
+senal /root/Eventos enemigo_vencido 1
+senal /root/Eventos jugador_danado 0
+valor Jugador golpes_onda 1
+valor Jugador vidas 4

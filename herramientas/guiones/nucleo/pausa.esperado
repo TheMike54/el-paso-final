@@ -1,0 +1,3 @@
+# Camino 10 cuadros a 6 px desde x=200 y despues nada: sin la pausa llegaria cerca de x=428.
+x 260 1
+valor Pausa abierta true

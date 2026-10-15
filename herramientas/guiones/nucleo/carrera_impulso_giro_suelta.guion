@@ -1,0 +1,13 @@
+# Carrera a la derecha, se pide la izquierda en el 46 (empieza el giro), impulso en el 48 y se suelta todo
+# en el 52, antes de que acabe el impulso: el impulso cancela el giro y, dentro de los ticks que la carrera
+# aguanta sin direccion, sigue a la izquierda a velocidad completa sin retomarlo.
+escena res://herramientas/salas/sala_carrera.tscn
+2 mover_derecha press
+10 impulso press
+11 impulso release
+46 mover_derecha release
+46 mover_izquierda press
+48 impulso press
+49 impulso release
+52 mover_izquierda release
+fin 61

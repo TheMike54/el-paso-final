@@ -1,0 +1,4 @@
+# Casos de herramientas/salas/prueba_estado_sala.gd: suelo y coleccionable recordados, recompensas,
+# mapa al descansar y los momentos que autoguardan.
+escena res://herramientas/salas/sala_estado_sala.tscn
+fin 2

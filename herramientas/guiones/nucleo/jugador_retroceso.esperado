@@ -1,0 +1,5 @@
+# Empujado unos 55 px hacia la izquierda desde el bloque rojo (sin retroceso estaria contra el,
+# cerca de x=972) y subiendo despacio: un salto completo daria una velocidad cercana a -700.
+x 867 2
+valor Jugador velocity:y -100 5
+valor Jugador vidas 3

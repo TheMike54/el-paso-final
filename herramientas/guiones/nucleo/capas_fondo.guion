@@ -1,0 +1,5 @@
+# En la sala de capas el jugador camina a la izquierda 58 cuadros. Cada capa se desplaza en
+# proporcion a su scroll_scale: la lejana menos que la cercana y el frente en sentido contrario.
+escena res://herramientas/salas/sala_capas.tscn
+2 mover_izquierda press
+fin 60

@@ -1,0 +1,4 @@
+# Sin la habilidad proyectil el toque cuenta, pero no sale nada ni se gasta Inspiracion.
+valor MunecoLejos/Golpeable golpes 0
+valor /root/Partida inspiracion 33
+valor Jugador toques_poder 1

@@ -1,0 +1,5 @@
+# Saltar lo levanta pero no lo hace saltar: sigue en el suelo junto al banco.
+x 600 1
+y 680 1
+en_suelo true
+valor Jugador descansando false

@@ -1,0 +1,9 @@
+# La misma caida; mantiene mover_derecha desde el cuadro 124 y toca saltar en el cuadro 140, dentro de
+# los ultimos ticks del aterrizaje duro (que termina en el 142).
+escena res://herramientas/salas/sala_caida.tscn
+2 mover_derecha press
+70 mover_derecha release
+124 mover_derecha press
+140 saltar press
+141 saltar release
+fin 150

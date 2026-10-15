@@ -1,0 +1,9 @@
+# Giro con un tick sin direccion entre soltar la derecha y presionar la izquierda, como cuando el pulgar
+# cruza el centro del joystick: la carrera no se apaga y sigue hacia la izquierda.
+escena res://herramientas/salas/sala_carrera.tscn
+2 mover_derecha press
+10 impulso press
+11 impulso release
+40 mover_derecha release
+41 mover_izquierda press
+fin 60

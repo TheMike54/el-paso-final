@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://herramientas/generar_mapa.gd" id="1_generar"]
+
+[node name="GenerarMapa" type="Node"]
+script = ExtResource("1_generar")

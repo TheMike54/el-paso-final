@@ -1,0 +1,6 @@
+# Llega a B en x=220 (puerta en 20 + llegada 200) y camina 4 cuadros mas a 6 px por cuadro: la puerta
+# funde a negro 9 cuadros y sigue en negro 6 antes de cambiar de sala.
+# Si la puerta no cambia de sala, el jugador queda en A contra el borde derecho.
+escena res://herramientas/salas/sala_puerta_b.tscn
+x 244 1
+en_suelo true

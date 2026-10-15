@@ -1,0 +1,20 @@
+[
+  {
+    "id": "mapa-pantalla",
+    "que": "La accion mapa abre el marco de menus en la pagina Mapa (detiene el juego), con dos estados, acercado y alejado, que cambian + y -; mapa_rapido mantenida muestra el mapa sin detener el juego; sin la pluma_mapa no hay nada; el banco dibuja lo visitado de las zonas cuyo mapa se tiene; el jugador se ve solo con la brujula; con el marco abierto la pausa no se abre",
+    "comprobacion": "herramientas/guiones/mapa/mapa_cuentas.guion",
+    "pasa": true
+  },
+  {
+    "id": "mapa-indice",
+    "que": "El indice de salas del mapa lo genera herramientas/generar_mapa.tscn y el validador falla si no coincide con las salas",
+    "comprobacion": "manual: en una copia del proyecto, mover posicion_mapa de mapa_2 sin regenerar da FALLO res://mapa/indice_salas.tres y salida 1; regenerado, pasa",
+    "pasa": true
+  },
+  {
+    "id": "mapa-telefono",
+    "que": "En el telefono, la zona de prueba Mapa: tomar el mapa y la pluma y descansar dibuja las salas; + y - cambian de estado; la brujula muestra al jugador; el boton tactil del mapa lo abre y lo cierra",
+    "comprobacion": "manual: con el APK de desarrollo, la fila Mapa de docs/pruebas.md",
+    "pasa": true
+  }
+]

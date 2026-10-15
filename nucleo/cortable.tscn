@@ -1,0 +1,22 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://nucleo/cortable.gd" id="1_cortable"]
+
+[sub_resource type="RectangleShape2D" id="forma_cortable"]
+size = Vector2(64, 48)
+
+[node name="Cortable" type="Area2D"]
+monitorable = true
+script = ExtResource("1_cortable")
+
+[node name="Forma" type="CollisionShape2D" parent="."]
+position = Vector2(0, -24)
+shape = SubResource("forma_cortable")
+
+[node name="Entero" type="Polygon2D" parent="."]
+color = Color(0.35, 0.55, 0.3, 1)
+polygon = PackedVector2Array(-30, 0, -22, -40, -14, 0, -6, -52, 2, 0, 10, -44, 18, 0, 26, -36, 32, 0)
+
+[node name="Cortado" type="Polygon2D" parent="."]
+color = Color(0.35, 0.55, 0.3, 1)
+polygon = PackedVector2Array(-30, 0, -22, -10, -14, 0, -6, -12, 2, 0, 10, -10, 18, 0, 26, -9, 32, 0)

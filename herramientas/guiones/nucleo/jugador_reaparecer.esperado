@@ -1,0 +1,7 @@
+# Vivo otra vez en la Entrada (x=600), con las cuatro vidas, en la misma sala. Murio una sola vez.
+escena res://herramientas/salas/sala_combate.tscn
+x 600 1
+en_suelo true
+valor Jugador vidas 4
+valor Jugador muerto false
+senal /root/Eventos jugador_muerto 1

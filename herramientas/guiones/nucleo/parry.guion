@@ -1,0 +1,14 @@
+# Sala del parry: el muneco que ataca da un golpe parable hacia el tick 60, dispara hacia el 141 y da un golpe no
+# parable hacia el 219 (su reloj se detiene en el congelado de 20 ticks de cada parry; el golpe dura 12 ticks). El
+# jugador ataca justo antes de cada uno: para el golpe parable y el disparo, y el golpe no parable le quita una vida
+# aunque ataque. Cada parry lo empuja 80 px hacia atras: entre el disparo y el ultimo golpe camina de vuelta.
+escena res://herramientas/salas/sala_parry.tscn
+58 atacar press
+59 atacar release
+144 atacar press
+145 atacar release
+170 mover_derecha press
+197 mover_derecha release
+216 atacar press
+217 atacar release
+fin 240

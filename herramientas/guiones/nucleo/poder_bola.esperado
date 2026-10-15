@@ -1,0 +1,7 @@
+# La bola golpea una vez al muneco lejano con su dano (2), gasta los 33 de Inspiracion y se
+# deshace contra la pared: el muneco de detras queda sin golpes.
+valor MunecoLejos/Golpeable golpes 1
+valor MunecoLejos/Golpeable dano_recibido 2
+valor MunecoTras/Golpeable golpes 0
+valor /root/Partida inspiracion 0
+valor Jugador toques_poder 1

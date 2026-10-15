@@ -1,0 +1,8 @@
+# El muneco actuo 64 de 84 ticks: 1 al arrancar y 19 del congelado del parry (el tick del parry ya habia actuado).
+# Empujado a 600 px/s: el congelado termino y el empuje de 8 ticks sigue.
+valor Jugador paradas 1
+valor Jugador invulnerable true
+valor Jugador velocity:x -600 1
+valor Muneco/Comportamiento reloj 64
+valor Vibracion ultima al_parar
+senal /root/Eventos enemigo_golpeado 1

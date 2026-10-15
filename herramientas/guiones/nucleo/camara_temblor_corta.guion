@@ -1,0 +1,7 @@
+# Caida corta en la sala de movimiento: camina a la derecha, salta cerca de la orilla de la plataforma
+# de la entrada y cae unos 400 px hasta el suelo; aterriza a unos 1100 px/s hacia el cuadro 123.
+escena res://herramientas/salas/sala_movimiento.tscn
+2 mover_derecha press
+60 saltar press
+80 saltar release
+fin 127

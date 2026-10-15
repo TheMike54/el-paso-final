@@ -1,0 +1,7 @@
+# La escena principal es el menu; Configuracion empieza oculta. Que la zona de pruebas aparezca solo con el
+# modo desarrollador lo comprueba menu_configuracion.guion.
+escena res://nucleo/menu.tscn
+valor Centro/Opciones/Jugar disabled false
+valor Ranuras visible false
+valor Configuracion visible false
+valor Confirmar visible false

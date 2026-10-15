@@ -1,0 +1,4 @@
+# Los 37 casos de herramientas/salas/prueba_controles_configurables.gd corrieron y ninguno fallo. Cada caso
+# que falla imprime una linea "FALLO controles_configurables: <caso>".
+valor . casos 37
+valor . fallos 0

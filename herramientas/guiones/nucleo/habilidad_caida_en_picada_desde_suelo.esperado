@@ -1,0 +1,7 @@
+# Desde el suelo tambien sale: rompe el suelo fragil y llega al piso de abajo con la Inspiracion
+# gastada. Si solo saliera en el aire, el jugador seguiria sobre el suelo fragil (y=680).
+x 1038 2
+y 1160 1
+en_suelo true
+valor Jugador en_picada false
+valor /root/Partida inspiracion 0

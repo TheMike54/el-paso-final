@@ -1,0 +1,11 @@
+# La caja camina a la izquierda 6 cuadros, a la derecha 60 y despues salta.
+# El estado se revisa en el cuadro 100, con la caja todavia en el aire. La caja ya no es la
+# escena principal (lo es el menu): el guion la pide.
+escena res://nucleo/caja_gris.tscn
+2 mover_izquierda press
+8 mover_izquierda release
+10 mover_derecha press
+70 mover_derecha release
+80 saltar press
+82 saltar release
+fin 100

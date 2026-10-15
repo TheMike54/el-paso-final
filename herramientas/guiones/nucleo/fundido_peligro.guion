@@ -1,0 +1,6 @@
+# En la sala de peligro el jugador camina a la derecha hasta caer al foso (lo toca en el cuadro 131). Se
+# queda quieto en el foso mientras la pantalla funde a negro y pasa al suelo firme en el tick en que el
+# negro tapa todo (el 139): al empezar ese cuadro sigue en el foso con la capa casi negra.
+escena res://herramientas/salas/sala_peligro.tscn
+2 mover_derecha press
+fin 139

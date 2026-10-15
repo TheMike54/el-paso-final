@@ -1,0 +1,20 @@
+# Como jugador_curar.guion hasta alejarse del bloque con 33 de Inspiracion y 3 vidas. Primero toca
+# curar (5 cuadros): es un toque, no cura ni gasta. Despues lo mantiene 80 cuadros: se cura.
+escena res://herramientas/salas/sala_curar.tscn
+2 mover_izquierda press
+3 mover_izquierda release
+6 atacar press
+7 atacar release
+30 atacar press
+31 atacar release
+54 atacar press
+55 atacar release
+70 mover_derecha press
+115 mover_derecha release
+130 mover_izquierda press
+150 mover_izquierda release
+160 curar press
+165 curar release
+180 curar press
+260 curar release
+fin 270

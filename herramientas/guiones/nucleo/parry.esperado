@@ -1,0 +1,7 @@
+# Dos paradas (golpe parable y disparo), cada una con su senal; el golpe no parable dana una vez.
+valor Muneco/Comportamiento golpes_dados 2
+valor Muneco/Comportamiento disparos 1
+valor Jugador paradas 2
+valor Jugador vidas 3
+senal /root/Eventos parry 2
+senal /root/Eventos jugador_danado 1

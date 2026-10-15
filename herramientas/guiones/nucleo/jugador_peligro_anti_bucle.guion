@@ -1,0 +1,4 @@
+# La escena de prueba instancia la sala de peligro y le manda peligros y golpes al jugador en ticks
+# medidos: anti-bucle antes y despues de 0,5 s, y peligros con el jugador invulnerable.
+escena res://herramientas/salas/sala_peligro_anti_bucle.tscn
+fin 500

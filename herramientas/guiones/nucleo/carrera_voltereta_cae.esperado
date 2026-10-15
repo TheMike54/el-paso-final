@@ -1,0 +1,5 @@
+en_suelo true
+x 2900 60
+valor Jugador volteando false
+valor Jugador corriendo false
+valor Jugador velocity:x 360 1

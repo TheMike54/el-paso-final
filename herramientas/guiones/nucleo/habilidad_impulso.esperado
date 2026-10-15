@@ -1,0 +1,5 @@
+# Camino 30 cuadros (x=480) y el impulso lo llevo 200 px mas (10 ticks a 1200 px/s). Si el primer
+# impulso hubiera funcionado sin la habilidad, estaria 200 px mas lejos.
+x 680 1
+y 680 1
+senal /root/Eventos habilidad_obtenida 1

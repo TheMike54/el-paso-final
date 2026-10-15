@@ -1,0 +1,10 @@
+# La picada tiembla siempre, aunque empiece a 100 px del suelo y no llegue a ticks_caida_dura: segundo
+# tick del temblor (20 y 18,89 px en vertical; 6,67 y 6,3 en horizontal). Sin la regla de la picada
+# seria 0. La picada no es un aterrizaje duro: no deja al jugador sin control.
+y 680 1
+en_suelo true
+valor Jugador temblor_y 18.89 0.05
+valor Jugador temblor_x 6.3 0.05
+valor Jugador aterrizando false
+senal /root/Eventos jugador_aterrizo 1
+valor Vibracion ultima al_aterrizar

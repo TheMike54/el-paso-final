@@ -1,0 +1,6 @@
+# La posicion de una capa es el borde izquierdo de la camara (con su suavizado) por
+# (1 - scroll_scale): 651 px por 0,7, 0,4 y -0,3. Al empezar valian 672, 384 y -288.
+x 1252 1
+valor FondoLejano position:x 455.7 1
+valor FondoCercano position:x 260.4 1
+valor Frente position:x -195.3 1

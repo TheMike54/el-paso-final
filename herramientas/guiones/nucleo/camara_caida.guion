@@ -1,0 +1,6 @@
+# En la sala de caida el jugador camina fuera de la cornisa y cae 860 px hasta el piso; el medidor
+# de la sala compara su velocidad en pantalla tick a tick hasta que aterriza.
+escena res://herramientas/salas/sala_caida.tscn
+2 mover_derecha press
+70 mover_derecha release
+fin 200

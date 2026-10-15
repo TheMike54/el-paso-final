@@ -1,0 +1,8 @@
+# Igual que jugador_movimiento.guion, pero suelta saltar enseguida: el salto se corta al
+# cumplir el minimo de ticks de subida y en el cuadro 30 queda mas bajo que el sostenido.
+escena res://herramientas/salas/sala_movimiento.tscn
+5 mover_derecha press
+25 mover_derecha release
+10 saltar press
+11 saltar release
+fin 30

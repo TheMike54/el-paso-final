@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="IndiceSalas" format=3]
+
+[ext_resource type="Script" path="res://mapa/indice_salas.gd" id="1_vteuf"]
+
+[resource]
+script = ExtResource("1_vteuf")
+rectangulos = Dictionary[String, Rect2]({
+"mapa_1": Rect2(7200, 0, 2400, 720),
+"mapa_2": Rect2(9600, -720, 1600, 1440),
+"prueba_1": Rect2(0, 0, 1600, 720),
+"prueba_2": Rect2(1600, 0, 2400, 720),
+"prueba_3": Rect2(4000, 0, 1600, 720),
+"prueba_4": Rect2(5600, 0, 1600, 720)
+})
+rutas = Dictionary[String, String]({
+"mapa_1": "res://herramientas/salas/zonas/mapa/mapa_1.tscn",
+"mapa_2": "res://herramientas/salas/zonas/mapa/mapa_2.tscn",
+"prueba_1": "res://herramientas/salas/zonas/prueba/prueba_1.tscn",
+"prueba_2": "res://herramientas/salas/zonas/prueba/prueba_2.tscn",
+"prueba_3": "res://herramientas/salas/zonas/prueba/prueba_3.tscn",
+"prueba_4": "res://herramientas/salas/zonas/prueba/prueba_4.tscn"
+})

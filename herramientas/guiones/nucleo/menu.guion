@@ -1,0 +1,3 @@
+# El juego arranca en el menu (escena principal, sin linea escena): Jugar y Configuracion. La entrada a la
+# zona de pruebas, en el menu con el modo desarrollador, la comprueba menu_configuracion.guion.
+fin 3

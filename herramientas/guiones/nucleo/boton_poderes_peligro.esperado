@@ -1,0 +1,3 @@
+# Reaparecer tras un peligro pierde la pulsacion a medias: soltarla no cuenta como toque.
+valor Jugador vidas 3
+valor Jugador toques_poder 0

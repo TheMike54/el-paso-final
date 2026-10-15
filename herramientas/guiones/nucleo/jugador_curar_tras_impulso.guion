@@ -1,0 +1,19 @@
+# Como jugador_curar.guion hasta alejarse del bloque (de paso toma el impulso), pero se impulsa a la
+# izquierda y presiona curar al cuadro siguiente: el impulso termina y la curacion no empieza.
+escena res://herramientas/salas/sala_curar.tscn
+2 mover_izquierda press
+3 mover_izquierda release
+6 atacar press
+7 atacar release
+30 atacar press
+31 atacar release
+54 atacar press
+55 atacar release
+70 mover_derecha press
+115 mover_derecha release
+130 mover_izquierda press
+150 mover_izquierda release
+155 impulso press
+156 impulso release
+157 curar press
+fin 180

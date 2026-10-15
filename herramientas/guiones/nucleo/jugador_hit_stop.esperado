@@ -1,0 +1,4 @@
+# Ya perdio una vida y sigue donde lo golpearon (x=1008). Sin hit-stop, el retroceso ya lo habria
+# llevado hacia atras.
+x 1008 1
+valor Jugador vidas 3

@@ -1,0 +1,5 @@
+# En la sala de caida el jugador camina fuera de la cornisa y cae hacia el piso de abajo, 860 px.
+escena res://herramientas/salas/sala_caida.tscn
+2 mover_derecha press
+60 mover_derecha release
+fin 85

@@ -1,0 +1,6 @@
+# Un toque contado y la curacion completa con los 33 de Inspiracion. Si el toque empezara a curar,
+# gastaria Inspiracion y la curacion larga ya no alcanzaria (seguiria con 3 vidas).
+valor Jugador toques_poder 1
+valor Jugador vidas 4
+valor /root/Partida inspiracion 0
+valor Jugador curando false

@@ -1,47 +1,53 @@
 # Estado
 
-Se sobrescribe; máximo 60 líneas. Rama y PR en curso, bloqueos y decisiones abiertas. El historial está en git.
+Se sobrescribe (ver `CLAUDE.md`).
 
-## Ahora
+## Ahora (14-oct-2026)
 
-- Etapa: preparación del repositorio, antes del primer código del núcleo.
-- Rama: `chore/setup` (pasos 2 a 4). PR en curso: #1, de `chore/setup` a `main`, con los tres checks en verde.
-- Bloqueos: ninguno. El primer PR necesita la aprobación de un integrante distinto de quien lo abre.
+- Rama y PR: `feature/nucleo-menu-tactil`, PR #5 a `main` (`qa-pending`). Un solo PR (decisión del 14-oct-2026):
+  además del núcleo lleva las paredes detrás de las puertas del borde, el foco que solo se ve tras usar control o
+  teclado, las dos limpiezas (`planes/cerrados/nucleo-limpieza.md`, `nucleo-limpieza-2.md`) y el pulido
+  (`planes/cerrados/nucleo-pulido.md`). Se fusiona con la aprobación de otro integrante, después de su prueba con
+  el APK de desarrollo.
+- `chore/android-export` (presets de 32 y 64 bits) sigue sobre la base vieja: rebase y su propio PR a `main`.
+- `planes/activos/nucleo-foco-visible.md`: abierto hasta ver el foco con control en el S50.
 
 ## Preparación del repositorio
 
-| # | Paso | Condición de salida | Estado |
-|---|---|---|---|
-| 1 | Repositorio, `project.godot`, licencia y README | En un clon nuevo, `--import` deja `git status --porcelain` vacío | Cumplida el 06-oct-2026 en un clon de GitHub (`2a73fbc`) |
-| 2 | Configuración de Claude Code y de git, los `CLAUDE.md` y las skills (rama `chore/setup`) | El asistente no puede hacer `git commit` ni `git -C . commit`; git rechaza un commit con atribución de un asistente | Cumplida: las dos órdenes quedan bloqueadas en PowerShell y en Git Bash; `probar-sin-commit.ps1` da 64 de 64 en 5.1 y en 7 |
-| 3 | Validador: `validar.gd`, `validar.tscn`, `validar.ps1` | Un `.gd` roto o un recurso faltante dan salida 1; el árbol limpio da 0 en PowerShell 5.1 y 7; con el validador roto termina solo y falla | Cumplida en una copia del proyecto; árbol limpio: `OK  VALIDACION archivos=2 fallos=0` en 5.1 y en 7 |
-| 4 | GitHub: etiqueta, plantillas, CODEOWNERS, workflows, ajustes y primer PR | El PR sale en rojo con un `.gd` roto y en verde al quitarlo; `qa-pending` se pone al abrir y se quita al aprobar; después, ruleset activo y push directo a `main` rechazado | En curso. Visto el 06-oct-2026: `validar` en verde en el PR #1 y en rojo en el PR #2 (mismo árbol más un `.gd` roto); `qa-pending` puesta al abrir. Falta: aprobación, fusión, ruleset y push directo rechazado |
-| 5 | Puerto de depuración y primer guion (segundo PR) | `GUION OK` en 3 corridas; guion o acción inexistente dan salida 1; el paquete de publicación arranca sin el puerto | Sin empezar |
-| 6 | Documentos: `docs/contrato.md`, `licencias.md`, `pruebas.md`, `idea.md` y los dos `funciones.json` (segundo PR) | El validador acepta los dos JSON; todo lo que citan los `CLAUDE.md` existe | Sin empezar |
-| 7 | Clon limpio y las tres máquinas | Solo con el README pasan `verificar-entorno.ps1` y `validar.ps1` en cada máquina | Sin empezar |
-| 8 | Android (tercer PR): preset, APK de depuración, instalación con `adb` | La caja gris corre en el teléfono de prueba; modelo, Android, RAM y FPS en `docs/pruebas.md` | Sin empezar |
+Pasos 1 a 8 cumplidos (detalle en git). El 7 cerró el 14-oct-2026: la tercera máquina pasó
+`verificar-entorno.ps1` y `validar.ps1` desde un clon limpio. Ruleset `main` activo desde el 12-oct-2026: solo por PR,
+1 aprobación, `validar` en verde, solo Squash and merge, sin force push ni borrado.
 
-El núcleo empieza al cerrar el paso 7. El paso 8 puede correr en paralelo.
+## QA de los integrantes (14-oct-2026)
 
-## Decisiones técnicas
-
-- `.gitattributes` con `* text=auto eol=lf`: los hooks de git son scripts de `sh` y el CI corre en Linux; con
-  `core.autocrlf=true` de Git para Windows, sin esta línea git convierte los finales de línea.
-- `.gitignore` usa `build/*` y `!build/.gdignore`: ignorar `build/` entero dejaría fuera el `.gdignore` que
-  impide a Godot importar lo exportado.
-- `LICENSE` lleva solo el texto MIT estándar para que GitHub lo reconozca; que el arte no entra en esa licencia
-  se dice en el README.
-- `project.godot`: orientación `4` (`DisplayServer.SCREEN_SENSOR_LANDSCAPE`, valor leído de Godot 4.7.2), base
-  1280×720 con `canvas_items` + `expand`, `quit_on_go_back=false`, Compatibility en las dos claves del renderer
-  y las cuatro advertencias de tipado como error.
-- El rojo del CI se comprueba en un PR borrador aparte (`chore/ci-check`, con un `.gd` roto) que se cierra sin
-  fusionar: el commit roto no queda en el PR que se evalúa, y el verde previo de `chore/setup` separa un fallo
-  de la infraestructura del fallo puesto a propósito.
-- `ci.yml` usa `chickensoft-games/setup-godot@v2` sin plantillas de exportación; el check obligatorio del
-  ruleset se llama `validar` porque el job no lleva `name:`.
-- Sin escena principal ni icono hasta el paso 5: no entra ningún recurso gráfico antes de tener su registro de
-  procedencia.
+- Pogo: funciona como debe (dos fundidos rápidos parecen uno).
+- Sala de puerta A: caminar con la sala a oscuras parecía estar atorado; ahora tiene marcas.
+- Salto en pared: dos integrantes lo encuentran difícil con el dedo; la dificultad se queda (decisión de la persona).
+- Pendiente: que prueben el APK nuevo (foco con control y con el dedo, puertas, combate) en #3 y #4.
 
 ## Decisiones abiertas
 
-Ninguna.
+- Capas translúcidas de la sala de arte en VRAM (`fondo1`, `fondo2`, `lejana1`, `suelo`): compararlas en el S50
+  contra Lossless; hasta entonces son excepción del validador.
+
+## Decisiones de la persona (13 y 14-oct-2026)
+
+- Sin inventario de objetos ni «sobrecarga» de amuletos en la v1. Morir otra vez sin recuperar lo perdido: se pierde.
+- Pruebas en teléfono: lo funcional en uno; el S50 y el S20 juntos solo para rendimiento o hardware.
+- Dash hacia abajo descartado. Logros fuera de la v1.
+- Después: 120 FPS en gama alta, sala de música, tienda de PejeCoins, palancas y muros, hablar con un NPC tocándolo y
+  un sonido propio para el daño recibido.
+- La dificultad del salto en pared se queda. El color del foco no es definitivo. Un `Fondo` opaco solo donde haga
+  falta. La skill de animación se escribe con el primer sprite animado.
+- 14-oct: el agarre a la pared se queda con cualquier contacto (`altura_agarre_pared` = 0), como Hollow Knight.
+- 14-oct: arte a 1x con mipmaps; puertas por id; campos nuevos del guardado con valor por omisión; ids de
+  habilidades en una lista; las reglas de salas, enemigos, jefes, audio, exportación e idioma en `docs/contrato.md`.
+
+## Bloqueos y pendientes
+
+- Prueba con control: un integrante con tableta y control (#3), el otro con teléfono y control (#4).
+- Esperan hardware o firma: `menu-desarrollo`, `paquete-publicacion` y `recursos-medicion-publicacion` (keystore) y
+  `entrada-control` (#3 y #4). `sonidos-telefono` falla hasta que el golpe recibido tenga su propio sonido.
+- Que el validador exija la pared detrás de cada puerta en el borde.
+- La caja gris sigue de `sala_inicial` hasta que exista la primera sala real.
+- Ícono del proyecto: después.

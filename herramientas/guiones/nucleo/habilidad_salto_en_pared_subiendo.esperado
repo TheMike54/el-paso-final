@@ -1,0 +1,4 @@
+# Despegado de la pared hacia la izquierda y subiendo con un salto nuevo. Si el salto en pared solo
+# saliera cayendo, seguiria pegado a la pared (x=600) y empezando a caer.
+x 565 2
+valor Jugador velocity:y -780 10

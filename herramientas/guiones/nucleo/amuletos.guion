@@ -1,0 +1,4 @@
+# La escena de prueba de los amuletos corre sus casos al entrar: poner y quitar en Partida y la pagina Amuletos del
+# marco de pie y sentado. Deja la cuenta en sus propiedades.
+escena res://herramientas/salas/sala_amuletos.tscn
+fin 60

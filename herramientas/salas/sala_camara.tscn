@@ -1,0 +1,164 @@
+[gd_scene format=3 uid="uid://fov77mxs87d6"]
+
+[ext_resource type="Script" uid="uid://k7a08bqsbqd0" path="res://nucleo/sala.gd" id="1_sala"]
+
+[sub_resource type="RectangleShape2D" id="forma_horizontal"]
+size = Vector2(3200, 40)
+
+[sub_resource type="RectangleShape2D" id="forma_vertical"]
+size = Vector2(40, 1440)
+
+[sub_resource type="RectangleShape2D" id="forma_escalon"]
+size = Vector2(320, 40)
+
+[sub_resource type="RectangleShape2D" id="forma_pedestal"]
+size = Vector2(320, 160)
+
+[node name="SalaCamara" type="Node2D"]
+script = ExtResource("1_sala")
+habilidades_de_prueba = Array[StringName]([&"pluma"])
+limites = Rect2(0, 0, 3200, 1440)
+
+[node name="Fondo" type="ColorRect" parent="."]
+offset_right = 3200.0
+offset_bottom = 1440.0
+mouse_filter = 2
+color = Color(0.1, 0.12, 0.2, 1)
+
+[node name="Entrada" type="Marker2D" parent="."]
+position = Vector2(1600, 1400)
+
+[node name="Suelo" type="StaticBody2D" parent="."]
+position = Vector2(1600, 1420)
+
+[node name="Forma" type="CollisionShape2D" parent="Suelo"]
+shape = SubResource("forma_horizontal")
+
+[node name="Dibujo" type="ColorRect" parent="Suelo"]
+offset_left = -1600.0
+offset_top = -20.0
+offset_right = 1600.0
+offset_bottom = 20.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.3, 1)
+
+[node name="Techo" type="StaticBody2D" parent="."]
+position = Vector2(1600, 20)
+
+[node name="Forma" type="CollisionShape2D" parent="Techo"]
+shape = SubResource("forma_horizontal")
+
+[node name="Dibujo" type="ColorRect" parent="Techo"]
+offset_left = -1600.0
+offset_top = -20.0
+offset_right = 1600.0
+offset_bottom = 20.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.3, 1)
+
+[node name="ParedIzquierda" type="StaticBody2D" parent="."]
+position = Vector2(20, 720)
+
+[node name="Forma" type="CollisionShape2D" parent="ParedIzquierda"]
+shape = SubResource("forma_vertical")
+
+[node name="Dibujo" type="ColorRect" parent="ParedIzquierda"]
+offset_left = -20.0
+offset_top = -720.0
+offset_right = 20.0
+offset_bottom = 720.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.3, 1)
+
+[node name="ParedDerecha" type="StaticBody2D" parent="."]
+position = Vector2(3180, 720)
+
+[node name="Forma" type="CollisionShape2D" parent="ParedDerecha"]
+shape = SubResource("forma_vertical")
+
+[node name="Dibujo" type="ColorRect" parent="ParedDerecha"]
+offset_left = -20.0
+offset_top = -720.0
+offset_right = 20.0
+offset_bottom = 720.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.3, 1)
+
+[node name="Pedestal" type="StaticBody2D" parent="."]
+position = Vector2(3000, 1320)
+
+[node name="Forma" type="CollisionShape2D" parent="Pedestal"]
+shape = SubResource("forma_pedestal")
+
+[node name="Dibujo" type="ColorRect" parent="Pedestal"]
+offset_left = -160.0
+offset_top = -80.0
+offset_right = 160.0
+offset_bottom = 80.0
+mouse_filter = 2
+color = Color(0.4, 0.4, 0.4, 1)
+[node name="Escalon2" type="StaticBody2D" parent="."]
+position = Vector2(2520, 1100)
+
+[node name="Forma" type="CollisionShape2D" parent="Escalon2"]
+shape = SubResource("forma_escalon")
+
+[node name="Dibujo" type="ColorRect" parent="Escalon2"]
+offset_left = -160.0
+offset_top = -20.0
+offset_right = 160.0
+offset_bottom = 20.0
+mouse_filter = 2
+color = Color(0.4, 0.4, 0.4, 1)
+[node name="Escalon3" type="StaticBody2D" parent="."]
+position = Vector2(2040, 940)
+
+[node name="Forma" type="CollisionShape2D" parent="Escalon3"]
+shape = SubResource("forma_escalon")
+
+[node name="Dibujo" type="ColorRect" parent="Escalon3"]
+offset_left = -160.0
+offset_top = -20.0
+offset_right = 160.0
+offset_bottom = 20.0
+mouse_filter = 2
+color = Color(0.4, 0.4, 0.4, 1)
+[node name="Escalon4" type="StaticBody2D" parent="."]
+position = Vector2(1560, 780)
+
+[node name="Forma" type="CollisionShape2D" parent="Escalon4"]
+shape = SubResource("forma_escalon")
+
+[node name="Dibujo" type="ColorRect" parent="Escalon4"]
+offset_left = -160.0
+offset_top = -20.0
+offset_right = 160.0
+offset_bottom = 20.0
+mouse_filter = 2
+color = Color(0.4, 0.4, 0.4, 1)
+[node name="Escalon5" type="StaticBody2D" parent="."]
+position = Vector2(1080, 620)
+
+[node name="Forma" type="CollisionShape2D" parent="Escalon5"]
+shape = SubResource("forma_escalon")
+
+[node name="Dibujo" type="ColorRect" parent="Escalon5"]
+offset_left = -160.0
+offset_top = -20.0
+offset_right = 160.0
+offset_bottom = 20.0
+mouse_filter = 2
+color = Color(0.4, 0.4, 0.4, 1)
+[node name="Escalon6" type="StaticBody2D" parent="."]
+position = Vector2(600, 460)
+
+[node name="Forma" type="CollisionShape2D" parent="Escalon6"]
+shape = SubResource("forma_escalon")
+
+[node name="Dibujo" type="ColorRect" parent="Escalon6"]
+offset_left = -160.0
+offset_top = -20.0
+offset_right = 160.0
+offset_bottom = 20.0
+mouse_filter = 2
+color = Color(0.4, 0.4, 0.4, 1)

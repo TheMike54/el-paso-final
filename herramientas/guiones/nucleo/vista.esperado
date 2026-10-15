@@ -1,0 +1,5 @@
+# Los 8 casos de herramientas/salas/prueba_vista.gd corrieron y ninguno fallo: dentro de 4:3 a 22:9 la
+# vista crece como con expand; fuera, se recorta a 1760x720 o 1280x960 con barras. Sin pantalla la D esta
+# apagada y la vista real sigue en 1280x1280: el caso 1:1 prueba solo la cuenta.
+valor . casos 8
+valor . fallos 0

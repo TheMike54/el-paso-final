@@ -1,0 +1,5 @@
+# En la sala de peligro el jugador cae al foso (cuadro 131). Al empezar el cuadro 140 la pantalla esta en
+# negro y el jugador ya en el suelo firme: pasa al punto en el tick del negro, ni antes ni despues.
+escena res://herramientas/salas/sala_peligro.tscn
+2 mover_derecha press
+fin 140

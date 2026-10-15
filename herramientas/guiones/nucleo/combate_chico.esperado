@@ -1,0 +1,9 @@
+# Sin pluma no se corta nada; con ella, el ataque corta sin dar Inspiracion. El ataque hacia arriba
+# golpea al muneco alto dos veces gracias a la cola del ataque.
+valor CortableA esta_cortado false
+valor CortableA sacudidas 1
+valor CortableB esta_cortado true
+senal /root/Eventos habilidad_obtenida 1
+valor MunecoAlto/Golpeable golpes 2
+senal /root/Eventos enemigo_golpeado 2
+valor /root/Partida inspiracion 22

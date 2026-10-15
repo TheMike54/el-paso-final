@@ -1,0 +1,7 @@
+# En el pozo de la sala de pared el jugador toma la habilidad al aparecer, empuja hacia la pared
+# derecha y salta: al caer se queda sostenido en la pared, deslizando despacio.
+escena res://herramientas/salas/sala_pared.tscn
+5 mover_derecha press
+10 saltar press
+40 saltar release
+fin 70

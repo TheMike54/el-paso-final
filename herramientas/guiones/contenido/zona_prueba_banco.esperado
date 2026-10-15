@@ -1,0 +1,4 @@
+valor /root/Partida sala prueba_1
+valor /root/Partida banco banco_prueba_1
+valor Jugador descansando true
+senal /root/Eventos partida_guardada 1

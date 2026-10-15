@@ -1,0 +1,5 @@
+# Zona de prueba (salas con id): caminar a la derecha desde prueba_1 cruza a prueba_2 por su puerta izquierda.
+escena res://herramientas/salas/zonas/prueba/prueba_1.tscn
+1 mover_derecha press
+260 mover_derecha release
+fin 320

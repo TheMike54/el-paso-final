@@ -1,0 +1,512 @@
+[
+  {
+    "id": "arranque",
+    "que": "El autoload Arranque carga el puerto de depuracion solo en un build de depuracion y si el archivo viaja en el paquete",
+    "comprobacion": "herramientas/guiones/nucleo/caja.guion",
+    "pasa": true
+  },
+  {
+    "id": "caja-gris",
+    "que": "La sala_inicial (donde cae una partida nueva hasta que exista la primera sala real) es una caja gris que camina y salta con las acciones mover_izquierda, mover_derecha y saltar",
+    "comprobacion": "herramientas/guiones/nucleo/caja.guion",
+    "pasa": true
+  },
+  {
+    "id": "entrada-acciones",
+    "que": "El InputMap tiene todas las acciones del juego con su teclado inicial y la logica solo lee acciones con nombre",
+    "comprobacion": "manual: project.godot lista las acciones de docs/contrato.md y ningun .gd de nucleo/ lee teclas ni toques, salvo nucleo/controles_tactiles.gd, que traduce los toques a acciones; nucleo/editor_controles.gd lee el raton emulado del toque para mover los botones y nucleo/configuracion.gd lee botones del control para reasignarlos",
+    "pasa": true
+  },
+  {
+    "id": "jugador-movimiento",
+    "que": "El jugador camina y salta en una sala de prueba, con toda su logica en _physics_process. Salto de altura variable: mantener saltar sube hasta una altura maxima y soltar antes corta la velocidad vertical, con un minimo de cuadros para que un toque corto de un salto bajo. Tiempo coyote (saltar unos ticks despues de salir de una orilla) y salto en cola (presionar unos ticks antes de aterrizar salta al tocar el suelo), de 2 a 3 ticks, ajustables. Dos guiones miran la altura en el mismo cuadro: jugador_movimiento.guion mantiene saltar y jugador_salto_corto.guion la suelta enseguida y debe quedar mas bajo",
+    "comprobacion": "herramientas/guiones/nucleo/jugador_movimiento.guion",
+    "pasa": true
+  },
+  {
+    "id": "camara-sala",
+    "que": "La camara sigue al jugador y no muestra nada fuera de los limites de la sala",
+    "comprobacion": "manual: en ventana, la camara sigue al jugador y se detiene en los cuatro bordes de la sala de prueba",
+    "pasa": true
+  },
+  {
+    "id": "capas-fondo",
+    "que": "Una sala lleva capas de fondo y de frente que se desplazan a distinta velocidad que el plano de juego al mover la camara",
+    "comprobacion": "manual: en ventana, al caminar por la sala de prueba las capas lejanas se mueven mas lento que el plano de juego y la de frente mas rapido, sin huecos en los bordes de la sala",
+    "pasa": true
+  },
+  {
+    "id": "cambio-de-sala",
+    "que": "Al cruzar una puerta el jugador aparece en la puerta destino de la otra sala",
+    "comprobacion": "herramientas/guiones/nucleo/cambio_de_sala.guion",
+    "pasa": true
+  },
+  {
+    "id": "bus-eventos",
+    "que": "El bus de eventos emite las senales de la lista de docs/contrato.md y ningun bloque se conecta a otro sin pasar por el",
+    "comprobacion": "herramientas/guiones/nucleo/bus_eventos.guion",
+    "pasa": true
+  },
+  {
+    "id": "jugador-ataque-y-vida",
+    "que": "El jugador ataca, recibe dano, pierde vidas y muere al quedarse sin ninguna",
+    "comprobacion": "herramientas/guiones/nucleo/jugador_ataque_y_vida.guion",
+    "pasa": true
+  },
+  {
+    "id": "guardado",
+    "que": "El guardado escribe JSON con version en un archivo temporal y lo renombra; al cargar distingue partida valida, archivo danado y version incompatible",
+    "comprobacion": "herramientas/guiones/nucleo/guardado.guion",
+    "pasa": true
+  },
+  {
+    "id": "estado-partida",
+    "que": "El autoload Partida guarda las vidas, las vidas maximas, el ultimo banco y las habilidades; se conservan al cambiar de sala y el guardado los guarda y carga desde ahi",
+    "comprobacion": "herramientas/guiones/nucleo/estado_partida.guion",
+    "pasa": true
+  },
+  {
+    "id": "banco",
+    "que": "Descansar en un banco guarda la partida, llena las vidas, lo deja como punto de reaparicion y emite descanso_en_banco; al morir se reaparece en el ultimo banco",
+    "comprobacion": "herramientas/guiones/nucleo/banco.guion",
+    "pasa": true
+  },
+  {
+    "id": "controles-tactiles",
+    "que": "Los controles tactiles traducen el toque a las mismas acciones del InputMap",
+    "comprobacion": "manual: en el telefono de prueba, el joystick y los botones mueven al jugador igual que el teclado",
+    "pasa": true
+  },
+  {
+    "id": "menu-desarrollo",
+    "que": "Un menu sencillo permite jugar (elegir una ranura) y, con el modo desarrollador encendido, entrar a la zona de pruebas, en depuracion y en publicacion",
+    "comprobacion": "manual: en ventana y en el paquete de publicacion, cada opcion del menu lleva a su escena; la zona de pruebas aparece solo con el modo desarrollador encendido y el modo se recuerda al reabrir el juego",
+    "pasa": false
+  },
+  {
+    "id": "pausa-y-atras",
+    "que": "La accion de pausa y el boton Atras de Android abren la pausa durante el juego y piden confirmacion en el menu; pausar no guarda y la app no se cierra sola",
+    "comprobacion": "manual: en el telefono de prueba, Atras durante el juego abre la pausa y no cierra la app; en el menu pide confirmacion antes de salir; en ventana, la tecla de pausa abre y cierra la pausa",
+    "pasa": true
+  },
+  {
+    "id": "entrada-control",
+    "que": "El control (Xbox / PlayStation) emite las mismas acciones del InputMap, con su mapeo en docs/contrato.md",
+    "comprobacion": "manual: con un control conectado, el stick izquierdo y cada boton disparan la accion que dice docs/contrato.md",
+    "pasa": false
+  },
+  {
+    "id": "jugador-curar",
+    "que": "Mantener curar en el suelo gasta Inspiracion, que se llena golpeando, y al terminar el tiempo de curacion devuelve una vida; si golpean al jugador a la mitad, la curacion se pierde. Duracion y costo como propiedades exportadas",
+    "comprobacion": "herramientas/guiones/nucleo/jugador_curar.guion; herramientas/guiones/nucleo/jugador_curar_golpe.guion; herramientas/guiones/nucleo/jugador_curar_sin_inspiracion.guion; herramientas/guiones/nucleo/jugador_curar_tras_impulso.guion",
+    "pasa": true
+  },
+  {
+    "id": "jugador-golpe-sensacion",
+    "que": "Al golpear, el jugador y lo golpeado salen empujados un poco; al recibir dano, el jugador se detiene unos ticks (hit-stop) con el congelado comun (Congelado), sin Engine.time_scale. Valores exportados",
+    "comprobacion": "herramientas/guiones/nucleo/jugador_golpe_sensacion.guion; herramientas/guiones/nucleo/jugador_hit_stop.guion",
+    "pasa": true
+  },
+  {
+    "id": "habilidad-impulso",
+    "que": "Con la habilidad impulso en Partida, la accion impulso lanza al jugador en horizontal hacia donde mira, sin gravedad unos ticks y con recarga; sin la habilidad no hace nada",
+    "comprobacion": "herramientas/guiones/nucleo/habilidad_impulso.guion",
+    "pasa": true
+  },
+  {
+    "id": "habilidad-salto-en-pared",
+    "que": "Con la habilidad salto_en_pared en Partida, empujar hacia una pared en el aire sostiene al jugador deslizando despacio, y saltar lo despega de la pared hacia el lado contrario; sin la habilidad cae normal",
+    "comprobacion": "herramientas/guiones/nucleo/habilidad_salto_en_pared.guion; herramientas/guiones/nucleo/habilidad_salto_en_pared_despegue.guion",
+    "pasa": true
+  },
+  {
+    "id": "habilidad-doble-salto",
+    "que": "Con la habilidad doble_salto en Partida, saltar en el aire da un segundo salto, que se recupera al tocar el suelo o al sostenerse en una pared; sin la habilidad no",
+    "comprobacion": "herramientas/guiones/nucleo/habilidad_doble_salto.guion",
+    "pasa": true
+  },
+  {
+    "id": "boton-poderes",
+    "que": "El boton curar es el de poderes: soltarlo antes de ticks_mantener_poder es un toque (cuenta en toques_poder y lanza el poder), mantenerlo empieza la curacion de jugador-curar, cuyos guiones siguen pasando",
+    "comprobacion": "herramientas/guiones/nucleo/boton_poderes.guion",
+    "pasa": true
+  },
+  {
+    "id": "poder-bola",
+    "que": "Con la habilidad proyectil en Partida, un toque de curar gasta Inspiracion y lanza un proyectil recto hacia donde mira el jugador, que golpea una vez a cada Golpeable que toca y desaparece contra un solido; sin la habilidad no sale",
+    "comprobacion": "herramientas/guiones/nucleo/poder_bola.guion; herramientas/guiones/nucleo/poder_bola_sin_habilidad.guion",
+    "pasa": true
+  },
+  {
+    "id": "jugador-pogo",
+    "que": "Atacar con mover_abajo mantenida en el aire golpea hacia abajo; al tocar un Golpeable o un peligro rebota hacia arriba sin recibir dano y recupera el doble salto y el impulso en el aire",
+    "comprobacion": "herramientas/guiones/nucleo/jugador_pogo.guion; herramientas/guiones/nucleo/jugador_pogo_recupera.guion",
+    "pasa": true
+  },
+  {
+    "id": "habilidad-caida-en-picada",
+    "que": "Con la habilidad caida_en_picada en Partida, curar con mover_abajo en el aire gasta Inspiracion y hace caer al jugador recto y rapido hasta el suelo; un suelo fragil que toque se rompe y sigue cayendo; sin la habilidad no pasa nada",
+    "comprobacion": "herramientas/guiones/nucleo/habilidad_caida_en_picada.guion; herramientas/guiones/nucleo/habilidad_caida_en_picada_sin_habilidad.guion",
+    "pasa": true
+  },
+  {
+    "id": "enemigo-base",
+    "que": "Un enemigo gris con ficha (vida, dano por contacto y grupo de reaparicion) pierde vida con cada golpe, emite enemigo_vencido al llegar a 0 y desaparece; el debil reaparece al salir y volver a entrar a la sala, el fuerte solo despues de descansar en un banco",
+    "comprobacion": "herramientas/guiones/nucleo/enemigo_base.guion; herramientas/guiones/nucleo/enemigo_descanso.guion",
+    "pasa": true
+  },
+  {
+    "id": "vibracion",
+    "que": "El telefono vibra corto al pegar, al recibir dano, al hacer parry, al curarse, al descansar en un banco y al aterrizar duro o de la picada, cada uno con su duracion y su fuerza y con un minimo de ticks entre vibraciones; nada mas vibra. El ajuste vibracion (archivo de ajustes propio, activado por omision) la apaga",
+    "comprobacion": "herramientas/guiones/nucleo/jugador_curar.guion; herramientas/guiones/nucleo/banco_sentarse.guion; herramientas/guiones/nucleo/vibracion_aterrizaje.guion; herramientas/guiones/nucleo/guardado.guion",
+    "pasa": true
+  },
+  {
+    "id": "camara-caida-sin-tiron",
+    "que": "Al caer, la camara no se frena en su limite antes del aterrizaje: la velocidad del jugador en pantalla no sube mas de 100 px/s de un tick al siguiente",
+    "comprobacion": "herramientas/guiones/nucleo/camara_caida.guion",
+    "pasa": true
+  },
+  {
+    "id": "temblor-al-aterrizar",
+    "que": "Al aterrizar tras ticks_caida_dura ticks cayendo a velocidad_caida_max, o al aterrizar de la picada, el jugador calcula el temblor (propiedades temblor_x y temblor_y) durante temblor_ticks ticks; una caida corta y un salto normal no tiemblan. Que el temblor pase al offset de la camara y la opcion Temblor de la Configuracion se comprueban a mano en el S20",
+    "comprobacion": "herramientas/guiones/nucleo/camara_temblor.guion",
+    "pasa": true
+  },
+  {
+    "id": "aterrizaje-duro",
+    "que": "Al aterrizar tras ticks_caida_dura ticks cayendo a velocidad_caida_max, el jugador se queda quieto ticks_aterrizaje_duro ticks: la gravedad y los golpes siguen, lo tocado durante el bloqueo (saltar, atacar, curar) se pierde y lo mantenido cuenta al terminar. Lo cortan un golpe, un peligro, morir y sentarse; la picada no lo empieza",
+    "comprobacion": "herramientas/guiones/nucleo/jugador_aterrizaje_duro.guion",
+    "pasa": true
+  },
+  {
+    "id": "vibracion-al-aterrizar",
+    "que": "El aterrizaje duro y el aterrizaje de la picada emiten Eventos.jugador_aterrizo y el telefono vibra 80 ms con fuerza 0,9; con el ajuste vibracion apagado no vibra",
+    "comprobacion": "herramientas/guiones/nucleo/vibracion_aterrizaje.guion",
+    "pasa": true
+  },
+  {
+    "id": "controles-configurables",
+    "que": "Desde Configuracion (la del menu o la de la pausa), Botones tactiles abre el editor: se puede mover cada boton tactil, cambiar su tamano y la opacidad de todos, restaurar los valores por omision y guardarlo en user://ajustes.json",
+    "comprobacion": "herramientas/guiones/nucleo/controles_configurables.guion",
+    "pasa": true
+  },
+  {
+    "id": "configuracion-menu",
+    "que": "El menu principal tiene Configuracion con Botones tactiles, que abre el editor de botones; Atras vuelve un nivel a la vez",
+    "comprobacion": "herramientas/guiones/nucleo/menu_configuracion.guion",
+    "pasa": true
+  },
+  {
+    "id": "peligro-anti-bucle",
+    "que": "Un peligro que toca al jugador antes de 0,5 s de volver de otro lo lleva a su punto de llegada a la sala sin quitarle vida; los peligros quitan vida aunque el jugador sea invulnerable",
+    "comprobacion": "herramientas/guiones/nucleo/jugador_peligro_anti_bucle.guion",
+    "pasa": true
+  },
+  {
+    "id": "fuertes-al-morir",
+    "que": "Morir hace reaparecer a los enemigos fuertes vencidos, igual que descansar",
+    "comprobacion": "herramientas/guiones/nucleo/enemigo_al_morir.guion",
+    "pasa": true
+  },
+  {
+    "id": "fundido-a-negro",
+    "que": "Al tocar un peligro, al morir y al cruzar una puerta la pantalla funde a negro y vuelve con el jugador ya en su lugar",
+    "comprobacion": "herramientas/guiones/nucleo/fundido_peligro.guion",
+    "pasa": true
+  },
+  {
+    "id": "sala-id",
+    "que": "Una sala lleva id <zona>_<numero>; Sala.ruta_de lleva del id a su escena (contenido o zona de prueba) y deja pasar una ruta res://; el banco, los enemigos fuertes y cambio_de_sala usan Sala.clave(), el id o la ruta de una sala de prueba suelta",
+    "comprobacion": "herramientas/guiones/contenido/sala_id.guion",
+    "pasa": true
+  },
+  {
+    "id": "guardado-v3",
+    "que": "El guardado es la version 3 de docs/contrato.md (banco {sala, id}, listas de ids, monedas, mochila, mapas, salas visitadas y mapeadas, estado por sala, personaje, nombre y tiempo jugado); una partida de la version 2 es INCOMPATIBLE y un banco sin id es DANADA",
+    "comprobacion": "herramientas/guiones/nucleo/guardado.guion",
+    "pasa": true
+  },
+  {
+    "id": "estado-por-sala",
+    "que": "Partida guarda el estado de cada sala ({sala: {objeto: true o numero}}); un SueloFragil con id se queda roto y un Coleccionable tomado no vuelve; las recompensas por cantidad se entregan una sola vez; descansar con pluma_mapa dibuja las visitadas de las zonas cuyo mapa se tiene",
+    "comprobacion": "herramientas/guiones/nucleo/estado_sala.guion",
+    "pasa": true
+  },
+  {
+    "id": "autoguardado",
+    "que": "Se autoguarda lo obtenido (no la posicion) al obtener una habilidad, vencer a un jefe, recoger un amuleto o un coleccionable, entregar recompensas, poner o quitar un amuleto, terminar una conversacion de un Npc, responder en un reto, morir, salir al menu y pasar a segundo plano; las salas de prueba y los guiones guardan en Partida.RUTA_PRUEBAS",
+    "comprobacion": "herramientas/guiones/contenido/zona_prueba_coleccionable.guion; herramientas/guiones/nucleo/estado_sala.guion",
+    "pasa": true
+  },
+  {
+    "id": "autoguardado-segundo-plano",
+    "que": "Mandar la app a segundo plano en medio de una sala guarda lo obtenido; al reabrir y Continuar se aparece en el ultimo banco con lo obtenido",
+    "comprobacion": "manual: en el telefono, con el APK de desarrollo, zona de pruebas -> Prueba 1, cruzar la puerta a Prueba 2 sin tocar nada que guarde y mandar la app al fondo con el boton de inicio; despues, adb shell run-as com.themike54.elpasofinal cat files/prueba_partida.json muestra prueba_2 en salas_visitadas",
+    "pasa": true
+  },
+  {
+    "id": "coleccionables",
+    "que": "Un Coleccionable se toma al tocarlo, autoguarda y no vuelve; la vitrina muestra los juntados y la entrega da cada recompensa por cantidad una vez (PejeCoins, amuleto, vida maxima)",
+    "comprobacion": "herramientas/guiones/contenido/zona_prueba_vitrina.guion",
+    "pasa": true
+  },
+  {
+    "id": "combate-chico",
+    "que": "Sin la pluma no se ataca; con ella, el ataque corta los Cortable (sin Inspiracion), va hacia arriba con mover_arriba y una pulsacion de atacar poco antes de poder atacar sale en cuanto se puede (cola del ataque)",
+    "comprobacion": "herramientas/guiones/nucleo/combate_chico.guion",
+    "pasa": true
+  },
+  {
+    "id": "congelado-comun",
+    "que": "El dano al jugador y un enemigo vencido congelan unos ticks al jugador, los enemigos, los empujes, los proyectiles y la decoracion que se mueve (Congelado, como FreezeMoment de Hollow Knight; las particulas siguen); las pulsaciones hechas durante el congelado no se pierden; morir vacia la Inspiracion",
+    "comprobacion": "herramientas/guiones/nucleo/combate_chico_cuentas.guion",
+    "pasa": true
+  },
+  {
+    "id": "enemigo-comportamiento",
+    "que": "La ficha de un enemigo puede llevar un script de comportamiento (ComportamientoEnemigo) que ataca con un AtaqueEnemigo separado del cuerpo y dispara ProyectilEnemigo; el muneco que ataca de la zona de pruebas lo usa: su golpe parable y su disparo se paran y su golpe no parable dana aunque el jugador ataque",
+    "comprobacion": "herramientas/guiones/nucleo/parry.guion",
+    "pasa": true
+  },
+  {
+    "id": "parry",
+    "que": "El ataque normal del jugador para un ataque enemigo marcado se_puede_parar: no dana, deja al jugador 15 ticks sin dano de enemigos, congela 20 ticks y empuja al jugador hacia atras, el dueno recibe el golpe y la vibracion es la del parry",
+    "comprobacion": "herramientas/guiones/nucleo/parry_ventana.guion",
+    "pasa": true
+  },
+  {
+    "id": "carrera",
+    "que": "Un impulso que termina con direccion empieza la carrera a 2,1 veces caminar; soltar la direccion o chocar con una pared la apaga y solo con el joystick nunca hay impulso ni carrera",
+    "comprobacion": "herramientas/guiones/nucleo/carrera_empieza.guion; herramientas/guiones/nucleo/carrera_suelta.guion; herramientas/guiones/nucleo/carrera_pared.guion; herramientas/guiones/nucleo/carrera_sin_impulso.guion",
+    "pasa": true
+  },
+  {
+    "id": "carrera-salto-giro",
+    "que": "Saltar en carrera conserva la velocidad; pedir el otro lado frena y la carrera sigue hacia alla sin apagarse",
+    "comprobacion": "herramientas/guiones/nucleo/carrera_giro.guion; herramientas/guiones/nucleo/carrera_salto.guion; herramientas/guiones/nucleo/carrera_giro_medio.guion",
+    "pasa": true
+  },
+  {
+    "id": "carrera-ataque",
+    "que": "Atacar al frente en carrera empuja al jugador hacia adelante mientras dura el ataque",
+    "comprobacion": "herramientas/guiones/nucleo/carrera_ataque.guion",
+    "pasa": true
+  },
+  {
+    "id": "peligro-movil",
+    "que": "Lo que dana y se mueve (Vaiven: sierras, trampas) es un golpe con retroceso, nunca un peligro que devuelve al suelo seguro; la sierra llega sola hasta el jugador quieto. La regla del validador es la entrada validador-peligro-movil de herramientas",
+    "comprobacion": "herramientas/guiones/nucleo/peligro_movil.guion",
+    "pasa": true
+  },
+  {
+    "id": "configuracion-opciones",
+    "que": "La Configuracion tiene Audio (volumen general, musica y efectos), Brillo (en su propia pantalla), vibracion, temblor, Recursos, Botones tactiles, botones del control (reasignar intercambia con la accion que tenia el boton y se guarda; Restablecer), modo desarrollador (muestra la zona de pruebas y se recuerda) y Creditos; las opciones de si o no son botones con su valor, sin interruptores; cada cambio se guarda (las barras al soltarlas) y Atras vuelve un nivel. Borrar una partida esta en las ranuras",
+    "comprobacion": "herramientas/guiones/nucleo/menu_configuracion.guion",
+    "pasa": true
+  },
+  {
+    "id": "recursos-modo",
+    "que": "El ajuste recursos (auto, bajo o alto) se guarda; en auto, un build de 32 bits o menos de 3 GB de memoria cuenta como debil; en bajo lo marcado Prescindible desaparece y las plantas y la niebla se quedan quietas; elegir alto en un telefono debil muestra un aviso",
+    "comprobacion": "herramientas/guiones/nucleo/recursos_cuentas.guion",
+    "pasa": true
+  },
+  {
+    "id": "recursos-medicion",
+    "que": "La sala de recursos de la zona de pruebas, con el presupuesto completo (30 plantas, 2 nieblas, emisores), corre a 60 FPS en alto en el S20 y en bajo en el S50",
+    "comprobacion": "manual: con el APK de desarrollo (arranca con --print-fps), sala de recursos en alto y en bajo en el S50 y en el S20; anotar los FPS en docs/pruebas.md",
+    "pasa": true
+  },
+  {
+    "id": "recursos-medicion-publicacion",
+    "que": "La sala de recursos, con el presupuesto completo, se mantiene en el paquete de publicacion por encima de ~45 FPS en bajo en el S50 tras varios minutos de juego (en caliente)",
+    "comprobacion": "manual: paquete exportado en release con el preset Publicacion, sala de recursos en bajo en el S50 durante 5 minutos; anotar los FPS en docs/pruebas.md",
+    "pasa": false
+  },
+  {
+    "id": "parry-visible",
+    "que": "Un parry congela todo 20 ticks, dibuja un estallido blanco en el punto de choque y empuja al jugador hacia atras; el golpe parado no quita vida",
+    "comprobacion": "herramientas/guiones/nucleo/parry.guion; herramientas/guiones/nucleo/parry_ventana.guion",
+    "pasa": true
+  },
+  {
+    "id": "carrera-voltereta",
+    "que": "El ataque en carrera que golpea corta la carrera y lanza al jugador en voltereta por encima del enemigo; cae caminando, y atacar o un impulso en el aire la cortan",
+    "comprobacion": "herramientas/guiones/nucleo/carrera_ataque_golpe.guion; herramientas/guiones/nucleo/carrera_voltereta_cae.guion; herramientas/guiones/nucleo/carrera_voltereta_ataque.guion; herramientas/guiones/nucleo/carrera_voltereta_impulso.guion",
+    "pasa": true
+  },
+  {
+    "id": "carrera-rebote-pared",
+    "que": "Chocar con una pared en carrera corta la carrera y da un rebote corto hacia atras",
+    "comprobacion": "herramientas/guiones/nucleo/carrera_pared_rebote.guion",
+    "pasa": true
+  },
+  {
+    "id": "aviso-pocos-toques",
+    "que": "En Android, si la pantalla no declara 5 o mas toques, una linea discreta abajo en el menu y en Configuracion lo avisa; en PC y en telefonos con 5 o mas toques no sale; el juego no cambia",
+    "comprobacion": "herramientas/guiones/nucleo/menu_configuracion.guion",
+    "pasa": true
+  },
+  {
+    "id": "ranuras-guardado",
+    "que": "El guardado tiene 4 ranuras independientes (user://partida_1.json a partida_4.json); la partida de antes de las ranuras pasa una vez a la ranura 1 sin pisar nada; al entrar a una ranura valida se copia, Restaurar vuelve a esa copia (tambien desde una ranura danada) y Borrar quita la ranura con su copia",
+    "comprobacion": "herramientas/guiones/nucleo/ranuras.guion",
+    "pasa": true
+  },
+  {
+    "id": "menu-ranuras",
+    "que": "El menu principal tiene Jugar, que abre las 4 ranuras: la vacia dice Nueva partida y empieza en ella; la ocupada dice donde se quedo, vidas maximas, tiempo jugado y un rastro de lo obtenido y continua en ella; la danada y la de otra version no se abren; Borrar y Restaurar piden confirmacion; Atras vuelve un nivel a la vez; entrar a una ranura fija el archivo del autoguardado",
+    "comprobacion": "herramientas/guiones/nucleo/ranuras.guion",
+    "pasa": true
+  },
+  {
+    "id": "ranuras-telefono",
+    "que": "En el telefono las 4 fichas caben en una fila y se leen y se tocan con el pulgar, con y sin el aviso de pocos toques; una partida nueva deja ocupada su ficha y Borrar y Restaurar funcionan con su confirmacion",
+    "comprobacion": "manual: en el S50 o el S20 con el APK de desarrollo: Jugar, ranura 1, un personaje y Empezar (caja gris), Volver al menu, Jugar: la ficha 1 dice Inicio y 0 min; entrar otra vez y volver: aparece Restaurar; Borrar con su confirmacion la deja vacia",
+    "pasa": true
+  },
+  {
+    "id": "audio-y-brillo",
+    "que": "Configuracion tiene Audio, un panel con el volumen general, de musica y de efectos (cada uno en su bus: Master, Musica y Efectos), cada uno con barra ancha y altavoz, que se guardan; mientras esta abierto suena la musica de prueba y Probar efecto toca uno; y Brillo, en su pantalla, de 50 a 150 %, que oscurece o aclara toda la pantalla y se guarda",
+    "comprobacion": "herramientas/guiones/nucleo/menu_configuracion.guion;herramientas/guiones/nucleo/guardado.guion",
+    "pasa": true
+  },
+  {
+    "id": "audio-y-brillo-telefono",
+    "que": "En el telefono la musica de prueba y el efecto se oyen, cada barra cambia solo su parte y el brillo se ve bien en sus extremos sin tapar los toques",
+    "comprobacion": "manual: en el S50 o el S20 con el APK de desarrollo: Configuracion, Audio: suena la musica; bajar Musica a 0 la calla y Probar efecto sigue sonando; bajar Efectos a 0 calla el efecto; General a 0 calla todo; Brillo en 50 y en 150: la pantalla se oscurece o aclara y los botones siguen respondiendo",
+    "pasa": true
+  },
+  {
+    "id": "amuletos-banco",
+    "que": "Los amuletos se ponen y se quitan solo sentado en un banco, en la pagina Amuletos del marco de menus (la abre la accion inventario sentado, o el boton tactil que sentado dice Inventario); de pie solo se ven; Partida no pone uno que no se tiene, repetido ni mas de MAX_EQUIPADOS, y poner o quitar autoguarda",
+    "comprobacion": "herramientas/guiones/nucleo/amuletos.guion",
+    "pasa": true
+  },
+  {
+    "id": "amuletos-telefono",
+    "que": "En el telefono la pagina Amuletos del marco de menus se abre sentado con el boton Inventario, se lee y se toca con el pulgar, y la brujula puesta sentado se ve en el mapa",
+    "comprobacion": "manual: fila Amuletos en el banco de docs/pruebas.md, en el S50 o el S20",
+    "pasa": true
+  },
+  {
+    "id": "personaje-y-nombre",
+    "que": "Una ranura vacia abre Nueva partida: elegir Hombre o Mujer (sin eso Empezar no responde) y un nombre limpio de hasta 12 caracteres (vacio, Alumno o Alumna); la partida guarda personaje y nombre y su ficha lleva el nombre; Atras vuelve a las ranuras",
+    "comprobacion": "herramientas/guiones/nucleo/ranuras.guion",
+    "pasa": true
+  },
+  {
+    "id": "personaje-y-nombre-telefono",
+    "que": "En el telefono el campo del nombre abre el teclado de Android, Enter empieza la partida y la ficha muestra el nombre",
+    "comprobacion": "manual: en el S50 o el S20: Jugar, ranura vacia, Mujer, tocar Nombre y escribir con el teclado del telefono, Enter; Volver al menu, Jugar: la ficha lleva el nombre",
+    "pasa": true
+  },
+  {
+    "id": "dialogo-npc",
+    "que": "Un Npc habla con interactuar: caja abajo con el texto letra por letra, avanzar con interactuar, saltar, atacar o un toque, preguntas con hasta 3 opciones; el jugador queda quieto; terminar contando sube la etapa, entrega una sola vez y autoguarda; No, un golpe o morir cierran sin contar; el validador revisa las fichas y los ids",
+    "comprobacion": "herramientas/guiones/nucleo/dialogo.guion;herramientas/guiones/nucleo/dialogo_completo.guion;herramientas/guiones/nucleo/dialogo_quieto.guion;herramientas/guiones/nucleo/dialogo_no.guion",
+    "pasa": true
+  },
+  {
+    "id": "dialogo-telefono",
+    "que": "En el telefono la caja y sus opciones caben fuera de la muesca, se leen y se tocan con el pulgar, y mientras se habla solo queda el boton de pausa",
+    "comprobacion": "manual: fila Dialogo con el guia de docs/pruebas.md, en el S50 o el S20",
+    "pasa": true
+  },
+  {
+    "id": "reto-preguntas",
+    "que": "Un RetoPreguntas pregunta en la caja de dialogo, en orden, las preguntas que faltan de la ronda (2 o 3 opciones) y dice si se acerto; cada respuesta cuenta y autoguarda; con la meta se gana y la recompensa llega una sola vez; sin ella la ronda empieza otra vez; el estado son numeros en la sala, sin cambiar el guardado; el validador revisa preguntas, meta e ids",
+    "comprobacion": "herramientas/guiones/nucleo/reto.guion",
+    "pasa": true
+  },
+  {
+    "id": "reto-telefono",
+    "que": "En el telefono las preguntas y sus opciones se leen y se tocan con el pulgar, y al ganar se ven las PejeCoins",
+    "comprobacion": "manual: fila Reto de preguntas de docs/pruebas.md, en el S50 o el S20",
+    "pasa": true
+  },
+  {
+    "id": "sonidos-eventos",
+    "que": "Los eventos del juego suenan: salto (senal nueva jugador_salto), golpe dado, dano, parry, curar y banco, en el bus Efectos, desde Sonido en Arranque (no se corta al cambiar de sala), con la ficha de prueba, pocas voces y sin repetir el mismo evento en ticks seguidos salvo dano y parry",
+    "comprobacion": "herramientas/guiones/nucleo/sonido.guion;herramientas/guiones/nucleo/bus_eventos.guion",
+    "pasa": true
+  },
+  {
+    "id": "sonidos-telefono",
+    "que": "En el telefono cada evento se oye, el golpe dado y el recibido se distinguen, nada se corta al cruzar una puerta y el volumen de efectos los baja",
+    "comprobacion": "manual: fila Efectos de los eventos de docs/pruebas.md, en el S50 o el S20",
+    "pasa": false
+  },
+  {
+    "id": "marco-menus",
+    "que": "Un marco detiene el juego y muestra en ciclo las paginas Inventario, Amuletos y Mapa (sin el bloque mapa, las dos primeras): mapa lo abre en Mapa e inventario en Inventario de pie y en Amuletos sentado; pagina_anterior, pagina_siguiente y la barra cambian de pagina; la misma accion, pausa, Atras y Volver lo cierran sin abrir la pausa, y con la pausa abierta no se abre. Inventario muestra vida, Inspiracion, PejeCoins, arma, habilidades, mapas y lo perdido",
+    "comprobacion": "herramientas/guiones/nucleo/marco.guion",
+    "pasa": true
+  },
+  {
+    "id": "pausa-configuracion",
+    "que": "La pausa tiene Continuar, Configuracion y Salir al menu; Configuracion se abre encima con el juego detenido, sin Desarrollador, el editor de botones sale encima de ella, y Atras y pausa vuelven un nivel hasta la pausa",
+    "comprobacion": "herramientas/guiones/nucleo/marco.guion",
+    "pasa": true
+  },
+  {
+    "id": "configuracion-tactil",
+    "que": "Configuracion sin interruptores: cada opcion de si o no muestra su valor en una pastilla y se cambia tocando el boton; Recursos pasa a bajo, alto y auto con cada toque; cada volumen tiene una barra ancha que salta al toque, se arrastra y con teclas se mueve de 10 en 10, y un altavoz que silencia y vuelve al valor de antes; Brillo abre su pantalla con la escena (la foto de la sala desde la pausa o una de muestra), un cuadro de calibracion y la barra, que guarda al soltarla",
+    "comprobacion": "herramientas/guiones/nucleo/menu_configuracion.guion",
+    "pasa": true
+  },
+  {
+    "id": "marco-menus-telefono",
+    "que": "En el telefono el marco de menus se abre con el boton Mapa de pie y con el que sentado dice Inventario, se cambia de pagina con la barra y se cierra con Volver y Atras; la pausa abre Configuracion encima sin un tiron visible; las pastillas, las barras, el altavoz y la pantalla de brillo se usan con el pulgar",
+    "comprobacion": "manual: filas Marco de menus en el telefono y Configuracion tactil de docs/pruebas.md, en el S50 y el S20",
+    "pasa": true
+  },
+  {
+    "id": "congelado-decoracion",
+    "que": "La planta y la niebla se detienen durante el congelado comun (golpe, vencer y parry), como en la pausa, y siguen al terminar",
+    "comprobacion": "herramientas/guiones/nucleo/recursos_cuentas.guion",
+    "pasa": true
+  },
+  {
+    "id": "mapa-obtener",
+    "que": "Recoger un mapa, en el suelo o como recompensa, pasa por Partida.obtener_mapa: avisa como lo demas que se obtiene y autoguarda; si ya se tenia, no hace nada",
+    "comprobacion": "herramientas/guiones/nucleo/guardado.guion",
+    "pasa": true
+  },
+  {
+    "id": "pared-tras-puerta",
+    "que": "Cada puerta en el borde de una sala tiene una pared invisible detras: saltar justo antes de la puerta cambia de sala en vez de pasarla por encima",
+    "comprobacion": "herramientas/guiones/nucleo/puerta_salto_a.guion;herramientas/guiones/nucleo/puerta_salto_b.guion;herramientas/guiones/nucleo/sala_puerta_a_pared.guion",
+    "pasa": true
+  },
+  {
+    "id": "foco-ultima-entrada",
+    "que": "Los menus dan el foco con Tema.dar_foco: el recuadro se dibuja solo si lo ultimo que se uso fue un control o el teclado (UltimaEntrada), no tras un toque",
+    "comprobacion": "herramientas/guiones/nucleo/menu_configuracion.guion",
+    "pasa": true
+  },
+  {
+    "id": "capas-fisica",
+    "que": "Cada cuerpo, area y rayo del nucleo esta en una capa de fisica con nombre (Capas) y solo busca las capas que le tocan: el jugador no choca con lo que se toca ni con su propio ataque, y los rayos de solidos solo ven el escenario",
+    "comprobacion": "herramientas/guiones/nucleo/capas_fisica.guion;herramientas/guiones/nucleo/poder_bola.guion",
+    "pasa": true
+  },
+  {
+    "id": "agarre-pared-altura",
+    "que": "altura_agarre_pared (0 por omision) pide que la pared llegue a esa fraccion del cuerpo para agarrarse; con 0 basta cualquier contacto, como Hollow Knight",
+    "comprobacion": "herramientas/guiones/nucleo/agarre_pared.guion",
+    "pasa": true
+  },
+  {
+    "id": "puertas-por-id",
+    "que": "Cada puerta de las zonas guarda en sala_destino el id de la sala y la resuelve con Sala.ruta_de al cruzar: se llega a la sala correcta",
+    "comprobacion": "herramientas/guiones/contenido/zona_prueba_puertas.guion",
+    "pasa": true
+  },
+  {
+    "id": "guardado-campos-nuevos",
+    "que": "Un campo nuevo de la partida se agrega en Guardado.NUEVOS con su valor por omision: una partida guardada sin el campo se carga con ese valor, sin subir la version",
+    "comprobacion": "herramientas/guiones/nucleo/guardado.guion",
+    "pasa": true
+  }
+]

@@ -1,0 +1,4 @@
+# Solo con el joystick nunca hay impulso ni carrera.
+escena res://herramientas/salas/sala_carrera.tscn
+2 mover_derecha press
+fin 60

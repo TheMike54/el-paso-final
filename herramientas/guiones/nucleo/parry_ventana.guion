@@ -1,0 +1,8 @@
+# Sala del parry, despues de la primera parada (golpe parable del tick 60) y de su congelado de 20 ticks: el
+# jugador sigue sin dano de enemigos, sale empujado hacia atras (a la izquierda, lejos del muneco), el reloj del
+# muneco se detuvo durante el congelado y la vibracion es la del parry, no la de pegar, aunque el dueno del ataque
+# recibe el golpe en el mismo tick.
+escena res://herramientas/salas/sala_parry.tscn
+58 atacar press
+59 atacar release
+fin 84

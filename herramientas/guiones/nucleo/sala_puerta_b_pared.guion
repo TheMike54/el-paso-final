@@ -1,0 +1,6 @@
+# En sala_puerta_b el jugador camina a la derecha desde la Entrada (x=640) mas de lo que mide la
+# sala. La pared derecha lo detiene dentro de los limites (fallo del S20, 07-oct-2026: salia y caia).
+escena res://herramientas/salas/sala_puerta_b.tscn
+2 mover_derecha press
+150 mover_derecha release
+fin 170

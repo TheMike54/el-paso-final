@@ -1,0 +1,7 @@
+# En una sala cuyo piso acaba en x=800, sin pared ni piso despues, el jugador camina a la derecha y
+# cae por debajo de los limites. Salir por abajo cuenta como un peligro: pierde una vida y vuelve a
+# suelo firme antes de la orilla, en vez de caer sin fin (fallo del S20 en sala_puerta_b, 07-oct-2026).
+escena res://herramientas/salas/sala_salida_abajo.tscn
+2 mover_derecha press
+150 mover_derecha release
+fin 200

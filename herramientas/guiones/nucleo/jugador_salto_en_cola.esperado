@@ -1,0 +1,5 @@
+# Con el salto en cola, el segundo salto sale al aterrizar y en el cuadro 73 va en el aire.
+# Sin el, la segunda pulsacion se pierde y el jugador sigue en la plataforma (y=480).
+x 200 1
+y 347 2
+en_suelo false

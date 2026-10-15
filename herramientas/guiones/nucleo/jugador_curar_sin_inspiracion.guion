@@ -1,0 +1,9 @@
+# Como jugador_curar.guion, pero sin golpear al muneco: sin Inspiracion, mantener curar no hace nada.
+escena res://herramientas/salas/sala_curar.tscn
+70 mover_derecha press
+125 mover_derecha release
+140 mover_izquierda press
+160 mover_izquierda release
+170 curar press
+245 curar release
+fin 250
