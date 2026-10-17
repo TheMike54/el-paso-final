@@ -1,5 +1,5 @@
-# El impulso recorrio sus 200 px (x=216). Si curar pudiera empezar a medio impulso, el jugador se
-# quedaria congelado en x=396 curandose y el resto del impulso saldria solo al terminar.
-x 216 2
+# El impulso recorrio sus 200 px (de x=440 a x=240). Si curar pudiera empezar a medio impulso, el jugador se
+# quedaria congelado en x=420 curandose y el resto del impulso saldria solo al terminar.
+x 240 2
 valor Jugador curando false
 valor Jugador vidas 3

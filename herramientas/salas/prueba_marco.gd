@@ -1,7 +1,8 @@
 extends "res://herramientas/salas/prueba_base.gd"
 # Prueba del marco de menus: en que pagina abre de pie y sentado, el ciclo con las acciones y con los botones de la
 # barra, que cierre con pausa, Atras, Volver y la misma accion sin abrir la pausa, que detenga el juego, que sin el
-# bloque mapa queden dos paginas, lo que muestra la pagina Inventario y la pausa con Configuracion encima. Arma las
+# bloque mapa queden dos paginas, lo que muestra la pagina Inventario, la pausa con Configuracion encima y los botones
+# del control en la barra y en Continuar. Arma las
 # piezas en el orden de una sala.
 # Deja casos y fallos para marco.guion e imprime el resumen.
 
@@ -58,6 +59,9 @@ func _ready() -> void:
 	_caso("mapa abre en Mapa", marco.abierta and marco.pagina == &"mapa" and mapa.abierta and mapa.visible)
 	await _presionar(&"pausa")
 	_caso("pausa lo cierra sin abrir la pausa", not marco.abierta and not mapa.visible and not pausa.abierta and not get_tree().paused)
+	await _presionar(&"mapa")
+	await _presionar(&"volver")
+	_caso("volver (B) lo cierra sin abrir la pausa", not marco.abierta and not pausa.abierta and not get_tree().paused)
 
 	# Sentado.
 	jugador.descansando = true
@@ -122,6 +126,22 @@ func _ready() -> void:
 	_caso("sin nada perdido dice Nada", inventario.valores["Lo perdido"] == "Nada")
 	marco.cerrar()
 	_caso("lo perdido dice cuanto y donde", PaginaInventario.perdido({"sala": "prueba_1", "x": 10.0, "y": 20.0, "monto": 30.0}) == "30 PejeCoins en prueba_1" and PaginaInventario.perdido({"monto": 0}) == "Nada")
+
+	# Botones del control en la barra (Volver, Anterior y Siguiente) y en Continuar de la pausa.
+	var iconos: Array[IconoBoton] = _iconos(marco)
+	var continuar: Array[IconoBoton] = _iconos(pausa.get_node(^"Panel/Opciones/Continuar"))
+	await _usar(true)
+	_caso("con el control la barra muestra Volver, L1 y R1, y Continuar el de volver", iconos.size() == 3 and _iconos_en(iconos, true) and continuar.size() == 1 and _iconos_en(continuar, true))
+	# En Mapa las vecinas tienen los nombres mas largos («‹ Amuletos», «Inventario ›»).
+	marco.abrir(&"mapa")
+	await get_tree().process_frame
+	await get_tree().process_frame
+	var boton_siguiente: Control = marco.get_node(^"Barra/Siguiente") as Control
+	var orilla: float = boton_siguiente.get_viewport_rect().size.x - Tema.MARGEN_LATERAL
+	_caso("con el control la barra cabe: Siguiente no pasa del margen derecho", boton_siguiente.visible and boton_siguiente.get_global_rect().end.x <= orilla + 0.5)
+	marco.cerrar()
+	await _usar(false)
+	_caso("tras un toque no se muestran botones del control", _iconos_en(iconos, false) and _iconos_en(continuar, false))
 
 	for nodo: Node in [mapa, amuletos, inventario, marco, pausa, jugador]:
 		nodo.free()

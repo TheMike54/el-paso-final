@@ -141,6 +141,23 @@ func _ready() -> void:
 	_escribir(ruta_ajustes, '{"version": 1, "ajustes": {"volumen_musica": "alto", "brillo": "x"}}')
 	Ajustes.cargar(ruta_ajustes)
 	_caso("un volumen o un brillo que no es numero deja el valor por omision", is_equal_approx(Ajustes.volumen_musica, 1.0) and is_equal_approx(Ajustes.brillo, Ajustes.BRILLO_POR_OMISION))
+	_escribir(ruta_ajustes, '{"version": 1, "ajustes": {"vibracion": false}}')
+	Ajustes.cargar(ruta_ajustes)
+	_caso("un archivo de antes de los FPS los deja en 60", Ajustes.fps == 60)
+	_escribir(ruta_ajustes, '{"version": 1, "ajustes": {"fps": 90}}')
+	Ajustes.cargar(ruta_ajustes)
+	var fps_raro: bool = Ajustes.fps == 60
+	_escribir(ruta_ajustes, '{"version": 1, "ajustes": {"fps": "120"}}')
+	Ajustes.cargar(ruta_ajustes)
+	_caso("unos FPS que no son 60 ni 120, o no son numero, dejan 60", fps_raro and Ajustes.fps == 60)
+	Ajustes.fps = 120
+	Ajustes.guardar(ruta_ajustes)
+	Ajustes.fps = 60
+	Ajustes.cargar(ruta_ajustes)
+	_caso("120 FPS vuelven como se guardaron", Ajustes.fps == 120)
+	Ajustes.fps = Ajustes.FPS_POR_OMISION
+	_caso("sin limite (0) solo con 120, Recursos en alto y pantalla de 90 Hz o mas", Ajustes.limite_fps(120, true, 120.0) == 0 and Ajustes.limite_fps(120, true, 90.0) == 0)
+	_caso("60 con 60 elegidos, con Recursos en bajo, con pantalla de 60 Hz o desconocida (-1)", Ajustes.limite_fps(60, true, 120.0) == 60 and Ajustes.limite_fps(120, false, 120.0) == 60 and Ajustes.limite_fps(120, true, 60.0) == 60 and Ajustes.limite_fps(120, true, -1.0) == 60)
 	Ajustes.volumen_musica = 0.3
 	Ajustes.volumen_efectos = 0.6
 	Ajustes.brillo = 0.8
@@ -151,7 +168,16 @@ func _ready() -> void:
 	Ajustes.cargar(ruta_ajustes)
 	_caso("musica, efectos y brillo vuelven como se guardaron", is_equal_approx(Ajustes.volumen_musica, 0.3) and is_equal_approx(Ajustes.volumen_efectos, 0.6) and is_equal_approx(Ajustes.brillo, 0.8))
 	_caso("el volumen pasa a dB: 1 es 0 dB y 0,5 queda por debajo", is_equal_approx(Ajustes.db_de(1.0), 0.0) and Ajustes.db_de(0.5) < -5.0)
-	_caso("el brillo bajo oscurece, el alto aclara con tope y 1 no tapa nada", is_equal_approx(Brillo.color_para(0.5).a, 0.5) and Brillo.color_para(0.5).r == 0.0 and Brillo.color_para(1.5).r == 1.0 and Brillo.color_para(1.5).a <= Brillo.ACLARADO_MAXIMO and is_zero_approx(Brillo.color_para(1.0).a))
+	_caso("el brillo bajo oscurece, el alto aclara, fuera de rango se recorta y 1 no cambia nada", Brillo.color_para(0.5).is_equal_approx(Color(0.5, 0.5, 0.5)) and Brillo.color_para(1.5).is_equal_approx(Color(1.5, 1.5, 1.5)) and Brillo.color_para(3.0).is_equal_approx(Color(1.5, 1.5, 1.5)) and Brillo.color_para(1.0).is_equal_approx(Color.WHITE))
+	Ajustes.brillo = 0.8
+	var modulado: Brillo = Brillo.new()
+	add_child(modulado)
+	_caso("el modulado de la sala toma el brillo al entrar", Brillo.instancia == modulado and modulado.color.is_equal_approx(Color(0.8, 0.8, 0.8)))
+	Ajustes.brillo = 1.3
+	Ajustes.aplicar_brillo()
+	_caso("mover la barra cambia el modulado de la sala viva", modulado.color.is_equal_approx(Color(1.3, 1.3, 1.3)))
+	modulado.free()
+	_caso("al salir de la sala no queda modulado vivo", Brillo.instancia == null)
 	DirAccess.remove_absolute(ruta_ajustes)
 	Ajustes.temblor = Ajustes.POR_OMISION["temblor"]
 	Ajustes.volumen_musica = 1.0

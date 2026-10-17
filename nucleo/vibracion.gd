@@ -34,6 +34,7 @@ func _ready() -> void:
 	Ajustes.cargar_una_vez()
 	# Metodos y no funciones anonimas: al borrarse la sala, Godot desconecta solo los metodos.
 	Eventos.enemigo_golpeado.connect(_al_pegar)
+	Eventos.objeto_golpeado.connect(_al_pegar)
 	Eventos.parry.connect(_al_parar)
 	Eventos.jugador_danado.connect(_al_recibir_dano)
 	Eventos.jugador_curado.connect(_al_curarse)

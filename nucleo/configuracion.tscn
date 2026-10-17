@@ -81,6 +81,13 @@ layout_mode = 2
 text = "Recursos"
 script = ExtResource("2_boton_valor")
 
+[node name="Fps" type="Button" parent="Lista/Desplazable/Centro/Opciones"]
+visible = false
+custom_minimum_size = Vector2(420, 108)
+layout_mode = 2
+text = "FPS"
+script = ExtResource("2_boton_valor")
+
 [node name="Controles" type="Button" parent="Lista/Desplazable/Centro/Opciones"]
 custom_minimum_size = Vector2(420, 108)
 layout_mode = 2

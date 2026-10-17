@@ -44,13 +44,14 @@ const ESCENA_PROYECTIL: PackedScene = preload("res://nucleo/proyectil.tscn")
 ## Gravedad, en px/s^2.
 @export var gravedad: float = 2400.0
 ## Altura maxima del salto manteniendo saltar, en px. El impulso se calcula a partir de ella.
-@export var altura_salto: float = 200.0
+@export var altura_salto: float = 230.0
 ## Al soltar saltar mientras sube, la velocidad vertical se multiplica por este factor.
 @export_range(0.0, 1.0) var corte_salto: float = 0.4
 ## Ticks de subida antes de que soltar saltar corte el salto: un toque corto da un salto bajo, no nulo.
 @export var ticks_minimos_salto: int = 4
-## Ticks despues de salir de una orilla en que saltar todavia funciona.
-@export var ticks_coyote: int = 3
+## Ticks despues de salir de una orilla en que saltar todavia funciona. Silksong da 4 pasos (~0,08 s, 5 ticks);
+## 4 para que no quede tan facil (probado en el telefono el 15-oct-2026).
+@export var ticks_coyote: int = 4
 ## Ticks antes de aterrizar en que presionar saltar hace saltar al tocar el suelo.
 @export var ticks_salto_en_cola: int = 3
 ## Tope de la velocidad de caida, en px/s, despues de los primeros distancia_caida_inicial px.
@@ -97,7 +98,7 @@ const ESCENA_PROYECTIL: PackedScene = preload("res://nucleo/proyectil.tscn")
 
 @export_group("Sensacion del golpe")
 ## Ticks que se detiene todo el juego al recibir dano (congelado comun, ver Congelado), antes del retroceso.
-@export var ticks_hit_stop: int = 4
+@export var ticks_hit_stop: int = 10
 ## Parry: ticks sin dano de enemigos despues de parar un ataque (los peligros si danan) y ticks de congelado.
 ## 20 = 0,33 s: Hollow Knight congela 0,36 s (NailClashEffect) y Silksong 0,2-0,3 s (medido en video).
 @export var ticks_invulnerable_parry: int = 15
@@ -116,7 +117,9 @@ const ESCENA_PROYECTIL: PackedScene = preload("res://nucleo/proyectil.tscn")
 @export var costo_curacion: int = 33
 ## Ticks manteniendo curar para recuperar una vida. Soltar o recibir dano antes la pierde.
 @export var ticks_curacion: int = 60
-## Inspiracion que gana cada golpe a algo golpeable.
+## Soltar curar antes de estos ticks de curacion devuelve toda la Inspiracion gastada; despues se pierde.
+@export var ticks_devolver_curacion: int = 27
+## Inspiracion que gana cada golpe a un enemigo (Golpeable con es_enemigo).
 @export var inspiracion_por_golpe: int = preload("res://nucleo/partida.gd").INSPIRACION_POR_GOLPE
 
 @export_group("Poderes")
@@ -212,6 +215,8 @@ const ESCENA_PROYECTIL: PackedScene = preload("res://nucleo/proyectil.tscn")
 ## Seguimiento vertical, en s: amortiguado critico (como SmoothDamp de Unity). Cayendo a velocidad
 ## constante, la camara va tiempo_camara_y por detras; con menos, el frenado en el limite se nota.
 @export var tiempo_camara_y: float = 0.15
+## Px que la camara se adelanta hacia donde mira el jugador; el suavizado en x hace el paso al voltear.
+@export var adelanto_camara: float = 43.0
 
 ## Vidas que le quedan; viven en Partida para sobrevivir al cambio de sala. A 0, muere.
 var vidas: int:
@@ -347,6 +352,9 @@ var _normal_pared: float = 0.0
 # Temblor al aterrizar: ticks que le quedan, si estaba en el suelo el tick anterior y la ultima
 # velocidad vertical que tuvo en el aire (al aterrizar, move_and_slide ya la dejo en 0).
 var _ticks_temblando: int = 0
+# Duracion y amplitud del temblor en curso: las del aterrizaje (temblor_ticks, temblor_px) o las que pidio temblar().
+var _ticks_temblor_total: int = 0
+var _px_temblor: float = 0.0
 var _en_suelo_antes: bool = true
 # Ticks seguidos cayendo a velocidad_caida_max.
 var _ticks_a_tope: int = 0
@@ -490,7 +498,7 @@ func _aterrizar(en_suelo: bool) -> void:
 	# La picada no pasa por aqui: tiembla y avisa en _seguir_picada, solo al aterrizar de verdad (romper
 	# un suelo fragil tambien deja en_suelo un tick, y una picada puede tocar el suelo en su primer tick).
 	if en_suelo and not _en_suelo_antes and not en_picada and _ticks_a_tope >= ticks_caida_dura:
-		_ticks_temblando = maxi(_ticks_temblando, temblor_ticks)
+		temblar(temblor_ticks, temblor_px)
 		# Un golpe o un banco del mismo tick se procesan antes que el jugador: si ya lo empujaron o lo
 		# sentaron, no hay bloqueo (si no, el retroceso esperaria 21 ticks o se levantaria sin control).
 		if not muerto and not descansando and _ticks_retrocediendo == 0:
@@ -502,6 +510,20 @@ func _aterrizar(en_suelo: bool) -> void:
 		_ticks_a_tope += 1
 	_en_suelo_antes = en_suelo
 	_temblar()
+
+
+## Tiembla la camara ticks ticks, empezando en px de amplitud (baja en linea recta). Si el temblor en curso todavia
+## es mas fuerte, sigue ese. Lo usan el aterrizaje, la picada y lo que se rompe (MuroRompible, Palanca).
+func temblar(ticks: int, px: float) -> void:
+	if ticks <= 0:
+		return
+	if _ticks_temblando > 0 and _ticks_temblor_total > 0:
+		var queda: float = _px_temblor * float(_ticks_temblando) / float(_ticks_temblor_total)
+		if queda > px:
+			return
+	_ticks_temblando = ticks
+	_ticks_temblor_total = ticks
+	_px_temblor = px
 
 
 # Aterrizaje duro, como en Hollow Knight: corta lo que estaba haciendo y deja al jugador quieto
@@ -532,9 +554,9 @@ func _seguir_aterrizando() -> void:
 func _temblar() -> void:
 	temblor_x = 0.0
 	temblor_y = 0.0
-	if _ticks_temblando > 0 and temblor_ticks > 0:
-		var transcurridos: int = temblor_ticks - _ticks_temblando
-		var queda: float = temblor_px * float(_ticks_temblando) / float(temblor_ticks)
+	if _ticks_temblando > 0 and _ticks_temblor_total > 0:
+		var transcurridos: int = _ticks_temblor_total - _ticks_temblando
+		var queda: float = _px_temblor * float(_ticks_temblando) / float(_ticks_temblor_total)
 		temblor_y = queda if (transcurridos / 2) % 2 == 0 else -queda
 		temblor_x = queda * temblor_fraccion_x * (1.0 if (transcurridos / 3) % 2 == 0 else -1.0)
 		_ticks_temblando -= 1
@@ -815,7 +837,7 @@ func _seguir_picada() -> void:
 	if is_on_floor() and not rompio:
 		en_picada = false
 		# La picada tiembla siempre al aterrizar, sin importar la altura, y no deja sin control.
-		_ticks_temblando = maxi(_ticks_temblando, temblor_ticks)
+		temblar(temblor_ticks, temblor_px)
 		velocity = Vector2.ZERO
 		_ticks_sin_dano = maxi(_ticks_sin_dano, ticks_invulnerable_picada)
 		# Antes de la onda: si la onda golpea, la vibracion del aterrizaje (la fuerte) llega primero.
@@ -892,6 +914,9 @@ func _empezar_curacion(en_suelo: bool) -> void:
 
 func _seguir_curando(en_suelo: bool, mantiene: bool) -> bool:
 	if not mantiene or not en_suelo:
+		# Soltar pronto devuelve exactamente lo que habia al empezar: nunca deja mas.
+		if not mantiene and ticks_curados < ticks_devolver_curacion:
+			Partida.inspiracion = _inspiracion_al_empezar
 		_cortar_curacion()
 		return false
 	ticks_curados += 1
@@ -910,7 +935,7 @@ func _cortar_curacion() -> void:
 
 
 # El area de ataque se enciende unos ticks hacia donde mira el jugador y golpea una sola vez a
-# cada Golpeable que toca durante ese ataque. Cada golpe da Inspiracion y empuja al jugador. En el
+# cada Golpeable que toca durante ese ataque. Cada golpe a un enemigo da Inspiracion; cualquiera empuja al jugador. En el
 # aire con mover_abajo, el ataque va hacia abajo (pogo): ver _rebotar_pogo; con mover_arriba, hacia
 # arriba. Sin la pluma (el arma) no se ataca. Un Cortable que toca se corta, sin mas.
 func _atacar() -> void:
@@ -963,7 +988,8 @@ func _atacar() -> void:
 			if golpeable != null and not _golpeados.has(golpeable):
 				_golpeados.append(golpeable)
 				golpeable.recibir_golpe(self, dano_ataque)
-				Partida.ganar_inspiracion(inspiracion_por_golpe)
+				if golpeable.es_enemigo:
+					Partida.ganar_inspiracion(inspiracion_por_golpe)
 				if _atacando_abajo:
 					_rebotar_pogo()
 				elif atacando_en_carrera:
@@ -1280,6 +1306,7 @@ func _objetivo_camara() -> Vector2:
 	var media: Vector2 = get_viewport_rect().size / _camara.zoom / 2.0
 	var centro: Vector2 = _limites.get_center()
 	var objetivo: Vector2 = global_position + _altura_camara
+	objetivo.x += adelanto_camara * _mirando
 	if _limites.size.x <= media.x * 2.0:
 		objetivo.x = centro.x
 	else:

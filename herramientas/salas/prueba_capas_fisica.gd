@@ -26,6 +26,8 @@ func _ready() -> void:
 	_revisar("ataque enemigo", AtaqueEnemigo.crear(Rect2(0.0, 0.0, 10.0, 10.0), 0, 1, true), Capas.DANINO, Capas.JUGADOR)
 	_revisar("proyectil enemigo", ProyectilEnemigo.crear_disparo(Vector2.RIGHT, 1, true), Capas.DANINO, Capas.JUGADOR)
 	_revisar("bola del jugador", Proyectil.new(), Capas.ATAQUE_JUGADOR, Capas.GOLPEABLE)
+	_revisar("muro rompible", MuroRompible.new(), Capas.ESCENARIO, 0)
+	_revisar("porton", Porton.new(), Capas.ESCENARIO, 0)
 	var coleccionable: Coleccionable = Coleccionable.new()
 	coleccionable.id = Partida.PREFIJO_COLECCIONABLE + "capas"
 	var interaccion: Array[Area2D] = [Puerta.new(), Banco.new(), coleccionable, ObjetoHabilidad.new(), ObjetoMapa.new(), Npc.new(), RetoPreguntas.new(), EntregaRecompensas.new(), (load(INTERRUPTOR) as GDScript).new() as Area2D]

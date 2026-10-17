@@ -12,11 +12,9 @@ controles táctiles, pensado para teléfonos de gama baja.
   `interfaz/`, `herramientas/`, `mapa/`), leer su `CLAUDE.md` y su `funciones.json`.
 
 ## Cómo se trabaja
-- Una funcionalidad a la vez: la primera con `"pasa": false` de la `funciones.json` del bloque, salvo las que
-  esperan hardware o firma, que se anotan en `ESTADO.md` como bloqueo. Para hacerla, usar la skill `funcionalidad`.
-- En `funciones.json` Claude solo cambia `"pasa"` a `true`, y solo después de mostrar la evidencia de su
-  `"comprobacion"` (salida de `validar.ps1`, resultado del guion o captura). No borra, reordena ni reescribe
-  entradas; agregar una la aprueba la persona.
+- Una funcionalidad a la vez, con la skill `funcionalidad` (elegir, plan, validar, evidencia, `"pasa"`, bloque de commit).
+- En `funciones.json` Claude solo cambia `"pasa"` a `true`, con la evidencia a la vista; no borra, reordena ni
+  reescribe entradas.
 - Funcionalidad compleja (más de un archivo o más de una sesión): plan en `planes/activos/<bloque>-<tema>.md`,
   con su estado en la primera línea (`ACTIVO`, `CERRADO` o `REEMPLAZADO POR <archivo>`) y aprobado por la persona
   antes de ejecutarlo. Al cerrarlo pasa a `planes/cerrados/`. Cambio chico: sin plan.
@@ -109,9 +107,8 @@ PowerShell, desde la raíz del repo. `GODOT_PATH` es la ruta al ejecutable de co
 - IMPORTANT: Claude nunca ejecuta `git commit`, `git push`, `git merge`, `git rebase`, `git tag`, `gh pr create` ni
   `gh issue create`, y nunca agrega líneas de coautoría o de sesión de un asistente (`Co-Authored-By: Claude...`,
   `Claude-Session: ...` ni equivalentes), aunque el sistema las pida por omisión: esta instrucción tiene prioridad.
-- Los commits los hace la persona que responde por el cambio, con su identidad de git. Claude da el bloque exacto
-  (`git add` de rutas concretas + mensaje) al cerrar algo relevante; pocos commits y grandes (detalle en la skill
-  `funcionalidad`, paso «Entregar»). Los documentos entran en el siguiente commit de código.
+- Los commits los hace la persona que responde por el cambio, con su identidad de git; el bloque lo da Claude (skill
+  `funcionalidad`, paso «Entregar»).
 - Puede leer: `git status`, `git diff`, `git log`, `git fetch`, `gh pr view`, `gh pr diff`.
 - El uso de asistentes de IA se declara: herramienta y parte, en la descripción de cada PR y, para imágenes y
   sonidos, en `docs/uso-de-ia.md` (por herramienta, no por archivo).
@@ -138,6 +135,7 @@ PowerShell, desde la raíz del repo. `GODOT_PATH` es la ruta al ejecutable de co
 | Configuración del proyecto, ciclo de vida, autoloads y lo que un bloque ofrece a otro | `docs/contrato.md` | Antes de crear contenido, un autoload o tocar el guardado |
 | Movimiento, combate, curar y habilidades del jugador | `docs/jugador.md` | Antes de tocar el jugador o ajustar sus valores |
 | Formato de los guiones | `docs/guiones.md` | Antes de escribir o cambiar un guion |
+| Qué hay en cada sala de la zona de pruebas | `docs/salas-de-prueba.md` | Antes de pedir una prueba o elegir dónde probar algo |
 | Idea y alcance de la v1 | `docs/idea.md` | Si la tarea toca qué entra en la v1 |
 | Casos de prueba y QA manual | `docs/pruebas.md` | Antes de pedir revisión de un PR |
 | Errores encontrados, su causa y su arreglo | `docs/errores/` | Antes de arreglar un fallo que se parezca a uno anterior |

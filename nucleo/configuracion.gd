@@ -29,26 +29,31 @@ const FONDO_TENUE: Color = Color(1.0, 1.0, 1.0, 0.3)
 const CALIBRACION: float = 96.0
 const COLOR_CALIBRACION: Color = Color(0.05, 0.05, 0.05, 1.0)
 const TEXTO_BRILLO: String = "Ajusta el brillo hasta que el cuadro de la esquina apenas se vea."
-# Deshace en la foto el rectangulo de Brillo con el que se tomo (Brillo.color_para): sin esto la escena se veria
+## Aviso al tocar Recursos abierto desde la pausa. Publico para la prueba.
+const AVISO_RECURSOS_EN_PARTIDA: String = "Para cambiar los gráficos, sal al menú principal."
+# Deshace en la foto el brillo con el que se tomo (el modulado de la sala la multiplico): sin esto la escena se veria
 # con el brillo aplicado dos veces. Solo se dibuja en la ventana y el fondo, no copia la pantalla.
 const SHADER_FOTO: String = "shader_type canvas_item;
-uniform float alfa = 0.0;
-uniform float blanco = 0.0;
+uniform float brillo_foto = 1.0;
 void fragment() {
-	COLOR.rgb = (COLOR.rgb - blanco * alfa) / (1.0 - alfa);
+	COLOR.rgb = COLOR.rgb / brillo_foto;
 }
 "
 
 ## Archivo de los ajustes: publico para que la prueba trabaje con el suyo.
 var ruta_ajustes: String = Ajustes.RUTA
 ## Abierta desde la pausa: sin Desarrollador (solo cambia el menu principal, que ahi no se ve) y avisando que
-## Recursos vale al entrar a la siguiente sala (Prescindible, Niebla y Planta lo leen al entrar).
+## Recursos queda bloqueado: Prescindible, Niebla y Planta lo leen al entrar a una sala, asi que en la partida no se
+## veria el cambio; se cambia desde el menu principal, como los graficos en otros juegos.
 var en_partida: bool = false
 ## Foto de la sala tomada al abrir la pausa (la pone Pausa): la pantalla de brillo la muestra. Sin foto, o vacia
 ## (en el menu, en headless), muestra EscenaMuestra.
 var foto: Image = null
-## Brillo con el que se tomo la foto: la foto ya lo trae (la capa Brillo sale en ella) y se deshace al mostrarla.
+## Brillo con el que se tomo la foto: la foto ya lo trae (el modulado de la sala) y se deshace al mostrarla.
 var foto_brillo: float = Ajustes.BRILLO_POR_OMISION
+## Refresco de la pantalla en Hz (-1 si no se sabe), leido al abrir: con 90 o mas y Recursos en alto se ofrece
+## elegir 120 FPS. Publico para que la prueba lo fije, porque sin pantalla no hay.
+var refresco: float = -1.0
 ## Accion del control que espera que se presione un boton, o vacio.
 var esperando: StringName = &""
 ## Franja de abajo que se deja libre (el aviso de pocos toques del menu), en px de la vista: sin ella, el aviso de
@@ -64,8 +69,8 @@ var reservado_abajo: float = 0.0:
 var _tick_asignado: int = -10
 # Una barra (volumen o brillo) cambio y no se ha guardado: arrastrarla escribia ajustes.json en cada paso.
 var _barra_sin_guardar: bool = false
-# Recursos al abrir: en la partida, el aviso de la siguiente sala sale solo si cambio.
-var _recursos_al_abrir: String = ""
+# En la partida se toco Recursos (bloqueado): el aviso dice donde se cambia.
+var _recursos_bloqueado_tocado: bool = false
 
 @onready var _lista: Control = $Lista as Control
 @onready var _opciones: GridContainer = $Lista/Desplazable/Centro/Opciones as GridContainer
@@ -81,6 +86,7 @@ var _recursos_al_abrir: String = ""
 @onready var _filas_audio: VBoxContainer = $PanelAudio/Desplazable/Centro/Filas as VBoxContainer
 @onready var _volver_audio: Button = $PanelAudio/Arriba/Volver as Button
 @onready var _recursos: BotonValor = $Lista/Desplazable/Centro/Opciones/Recursos as BotonValor
+@onready var _fps: BotonValor = $Lista/Desplazable/Centro/Opciones/Fps as BotonValor
 @onready var _aviso_recursos: Label = $Lista/AvisoRecursos as Label
 @onready var _modo: BotonValor = $Lista/Desplazable/Centro/Opciones/ModoDesarrollador as BotonValor
 @onready var _creditos: BotonValor = $Lista/Desplazable/Centro/Opciones/Creditos as BotonValor
@@ -115,6 +121,7 @@ var _fondo_foto: TextureRect = null
 var _fondo_muestra: EscenaMuestra = null
 var _ventana_foto: TextureRect = null
 var _ventana_muestra: EscenaMuestra = null
+var _calibracion: ColorRect = null
 
 
 func _ready() -> void:
@@ -130,18 +137,24 @@ func _ready() -> void:
 	_armar_brillo()
 	_recursos.estilo = BotonValor.Estilo.NEUTRO
 	_recursos.pressed.connect(_al_tocar_recursos)
+	_fps.estilo = BotonValor.Estilo.NEUTRO
+	_fps.pressed.connect(_al_tocar_fps)
 	_modo.pressed.connect(_al_tocar_modo)
 	_creditos.pressed.connect(_abrir_creditos)
 	_volver.pressed.connect(atras)
 	_por_omision.pressed.connect(_mando_por_omision)
 	_volver_mando.pressed.connect(atras)
 	_volver_creditos.pressed.connect(atras)
+	for volver: Button in [_volver, _volver_audio, _volver_mando, _volver_creditos]:
+		IconoBoton.en_boton(volver, &"volver")
 	# Un boton por accion con su boton del control adentro («Saltar: A / Cruz»); si no cabe, en dos lineas.
 	for accion: StringName in Mando.REASIGNABLES:
 		var boton: Button = Button.new()
 		boton.custom_minimum_size = Tema.CELDA
 		boton.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		boton.pressed.connect(_esperar_boton.bind(accion))
+		# Con el control, el boton asignado dibujado como el de ese control, a la derecha del texto.
+		IconoBoton.en_boton(boton, accion, true)
 		_filas.add_child(boton)
 		_botones_mando[accion] = boton
 	Input.joy_connection_changed.connect(_al_cambiar_controles)
@@ -160,7 +173,10 @@ func _ready() -> void:
 ## Muestra la lista con los valores actuales y pone el foco en el primer boton.
 func abrir() -> void:
 	_modo.visible = not en_partida
-	_recursos_al_abrir = Ajustes.recursos
+	_recursos.bloqueado = en_partida
+	_recursos_bloqueado_tocado = false
+	if DisplayServer.get_name() != "headless":
+		refresco = DisplayServer.screen_get_refresh_rate()
 	_poner_valores()
 	_mostrar_aviso_recursos()
 	visible = true
@@ -187,6 +203,9 @@ func _poner_valores() -> void:
 	_temblor.poner_si_no(Ajustes.temblor)
 	_modo.poner_si_no(Ajustes.modo_desarrollador)
 	_recursos.valor = nombre_recursos(Ajustes.recursos, Recursos.es_debil())
+	# FPS solo con Recursos en alto (elegido o por la deteccion) y una pantalla rapida; si no, el juego va a 60.
+	_fps.visible = Ajustes.fps_disponible(not Recursos.bajos(), refresco)
+	_fps.valor = str(Ajustes.fps)
 	_brillo.valor = "%d %%" % roundi(Ajustes.brillo * 100.0)
 
 
@@ -274,10 +293,23 @@ func _al_tocar_modo() -> void:
 
 # Cada toque pasa al siguiente: auto, bajo, alto y de nuevo auto.
 func _al_tocar_recursos() -> void:
+	if en_partida:
+		_recursos_bloqueado_tocado = true
+		_mostrar_aviso_recursos()
+		return
 	var i: int = Recursos.MODOS.find(Ajustes.recursos)
 	Ajustes.recursos = Recursos.MODOS[(i + 1) % Recursos.MODOS.size()]
 	_poner_valores()
 	_mostrar_aviso_recursos()
+	Ajustes.aplicar_fps()
+	_guardar()
+
+
+# Alterna 60 y 120 y lo aplica al momento, tambien desde la pausa: el limite de FPS no recarga nada.
+func _al_tocar_fps() -> void:
+	Ajustes.fps = 120 if Ajustes.fps == 60 else 60
+	_poner_valores()
+	Ajustes.aplicar_fps()
 	_guardar()
 
 
@@ -441,7 +473,7 @@ func _al_cambiar_volumen(valor: float, nombre: String) -> void:
 
 # La pantalla de brillo, como la de Hollow Knight: detras, la escena tenue a pantalla completa; arriba, Volver y el
 # titulo; al centro, la misma escena en una ventana con el cuadro de calibracion en la esquina; abajo, el texto y la
-# barra. La capa Brillo (100) tapa todo, asi que la escena se ve con el brillo elegido.
+# barra. El brillo de la sala no llega a los menus: la escena y el cuadro se modulan aqui (_modular_escena).
 func _armar_brillo() -> void:
 	_panel_brillo = Control.new()
 	_panel_brillo.name = "PanelBrillo"
@@ -491,6 +523,7 @@ func _armar_brillo() -> void:
 	negro.offset_left = -CALIBRACION
 	negro.offset_top = -CALIBRACION
 	ventana.add_child(negro)
+	_calibracion = negro
 	var cuadro: ColorRect = ColorRect.new()
 	cuadro.color = COLOR_CALIBRACION
 	cuadro.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -564,9 +597,7 @@ func _abrir_brillo() -> void:
 		shader.code = SHADER_FOTO
 		material = ShaderMaterial.new()
 		material.shader = shader
-		var capa: Color = Brillo.color_para(foto_brillo)
-		material.set_shader_parameter(&"alfa", minf(capa.a, 0.9))
-		material.set_shader_parameter(&"blanco", 1.0 if capa.r > 0.5 else 0.0)
+		material.set_shader_parameter(&"brillo_foto", Brillo.color_para(foto_brillo).r)
 	for imagen: TextureRect in [_fondo_foto, _ventana_foto]:
 		imagen.texture = textura
 		imagen.material = material
@@ -575,6 +606,7 @@ func _abrir_brillo() -> void:
 	_guardar_barras()
 	_barra_brillo.value = roundf(Ajustes.brillo * 100.0)
 	_barra_sin_guardar = false
+	_modular_escena()
 	_mostrar(_panel_brillo)
 	Tema.dar_foco(_barra_brillo)
 
@@ -584,6 +616,15 @@ func _al_cambiar_brillo(valor: float) -> void:
 	Ajustes.aplicar_brillo()
 	_porcentaje_brillo.text = "%d %%" % roundi(valor)
 	_barra_sin_guardar = true
+	_modular_escena()
+
+
+# La escena de la pantalla de brillo (foto o muestra) y el cuadro de calibracion, con el mismo color que el modulado
+# de la sala; lo lee la prueba en el modulate de cada pieza.
+func _modular_escena() -> void:
+	var color: Color = Brillo.color_para(Ajustes.brillo)
+	for pieza: Control in [_fondo_muestra, _fondo_foto, _ventana_muestra, _ventana_foto, _calibracion]:
+		pieza.modulate = color
 
 
 # Elegir alto en un telefono que la deteccion marca como debil se permite, con aviso.
@@ -591,8 +632,8 @@ func _mostrar_aviso_recursos() -> void:
 	var textos: PackedStringArray = []
 	if Recursos.avisar(Ajustes.recursos, Recursos.es_debil()):
 		textos.append("Este teléfono parece de gama baja (%s): en alto puede ir lento." % Recursos.motivo())
-	if en_partida and Ajustes.recursos != _recursos_al_abrir:
-		textos.append("Recursos cambia al entrar a la siguiente sala.")
+	if _recursos_bloqueado_tocado:
+		textos.append(AVISO_RECURSOS_EN_PARTIDA)
 	_aviso_recursos.text = " ".join(textos)
 	_aviso_recursos.visible = not textos.is_empty()
 

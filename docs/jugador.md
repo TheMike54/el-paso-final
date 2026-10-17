@@ -12,10 +12,10 @@ Todos los valores son propiedades exportadas del jugador y se ajustan en la zona
 |---|---|---|
 | `velocidad` | 360 px/s | Velocidad al caminar, sin aceleración |
 | `gravedad` | 2400 px/s² | Gravedad |
-| `altura_salto` | 200 px | Altura máxima manteniendo `saltar`; el impulso se calcula a partir de ella |
+| `altura_salto` | 230 px | Altura máxima manteniendo `saltar`; el impulso se calcula a partir de ella |
 | `corte_salto` | 0,4 | Factor de la velocidad vertical al soltar `saltar` mientras sube |
 | `ticks_minimos_salto` | 4 | Ticks de subida antes de que soltar corte el salto |
-| `ticks_coyote` | 3 | Ticks después de salir de una orilla en que `saltar` todavía funciona |
+| `ticks_coyote` | 4 | Ticks después de salir de una orilla en que `saltar` todavía funciona. Silksong da 4 pasos (~0,08 s, 5 ticks; Hollow Knight 2); en 5 se sintió fácil (S21, 15-oct-2026) |
 | `ticks_salto_en_cola` | 3 | Ticks antes de aterrizar en que presionar `saltar` hace saltar al tocar el suelo |
 | `velocidad_caida_max` | 1200 px/s | Tope de la velocidad de caída, pasados los primeros `distancia_caida_inicial` px |
 | `velocidad_caida_inicial` | 700 px/s | Tope al empezar a caer: al principio se cae más lento |
@@ -35,14 +35,15 @@ Todos los valores son propiedades exportadas del jugador y se ajustan en la zona
 | `ticks_reaparicion_peligro` | 20 | Ticks quieto tras volver al punto seguro |
 | `ticks_anti_bucle` | 30 | Ticks con control tras volver de un peligro durante los que otro peligro lleva al punto de llegada sin quitar vida |
 | `margen_fuera_de_sala` | 160 px | Px que los pies pasan del borde de abajo de `limites` para que salir por abajo cuente como peligro (el alto del cuerpo) |
-| `ticks_hit_stop` | 4 | Ticks de congelado común al recibir daño, antes del retroceso (ver `Congelado`) |
+| `ticks_hit_stop` | 10 | Ticks de congelado común al recibir daño, antes del retroceso (ver `Congelado`) |
 | `ticks_invulnerable_parry`, `ticks_congelado_parry` | 15, 20 | Parry: ticks sin daño de enemigos y de congelado común (ver «Enemigos» en `docs/contrato.md`). 20 = 0,33 s: Hollow Knight 0,36 s (`NailClashEffect`), Silksong 0,2-0,3 s (medido en video) |
 | `ticks_retroceso_parry`, `velocidad_retroceso_parry` | 8, 600 px/s | Parry: empuje del jugador hacia atrás, lejos del ataque, después del congelado |
 | `ticks_rebote_al_golpear` | 4 | Ticks en que el jugador sale empujado hacia atrás al golpear algo |
 | `velocidad_rebote_al_golpear` | 240 px/s | Velocidad de ese empuje |
 | `costo_curacion` | 33 | Inspiración que cuesta curar una vida |
 | `ticks_curacion` | 60 | Ticks de curación para recuperar una vida, contados desde `ticks_mantener_poder` |
-| `inspiracion_por_golpe` | 11 (`Partida.INSPIRACION_POR_GOLPE`, que también mide los bloques del HUD) | Inspiración que gana cada golpe a algo golpeable |
+| `ticks_devolver_curacion` | 27 | Soltar `curar` antes de estos ticks de curación devuelve toda la Inspiración gastada |
+| `inspiracion_por_golpe` | 11 (`Partida.INSPIRACION_POR_GOLPE`, que también mide los bloques del HUD) | Inspiración que gana cada golpe del ataque a un enemigo (`Golpeable` con `es_enemigo`) |
 | `ticks_mantener_poder` | 10 | Ticks manteniendo `curar` a partir de los cuales es mantener (curar) y no un toque (poder) |
 | `costo_poder` | 33 | Inspiración que cuesta cada poder |
 | `salida_proyectil` | (60, −90) px | Dónde sale la bola, relativo a los pies del jugador mirando a la derecha |
@@ -69,11 +70,12 @@ Todos los valores son propiedades exportadas del jugador y se ajustan en la zona
 | `altura_saltito_picada` | 40 px | Picada desde el suelo: altura del saltito |
 | `ticks_carga_picada` | 15 | Picada desde el suelo: ticks quieto en la cima del saltito antes de bajar |
 | `ticks_caida_dura` | 18 | Aterrizaje duro, como en Hollow Knight: aterrizar tras 18 ticks seguidos (0,3 s) cayendo a `velocidad_caida_max` (unos 794 px; 650 con `distancia_caida_inicial` en 0). Pared, pogo, impulso o retroceso reinician la cuenta. La picada tiembla siempre al aterrizar (no al romper un `SueloFragil`). Sin fuente |
-| `temblor_px` | 20 px | Amplitud vertical inicial del temblor del aterrizaje duro y de la picada: el `offset` de la cámara, signo alterno cada 2 ticks, baja en línea recta a 0; aterrizar otra vez lo reinicia. `temblor_y` y `temblor_x` (públicas) son los valores de cada tick aunque el ajuste esté apagado. Provisional, sin fuente |
+| `temblor_px` | 20 px | Amplitud vertical inicial del temblor del aterrizaje duro y de la picada: el `offset` de la cámara, signo alterno cada 2 ticks, baja en línea recta a 0; aterrizar otra vez lo reinicia (salvo que el que queda sea más fuerte, ver `temblar`). `temblor_y` y `temblor_x` (públicas) son los valores de cada tick aunque el ajuste esté apagado. Provisional, sin fuente |
 | `temblor_fraccion_x` | 1/3 | Amplitud horizontal en fracción de `temblor_px`, signo alterno cada 3 ticks: con periodos distintos no da vueltas en círculo |
 | `temblor_ticks` | 18 | Ticks que dura el temblor (0,3 s). Provisional, sin fuente |
 | `ticks_aterrizaje_duro` | 21 | Ticks sin control tras un aterrizaje duro (0,35 s; no tras la picada). Sin fuente: el de Hollow Knight está en sus recursos |
 | `suavizado_camara_x` | 8 | Seguimiento horizontal de la cámara: fracción por segundo de lo que le falta (el cálculo de `position_smoothing_speed`) |
+| `adelanto_camara` | 43 px | La cámara se adelanta hacia donde mira el jugador; `suavizado_camara_x` hace el paso al voltear |
 | `tiempo_camara_y` | 0,15 s | Seguimiento vertical de la cámara, amortiguado crítico (como `SmoothDamp`): cayendo a 1200 px/s va 180 px por detrás. Con menos de 0,15 s el frenado en el límite inferior se siente como un jalón (medido el 07-oct-2026) |
 
 Combate:
@@ -114,6 +116,9 @@ Combate:
   jugador quieto con gravedad (`hablando`) hasta `dejar_de_hablar()`. El tick siguiente también queda quieto: la
   pulsación que cerró la caja no salta ni ataca. Un golpe, un peligro o morir lo cortan. Mientras habla, el banco no
   sienta y la entrega de recompensas no responde.
+- Temblor pedido desde fuera: `temblar(ticks, px)` (lo llaman `MuroRompible` y `Palanca`) arranca un temblor con la
+  misma forma que el del aterrizaje. Si ya hay uno que en ese tick es más fuerte que `px`, se queda el que hay; el
+  aterrizaje y la picada usan el mismo camino.
 - `vidas`, `muerto`, `toques_poder`, `rebotes_pogo`, `en_picada`, `golpes_onda`, `descansando`, `hablando`, `temblor_x`, `temblor_y`, `aterrizando`, `paradas`, `corriendo`, `atacando_en_carrera`, `volteando`, `girando`, `invulnerable` y `puede_interactuar` (`aterrizando`, `girando`, `invulnerable` y `puede_interactuar`, de solo
   lectura) son propiedades públicas: los guiones las leen con `valor Jugador vidas`. `puede_interactuar` es la regla
   única del banco, el `Npc`, el reto y la entrega: en el suelo, vivo, de pie, sin aterrizaje duro ni conversación.
@@ -128,7 +133,8 @@ Curar y sensación del golpe:
 - Curar: al llegar a `ticks_mantener_poder`, si el jugador está en el suelo, con vidas por llenar, fuera del
   retroceso y del impulso, y con `Partida.inspiracion >= costo_curacion`, se queda quieto y gasta la Inspiración
   poco a poco mientras mantiene `curar`. A los `ticks_curacion` ticks recupera una vida y emite `jugador_curado`. Soltar, dejar el suelo o recibir daño antes lo
-  corta y lo gastado se pierde. Cada golpe a un `Golpeable` da `inspiracion_por_golpe` (tope 99).
+  corta y lo gastado se pierde, salvo al soltar antes de `ticks_devolver_curacion`: la Inspiración vuelve al valor
+  de antes de empezar, nunca a más. Cada golpe a un `Golpeable` con `es_enemigo` da `inspiracion_por_golpe` (tope 99); a un muro o una palanca, nada.
 - Sensación: al golpear, el jugador sale empujado hacia atrás y lo golpeado hacia el otro lado
   (`Golpeable.velocidad_retroceso`, `ticks_retroceso`). Al recibir daño (no de un peligro), el jugador se detiene
   `ticks_hit_stop` ticks antes del retroceso.

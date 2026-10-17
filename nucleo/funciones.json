@@ -14,7 +14,7 @@
   {
     "id": "entrada-acciones",
     "que": "El InputMap tiene todas las acciones del juego con su teclado inicial y la logica solo lee acciones con nombre",
-    "comprobacion": "manual: project.godot lista las acciones de docs/contrato.md y ningun .gd de nucleo/ lee teclas ni toques, salvo nucleo/controles_tactiles.gd, que traduce los toques a acciones; nucleo/editor_controles.gd lee el raton emulado del toque para mover los botones y nucleo/configuracion.gd lee botones del control para reasignarlos",
+    "comprobacion": "manual: project.godot lista las acciones de docs/contrato.md y ningun .gd de nucleo/ lee teclas ni toques, salvo nucleo/controles_tactiles.gd, que traduce los toques a acciones; nucleo/editor_controles.gd lee el raton emulado del toque para mover los botones , nucleo/configuracion.gd lee botones del control para reasignarlos y nucleo/ultima_entrada.gd lee toques, teclas, el control y el raton para saber que se uso al ultimo (foco e iconos de los menus)",
     "pasa": true
   },
   {
@@ -93,7 +93,7 @@
     "id": "entrada-control",
     "que": "El control (Xbox / PlayStation) emite las mismas acciones del InputMap, con su mapeo en docs/contrato.md",
     "comprobacion": "manual: con un control conectado, el stick izquierdo y cada boton disparan la accion que dice docs/contrato.md",
-    "pasa": false
+    "pasa": true
   },
   {
     "id": "jugador-curar",
@@ -367,14 +367,14 @@
   },
   {
     "id": "audio-y-brillo",
-    "que": "Configuracion tiene Audio, un panel con el volumen general, de musica y de efectos (cada uno en su bus: Master, Musica y Efectos), cada uno con barra ancha y altavoz, que se guardan; mientras esta abierto suena la musica de prueba y Probar efecto toca uno; y Brillo, en su pantalla, de 50 a 150 %, que oscurece o aclara toda la pantalla y se guarda",
+    "que": "Configuracion tiene Audio, un panel con el volumen general, de musica y de efectos (cada uno en su bus: Master, Musica y Efectos), cada uno con barra ancha y altavoz, que se guardan; mientras esta abierto suena la musica de prueba y Probar efecto toca uno; y Brillo, en su pantalla, de 50 a 150 %, que oscurece o aclara el mundo (no el HUD ni los menus) y se guarda",
     "comprobacion": "herramientas/guiones/nucleo/menu_configuracion.guion;herramientas/guiones/nucleo/guardado.guion",
     "pasa": true
   },
   {
     "id": "audio-y-brillo-telefono",
     "que": "En el telefono la musica de prueba y el efecto se oyen, cada barra cambia solo su parte y el brillo se ve bien en sus extremos sin tapar los toques",
-    "comprobacion": "manual: en el S50 o el S20 con el APK de desarrollo: Configuracion, Audio: suena la musica; bajar Musica a 0 la calla y Probar efecto sigue sonando; bajar Efectos a 0 calla el efecto; General a 0 calla todo; Brillo en 50 y en 150: la pantalla se oscurece o aclara y los botones siguen respondiendo",
+    "comprobacion": "manual: en el S50 o el S20 con el APK de desarrollo: Configuracion, Audio: suena la musica; bajar Musica a 0 la calla y Probar efecto sigue sonando; bajar Efectos a 0 calla el efecto; General a 0 calla todo; Brillo en 50 y en 150: el mundo se oscurece o aclara, el HUD y los botones no cambian y siguen respondiendo",
     "pasa": true
   },
   {
@@ -508,5 +508,89 @@
     "que": "Un campo nuevo de la partida se agrega en Guardado.NUEVOS con su valor por omision: una partida guardada sin el campo se carga con ese valor, sin subir la version",
     "comprobacion": "herramientas/guiones/nucleo/guardado.guion",
     "pasa": true
+  },
+  {
+    "id": "jugador-curar-soltar",
+    "que": "Soltar curar antes de ticks_devolver_curacion ticks de curacion devuelve toda la Inspiracion gastada (el valor de antes de empezar, nunca mas); despues, lo gastado se pierde como en jugador-curar",
+    "comprobacion": "herramientas/guiones/nucleo/jugador_curar_soltar.guion; herramientas/guiones/nucleo/jugador_curar_soltar_tarde.guion",
+    "pasa": true
+  },
+  {
+    "id": "brillo-sin-capa",
+    "que": "El brillo multiplica el color del mundo con un CanvasModulate que crea cada sala (Brillo), sin dibujar nada encima de la pantalla; el HUD, los controles y los menus no cambian; la pantalla de brillo modula su escena y su cuadro con el mismo color; mover la barra cambia la sala viva",
+    "comprobacion": "herramientas/guiones/nucleo/brillo_sala.guion;herramientas/guiones/nucleo/guardado.guion;herramientas/guiones/nucleo/menu_configuracion.guion",
+    "pasa": true
+  },
+  {
+    "id": "brillo-sin-capa-telefono",
+    "que": "En el Senwa S50 el brillo distinto de 1 ya no baja los FPS y se ve bien en sus extremos",
+    "comprobacion": "manual: APK de desarrollo en el S50, Recursos bajo, sala de arte quieta 20 s con el brillo en 0,95 y en 1,0: el FPS es casi el mismo (antes 42 contra 56); brillo en 50 % y en 150 % en la partida y en la pantalla de brillo: el mundo se oscurece o aclara, el HUD y los botones no",
+    "pasa": true
+  },
+  {
+    "id": "configuracion-recursos-en-partida",
+    "que": "Abierta desde la pausa, la Configuracion muestra Recursos apagado (BotonValor.bloqueado, sigue tomando foco y toque); tocarlo no cambia el modo y avisa que los graficos se cambian desde el menu principal; desde el menu cambia como siempre",
+    "comprobacion": "herramientas/guiones/nucleo/menu_configuracion.guion",
+    "pasa": true
+  },
+  {
+    "id": "circulo-atras-menus",
+    "que": "B / Circulo (accion volver, no reasignable) vuelve un nivel en el menu principal, las ranuras, nueva partida, Configuracion, la pausa (arriba la cierra), el marco de menus y la zona de pruebas, como Start; en la espera de un boton de Botones del control se asigna y no vuelve; en la partida sigue curando y B mantenido al cerrar la pausa no empieza a curar",
+    "comprobacion": "herramientas/guiones/nucleo/entrada_control.guion;herramientas/guiones/nucleo/menu_configuracion.guion;herramientas/guiones/nucleo/pausa_volver.guion;herramientas/guiones/nucleo/marco.guion;herramientas/guiones/nucleo/zona_pruebas_volver.guion",
+    "pasa": true
+  },
+  {
+    "id": "cursor-touchpad-oculto",
+    "que": "En Android el touchpad del DUALSHOCK 4 no muestra puntero sobre el juego y su clic no apaga el foco de los menus; el toque con el dedo lo sigue apagando",
+    "comprobacion": "manual: telefono con DUALSHOCK 4 y APK de desarrollo: mover y pulsar el touchpad en el menu y en la partida: no aparece puntero y el foco sigue dibujado; tocar la pantalla con el dedo: el foco se apaga",
+    "pasa": false
+  },
+  {
+    "id": "selector-fps",
+    "que": "Configuracion ofrece FPS (60 o 120, por omision 60, ajuste fps) solo con Recursos en alto y una pantalla de 90 Hz o mas; con 120 Engine.max_fps queda sin limite (V-Sync, el refresco) y en los demas casos en 60; se cambia tambien desde la pausa y se guarda",
+    "comprobacion": "herramientas/guiones/nucleo/guardado.guion;herramientas/guiones/nucleo/menu_configuracion.guion",
+    "pasa": true
+  },
+  {
+    "id": "selector-fps-telefono",
+    "que": "En un telefono de 120 Hz con Recursos en alto, FPS en 60 deja el juego a ~60 y en 120 a ~120, sin reiniciar; en el S50 (60 Hz) la opcion no aparece",
+    "comprobacion": "manual: APK de desarrollo con --print-fps; S21 en alto: FPS 60 y 120, 2 min cada uno en la sala de arte, logcat; cambiarlo desde la pausa; S50: Configuracion sin la opcion",
+    "pasa": false
+  },
+  {
+    "id": "iconos-boton",
+    "que": "IconoBoton dibuja el boton de una accion segun el ultimo dispositivo: simbolos de PlayStation, letras de Xbox, pastillas para laterales y gatillos, la tecla con teclado y nada tras un toque; la familia sale del nombre y del GUID del control y el boton respeta lo reasignado",
+    "comprobacion": "herramientas/guiones/nucleo/icono_boton.guion",
+    "pasa": true
+  },
+  {
+    "id": "iconos-boton-pantallas",
+    "que": "Los Volver de los menus, la pausa, el marco, la zona de pruebas (con L1 y R1) y las filas de Botones del control muestran el icono de su accion con control y lo esconden tras un toque",
+    "comprobacion": "herramientas/guiones/nucleo/menu_configuracion.guion;herramientas/guiones/nucleo/marco.guion;herramientas/guiones/nucleo/zona_pruebas_categorias.guion",
+    "pasa": true
+  },
+  {
+    "id": "iconos-boton-telefono",
+    "que": "Con un control real los iconos son los de su marca y cambian al reasignar o al tocar la pantalla",
+    "comprobacion": "manual: tableta con Xbox y telefono con DUALSHOCK 4: los iconos de los menus son los de cada control; al tocar la pantalla desaparecen y vuelven al usar el control; reasignar Saltar cambia el icono de su fila. APK exportado con --export-debug: logcat imprime una linea CONTROL con nombre, GUID y familia de cada control; si el DUALSHOCK 4 sale con letras de Xbox, esa linea va al plan para ajustar Mando.familia",
+    "pasa": false
+  },
+  {
+    "id": "muro-rompible",
+    "que": "MuroRompible: solido que el ataque y la bola rompen en 4 golpes (uno por golpe, sin Inspiracion), con lado opcional; con id queda roto al volver a la sala y sus tapas desaparecen",
+    "comprobacion": "herramientas/guiones/nucleo/muro_rompible.guion;herramientas/guiones/nucleo/muro_rompible_caminando.guion",
+    "pasa": true
+  },
+  {
+    "id": "palanca-porton",
+    "que": "Palanca: el primer golpe del ataque la activa y, tras su retraso, abre sus Porton; las dos piezas se guardan y vuelven abiertas; Porton se puede cerrar (arenas)",
+    "comprobacion": "herramientas/guiones/nucleo/muro_rompible.guion",
+    "pasa": true
+  },
+  {
+    "id": "muros-palancas-telefono",
+    "que": "En el telefono, la sala de secretos se siente bien: golpes del muro, de donde sale, retraso de la palanca y el porton al abrirse",
+    "comprobacion": "manual: sala Secretos de la zona de pruebas en un telefono: romper cada muro, el techo y mover la palanca; decir si cuatro golpes sobran, si se entiende el retraso y si se ve abrir el porton",
+    "pasa": false
   }
 ]

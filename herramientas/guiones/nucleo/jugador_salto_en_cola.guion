@@ -3,5 +3,5 @@
 escena res://herramientas/salas/sala_movimiento.tscn
 10 saltar press
 40 saltar release
-60 saltar press
-fin 73
+64 saltar press
+fin 77

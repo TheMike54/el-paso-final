@@ -1,5 +1,5 @@
 extends Node
-# Autoload de arranque del nucleo. Carga los ajustes, crea la capa del brillo, los efectos (Sonido, que asi no
+# Autoload de arranque del nucleo. Carga los ajustes, crea los efectos (Sonido, que asi no
 # muere al cambiar de escena) y UltimaEntrada (si se usa el dedo o un control) y, solo si el build es de depuracion y el
 # archivo viajo en el paquete, el puerto de depuracion: herramientas/ viaja tambien en
 # publicacion (zona de pruebas con el modo desarrollador), pero el puerto nunca corre ahi.
@@ -21,10 +21,6 @@ func _ready() -> void:
 	if DisplayServer.get_name() != "headless":
 		get_window().size_changed.connect(_al_cambiar_tamano)
 		_ajustar_vista()
-		# La capa del brillo, encima de todo; sin pantalla no hace falta.
-		var brillo: Brillo = Brillo.new()
-		brillo.name = "Brillo"
-		add_child(brillo)
 	# Lo ultimo que se uso (dedo o control) decide si un menu dibuja su foco (Tema.dar_foco).
 	var ultima: UltimaEntrada = UltimaEntrada.new()
 	ultima.name = "UltimaEntrada"

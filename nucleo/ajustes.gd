@@ -1,6 +1,6 @@
 class_name Ajustes
 extends RefCounted
-# Ajustes del jugador (vibracion, temblor de camara, volumen general, de musica y de efectos, brillo, modo
+# Ajustes del jugador (vibracion, temblor de camara, volumen general, de musica y de efectos, brillo, FPS, modo
 # desarrollador, disposicion de los botones tactiles y botones del control), en su propio
 # archivo JSON: son del telefono y no de la partida, y asi agregar uno no cambia la version del guardado.
 # Funciones estaticas, como Guardado; un archivo que falta o esta danado deja los valores por omision.
@@ -17,6 +17,11 @@ const BUS_EFECTOS: StringName = &"Efectos"
 const BRILLO_POR_OMISION: float = 1.0
 const BRILLO_MINIMO: float = 0.5
 const BRILLO_MAXIMO: float = 1.5
+## FPS que el jugador puede elegir; 120 solo vale con Recursos en alto y una pantalla rapida (limite_fps).
+const FPS_OPCIONES: Array[int] = [60, 120]
+const FPS_POR_OMISION: int = 60
+## Desde este refresco (Hz) la pantalla cuenta como rapida y se ofrece 120.
+const REFRESCO_RAPIDO: float = 90.0
 
 ## Vibrar al pegar, al recibir dano, al curarse y al descansar.
 static var vibracion: bool = POR_OMISION["vibracion"]
@@ -33,6 +38,8 @@ static var volumen_efectos: float = VOLUMEN_POR_OMISION
 static var brillo: float = BRILLO_POR_OMISION
 ## Modo de recursos: Recursos.AUTO (decide la deteccion), BAJO o ALTO.
 static var recursos: String = Recursos.AUTO
+## FPS elegidos: 60 o 120 (FPS_OPCIONES).
+static var fps: int = FPS_POR_OMISION
 ## Donde va cada boton tactil, su tamano y la opacidad de todos. El editor de controles la reemplaza.
 static var disposicion: DisposicionControles = DisposicionControles.por_omision()
 static var _cargados: bool = false
@@ -54,11 +61,13 @@ static func cargar(ruta: String = RUTA) -> void:
 	volumen_efectos = VOLUMEN_POR_OMISION
 	brillo = BRILLO_POR_OMISION
 	recursos = Recursos.AUTO
+	fps = FPS_POR_OMISION
 	disposicion = DisposicionControles.por_omision()
 	Mando.por_omision()
 	_leer(ruta)
 	aplicar_volumen()
 	aplicar_brillo()
+	aplicar_fps()
 
 
 static func _leer(ruta: String) -> void:
@@ -93,6 +102,9 @@ static func _leer(ruta: String) -> void:
 	valor = ajustes.get("recursos")
 	if typeof(valor) == TYPE_STRING and Recursos.MODOS.has(valor as String):
 		recursos = valor
+	valor = ajustes.get("fps")
+	if typeof(valor) == TYPE_FLOAT and FPS_OPCIONES.has(int(valor as float)):
+		fps = int(valor as float)
 	disposicion = DisposicionControles.desde_diccionario(ajustes.get("controles"))
 	Mando.aplicar(ajustes.get("mando"))
 
@@ -126,10 +138,29 @@ static func _poner_bus(nombre: StringName, lineal: float) -> void:
 	AudioServer.set_bus_volume_db(indice, db_de(lineal))
 
 
-## Pasa el brillo a la capa de brillo, si existe (no en headless).
+## Pasa el brillo al modulado de la sala, si hay una (Brillo).
 static func aplicar_brillo() -> void:
 	if is_instance_valid(Brillo.instancia):
 		Brillo.instancia.poner(brillo)
+
+
+## Limite de FPS para Engine.max_fps: 0 (sin limite: V-Sync lo deja en el refresco de la pantalla) solo con 120
+## elegidos, Recursos en alto y una pantalla rapida; si no, 60. Un refresco desconocido (-1) cuenta como 60 Hz.
+static func limite_fps(elegidos: int, recursos_altos: bool, refresco: float) -> int:
+	return 0 if elegidos == 120 and fps_disponible(recursos_altos, refresco) else 60
+
+
+## Si Configuracion ofrece elegir 120: con Recursos en alto y una pantalla de REFRESCO_RAPIDO Hz o mas.
+static func fps_disponible(recursos_altos: bool, refresco: float) -> bool:
+	return recursos_altos and refresco >= REFRESCO_RAPIDO
+
+
+## Pone el limite de FPS segun el ajuste, Recursos y la pantalla. Sin pantalla (guiones, CI) no lo toca: ahi los
+## cuadros van tan rapido como se pueda.
+static func aplicar_fps() -> void:
+	if DisplayServer.get_name() == "headless":
+		return
+	Engine.max_fps = limite_fps(fps, not Recursos.bajos(), DisplayServer.screen_get_refresh_rate())
 
 
 ## Escribe con Archivo (a un temporal que despues renombra), como el guardado de la partida.
@@ -143,6 +174,7 @@ static func guardar(ruta: String = RUTA) -> Error:
 		"volumen_efectos": volumen_efectos,
 		"brillo": brillo,
 		"recursos": recursos,
+		"fps": fps,
 		"controles": disposicion.a_diccionario(),
 		"mando": Mando.a_diccionario(),
 	}

@@ -2,7 +2,8 @@ extends Control
 # Zona de pruebas: las salas de prueba de esta carpeta agrupadas por categoria (GRUPOS), con una fila de categorias
 # arriba que cambia la cuadricula de abajo, y Volver fijo arriba a la izquierda. Lista la carpeta al entrar: una
 # sala que no esta en GRUPOS ni en OCULTAS aparece sola en «Otras». Se llega desde el menu principal con el modo
-# desarrollador encendido, en depuracion y en publicacion; Volver, Atras y pausa regresan a ese menu.
+# desarrollador encendido, en depuracion y en publicacion; Volver, Atras, pausa y volver (B) regresan a ese menu, y
+# L1 / R1 cambian de categoria.
 const CARPETA: String = "res://herramientas/salas/"
 ## Salas de cada categoria, en el orden en que se muestran (rutas desde CARPETA). validar.gd falla si una no existe.
 ## Nombres cortos: con los largos la fila media 1481 px y en el S50 caben 1312.
@@ -10,12 +11,12 @@ const GRUPOS: Dictionary = {
 	"Movimiento": ["sala_movimiento.tscn", "sala_caida.tscn", "sala_salida_abajo.tscn", "sala_doble_salto.tscn", "sala_impulso.tscn", "sala_pared.tscn", "sala_carrera.tscn"],
 	"Combate": ["sala_combate.tscn", "sala_combate_chico.tscn", "sala_golpe.tscn", "sala_parry.tscn", "sala_pogo.tscn", "sala_picada.tscn", "sala_bola.tscn", "sala_curar.tscn"],
 	"Enemigos": ["sala_enemigos.tscn", "sala_enemigos_banco.tscn", "sala_peligro.tscn", "sala_peligro_movil.tscn"],
-	"Salas": ["sala_banco.tscn", "sala_dialogo.tscn", "sala_reto.tscn", "sala_puerta_a.tscn", "sala_puerta_b.tscn", "sala_camara.tscn", "sala_capas.tscn", "sala_recursos.tscn", "sala_arte.tscn"],
+	"Salas": ["sala_banco.tscn", "sala_dialogo.tscn", "sala_reto.tscn", "sala_puerta_a.tscn", "sala_puerta_b.tscn", "sala_camara.tscn", "sala_capas.tscn", "sala_recursos.tscn", "sala_arte.tscn", "sala_secretos.tscn"],
 	"Zonas": ["zonas/mapa/mapa_1.tscn", "zonas/mapa/mapa_2.tscn", "zonas/prueba/prueba_1.tscn", "zonas/prueba/prueba_2.tscn", "zonas/prueba/prueba_3.tscn", "zonas/prueba/prueba_4.tscn"],
 }
 const OTRAS: String = "Otras"
 ## Escenas de la carpeta que no se listan: esta y las pruebas sin jugador, que solo corre un guion.
-const OCULTAS: PackedStringArray = ["zona_pruebas.tscn", "sala_guardado.tscn", "sala_tactil.tscn", "sala_control.tscn", "sala_foco.tscn", "sala_aterrizaje.tscn", "sala_vista.tscn", "sala_controles_configurables.tscn", "sala_menu_configuracion.tscn", "sala_ranuras.tscn", "sala_amuletos.tscn", "sala_marco.tscn", "sala_dialogo_prueba.tscn", "sala_reto_prueba.tscn", "sala_sonido.tscn", "sala_peligro_anti_bucle.tscn", "sala_enemigo_al_morir.tscn", "sala_sala_id.tscn", "sala_estado_sala.tscn", "sala_combate_chico_cuentas.tscn", "sala_recursos_cuentas.tscn", "sala_mapa_cuentas.tscn", "sala_capas_fisica.tscn", "sala_agarre_pared.tscn"]
+const OCULTAS: PackedStringArray = ["zona_pruebas.tscn", "sala_guardado.tscn", "sala_tactil.tscn", "sala_control.tscn", "sala_foco.tscn", "sala_aterrizaje.tscn", "sala_vista.tscn", "sala_controles_configurables.tscn", "sala_menu_configuracion.tscn", "sala_ranuras.tscn", "sala_amuletos.tscn", "sala_marco.tscn", "sala_dialogo_prueba.tscn", "sala_reto_prueba.tscn", "sala_sonido.tscn", "sala_peligro_anti_bucle.tscn", "sala_enemigo_al_morir.tscn", "sala_sala_id.tscn", "sala_estado_sala.tscn", "sala_combate_chico_cuentas.tscn", "sala_recursos_cuentas.tscn", "sala_mapa_cuentas.tscn", "sala_capas_fisica.tscn", "sala_agarre_pared.tscn", "sala_zona_pruebas.tscn", "sala_icono_boton.tscn", "sala_muros.tscn"]
 ## Boton de cada sala: cabe «Enemigos banco» con la letra del tema. 3 columnas en la vista de 1280 y 4 desde 1600;
 ## 2 solo si el area segura recorta mucho.
 const CELDA: Vector2 = Vector2(320.0, Tema.ALTO_TOQUE)
@@ -49,6 +50,17 @@ func _ready() -> void:
 		_fila.add_child(boton)
 		_botones_categoria[categoria] = boton
 	_volver.pressed.connect(volver)
+	IconoBoton.en_boton(_volver, &"volver")
+	# L1 y R1 con «Categoria» a la derecha de la barra de arriba: en la fila no caben sin desplazarla (1280x720,
+	# 16-oct-2026). Tras un toque no se ven.
+	var arriba: HBoxContainer = _volver.get_parent() as HBoxContainer
+	var l1: IconoBoton = IconoBoton.new()
+	l1.accion = &"pagina_anterior"
+	arriba.add_child(l1)
+	var r1: IconoBoton = IconoBoton.new()
+	r1.accion = &"pagina_siguiente"
+	r1.texto = "Categoría"
+	arriba.add_child(r1)
 	Tema.ajustar(_marco)
 	_marco.resized.connect(_acomodar_columnas)
 	if not _salas.is_empty():
@@ -56,13 +68,33 @@ func _ready() -> void:
 
 
 func _physics_process(_delta: float) -> void:
-	if Input.is_action_just_pressed(&"pausa"):
+	if Input.is_action_just_pressed(&"pausa") or Input.is_action_just_pressed(&"volver"):
 		volver()
+	elif Input.is_action_just_pressed(&"pagina_anterior"):
+		cambiar(-1)
+	elif Input.is_action_just_pressed(&"pagina_siguiente"):
+		cambiar(1)
 
 
 func _notification(que: int) -> void:
 	if que == NOTIFICATION_WM_GO_BACK_REQUEST:
 		volver()
+
+
+## Pasa a la categoria anterior (-1) o siguiente (1) de la fila, con la vuelta en los extremos, como las paginas del
+## marco de menus; con L1 / R1 (pagina_anterior y pagina_siguiente).
+func cambiar(paso: int) -> void:
+	if _salas.is_empty():
+		return
+	var categorias: Array[String] = []
+	categorias.assign(_salas.keys())
+	var i: int = maxi(categorias.find(_ultima), 0)
+	_mostrar(categorias[posmod(i + paso, categorias.size())])
+
+
+## La categoria que se muestra. Publica para la prueba.
+func categoria() -> String:
+	return _ultima
 
 
 ## Regresa al menu principal, de donde se llega aqui.

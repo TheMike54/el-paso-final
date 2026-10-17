@@ -4,7 +4,7 @@ extends "res://herramientas/salas/prueba_base.gd"
 # la vez. Comprueba tambien lo que puede romperse: Listo guarda la disposicion, reasignar un boton del control
 # intercambia con la accion que lo tenia y se guarda, el modo desarrollador muestra la zona de pruebas en el menu y se
 # recuerda, el panel de audio guarda cada volumen en su ajuste y su bus (barra, teclas y altavoz), las opciones
-# de si o no y Recursos cambian con un toque, la pantalla de brillo guarda al soltar y muestra la foto o la escena de
+# de si o no y Recursos cambian con un toque (Recursos, en la partida, queda bloqueado y avisa), la pantalla de brillo guarda al soltar y muestra la foto o la escena de
 # muestra, las columnas segun el ancho de la vista y el aviso de pocos toques sale solo cuando toca. Todo en archivos de prueba. Deja casos y fallos
 # para menu_configuracion.guion. Imprime el resumen y los fallos.
 
@@ -56,10 +56,38 @@ func _ready() -> void:
 	UltimaEntrada.anotar(toque)
 	Tema.dar_foco(audio)
 	_caso("tras tocar con el dedo, aunque haya control, el foco no se dibuja", audio.has_focus() and not audio.has_focus(true))
+	# El boton del control junto a Volver: se ve tras usar el control y se quita tras un toque (con su hueco).
+	var volver_lista: Button = config.get_node(^"Lista/Arriba/Volver") as Button
+	var icono_volver: IconoBoton = volver_lista.get_node(^"Icono") as IconoBoton
+	UltimaEntrada.anotar(boton_control)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	_caso("con el control, Volver muestra el boton de volver y le hace lugar", icono_volver.visible and volver_lista.icon != null)
+	UltimaEntrada.anotar(toque)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	_caso("tras un toque, Volver queda solo con su texto", not icono_volver.visible and volver_lista.icon == null)
 	var stick: InputEventJoypadMotion = InputEventJoypadMotion.new()
 	stick.axis_value = 0.2
 	UltimaEntrada.anotar(stick)
 	_caso("un stick apenas movido no cuenta como usar el control", not UltimaEntrada.con_control)
+	# En Android el touchpad del DUALSHOCK 4 llega como clic de raton real: no apaga el foco. El que Godot emula
+	# desde el dedo (DEVICE_ID_EMULATION) y cualquier clic fuera de Android, si.
+	UltimaEntrada.anotar(boton_control)
+	var clic: InputEventMouseButton = InputEventMouseButton.new()
+	clic.pressed = true
+	UltimaEntrada.anotar(clic, true)
+	var touchpad_no_apaga: bool = UltimaEntrada.con_control
+	clic.device = InputEvent.DEVICE_ID_EMULATION
+	UltimaEntrada.anotar(clic, true)
+	_caso("en Android el clic del touchpad no apaga el foco y el emulado desde el dedo si", touchpad_no_apaga and not UltimaEntrada.con_control)
+	UltimaEntrada.anotar(boton_control)
+	UltimaEntrada.anotar(toque, true)
+	_caso("en Android un toque con el dedo apaga el foco", not UltimaEntrada.con_control)
+	UltimaEntrada.anotar(boton_control)
+	clic.device = 0
+	UltimaEntrada.anotar(clic, false)
+	_caso("fuera de Android un clic de raton apaga el foco", not UltimaEntrada.con_control)
 	var zona: Button = menu.get_node(^"Centro/Opciones/ZonaPruebas") as Button
 	_caso("sin el modo desarrollador el menu no muestra la zona de pruebas", not zona.visible)
 	_boton(config, "Controles").pressed.emit()
@@ -101,18 +129,35 @@ func _ready() -> void:
 	_caso("el aviso del control se recalcula al conectar o desconectar uno", (config.get_node(^"PanelMando/SinControl") as Label).visible == Input.get_connected_joypads().is_empty())
 	var saltar: int = Mando.boton_de(&"saltar")
 	var atacar: int = Mando.boton_de(&"atacar")
+	await _usar(true)
+	var dibujo_atacar: Dictionary = IconoBoton.dibujo(&"atacar", UltimaEntrada.dispositivo)
 	config._esperar_boton(&"saltar")
 	config.recibir_boton(atacar)
 	_caso("dar a saltar el boton de atacar los intercambia", Mando.boton_de(&"saltar") == atacar and Mando.boton_de(&"atacar") == saltar)
 	Ajustes.cargar(RUTA_PRUEBA)
 	_caso("el cambio se guarda y se vuelve a leer", Mando.boton_de(&"saltar") == atacar and Mando.boton_de(&"atacar") == saltar)
 	_caso("justo despues de asignar, el menu ignora la accion pausa (el Start con que se asigno)", config.acaba_de_asignar())
+	await _usar(true)
+	var icono_saltar: IconoBoton = null
+	for icono: IconoBoton in _iconos(panel_mando):
+		if icono.accion == &"saltar":
+			icono_saltar = icono
+	_caso("la fila de Saltar dibuja ya el boton que tenia Atacar", icono_saltar != null and icono_saltar.visible and not dibujo_atacar.is_empty() and icono_saltar._dibujo == dibujo_atacar)
+	await _usar(false)
+	_caso("tras un toque la fila de Saltar no dibuja boton", icono_saltar != null and not icono_saltar.visible)
 	config._esperar_boton(&"saltar")
 	config.recibir_boton(Mando.boton_de(&"saltar"))
 	Input.action_press(&"pausa")
 	await _esperar(2)
 	Input.action_release(&"pausa")
 	_caso("y el panel del control sigue abierto tras ese Start", panel_mando.visible and config.visible)
+	# B tambien es volver: el B con que se asigna un boton no vuelve un nivel.
+	config._esperar_boton(&"curar")
+	config.recibir_boton(Mando.boton_de(&"curar"))
+	Input.action_press(&"volver")
+	await _esperar(2)
+	Input.action_release(&"volver")
+	_caso("y tampoco tras el B (volver) con que se asigna", panel_mando.visible and config.visible)
 	Mando.asignar(&"saltar", 999)
 	_caso("un boton fuera de rango no se asigna", Mando.boton_de(&"saltar") == atacar)
 	_caso("impulso e interactuar (ejes) no se reasignan", not Mando.REASIGNABLES.has(&"impulso") and not Mando.REASIGNABLES.has(&"interactuar"))
@@ -128,6 +173,11 @@ func _ready() -> void:
 	_caso("Por omision devuelve los botones de project.godot", Mando.boton_de(&"saltar") == saltar and Mando.boton_de(&"atacar") == atacar)
 	menu.notification(NOTIFICATION_WM_GO_BACK_REQUEST)
 	_caso("Atras en el panel del control vuelve a la lista", lista.visible and not panel_mando.visible)
+	_boton(config, "Mando").pressed.emit()
+	Input.action_press(&"volver")
+	await _esperar(2)
+	Input.action_release(&"volver")
+	_caso("B (volver) en el panel del control vuelve a la lista, como Atras", lista.visible and not panel_mando.visible)
 
 	# Modo desarrollador: al volver al menu, este muestra la zona de pruebas; se recuerda.
 	var modo: BotonValor = config.get_node(NodePath(OPCIONES + "ModoDesarrollador")) as BotonValor
@@ -168,13 +218,42 @@ func _ready() -> void:
 		vistos.append(Ajustes.recursos)
 	_caso("cada toque de Recursos pasa al siguiente y se guarda: bajo, alto y auto", vistos == PackedStringArray([Recursos.BAJO, Recursos.ALTO, Recursos.AUTO]))
 	_caso("en auto la pastilla dice lo que se eligio", Configuracion.nombre_recursos(Recursos.AUTO, true) == "Auto (bajo)" and Configuracion.nombre_recursos(Recursos.ALTO, true) == "Alto")
-	_caso("sin la partida no avisa de la siguiente sala", not (config.get_node(^"Lista/AvisoRecursos") as Label).text.contains("siguiente sala"))
+	var aviso_de_recursos: Label = config.get_node(^"Lista/AvisoRecursos") as Label
+	_caso("desde el menu Recursos no esta bloqueado ni avisa", not recursos.bloqueado and not aviso_de_recursos.text.contains(Configuracion.AVISO_RECURSOS_EN_PARTIDA))
 	config.en_partida = true
 	config.abrir()
+	_caso("en la partida Recursos se ve bloqueado y sin aviso hasta tocarlo", recursos.bloqueado and recursos.modulate.a < 1.0 and not aviso_de_recursos.text.contains(Configuracion.AVISO_RECURSOS_EN_PARTIDA))
+	var recursos_antes: String = Ajustes.recursos
 	recursos.pressed.emit()
-	_caso("en la partida, cambiar Recursos avisa que vale en la siguiente sala", (config.get_node(^"Lista/AvisoRecursos") as Label).text.contains("siguiente sala"))
+	_caso("en la partida, tocar Recursos no lo cambia y dice que se cambia desde el menu", Ajustes.recursos == recursos_antes and aviso_de_recursos.visible and aviso_de_recursos.text.contains(Configuracion.AVISO_RECURSOS_EN_PARTIDA))
 	_caso("en la partida no aparece Desarrollador", not modo.visible)
 	config.en_partida = false
+	config.abrir()
+	# FPS: solo con Recursos en alto y pantalla rapida; el refresco se fija aqui porque sin pantalla no hay.
+	var fps_real: int = Ajustes.fps
+	var fps: BotonValor = _boton(config, "Fps") as BotonValor
+	Ajustes.recursos = Recursos.ALTO
+	Ajustes.fps = 60
+	config.refresco = 60.0
+	config.abrir()
+	_caso("con pantalla de 60 Hz no se ofrece FPS", not fps.visible)
+	config.refresco = 120.0
+	config.abrir()
+	_caso("con 120 Hz y Recursos en alto se ofrece FPS, en 60", fps.visible and fps.valor == "60")
+	fps.pressed.emit()
+	Ajustes.fps = 60
+	Ajustes.cargar(RUTA_PRUEBA)
+	_caso("tocar FPS pasa a 120 y se guarda", Ajustes.fps == 120)
+	config.en_partida = true
+	config.abrir()
+	fps.pressed.emit()
+	_caso("desde la pausa FPS no esta bloqueado y tocarlo lo cambia", fps.visible and not fps.bloqueado and Ajustes.fps == 60)
+	config.en_partida = false
+	Ajustes.recursos = Recursos.BAJO
+	config.abrir()
+	_caso("con Recursos en bajo no se ofrece FPS", not fps.visible)
+	Ajustes.fps = fps_real
+	config.refresco = -1.0
 	config.abrir()
 	Ajustes.recursos = recursos_real
 	await _esperar(3)
@@ -241,6 +320,17 @@ func _ready() -> void:
 	_caso("desde el menu no hay foto: se ve la escena de muestra", not config.brillo_con_foto())
 	barra_brillo.value = 140.0
 	_caso("la barra del brillo aplica pero no escribe hasta soltarla", is_equal_approx(Ajustes.brillo, 1.4) and not FileAccess.get_file_as_string(RUTA_PRUEBA).contains("1.4"))
+	# La escena (muestra y foto, en la ventana y en el fondo) y el cuadro de calibracion: el brillo de la sala no llega.
+	var ventana: Node = config.get_node(^"PanelBrillo/Columna").find_child("Ventana", true, false)
+	var piezas: Array[Control] = []
+	for padre: Node in [ventana, config.get_node(^"PanelBrillo/Fondo")]:
+		for hijo: Node in padre.get_children():
+			if hijo is EscenaMuestra or hijo.name == &"Foto" or hijo.name == &"Calibracion":
+				piezas.append(hijo as Control)
+	var moduladas: bool = piezas.size() == 5
+	for pieza: Control in piezas:
+		moduladas = moduladas and pieza.modulate.is_equal_approx(Color(1.4, 1.4, 1.4))
+	_caso("la escena y el cuadro de la pantalla de brillo se modulan con el brillo (no los tapa una capa)", moduladas)
 	barra_brillo.drag_ended.emit(true)
 	Ajustes.brillo = 1.0
 	Ajustes.cargar(RUTA_PRUEBA)

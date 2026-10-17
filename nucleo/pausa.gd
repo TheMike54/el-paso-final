@@ -34,15 +34,19 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_panel.visible = false
 	_continuar.pressed.connect(cerrar)
+	IconoBoton.en_boton(_continuar, &"volver")
 	_salir.pressed.connect(_salir_al_menu)
 	_boton_configuracion.pressed.connect(abrir_configuracion)
 
 
 # Se lee la accion y no el evento: asi la abren igual el teclado, el boton tactil y un guion.
 func _physics_process(_delta: float) -> void:
-	if not Input.is_action_just_pressed(&"pausa") or editor != null:
+	# B (volver) solo sirve con la pausa abierta: en la partida es curar y no la abre.
+	var volver: bool = Input.is_action_just_pressed(&"volver") and abierta
+	if not (Input.is_action_just_pressed(&"pausa") or volver) or editor != null:
 		return
-	# Con Configuracion abierta, pausa vuelve un nivel, como Atras; salvo el Start recien asignado a una accion.
+	# Con Configuracion abierta, pausa y volver vuelven un nivel, como Atras; salvo el boton recien asignado a una
+	# accion.
 	if _configuracion_abierta():
 		if not configuracion.acaba_de_asignar():
 			configuracion.atras()

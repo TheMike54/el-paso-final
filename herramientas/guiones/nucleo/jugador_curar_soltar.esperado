@@ -1,0 +1,5 @@
+# Los 33 de Inspiracion de antes de curar, ni uno mas, y sin la vida. Sin la devolucion quedarian 19.
+valor /root/Partida inspiracion 33
+valor Jugador vidas 3
+valor Jugador curando false
+senal /root/Eventos jugador_curado 0

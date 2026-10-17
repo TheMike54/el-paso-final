@@ -41,6 +41,9 @@ func _ready() -> void:
 	# Metodos y no funciones anonimas, como en Vibracion.
 	Eventos.jugador_salto.connect(_al_saltar)
 	Eventos.enemigo_golpeado.connect(_al_pegar)
+	Eventos.objeto_golpeado.connect(_al_pegar)
+	Eventos.muro_roto.connect(_al_romper_muro)
+	Eventos.porton_abierto.connect(_al_abrir_porton)
 	Eventos.jugador_danado.connect(_al_recibir_dano)
 	Eventos.parry.connect(_al_parar)
 	Eventos.jugador_curado.connect(_al_curarse)
@@ -75,6 +78,14 @@ func _al_saltar() -> void:
 
 func _al_pegar(_enemigo: Node) -> void:
 	tocar(&"golpe")
+
+
+func _al_romper_muro(_muro: StringName) -> void:
+	tocar(&"muro_roto")
+
+
+func _al_abrir_porton(_porton: StringName) -> void:
+	tocar(&"porton")
 
 
 func _al_recibir_dano(_vidas: int) -> void:

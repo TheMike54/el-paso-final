@@ -10,7 +10,8 @@ var fallos: int = 0
 func _ready() -> void:
 	_boton(JOY_BUTTON_A, &"saltar")
 	_boton(JOY_BUTTON_X, &"atacar")
-	_boton(JOY_BUTTON_B, &"curar")
+	# B es curar en la partida y volver en los menus, que la detienen o no tienen partida: no chocan.
+	_botones(JOY_BUTTON_B, [&"curar", &"volver"])
 	# LB es mapa rapido con el juego andando y pagina anterior en el marco, que detiene el juego: no chocan.
 	_botones(JOY_BUTTON_LEFT_SHOULDER, [&"mapa_rapido", &"pagina_anterior"])
 	_boton(JOY_BUTTON_Y, &"mapa")

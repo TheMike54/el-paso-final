@@ -12,6 +12,16 @@ const ACCION_RENOMBRADA: StringName = &"inventario"
 ## Nombre en pantalla de cada boton de un control estandar (indices de JoyButton).
 const NOMBRES: PackedStringArray = ["A / Cruz", "B / Circulo", "X / Cuadrado", "Y / Triangulo", "Select", "Guia", "Start", "Stick izq.", "Stick der.", "LB / L1", "RB / R1", "Arriba", "Abajo", "Izquierda", "Derecha"]
 
+## Familia de un control: decide como se dibujan sus botones en la interfaz (IconoBoton).
+const XBOX: String = "xbox"
+const PLAYSTATION: String = "playstation"
+## Palabras del nombre de un control (Input.get_joy_name, base de SDL) que dicen PlayStation, en minusculas.
+const NOMBRES_PLAYSTATION: PackedStringArray = ["ps3", "ps4", "ps5", "playstation", "dualshock", "dualsense", "sony"]
+## Fabricante Sony (054c) en un GUID de SDL: bytes 4 y 5, al reves (classes/class_input.rst, get_joy_guid).
+const FABRICANTE_SONY: String = "4c05"
+
+## Sube cada vez que cambia un boton del InputMap: IconoBoton se redibuja al verlo.
+static var cambios: int = 0
 # Boton de cada accion segun project.godot, leido la primera vez: lo que restaura «Restablecer».
 static var _por_omision: Dictionary[StringName, int] = {}
 
@@ -56,7 +66,19 @@ static func es_boton_valido(boton: int) -> bool:
 	return boton >= 0 and boton < JOY_BUTTON_SDL_MAX
 
 
+## PlayStation si el GUID trae el fabricante Sony o el nombre lo dice; si no, Xbox (tambien un control generico).
+static func familia(nombre: String, guid: String) -> String:
+	if guid.length() >= 12 and guid.substr(8, 4).to_lower() == FABRICANTE_SONY:
+		return PLAYSTATION
+	var bajo: String = nombre.to_lower()
+	for palabra: String in NOMBRES_PLAYSTATION:
+		if bajo.contains(palabra):
+			return PLAYSTATION
+	return XBOX
+
+
 static func _poner(accion: StringName, boton: int) -> void:
+	cambios += 1
 	for evento: InputEvent in InputMap.action_get_events(accion):
 		if evento is InputEventJoypadButton:
 			InputMap.action_erase_event(accion, evento)

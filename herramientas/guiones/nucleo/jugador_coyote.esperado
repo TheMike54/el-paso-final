@@ -1,5 +1,5 @@
 # Con el tiempo coyote el jugador salta y en el cuadro 110 va por encima de la plataforma.
 # Sin el, cae hacia el suelo bajo y en ese cuadro esta cerca de y=607.
 x 800 1
-y 295 2
+y 284 2
 en_suelo false

@@ -1,6 +1,6 @@
-# Dos golpes y ninguna vida recuperada; de los 33 de Inspiracion se perdieron los 9 que ya se
+# Dos golpes y ninguna vida recuperada; de los 33 de Inspiracion se perdieron los 12 que ya se
 # habian gastado en los cuadros de curacion antes del golpe. La curacion empieza tras
 # ticks_mantener_poder (boton-poderes): antes de eso no se gasta nada.
 valor Jugador vidas 2
-valor /root/Partida inspiracion 24 1
+valor /root/Partida inspiracion 21 1
 valor Jugador curando false

@@ -1,6 +1,6 @@
-# Mismo cuadro que jugador_movimiento.esperado: el salto corto queda unos 120 px mas bajo
-# (y=407 contra y=284), mucho mas que la suma de las dos tolerancias.
+# Mismo cuadro que jugador_movimiento.esperado: el salto corto queda unos 134 px mas bajo
+# (y=395 contra y=261), mucho mas que la suma de las dos tolerancias.
 x 320 1
-y 407 2
+y 395 2
 en_suelo false
 escena res://herramientas/salas/sala_movimiento.tscn

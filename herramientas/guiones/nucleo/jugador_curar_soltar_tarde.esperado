@@ -1,0 +1,5 @@
+# Gastados 14 de los 33 (27 de 60 ticks de curacion) y sin la vida.
+valor /root/Partida inspiracion 19
+valor Jugador vidas 3
+valor Jugador curando false
+senal /root/Eventos jugador_curado 0

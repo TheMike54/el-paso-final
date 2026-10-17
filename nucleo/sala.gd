@@ -117,6 +117,9 @@ func _ready() -> void:
 	var vibracion: Vibracion = Vibracion.new()
 	vibracion.name = &"Vibracion"
 	add_child(vibracion)
+	var brillo: Brillo = Brillo.new()
+	brillo.name = &"Brillo"
+	add_child(brillo)
 	for ruta: String in [INTERFAZ, MAPA]:
 		if ResourceLoader.exists(ruta):
 			var escena: PackedScene = load(ruta) as PackedScene

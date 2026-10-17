@@ -121,6 +121,7 @@ static func barra_arriba(titulo: String, al_volver: Callable) -> HBoxContainer:
 	var volver: Button = boton("Volver", Vector2(ANCHO_VOLVER, ALTO_TOQUE))
 	volver.name = "Volver"
 	volver.pressed.connect(al_volver)
+	IconoBoton.en_boton(volver, &"volver")
 	arriba.add_child(volver)
 	var etiqueta: Label = Label.new()
 	etiqueta.name = "Titulo"

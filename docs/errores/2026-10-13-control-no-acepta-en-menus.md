@@ -13,3 +13,7 @@
 - **Lo cubre:** `herramientas/guiones/nucleo/entrada_control.guion`, caso «A acepta en los menús» de
   `prueba_control.gd` (falla sin el arreglo). La pulsación con un control real sigue siendo la prueba manual
   «Control conectado» de `docs/pruebas.md`.
+- **Reporte posterior (14-oct-2026):** con el APK `dev-2026-10-14`, el mismo A55 con DUALSHOCK 4 volvió a reportar
+  que Cruz no pulsa en la pausa. No se reprodujo con un DUALSHOCK 4 en Windows 11 ni en un Senwa S50 por Bluetooth
+  (también tras usar el touchpad), ni con un control Xbox en una Galaxy Tab S9 FE. Causa sin encontrar; si vuelve,
+  hace falta ver qué eventos manda ese control en ese teléfono.

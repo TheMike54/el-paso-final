@@ -21,6 +21,8 @@ const COLOR_NO: Color = Color(0.36, 0.36, 0.4, 1.0)
 const COLOR_NEUTRO: Color = Color(0.25, 0.4, 0.55, 1.0)
 const LETRA_CLARA: Color = Color(0.92, 0.92, 0.94, 1.0)
 const LETRA_ENLACE: Color = Color(0.75, 0.75, 0.8, 1.0)
+## Opacidad del boton bloqueado: se lee, pero se ve que ahora no se puede cambiar.
+const OPACIDAD_BLOQUEADO: float = 0.45
 
 ## Lo que dice la pastilla («Sí», «Auto», «100 %»); con ENLACE va seguido de «›». Publico para la prueba.
 var valor: String = "":
@@ -31,6 +33,11 @@ var estilo: Estilo = Estilo.ENLACE:
 	set(nuevo):
 		estilo = nuevo
 		queue_redraw()
+## Se ve apagado, pero sigue tomando el foco y el toque (no es `disabled`): quien lo usa decide que explicar al tocarlo.
+var bloqueado: bool = false:
+	set(nuevo):
+		bloqueado = nuevo
+		modulate.a = OPACIDAD_BLOQUEADO if nuevo else 1.0
 
 
 func _ready() -> void:

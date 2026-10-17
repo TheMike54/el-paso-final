@@ -29,8 +29,11 @@ Leer `funciones.json` de esta carpeta.
   `mapa-indice` de `mapa/funciones.json`); las tablas de la zona de pruebas (`GRUPOS` y `OCULTAS` de
   `herramientas/salas/zona_pruebas.gd`) solo nombran escenas que existen (entrada `validador-zona-pruebas`); cada `Npc` y
   `RetoPreguntas` con conversaciones o preguntas sin fallos e id libre (detalle en `docs/contrato.md`, «Sala»);
+  en las salas con id, cada `MuroRompible`, `Palanca` y `Porton` lleva id, cada ruta de `portones` de una palanca
+  lleva a un `Porton` y cada ruta de `tapas` de un muro a un `CanvasItem` (entrada `validador-muros-palancas`);
   cada `Puerta` lleva en `sala_destino` el id de una sala que existe, nunca la ruta de una sala con id (una ruta
-  `res://` solo a una sala de prueba suelta, sin id); cada habilidad que se da (objetos, recompensas y `habilidades_de_prueba`) está en
+  `res://` solo a una sala de prueba suelta, sin id); cada `Puerta` en el borde izquierdo o derecho de `limites` lleva
+  detrás su `ParedTrasPuerta` (entrada `validador-pared-tras-puerta`; regla en `docs/contrato.md`, «Cambio de sala»); cada habilidad que se da (objetos, recompensas y `habilidades_de_prueba`) está en
   `Habilidades.TODAS` (entrada `validador-habilidades`); el arte del mundo (`CARPETAS_ARTE_MUNDO`) se importa con
   mipmaps y, si tiene transparencia, sin VRAM Compressed, salvo lo que lista `ALFA_EN_VRAM` (entrada
   `validador-importacion`; reglas en `docs/contrato.md`, «Recursos»).

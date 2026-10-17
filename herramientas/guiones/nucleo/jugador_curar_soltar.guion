@@ -1,0 +1,18 @@
+# Como jugador_curar.guion, pero suelta curar en el ultimo cuadro antes de ticks_devolver_curacion (27): la
+# curacion se corta y devuelve toda la Inspiracion gastada.
+escena res://herramientas/salas/sala_curar.tscn
+2 mover_izquierda press
+3 mover_izquierda release
+6 atacar press
+7 atacar release
+30 atacar press
+31 atacar release
+54 atacar press
+55 atacar release
+70 mover_derecha press
+115 mover_derecha release
+130 mover_izquierda press
+150 mover_izquierda release
+160 curar press
+197 curar release
+fin 230

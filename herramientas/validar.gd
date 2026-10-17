@@ -7,7 +7,7 @@ extends Node
 # cada FichaDialogo y FichaPregunta, y de los Npc y RetoPreguntas de cualquier escena. En cualquier escena, un DanoContacto que se mueve
 # (dentro de un Vaiven, un enemigo o un cuerpo que se mueve) no puede ser peligro. Las tablas de la zona de pruebas
 # (GRUPOS y OCULTAS) solo nombran escenas que existen. Ninguna imagen pasa de 2048 px por lado. Cada puerta lleva a un
-# destino que existe, por id si es una sala con id; cada id de habilidad esta en Habilidades.TODAS; el arte del
+# destino que existe, por id si es una sala con id; cada puerta en el borde lleva su pared detras; cada id de habilidad esta en Habilidades.TODAS; el arte del
 # mundo se importa con mipmaps y en VRAM solo sin transparencia.
 const IGNORAR: PackedStringArray = ["addons", "build"]
 const CAMPOS_TEXTO: PackedStringArray = ["id", "que", "comprobacion"]
@@ -131,10 +131,66 @@ func _revisar(ruta: String) -> void:
 						_destino_de_puerta(ruta, puerta as Puerta)
 				if nodo is Sala:
 					_revisar_presupuesto(ruta, nodo)
+					_revisar_pared_tras_puerta(ruta, nodo as Sala)
 				_revisar_peligros(ruta, nodo)
 				_revisar_habilidades(ruta, nodo)
 				_revisar_npcs(ruta, nodo)
 				nodo.free()
+
+
+# Una puerta en el borde izquierdo o derecho de limites lleva detras un StaticBody2D fuera de limites, pegado al
+# borde, desde lo alto de la sala hasta el pie de la puerta (docs/contrato.md, «Cambio de sala»): sin el, un salto
+# pasa por encima del area y el jugador sale de la sala (docs/errores/2026-10-14-salto-sobre-puerta.md).
+## Tolerancia en px para decidir que algo toca un borde.
+const TOLERANCIA_BORDE: float = 1.0
+
+
+func _revisar_pared_tras_puerta(ruta: String, sala: Sala) -> void:
+	var limites: Rect2 = sala.limites
+	var paredes: Array[Rect2] = []
+	for cuerpo: Node in sala.find_children("*", "StaticBody2D", true, false):
+		for forma: Node in cuerpo.find_children("*", "CollisionShape2D", true, false):
+			var colision: CollisionShape2D = forma as CollisionShape2D
+			if colision.shape != null and not colision.disabled:
+				paredes.append(_transformada_en(sala, colision) * colision.shape.get_rect())
+	for hijo: Node in sala.get_children():
+		var puerta: Puerta = hijo as Puerta
+		if puerta == null:
+			continue
+		for forma: Node in puerta.find_children("*", "CollisionShape2D", true, false):
+			var colision: CollisionShape2D = forma as CollisionShape2D
+			if colision.shape == null:
+				continue
+			var area: Rect2 = _transformada_en(sala, colision) * colision.shape.get_rect()
+			var derecha: bool = area.end.x >= limites.end.x - TOLERANCIA_BORDE
+			var izquierda: bool = area.position.x <= limites.position.x + TOLERANCIA_BORDE
+			if not derecha and not izquierda:
+				continue
+			var cubierta: bool = false
+			for pared: Rect2 in paredes:
+				var por_fuera: bool = (
+					absf(pared.position.x - limites.end.x) <= TOLERANCIA_BORDE if derecha
+					else absf(pared.end.x - limites.position.x) <= TOLERANCIA_BORDE
+				)
+				if (por_fuera and pared.position.y <= limites.position.y + TOLERANCIA_BORDE
+						and pared.end.y >= area.end.y - TOLERANCIA_BORDE):
+					cubierta = true
+					break
+			if not cubierta:
+				_fallos.append("%s (la puerta %s esta en el borde %s y no tiene detras una pared desde lo alto de la sala hasta su pie: ParedTrasPuerta)"
+					% [ruta, puerta.name, "derecho" if derecha else "izquierdo"])
+
+
+# Transformada de un nodo relativa a la raiz de la sala, sin que la escena este en el arbol.
+func _transformada_en(raiz: Node, nodo: Node) -> Transform2D:
+	var total: Transform2D = Transform2D.IDENTITY
+	var actual: Node = nodo
+	while actual != null and actual != raiz:
+		var nodo_2d: Node2D = actual as Node2D
+		if nodo_2d != null:
+			total = nodo_2d.transform * total
+		actual = actual.get_parent()
+	return total
 
 
 # Presupuesto de una sala (seccion 8 del plan de cierre del nucleo, medido para el S50): a lo mas 3 emisores de
@@ -379,6 +435,7 @@ func _revisar_sala(ruta: String, nodo: Node) -> void:
 			if recordados.has(recordado):
 				_fallos.append("%s (id %s repetido en la sala)" % [ruta, recordado])
 			recordados[recordado] = true
+		_revisar_rutas_de_secretos(ruta, anidado)
 	for hijo: Node in sala.get_children():
 		var puerta: Puerta = hijo as Puerta
 		if puerta != null:
@@ -433,12 +490,36 @@ func _revisar_npcs(ruta: String, raiz: Node) -> void:
 				_fallos.append("%s (reto %s: %s)" % [ruta, reto.name, fallo])
 
 
-# Id de un objeto que se recuerda en el estado de su sala (suelo fragil, coleccionable, npc, reto): "" si el nodo no es de
-# esos, "?" si lo es y no tiene id.
+# Cada ruta de portones de una Palanca lleva a un Porton y cada tapa de un MuroRompible a un dibujo: una ruta rota
+# dejaria la palanca sin abrir nada o el secreto a la vista, sin aviso.
+func _revisar_rutas_de_secretos(ruta: String, nodo: Node) -> void:
+	var palanca: Palanca = nodo as Palanca
+	if palanca != null:
+		for destino: NodePath in palanca.portones:
+			if not palanca.get_node_or_null(destino) is Porton:
+				_fallos.append("%s (la palanca %s abre %s, que no es un Porton)" % [ruta, palanca.name, destino])
+	var muro: MuroRompible = nodo as MuroRompible
+	if muro != null:
+		for destino: NodePath in muro.tapas:
+			if not muro.get_node_or_null(destino) is CanvasItem:
+				_fallos.append("%s (el muro %s tapa con %s, que no es un dibujo)" % [ruta, muro.name, destino])
+
+
+# Id de un objeto que se recuerda en el estado de su sala (suelo fragil, muro rompible, palanca, porton, coleccionable,
+# npc, reto): "" si el nodo no es de esos, "?" si lo es y no tiene id.
 func _id_recordado(nodo: Node) -> String:
 	var suelo: SueloFragil = nodo as SueloFragil
 	if suelo != null:
 		return suelo.id if not suelo.id.is_empty() else "?"
+	var muro: MuroRompible = nodo as MuroRompible
+	if muro != null:
+		return muro.id if not muro.id.is_empty() else "?"
+	var palanca: Palanca = nodo as Palanca
+	if palanca != null:
+		return palanca.id if not palanca.id.is_empty() else "?"
+	var porton: Porton = nodo as Porton
+	if porton != null:
+		return porton.id if not porton.id.is_empty() else "?"
 	var coleccionable: Coleccionable = nodo as Coleccionable
 	if coleccionable != null:
 		return coleccionable.id if not coleccionable.id.is_empty() else "?"

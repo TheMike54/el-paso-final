@@ -1,0 +1,4 @@
+# Sin salto, en el cuadro 110 cae a velocidad_caida_inicial cerca de y=605; con el, iria por y=284.
+x 800 1
+y 605 3
+en_suelo false

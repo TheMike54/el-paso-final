@@ -3,14 +3,18 @@ extends Area2D
 # Componente de lo que el ataque del jugador puede golpear (enemigos, objetos que se rompen).
 # Va como hijo del nodo golpeable, con su forma; cuenta los golpes, empuja un poco a su padre
 # lejos del atacante (sin cruzar paredes ni salir de la sala) y avisa con la senal golpeado (con el dano, para quien lleve la vida) y con
-# Eventos.enemigo_golpeado. Lo golpean el ataque del jugador y el proyectil.
+# Eventos.enemigo_golpeado, o con Eventos.objeto_golpeado si no es un enemigo (muro, palanca: sin Inspiracion). Lo
+# golpean el ataque del jugador y el proyectil.
 
 signal golpeado(atacante: Node2D, dano: int)
 
-## Velocidad con que el padre sale empujado al recibir un golpe, en px/s. 0: no se mueve.
-@export var velocidad_retroceso: float = 240.0
+## Velocidad con que el padre sale empujado al recibir un golpe, en px/s. 0: no se mueve. 600 x 6 ticks = 60 px.
+@export var velocidad_retroceso: float = 600.0
 ## Ticks que dura ese empuje.
 @export var ticks_retroceso: int = 6
+## false: un objeto (muro rompible, palanca), no un enemigo. Golpearlo no da Inspiracion y avisa con
+## Eventos.objeto_golpeado en vez de Eventos.enemigo_golpeado. El jugador rebota igual.
+@export var es_enemigo: bool = true
 
 ## Golpes recibidos desde que entro a la sala, y el dano que sumaron.
 var golpes: int = 0
@@ -34,7 +38,10 @@ func recibir_golpe(atacante: Node2D, dano: int = 1) -> void:
 		_sentido = lado
 		_ticks_empujado = ticks_retroceso if lado != 0.0 else 0
 	golpeado.emit(atacante, dano)
-	Eventos.enemigo_golpeado.emit(get_parent())
+	if es_enemigo:
+		Eventos.enemigo_golpeado.emit(get_parent())
+	else:
+		Eventos.objeto_golpeado.emit(get_parent())
 
 
 func _physics_process(delta: float) -> void:

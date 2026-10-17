@@ -1,0 +1,5 @@
+# En la zona de pruebas, B (volver) regresa al menu principal, como Start y Atras.
+escena res://herramientas/salas/zona_pruebas.tscn
+5 volver press
+6 volver release
+fin 30

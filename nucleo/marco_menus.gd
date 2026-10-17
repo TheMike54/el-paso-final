@@ -25,6 +25,8 @@ var _volver: Button = null
 var _anterior: Button = null
 var _siguiente: Button = null
 var _titulo: Label = null
+var _barra: HBoxContainer = null
+var _contrapeso: Control = null
 
 
 func _ready() -> void:
@@ -40,27 +42,33 @@ func _ready() -> void:
 	barra.offset_top = Tema.MARGEN_VERTICAL
 	barra.add_theme_constant_override(&"separation", int(Tema.SEPARACION))
 	add_child(barra)
+	_barra = barra
 	_volver = _boton(barra, "Volver", cerrar)
 	_volver.name = "Volver"
 	_volver.custom_minimum_size.x = Tema.ANCHO_VOLVER
+	IconoBoton.en_boton(_volver, &"volver")
 	barra.add_child(_relleno())
 	_anterior = _boton(barra, "", cambiar.bind(-1))
 	_anterior.name = "Anterior"
+	IconoBoton.en_boton(_anterior, &"pagina_anterior")
 	_titulo = Label.new()
 	_titulo.name = "Titulo"
 	_titulo.add_theme_font_size_override(&"font_size", Tema.LETRA_TITULO)
-	_titulo.custom_minimum_size = Vector2(360.0, Tema.ALTO_TOQUE)
+	_titulo.custom_minimum_size.y = Tema.ALTO_TOQUE
 	_titulo.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_titulo.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	barra.add_child(_titulo)
 	_siguiente = _boton(barra, "", cambiar.bind(1))
 	_siguiente.name = "Siguiente"
+	IconoBoton.en_boton(_siguiente, &"pagina_siguiente", true)
 	barra.add_child(_relleno())
-	# Del ancho de Volver, para que el titulo quede al centro de la pantalla.
-	var contrapeso: Control = Control.new()
-	contrapeso.custom_minimum_size.x = Tema.ANCHO_VOLVER
-	contrapeso.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	barra.add_child(contrapeso)
+	# Hasta el ancho de Volver, para que el titulo quede al centro de la pantalla (_acomodar_contrapeso).
+	_contrapeso = Control.new()
+	_contrapeso.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	barra.add_child(_contrapeso)
+	barra.minimum_size_changed.connect(_acomodar_contrapeso, CONNECT_DEFERRED)
+	get_viewport().size_changed.connect(_acomodar_contrapeso)
+	_acomodar_contrapeso()
 	visible = false
 
 
@@ -73,6 +81,16 @@ func _boton(barra: HBoxContainer, texto: String, al_tocar: Callable) -> Button:
 	return boton
 
 
+# El contrapeso iguala a Volver solo con lo que sobra: en la vista de 1280 la barra con los botones del control no
+# cabe con el entero, y empujaba Siguiente fuera de la pantalla (16-oct-2026).
+func _acomodar_contrapeso() -> void:
+	var otros: float = _barra.get_combined_minimum_size().x - _contrapeso.custom_minimum_size.x
+	var ancho: float = _barra.get_viewport_rect().size.x - 2.0 * Tema.MARGEN_LATERAL
+	var nuevo: float = clampf(ancho - otros, 0.0, Tema.ANCHO_VOLVER)
+	if not is_equal_approx(nuevo, _contrapeso.custom_minimum_size.x):
+		_contrapeso.custom_minimum_size.x = nuevo
+
+
 func _relleno() -> Control:
 	var relleno: Control = Control.new()
 	relleno.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -83,7 +101,8 @@ func _relleno() -> Control:
 # Se leen acciones con nombre: lo abren y lo manejan igual el teclado, el control, el boton tactil y un guion.
 func _physics_process(_delta: float) -> void:
 	if abierta:
-		if Input.is_action_just_pressed(&"pausa") or Input.is_action_just_pressed(&"mapa") or Input.is_action_just_pressed(&"inventario"):
+		if (Input.is_action_just_pressed(&"pausa") or Input.is_action_just_pressed(&"volver")
+				or Input.is_action_just_pressed(&"mapa") or Input.is_action_just_pressed(&"inventario")):
 			cerrar()
 		elif Input.is_action_just_pressed(&"pagina_anterior"):
 			cambiar(-1)

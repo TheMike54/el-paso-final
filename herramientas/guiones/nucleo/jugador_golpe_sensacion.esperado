@@ -1,4 +1,4 @@
-# Jugador: 4 ticks a 240 px/s, 16 px atras desde x=300. Muneco: 6 ticks a 240 px/s, 24 px desde x=460.
+# Jugador: 4 ticks a 240 px/s, 16 px atras desde x=300. Muneco: 6 ticks a 600 px/s, 60 px desde x=460.
 x 284 1
-valor Muneco position:x 484 1
+valor Muneco position:x 520 1
 valor Muneco/Golpeable golpes 1

@@ -1,6 +1,6 @@
 # Salto largo en la sala de movimiento: cae con el tope velocidad_caida_inicial (700 px/s) y
-# aterriza hacia el cuadro 57.
+# aterriza hacia el cuadro 62.
 escena res://herramientas/salas/sala_movimiento.tscn
 5 saltar press
 30 saltar release
-fin 60
+fin 66

@@ -1,4 +1,4 @@
-ACTIVO
+CERRADO
 
 # Foco de los menús visible solo con control o teclado
 
@@ -53,3 +53,6 @@ en el mismo commit. Cambia lo que se ve: no va en `chore/limpieza-codigo`.
   (H3). Segunda revisión: «Botones del control» consume en su `_input` el botón que se reasigna antes de que
   `UltimaEntrada` lo vea, y `recibir_boton` ponía el foco con el valor viejo: ahí se anota a mano antes de
   consumirlo. Falta la prueba manual en el S50.
+- 14-oct-2026, prueba manual con el APK `dev-2026-10-14` (fila «Foco de los menús» de `docs/pruebas.md`): pasa en
+  la Galaxy Tab S9 FE con control Xbox y en el Senwa S50 con DUALSHOCK 4 por Bluetooth. En el A55 con DUALSHOCK 4 se
+  reportó el recuadro con el dedo en la pausa; sin reproducir. Plan cerrado; el #5 se fusionó en `main`.

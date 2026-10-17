@@ -35,7 +35,13 @@ func _physics_process(delta: float) -> void:
 	var frente: Vector2 = global_position + Vector2(paso + sentido * TAMANO.x / 2.0, 0.0)
 	var consulta: PhysicsRayQueryParameters2D = PhysicsRayQueryParameters2D.create(global_position, frente)
 	consulta.collision_mask = Capas.ESCENARIO
-	if not get_world_2d().direct_space_state.intersect_ray(consulta).is_empty():
+	var choque: Dictionary = get_world_2d().direct_space_state.intersect_ray(consulta)
+	if not choque.is_empty():
+		# Un muro rompible para a la bola en su solido, antes de que toque su area de golpe: se le pega aqui.
+		var muro: MuroRompible = choque["collider"] as MuroRompible
+		if muro != null and muro.golpeable != null and not _golpeados.has(muro.golpeable):
+			_golpeados.append(muro.golpeable)
+			muro.golpeable.recibir_golpe(self, dano)
 		queue_free()
 		return
 	position.x += paso

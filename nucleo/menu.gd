@@ -153,8 +153,8 @@ func preparar_ranura(numero: int, personaje: String = "", nombre: String = "") -
 
 
 func _physics_process(_delta: float) -> void:
-	# El Start con que se acaba de asignar un boton del control no es Atras.
-	if Input.is_action_just_pressed(&"pausa") and not configuracion.acaba_de_asignar():
+	# El Start o el B con que se acaba de asignar un boton del control no es Atras.
+	if (Input.is_action_just_pressed(&"pausa") or Input.is_action_just_pressed(&"volver")) and not configuracion.acaba_de_asignar():
 		atras()
 
 

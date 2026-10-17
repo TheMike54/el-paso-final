@@ -1,5 +1,5 @@
-# En la sala de enemigos el jugador vence al debil (dos golpes) y al fuerte (tres, acercandose entre
-# golpe y golpe), sale por la puerta derecha a la sala del banco y vuelve sin descansar. Camina
+# En la sala de enemigos el jugador vence al debil (dos golpes) y al fuerte (tres, acercandose 48 px entre
+# golpe y golpe: cada golpe lo empuja 60), sale por la puerta derecha a la sala del banco y vuelve sin descansar. Camina
 # hacia la izquierda por donde estaba el fuerte.
 escena res://herramientas/salas/sala_enemigos.tscn
 2 mover_derecha press
@@ -13,11 +13,11 @@ escena res://herramientas/salas/sala_enemigos.tscn
 165 atacar press
 166 atacar release
 180 mover_derecha press
-184 mover_derecha release
+188 mover_derecha release
 190 atacar press
 191 atacar release
 205 mover_derecha press
-209 mover_derecha release
+213 mover_derecha release
 215 atacar press
 216 atacar release
 245 mover_derecha press
