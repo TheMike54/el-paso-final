@@ -55,7 +55,7 @@
   },
   {
     "id": "hook-al-compactar",
-    "que": "Tras compactar, el hook SessionStart reinyecta la rama, git status --short, ESTADO.md con acentos correctos y la lista de planes activos",
+    "que": "Tras compactar, el hook SessionStart reinyecta la rama, ESTADO.md con acentos correctos, la lista de planes activos y las primeras 25 lineas de git status --short",
     "comprobacion": "manual: tras reiniciar la sesion y correr /compact, Claude repite la rama y la primera linea de Ahora de ESTADO.md sin haberlos leido",
     "pasa": true
   },
