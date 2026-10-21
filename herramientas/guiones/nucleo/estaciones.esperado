@@ -1,0 +1,4 @@
+# Los 35 casos de herramientas/pruebas/prueba_estaciones.gd corrieron y ninguno fallo. Cada caso que falla imprime una
+# linea "FALLO estaciones: <caso>".
+valor . casos 35
+valor . fallos 0

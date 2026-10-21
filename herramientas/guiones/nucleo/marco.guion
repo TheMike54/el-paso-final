@@ -1,5 +1,5 @@
 # La escena de prueba del marco de menus corre sus casos al entrar: en que pagina abre de pie y sentado, el ciclo,
 # como se cierra, que detenga el juego, dos paginas sin el bloque mapa, la pagina Inventario y la pausa con
 # Configuracion encima. Deja la cuenta en sus propiedades.
-escena res://herramientas/salas/sala_marco.tscn
+escena res://herramientas/pruebas/sala_marco.tscn
 fin 120

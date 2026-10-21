@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://dp5jqdvhw30hj" path="res://nucleo/configuracion.gd" id="1_configuracion"]
 [ext_resource type="Script" uid="uid://xdh8gd5iuplu" path="res://nucleo/boton_valor.gd" id="2_boton_valor"]
+[ext_resource type="Script" uid="uid://cff1lfxwnfp7r" path="res://nucleo/panel_audio.gd" id="3_panel_audio"]
 
 [node name="Configuracion" type="Control"]
 layout_mode = 3
@@ -30,7 +31,6 @@ text = "Volver"
 [node name="Titulo" type="Label" parent="Lista/Arriba"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 48
 text = "Configuración"
 vertical_alignment = 1
 
@@ -137,7 +137,6 @@ text = "Volver"
 [node name="Titulo" type="Label" parent="PanelMando/Arriba"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 48
 text = "Botones del control"
 vertical_alignment = 1
 
@@ -185,6 +184,7 @@ layout_mode = 0
 offset_right = 1152.0
 offset_bottom = 688.0
 theme_override_constants/separation = 12
+script = ExtResource("3_panel_audio")
 
 [node name="Arriba" type="HBoxContainer" parent="PanelAudio"]
 layout_mode = 2
@@ -198,7 +198,6 @@ text = "Volver"
 [node name="Titulo" type="Label" parent="PanelAudio/Arriba"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 48
 text = "Audio"
 vertical_alignment = 1
 
@@ -236,7 +235,6 @@ text = "Volver"
 [node name="Titulo" type="Label" parent="PanelCreditos/Arriba"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 48
 text = "Créditos"
 vertical_alignment = 1
 

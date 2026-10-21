@@ -1,0 +1,4 @@
+# Los 7 casos de herramientas/pruebas/prueba_salto_tras_menu.gd corrieron y ninguno fallo. Cada caso que falla imprime
+# una linea "FALLO salto_tras_menu: <caso>".
+valor . casos 7
+valor . fallos 0

@@ -1,4 +1,4 @@
 # La escena de prueba del reto de preguntas corre sus casos al entrar: forma de las preguntas, rondas perdidas y
 # ganadas, lo guardado al entrar y la caja con cada respuesta. Deja la cuenta en sus propiedades.
-escena res://herramientas/salas/sala_reto_prueba.tscn
+escena res://herramientas/pruebas/sala_reto_prueba.tscn
 fin 300

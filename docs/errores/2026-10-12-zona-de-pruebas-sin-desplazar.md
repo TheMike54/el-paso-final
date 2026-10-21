@@ -9,7 +9,8 @@
   lista y la escena no atendía Atrás.
 - **Arreglo**: `herramientas/salas/zona_pruebas.tscn` mete la cuadrícula en un `ScrollContainer` y pone «Volver» fijo
   arriba; `zona_pruebas.gd` calcula de 3 a 6 columnas según el ancho, deja pasar el arrastre de los botones a la
-  lista (`MOUSE_FILTER_PASS`) y, con Volver, Atrás o `pausa`, vuelve al menú con `Configuracion.abrir_al_volver`, que
-  el menú lee para abrir la Configuración.
-- **Guion que lo cubre**: `menu_configuracion` comprueba que el menú abre la Configuración al volver de la zona.
+  lista (`MOUSE_FILTER_PASS`) y, con Volver, Atrás o `pausa`, vuelve al menú con `Configuracion.abrir_al_volver` (hoy
+  `MenuPrincipal.volver_a_zona`), que el menú lee para abrir la Configuración.
+- **Guion que lo cubre**: `menu_configuracion` comprueba que, al volver de la zona, el menú queda con el foco en su
+  entrada (`MenuPrincipal.volver_a_zona`, que reemplazó a `Configuracion.abrir_al_volver`).
   Que la lista quepa y se desplace con el dedo es prueba manual («Menú de desarrollo» en `docs/pruebas.md`).

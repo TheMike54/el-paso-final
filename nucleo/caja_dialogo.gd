@@ -16,7 +16,6 @@ const ACCIONES_AVANZAR: Array[StringName] = [&"interactuar", &"saltar", &"atacar
 const ALTO_CAJA: float = 200.0
 const ANCHO_MAXIMO: float = 1100.0
 const ANCHO_OPCION: float = 300.0
-const COLOR_QUIEN: Color = Tema.DORADO
 
 ## 2 ticks por letra: 30 letras por segundo.
 @export var ticks_por_letra: int = 2
@@ -113,6 +112,7 @@ func _mostrar_linea(indice: int) -> void:
 		var boton: Button = Button.new()
 		boton.text = actual.opciones[i]
 		boton.custom_minimum_size = Vector2(ANCHO_OPCION, Tema.ALTO_TOQUE)
+		boton.theme_type_variation = Tema.TARJETA
 		boton.focus_mode = Control.FOCUS_NONE
 		boton.toggle_mode = true
 		boton.pressed.connect(_al_tocar_opcion.bind(i))
@@ -190,6 +190,7 @@ func _armar() -> void:
 	add_child(raiz)
 	_caja = Button.new()
 	_caja.name = "Caja"
+	_caja.theme_type_variation = Tema.TARJETA
 	_caja.focus_mode = Control.FOCUS_NONE
 	_caja.pressed.connect(_al_tocar_caja)
 	raiz.add_child(_caja)
@@ -203,7 +204,7 @@ func _armar() -> void:
 	_caja.add_child(contenido)
 	_quien = Label.new()
 	_quien.name = "Quien"
-	_quien.add_theme_color_override(&"font_color", COLOR_QUIEN)
+	_quien.theme_type_variation = Tema.QUIEN
 	_quien.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	contenido.add_child(_quien)
 	_texto = Label.new()

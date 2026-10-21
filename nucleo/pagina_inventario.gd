@@ -1,15 +1,12 @@
 class_name PaginaInventario
-extends CanvasLayer
+extends PaginaMarco
 # Pagina Inventario del marco de menus: lo que el jugador lleva, solo para leer. Muestra lo que ya existe en
 # Partida (vida, Inspiracion, PejeCoins, arma, habilidades, mapas y lo perdido al morir); no hay objetos todavia,
 # porque un inventario de objetos subiria el guardado a la version 4. La crea cada sala, como Amuletos.
 
-const CAPA: int = 20
 ## El arma es la habilidad pluma: sin ella no se ataca.
 const ARMA: StringName = Habilidades.PLUMA
 
-## A la vista dentro del marco. Publico para los guiones.
-var abierta: bool = false
 ## Texto de cada fila por nombre ("Vida", "Lo perdido", ...). Publico para la prueba.
 var valores: Dictionary[String, String] = {}
 
@@ -17,13 +14,8 @@ var _filas: GridContainer = null
 
 
 func _ready() -> void:
-	process_mode = Node.PROCESS_MODE_ALWAYS
-	layer = CAPA
-	add_to_group(MarcoMenus.GRUPO_PAGINAS)
-	var fondo: ColorRect = ColorRect.new()
-	fondo.color = Color(0.0, 0.0, 0.0, 0.85)
-	fondo.set_anchors_preset(Control.PRESET_FULL_RECT)
-	fondo.theme = Tema.crear()
+	super()
+	var fondo: ColorRect = Tema.fondo_menu()
 	add_child(fondo)
 	var centro: CenterContainer = CenterContainer.new()
 	centro.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -36,7 +28,6 @@ func _ready() -> void:
 	_filas.add_theme_constant_override(&"h_separation", 48)
 	_filas.add_theme_constant_override(&"v_separation", int(Tema.SEPARACION_FILAS))
 	centro.add_child(_filas)
-	visible = false
 
 
 func id_pagina() -> StringName:
@@ -48,14 +39,8 @@ func titulo_pagina() -> String:
 
 
 func mostrar_en_marco() -> void:
-	abierta = true
-	visible = true
+	super()
 	_llenar()
-
-
-func ocultar_de_marco() -> void:
-	abierta = false
-	visible = false
 
 
 func _llenar() -> void:
@@ -73,14 +58,14 @@ func _llenar() -> void:
 	for nombre: String in valores:
 		var etiqueta: Label = Label.new()
 		etiqueta.text = nombre
-		etiqueta.modulate = Color(1.0, 1.0, 1.0, 0.7)
+		etiqueta.theme_type_variation = Tema.TENUE
 		_filas.add_child(etiqueta)
 		var valor: Label = Label.new()
 		valor.text = valores[nombre]
 		_filas.add_child(valor)
 
 
-## Lo perdido al morir ({sala, x, y, monto} de docs/contrato.md), en una linea. Hoy morir todavia no lo llena.
+## Lo perdido al morir ({sala, x, y, monto} de docs/contrato.md), en una linea. Lo llena morir con PejeCoins.
 static func perdido(mochila: Dictionary) -> String:
 	var monto: Variant = mochila.get("monto")
 	var sala: Variant = mochila.get("sala")

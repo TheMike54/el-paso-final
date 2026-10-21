@@ -1,0 +1,7 @@
+# Corre herramientas/pruebas/prueba_salto_tras_menu.gd: A (aceptar y saltar) pulsado y soltado en el mismo cuadro sobre
+# Continuar de la pausa, el No del cobro de una estacion y Volver del marco los cierra sin que el jugador salte (ni en
+# cola al aterrizar) ni se levante del banco, y saltar pulsado en el tick siguiente si salta; y A apretado en un cuadro y
+# soltado en el siguiente sin tick entre los dos (120 FPS) tampoco salta. Sin entradas propias: la prueba manda los
+# eventos.
+escena res://herramientas/pruebas/sala_salto_tras_menu.tscn
+fin 440

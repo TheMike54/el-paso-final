@@ -1,0 +1,3 @@
+# El bucle de quieto corre desde que aparece el jugador, sin haberse movido: a 1,5 s ya va en el segundo cuadro.
+escena res://herramientas/salas/sala_movimiento.tscn
+fin 90

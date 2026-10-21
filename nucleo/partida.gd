@@ -47,12 +47,17 @@ var habilidades: Array[StringName] = []
 var jefes: Array[StringName] = []
 var amuletos_tenidos: Array[StringName] = []
 var amuletos_equipados: Array[StringName] = []
-## Lo que se perdio al morir: {sala, x, y, monto}, o vacio. La mecanica todavia no existe.
+## Lo que se perdio al morir: {sala, x, y, monto}, o vacio. x e y van en coordenadas de la sala; la Mochila que
+## crea la sala lo devuelve con el reto (ver dejar_mochila).
 var mochila: Dictionary = {}
 ## Zonas cuyo mapa se tiene, y salas visitadas y ya dibujadas en el mapa (por su clave).
 var mapas: Array[String] = []
 var salas_visitadas: Array[String] = []
 var salas_mapeadas: Array[String] = []
+## Ids de las estaciones del viaje rapido ya abiertas (pagadas), en el orden en que se abrieron.
+var estaciones: Array[String] = []
+## Botones de la pantalla que un AvisoAccion ya enseno: en una sala con botones_por_ensenar solo se ven estos.
+var botones_ensenados: Array[StringName] = []
 ## Estado por sala: {clave de la sala: {id del objeto: true o numero}}. Lo permanente de cada sala (un
 ## suelo roto, un coleccionable tomado); lo que reaparece no se escribe aqui.
 var salas: Dictionary[String, Dictionary] = {}
@@ -107,11 +112,37 @@ func reiniciar() -> void:
 	mapas.clear()
 	salas_visitadas.clear()
 	salas_mapeadas.clear()
+	estaciones.clear()
+	botones_ensenados.clear()
 	salas.clear()
 	personaje = ""
 	nombre = ""
 	tiempo_jugado = 0.0
 	enemigos_vencidos.clear()
+
+
+## Anota que un boton de la pantalla ya se enseno (AvisoAccion); no lo repite ni guarda.
+func ensenar_boton(accion: StringName) -> void:
+	if not botones_ensenados.has(accion):
+		botones_ensenados.append(accion)
+
+
+## Cobra PejeCoins (la tienda, una estacion). Devuelve false y no cambia nada si no alcanzan o si cantidad es negativa.
+func gastar_monedas(cantidad: int) -> bool:
+	if cantidad < 0 or cantidad > monedas:
+		return false
+	monedas -= cantidad
+	return true
+
+
+## Abre una estacion del viaje rapido; un id que ya esta no se agrega dos veces. No guarda: lo hace la Estacion.
+func abrir_estacion(id: String) -> void:
+	if not id.is_empty() and not estaciones.has(id):
+		estaciones.append(id)
+
+
+func estacion_abierta(id: String) -> bool:
+	return estaciones.has(id)
 
 
 func ganar_inspiracion(cantidad: int) -> void:
@@ -197,11 +228,9 @@ func estado_de(clave_sala: String, objeto: String) -> Variant:
 	return estado.get(objeto)
 
 
-## Un numero del estado de una sala, o por_omision si no hay nada o no es numero. El JSON devuelve los enteros
-## como float: por eso no basta con "as int".
+## Un numero del estado de una sala (Guardado.entero), o por_omision si no hay nada o no es numero.
 func estado_entero(clave_sala: String, objeto: String, por_omision: int) -> int:
-	var valor: Variant = estado_de(clave_sala, objeto)
-	return int(valor as float) if valor is int or valor is float else por_omision
+	return Guardado.entero(estado_de(clave_sala, objeto), por_omision)
 
 
 ## Recuerda un objeto de una sala (true o un numero). Se escribe en el siguiente guardado.
@@ -269,6 +298,47 @@ func _al_morir() -> void:
 	enemigos_vencidos.clear()
 	# La Inspiracion se pierde al morir, como el alma de Hollow Knight (que se queda en la sombra).
 	inspiracion = 0
+	# La mochila ya la dejo el jugador (Jugador._morir) antes de emitir la senal: este guardado la lleva.
+	autoguardar()
+
+
+## Al morir, como el capullo de Silksong: con monedas, todas pasan a la mochila en ese punto de esa sala y una mochila
+## anterior se pierde; sin monedas no hace nada y la anterior sigue donde estaba. No guarda: lo hace quien llama.
+func dejar_mochila(clave_sala: String, punto: Vector2) -> void:
+	if monedas <= 0 or clave_sala.is_empty():
+		return
+	mochila = {"sala": clave_sala, "x": punto.x, "y": punto.y, "monto": monedas}
+	monedas = 0
+
+
+## Monto de la mochila como numero: el JSON devuelve los enteros como float. 0 si no hay mochila.
+func monto_mochila() -> int:
+	return Guardado.entero(mochila.get("monto"), 0)
+
+
+## Punto de la mochila en su sala ({x, y} de mochila); un eje que no es numero queda en 0.
+func punto_de_mochila() -> Vector2:
+	var x: Variant = mochila.get("x")
+	var y: Variant = mochila.get("y")
+	return Vector2(x as float if x is float or x is int else 0.0, y as float if y is float or y is int else 0.0)
+
+
+## La mochila vuelve: suma su monto a las monedas, la vacia, lo avisa y autoguarda. Sin mochila no hace nada.
+func recuperar_mochila() -> void:
+	if mochila.is_empty():
+		return
+	var monto: int = monto_mochila()
+	mochila = {}
+	monedas += monto
+	Eventos.mochila_recuperada.emit(monto)
+	autoguardar()
+
+
+## Perder el reto de la mochila: se va sin devolver nada y autoguarda (una sola oportunidad). Sin mochila no hace nada.
+func perder_mochila() -> void:
+	if mochila.is_empty():
+		return
+	mochila = {}
 	autoguardar()
 
 
@@ -307,6 +377,8 @@ func a_diccionario() -> Dictionary:
 		"mapas": mapas.duplicate(),
 		"salas_visitadas": salas_visitadas.duplicate(),
 		"salas_mapeadas": salas_mapeadas.duplicate(),
+		"estaciones": estaciones.duplicate(),
+		"botones_ensenados": _textos(botones_ensenados),
 		"salas": salas.duplicate(true),
 		"personaje": personaje,
 		"nombre": nombre,
@@ -334,6 +406,9 @@ func desde_diccionario(partida: Dictionary) -> void:
 	mapas = _cadenas(partida["mapas"] as Array)
 	salas_visitadas = _cadenas(partida["salas_visitadas"] as Array)
 	salas_mapeadas = _cadenas(partida["salas_mapeadas"] as Array)
+	# Campo nuevo (Guardado.NUEVOS): una partida que llega sin pasar por Guardado.cargar puede no traerlo.
+	estaciones = _cadenas(partida.get("estaciones", []) as Array)
+	botones_ensenados = _ids(partida.get("botones_ensenados", []) as Array)
 	salas.clear()
 	var leidas: Dictionary = partida["salas"]
 	for clave_sala: Variant in leidas:
@@ -346,7 +421,7 @@ func desde_diccionario(partida: Dictionary) -> void:
 
 
 ## Guarda la partida; si salio bien, lo avisa con Eventos.partida_guardada.
-func guardar(ruta: String = Guardado.RUTA) -> Error:
+func guardar(ruta: String) -> Error:
 	var error: Error = Guardado.guardar(a_diccionario(), ruta)
 	if error == OK:
 		Eventos.partida_guardada.emit()

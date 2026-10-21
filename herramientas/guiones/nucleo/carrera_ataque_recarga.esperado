@@ -1,4 +1,4 @@
 valor Jugador atacando_en_carrera false
 valor Jugador corriendo true
 valor Jugador velocity:x 756 1
-valor Jugador _ticks_atacando 0
+valor Jugador atacando false

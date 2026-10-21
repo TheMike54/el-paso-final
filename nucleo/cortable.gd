@@ -1,11 +1,9 @@
 class_name Cortable
 extends Area2D
-# Decoracion que el ataque del jugador corta (pasto y lo que cada zona quiera): muestra su version cortada,
-# suelta unos trozos y emite cortado. No es un Golpeable: no da Inspiracion, no rebota al jugador, no hace
+# Decoracion que el ataque del jugador y su bola cortan (pasto y lo que cada zona quiera): muestra su version cortada
+# y suelta unos trozos. No es un Golpeable: no da Inspiracion, no rebota al jugador, no hace
 # pogo y no cuenta como enemigo. Se agita al pasar el jugador. Vuelve al entrar otra vez a la sala (no se
 # guarda), como el pasto de Hollow Knight. Generica: el dibujo entero y el cortado son hijos de la escena.
-
-signal cortado()
 
 ## Hijo que se ve entero; al cortarlo se oculta. Vacio: no cambia nada.
 @export var entero: NodePath = ^"Entero"
@@ -37,7 +35,7 @@ func _ready() -> void:
 	body_entered.connect(_al_pasar)
 
 
-## Lo llama el ataque del jugador. Uno ya cortado no cambia.
+## Lo llaman el ataque del jugador y su bola. Uno ya cortado no cambia.
 func cortar() -> void:
 	if esta_cortado:
 		return
@@ -49,7 +47,6 @@ func cortar() -> void:
 		cortada.visible = true
 	if trozos > 0:
 		_soltar_trozos()
-	cortado.emit()
 
 
 func _al_pasar(cuerpo: Node2D) -> void:

@@ -7,6 +7,9 @@ extends Node
 ## Por ahora, la de los sonidos de prueba. Donde vivira la del juego (en contenido/ seria una excepcion nueva de
 ## nucleo/CLAUDE.md) lo decide la persona.
 const FICHA_PRUEBA: String = "res://nucleo/sonidos/sonidos_prueba.tres"
+## Cada evento que Sonido toca, uno por metodo _al_* de abajo. Cada uno es un campo de efecto de FichaSonidos (lo
+## exige la prueba de sonido.guion); tocar() avisa si le llega uno que no lo es.
+const EVENTOS: Array[StringName] = [&"salto", &"golpe", &"muro_roto", &"porton", &"dano", &"parry", &"curar", &"banco"]
 
 ## Efectos a la vez. Van en rueda: el siguiente toma la voz que empezo hace mas tiempo, aunque otra ya este libre.
 @export var voces: int = 4
@@ -24,6 +27,8 @@ var _reproductores: Array[AudioStreamPlayer] = []
 var _siguiente_voz: int = 0
 var _tick_evento: Dictionary[StringName, int] = {}
 var _azar: RandomNumberGenerator = RandomNumberGenerator.new()
+# Los campos de efecto de FichaSonidos, leidos una vez: tocar() los consulta en cada evento.
+var _campos: Array[StringName] = FichaSonidos.new().campos_de_efecto()
 # Sin pantalla nadie oye: se cuenta igual pero no se toca (tocar sin pantalla dejaba recursos vivos al salir,
 # docs/errores/2026-10-13-musica-sin-pantalla.md).
 var _mudo: bool = DisplayServer.get_name() == "headless"
@@ -50,9 +55,12 @@ func _ready() -> void:
 	Eventos.descanso_en_banco.connect(_al_descansar)
 
 
-## Toca el efecto de un evento si la ficha tiene uno y no sono hace menos de ticks_entre_iguales.
+## Toca el efecto de un evento si la ficha tiene uno y no sono hace menos de ticks_entre_iguales. Avisa con un
+## WARNING si el evento no es campo de FichaSonidos: ficha.efecto() daria null y nunca sonaria.
 func tocar(evento: StringName) -> void:
 	pedidos += 1
+	if not _campos.has(evento):
+		push_warning("Sonido: el evento %s no es campo de FichaSonidos y nunca suena" % evento)
 	var stream: AudioStream = ficha.efecto(evento) if ficha != null else null
 	if stream == null:
 		return

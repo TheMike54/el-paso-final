@@ -5,9 +5,8 @@ extends Node2D
 # golpes solo rebotan al jugador. La bola no la mueve. Con id se marca en el estado de su sala y aparece activada;
 # cada porton guarda lo suyo. Golpearla no da Inspiracion (su Golpeable no es un enemigo).
 
-## Al activarse, y cuando ya abrio sus portones.
+## Al activarse.
 signal activada()
-signal portones_abiertos()
 
 const TAMANO_GOLPE: Vector2 = Vector2(70.0, 110.0)
 const COLOR_BASE: Color = Color(0.4, 0.4, 0.44)
@@ -69,7 +68,6 @@ func _physics_process(_delta: float) -> void:
 		var porton: Porton = get_node_or_null(ruta) as Porton
 		if porton != null:
 			porton.abrir()
-	portones_abiertos.emit()
 
 
 func _al_recibir_golpe(atacante: Node2D, _dano: int) -> void:

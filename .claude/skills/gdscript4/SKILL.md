@@ -25,7 +25,7 @@ antes de darlo por bueno; no se supone.
   equipo por encima de ella (`tutorials/scripting/gdscript/gdscript_styleguide.rst:19`).
 - Un valor `Variant` (elemento de un `Dictionary` o `Array` sin tipo, resultado de `JSON`, de `Callable.call()`)
   se asigna primero a una variable tipada o se convierte con `as`; solo entonces se pasa a una función.
-- Nodos: `@onready var _sprite: Sprite2D = $Sprite as Sprite2D` (convención del repo, `nucleo/configuracion.gd:70`).
+- Nodos: `@onready var _sprite: Sprite2D = $Sprite as Sprite2D` (convención del repo; ejemplo: `_lista` en `nucleo/configuracion.gd`).
   El acceso a propiedades o métodos de una clase propia exige que la variable tenga ese tipo (`class_name` o
   `preload` del script).
 - Colecciones tipadas: `Array[String]`, `Dictionary[String, int]`, `PackedStringArray`. No se anidan
@@ -41,14 +41,14 @@ antes de darlo por bueno; no se supone.
 
 - `as` devuelve `null` en silencio (`tutorials/scripting/gdscript/static_typing.rst:317`); sin `as` falla antes
   (`static_typing.rst:394`). `validar.ps1` no ejecuta `_ready`: el `null` lo atrapa un guion que pase por ahí.
-- Fuera de `@onready`, `as` solo cuando el `null` es posible, y se comprueba: `nucleo/banco.gd:31-32`.
+- Fuera de `@onready`, `as` solo cuando el `null` es posible, y se comprueba: `Banco.descansar()` en `nucleo/banco.gd`.
   O se pregunta antes con `is`.
 
 ## Referencias, recursos y archivos
 
 | Regla | Referencia | Se comprueba con |
 |---|---|---|
-| `Array`, `Dictionary`, objetos y packed arrays se comparten: `duplicate()` (o `duplicate(true)` con anidados) antes de guardar, entregar o modificar algo ajeno (`nucleo/partida.gd:306`) | `tutorials/scripting/gdscript/gdscript_basics.rst:693` | guiones `estado_partida` y `guardado` |
+| `Array`, `Dictionary`, objetos y packed arrays se comparten: `duplicate()` (o `duplicate(true)` con anidados) antes de guardar, entregar o modificar algo ajeno (`Partida.a_diccionario()` en `nucleo/partida.gd`) | `tutorials/scripting/gdscript/gdscript_basics.rst:693` | guiones `estado_partida` y `guardado` |
 | Un recurso cargado es la copia de la caché, la misma para todos: no modificar en ejecución una ficha `.tres`, un `StyleBox` ni una forma de colisión compartida; para uno propio, `duplicate()` o `new()` | `tutorials/scripting/resources.rst:30` | revisión del diff: ningún campo de una ficha cargada se asigna fuera de `duplicate()`/`new()` |
 | `FileAccess` solo para lo que Godot no importa (`user://`, JSON, `.guion`); un asset importado se lee con `load()`, porque en el APK solo está la versión importada | `tutorials/assets_pipeline/import_process.rst:23` | Grep de `FileAccess.open` |
 
@@ -70,7 +70,7 @@ antes de darlo por bueno; no se supone.
 | Regla | Referencia | Se comprueba con |
 |---|---|---|
 | `static var` es de la clase y sobrevive al cambio de escena: reiniciarla a mano al empezar partida o guion (`Ajustes.cargar()` las vuelve a su valor por omisión antes de leer). No usar `@static_unload`: por un error del motor no libera nada | `tutorials/scripting/gdscript/gdscript_basics.rst:1164`, `:1261` | guion `ranuras` |
-| Un `Node` no se libera solo: `queue_free()` al terminar e `is_instance_valid()` antes de usar una referencia guardada (`nucleo/npc.gd:35`); `free()` inmediato solo si nadie más la tiene y no se está dentro de una señal de ese nodo | `tutorials/scripting/gdscript/gdscript_basics.rst:2623`, `tutorials/scripting/nodes_and_scene_instances.rst:173` | guiones `dialogo` y `reto` |
+| Un `Node` no se libera solo: `queue_free()` al terminar e `is_instance_valid()` antes de usar una referencia guardada (`_physics_process` de `nucleo/npc.gd`); `free()` inmediato solo si nadie más la tiene y no se está dentro de una señal de ese nodo | `tutorials/scripting/gdscript/gdscript_basics.rst:2623`, `tutorials/scripting/nodes_and_scene_instances.rst:173` | guiones `dialogo` y `reto` |
 | Inicializar en `_ready` (una vez), no en `_enter_tree`, que corre cada vez que el nodo vuelve al árbol | `tutorials/scripting/overridable_functions.rst:20` | Grep de `_enter_tree` |
 | Un ajuste de `project.godot` con override por etiqueta (`.mobile`) se lee con `ProjectSettings.get_setting_with_override()`; `get_setting()` lo ignora | `tutorials/export/feature_tags.rst:213` | Grep de `ProjectSettings.get` |
 
@@ -84,9 +84,11 @@ antes de darlo por bueno; no se supone.
 
 ## Estilo para código nuevo
 
-- Cabecera de cada `.gd` nuevo: 3 o 4 líneas con `#` tras `class_name`/`extends` (`nucleo/ranuras.gd:3-6`).
+- Cabecera de cada `.gd` nuevo: 3 o 4 líneas con `#` tras `class_name`/`extends` (la de `nucleo/ranuras.gd`).
   `##` solo para documentar miembros públicos; lo privado lleva `_` y `#`, y así no sale en la ayuda del editor
-  (`tutorials/scripting/gdscript/gdscript_documentation_comments.rst:136`, `gdscript_styleguide.rst:715`).
+  (`tutorials/scripting/gdscript/gdscript_documentation_comments.rst:136`, `gdscript_styleguide.rst:715`). Grep de
+  `^##` en el `.gd`: solo sobre `const`, `var`, `func` y `signal` sin `_` (`nucleo/tema.gd` es el ejemplo).
+- Grep de `:=` en los `.gd` del cambio: `validar.ps1` no lo atrapa, porque compila.
 - Orden: `class_name`, `extends`, comentario; señales, enums, constantes, `@export`, variables, `@onready`;
   `_init`, `_ready`, `_process`, `_physics_process` y demás virtuales; públicas; privadas
   (`gdscript_styleguide.rst:822`).

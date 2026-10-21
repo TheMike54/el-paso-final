@@ -14,15 +14,15 @@ el contrato todavía no define se propone en un plan antes de programarlo.
 ## Qué no toca
 - No conoce zonas, enemigos ni NPC concretos: trabaja con fichas y señales.
 - No depende de ningún otro bloque. Excepciones, todas solo si el archivo existe (`load()` o
-  `ResourceLoader.exists`): `Arranque` carga el puerto de depuración, solo en builds de depuración; el menú
-  principal muestra la zona de pruebas con el modo desarrollador encendido, en depuración y en publicación
-  (`docs/contrato.md`, «Paquete de publicación»); la sala carga `interfaz/interfaz.tscn` y
-  `mapa/pantalla_mapa.tscn`, y `Sala.ruta_de` busca el id en `contenido/salas/` y después en
-  `herramientas/salas/zonas/`.
+  `ResourceLoader.exists`, nunca `preload`): las de `herramientas/`, en `docs/contrato.md`, «Paquete de
+  publicación»; la sala carga `interfaz/interfaz.tscn` y `mapa/pantalla_mapa.tscn`; el `MenuEstaciones` lee
+  `mapa/indice_salas.tres` con `get()`, sin nombrar `IndiceSalas` (sin él, la lista sola); y de `contenido/`, `Sala.ruta_de`
+  (salas), la `Mochila` (`preguntas_mochila.tres`) y `Estacion.tabla_de` (`estaciones.tres`). Una excepción nueva va
+  aquí y, si es de `herramientas/`, en el contrato.
 
 ## Cómo se comprueba
-- Movimiento, salto, cámara y cambio de sala: un guion en `herramientas/guiones/nucleo/` con lo que debe
-  cumplirse al final.
+- Cada entrada de `funciones.json` dice su `comprobacion`: casi siempre un guion de `herramientas/guiones/nucleo/`
+  con lo que debe cumplirse al final.
 
 ## Trampas
 - El guardado se escribe a un archivo temporal y luego se renombra: así un cierre a mitad no deja el archivo dañado.

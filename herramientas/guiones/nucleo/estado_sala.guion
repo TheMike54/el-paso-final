@@ -1,4 +1,4 @@
-# Casos de herramientas/salas/prueba_estado_sala.gd: suelo y coleccionable recordados, recompensas,
-# mapa al descansar y los momentos que autoguardan.
-escena res://herramientas/salas/sala_estado_sala.tscn
-fin 2
+# Casos de herramientas/pruebas/prueba_estado_sala.gd: suelo y coleccionable recordados, recompensas,
+# banco y entrega sin responder en el congelado, mapa al descansar y los momentos que autoguardan.
+escena res://herramientas/pruebas/sala_estado_sala.tscn
+fin 60

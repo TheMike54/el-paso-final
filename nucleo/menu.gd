@@ -23,20 +23,20 @@ var ranuras: Ranuras = null
 ## La eleccion de personaje y nombre de una ranura vacia; publica para que la prueba la maneje.
 var nueva_partida: NuevaPartida = null
 
+var _confirmar: Confirmacion = null
+
 @onready var _jugar: Button = $Centro/Opciones/Jugar as Button
 @onready var _configuracion: Button = $Centro/Opciones/Configuracion as Button
 @onready var _zona: Button = $Centro/Opciones/ZonaPruebas as Button
 ## La pantalla de Configuracion; publica para que la prueba la maneje.
 @onready var configuracion: Configuracion = $Configuracion as Configuracion
-@onready var _confirmar: Control = $Confirmar as Control
 @onready var _centro: Control = $Centro as Control
-@onready var _si: Button = $Confirmar/Caja/Botones/Si as Button
-@onready var _no: Button = $Confirmar/Caja/Botones/No as Button
 
 
 func _ready() -> void:
 	theme = Tema.crear()
-	_confirmar.visible = false
+	Tema.raya_abajo($Centro/Opciones/Titulo as Control)
+	_centro.offset_left = Tema.margen_columna(get_viewport_rect().size)
 	var error: Error = Guardado.migrar(Guardado.RUTA, Guardado.ruta_ranura(1))
 	if error != OK:
 		push_error("Menu: no se pudo pasar la partida a la ranura 1 (error %d)" % error)
@@ -52,13 +52,12 @@ func _ready() -> void:
 	move_child(nueva_partida, configuracion.get_index())
 	nueva_partida.confirmada.connect(_empezar_nueva)
 	nueva_partida.cerrado.connect(_al_cerrar_nueva)
+	_armar_confirmacion()
 	_jugar.pressed.connect(abrir_ranuras)
 	_configuracion.pressed.connect(abrir_configuracion)
 	configuracion.editor_pedido.connect(abrir_editor)
 	_zona.pressed.connect(_entrar_a_zona)
 	configuracion.cerrado.connect(_al_cerrar_configuracion)
-	_si.pressed.connect(salir)
-	_no.pressed.connect(_cancelar_salida)
 	_poner_aviso_toques()
 	_mostrar_zona()
 	Tema.dar_foco(_jugar)
@@ -213,13 +212,27 @@ func _al_cerrar_editor() -> void:
 	configuracion.volver_del_editor()
 
 
+# La confirmacion de salir (Confirmacion), la ultima hija: encima del menu, de las ranuras, de Configuracion y del
+# aviso de pocos toques. Conserva el aspecto que tenia en menu.tscn: velo al 0,7, pregunta de una linea en
+# Tema.TITULO y 24 px entre la pregunta y los botones. Se llama Confirmar: asi la buscan los guiones y las pruebas.
+func _armar_confirmacion() -> void:
+	_confirmar = Confirmacion.new()
+	_confirmar.name = "Confirmar"
+	_confirmar.alfa_velo = 0.7
+	_confirmar.separacion = 24
+	_confirmar.ancho_pregunta = 0.0
+	_confirmar.variacion_pregunta = Tema.TITULO
+	_confirmar.confirmada.connect(salir)
+	_confirmar.cancelada.connect(_cancelar_salida)
+	add_child(_confirmar)
+
+
 func _pedir_salida() -> void:
 	if _confirmar.visible:
-		_cancelar_salida()
+		_confirmar.cancelar()
 	else:
-		_confirmar.visible = true
 		_centro.visible = false
-		Tema.dar_foco(_no)
+		_confirmar.abrir("¿Salir del juego?", "Salir", "Seguir jugando", Confirmacion.Foco.NO)
 
 
 ## Sale del juego avisando antes el cierre a todo el arbol, como al cerrar la ventana: quit() solo no lo avisa y
@@ -230,7 +243,6 @@ func salir() -> void:
 
 
 func _cancelar_salida() -> void:
-	_confirmar.visible = false
 	_centro.visible = true
 	Tema.dar_foco(_jugar)
 

@@ -16,7 +16,7 @@ const DANINO: int = 1 << 3
 const INTERACCION: int = 1 << 4
 ## El ataque del jugador y su bola: nadie los mira.
 const ATAQUE_JUGADOR: int = 1 << 5
-## Reservada para el primer enemigo que camine con fisica (CharacterBody2D): miraria ESCENARIO.
+## El cuerpo de cada Enemigo (CharacterBody2D): mira ESCENARIO. Nadie lo mira: el jugador lo atraviesa.
 const CUERPO_ENEMIGO: int = 1 << 6
 
 
@@ -24,3 +24,11 @@ const CUERPO_ENEMIGO: int = 1 << 6
 static func poner(objeto: CollisionObject2D, capa: int, mascara: int) -> void:
 	objeto.collision_layer = capa
 	objeto.collision_mask = mascara
+
+
+## Rayo de desde a hasta (globales) contra los solidos de ESCENARIO, sin areas: el Dictionary de intersect_ray,
+## vacio si no choca. Solo dentro del tick (_physics_process o lo que este llama).
+static func rayo_a_escenario(quien: Node2D, desde: Vector2, hasta: Vector2) -> Dictionary:
+	var consulta: PhysicsRayQueryParameters2D = PhysicsRayQueryParameters2D.create(desde, hasta)
+	consulta.collision_mask = ESCENARIO
+	return quien.get_world_2d().direct_space_state.intersect_ray(consulta)

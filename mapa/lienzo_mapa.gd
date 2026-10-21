@@ -10,6 +10,8 @@ const COLOR_BORDE: Color = Color(0.9, 0.85, 0.7, 1.0)
 const COLOR_MARCADOR: Color = Color(1.0, 0.85, 0.2, 1.0)
 const COLORES_ZONA: Array[Color] = [Color(0.45, 0.55, 0.65), Color(0.6, 0.5, 0.4), Color(0.45, 0.6, 0.45), Color(0.6, 0.45, 0.6)]
 const RADIO_MARCADOR: float = 10.0
+const COLOR_MOCHILA: Color = Color(0.85, 0.35, 0.3, 1.0)
+const LADO_MOCHILA: float = 22.0
 
 ## Lo que quedo dibujado en la ultima llamada a dibujar(): salas, zonas, si hay marcador y si quedo acercado.
 var salas_dibujadas: int = 0
@@ -18,6 +20,9 @@ var marcador_visible: bool = false
 var quedo_acercado: bool = false
 ## Donde quedo el punto del jugador, en la pantalla del mapa (para la prueba).
 var marcador_en_pantalla: Vector2 = Vector2.ZERO
+## Si se dibujo el icono de la mochila (lo perdido al morir) y donde, en la pantalla del mapa.
+var mochila_visible: bool = false
+var mochila_en_pantalla: Vector2 = Vector2.ZERO
 
 var _indice: IndiceSalas = IndiceSalas.new()
 var _zonas: Dictionary[String, Array] = {}
@@ -42,7 +47,8 @@ func _ready() -> void:
 
 
 ## Prepara el dibujo. acercado se cumple solo si la zona actual tiene salas dibujadas; si no, queda alejado.
-func dibujar(indice: IndiceSalas, zonas: Dictionary[String, Array], zona_actual: String, acercado: bool, con_marcador: bool, marcador: Vector2) -> void:
+## sala_mochila y punto_mochila: donde esta lo perdido (sala vacia: no hay); se dibuja si esa sala queda dibujada.
+func dibujar(indice: IndiceSalas, zonas: Dictionary[String, Array], zona_actual: String, acercado: bool, con_marcador: bool, marcador: Vector2, sala_mochila: String = "", punto_mochila: Vector2 = Vector2.ZERO) -> void:
 	_indice = indice
 	_zonas = zonas
 	quedo_acercado = acercado and zonas.has(zona_actual)
@@ -66,6 +72,11 @@ func dibujar(indice: IndiceSalas, zonas: Dictionary[String, Array], zona_actual:
 		for zona: String in zonas:
 			_centros_zona.append(_transformacion * DatosMapa.abarca(indice, zonas[zona]).get_center())
 			_nombres_zona.append(DatosMapa.nombre_de_zona(zona))
+	# Todas las salas empiezan sus limites en (0, 0): el punto de la sala en el mundo es la esquina de su rectangulo
+	# mas el punto. Si una sala empezara en otra esquina, el icono se correria lo mismo.
+	mochila_visible = not sala_mochila.is_empty() and _ids.has(sala_mochila)
+	if mochila_visible:
+		mochila_en_pantalla = _transformacion * (indice.rectangulos[sala_mochila].position + punto_mochila)
 	marcador_visible = con_marcador and salas_dibujadas > 0
 	if _punto != null:
 		_punto.visible = marcador_visible
@@ -88,7 +99,8 @@ func soltar_texturas() -> void:
 
 func _draw() -> void:
 	if salas_dibujadas == 0:
-		draw_string(get_theme_default_font(), Vector2(size.x / 2.0 - 160.0, size.y / 2.0), "Aún no hay nada en el mapa", HORIZONTAL_ALIGNMENT_CENTER, 320.0, 28)
+		# Centrado en todo el ancho del lienzo: en un ancho fijo el texto se cortaba.
+		draw_string(get_theme_default_font(), Vector2(0.0, size.y / 2.0), "Aún no hay nada en el mapa", HORIZONTAL_ALIGNMENT_CENTER, size.x, 28)
 		return
 	var escala: float = _transformacion.x.x
 	if quedo_acercado:
@@ -110,6 +122,11 @@ func _draw() -> void:
 				draw_rect(_en_pantalla(_indice.rectangulos[str(valor)], escala), color)
 		for i: int in range(_nombres_zona.size()):
 			draw_string(get_theme_default_font(), _centros_zona[i] - Vector2(150.0, -10.0), _nombres_zona[i], HORIZONTAL_ALIGNMENT_CENTER, 300.0, 30)
+	if mochila_visible:
+		# Un rombo, para que no se confunda con el punto redondo del jugador.
+		var m: Vector2 = mochila_en_pantalla
+		var l: float = LADO_MOCHILA / 2.0
+		draw_colored_polygon(PackedVector2Array([m + Vector2(0.0, -l), m + Vector2(l, 0.0), m + Vector2(0.0, l), m + Vector2(-l, 0.0)]), COLOR_MOCHILA)
 
 
 func _dibujar_punto() -> void:

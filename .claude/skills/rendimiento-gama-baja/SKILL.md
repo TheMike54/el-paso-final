@@ -21,7 +21,8 @@ viven en `docs/contrato.md` («Configuración del proyecto» y «Recursos»): es
   (`tutorials/performance/general_optimization.rst:39`).
 - Decir si limita la CPU o la GPU: el cuadro dura lo que tarda el más lento, y optimizar el otro no sube nada
   (`tutorials/performance/general_optimization.rst:289`). Aquí se prueba apagando capas una por una en la sala
-  de arte (`herramientas/salas/sala_arte.gd`); así se vio que una niebla translúcida grande costaba ~11 FPS.
+  de arte (`herramientas/salas/sala_arte.gd`); así se vio que una niebla translúcida grande costaba ~11 FPS
+  (`docs/pruebas.md`, «Sala de arte (rendimiento)»).
 - Rendimiento se mide en el S50 y en el S20; lo funcional, en uno
   (`tutorials/performance/general_optimization.rst:74`).
 
@@ -50,9 +51,9 @@ Texturas (memoria por tamaño: tabla en `tutorials/assets_pipeline/importing_ima
   (`CARPETAS_ARTE_MUNDO` en `herramientas/validar.gd`); que el HUD y los menús no los lleven no lo revisa.
 - Sprites y piezas con alfa en Lossless (`compress/mode=0`); VRAM Compressed da artefactos en 2D
   (`tutorials/assets_pipeline/importing_images.rst:187`). `validar.ps1` falla con una imagen
-  del arte del mundo con transparencia en VRAM. Excepción: los fondos translúcidos de la sala de arte (`ALFA_EN_VRAM` en
-  `herramientas/validar.gd`), mientras se mide (tabla de abajo); una excepción nueva va ahí y en `docs/contrato.md`,
-  «Recursos».
+  del arte del mundo con transparencia en VRAM. Excepción decidida con medida: los fondos translúcidos de la sala de
+  arte (`ALFA_EN_VRAM` en `herramientas/validar.gd`; razón y medida en `docs/contrato.md`, «Recursos»). Una excepción
+  nueva se mide igual (artefactos y `dumpsys meminfo`) y va en los dos lugares.
 
 Escena y proceso:
 
@@ -94,12 +95,12 @@ Hechos del proyecto:
 ## Medir en el S50 antes de decidir
 
 Ninguno de estos se cambia sin una medida en el teléfono; la decisión queda escrita en el plan activo o en
-`ESTADO.md`.
+`ESTADO.md`. Ya decididos con medida, en `docs/contrato.md`: la interpolación de física, apagada («Configuración
+del proyecto»; si se reabre, solo `CPUParticles2D` se interpola,
+`tutorials/physics/interpolation/2d_and_3d_physics_interpolation.rst:12`), y Lossless o VRAM por imagen («Recursos»).
 
 | Tema | Qué medir | Doc |
 |---|---|---|
-| Interpolación de física | Si a 60 ticks se nota saltón en un teléfono de 90 o 120 Hz. Si se activa, solo `CPUParticles2D` se interpola | `tutorials/physics/interpolation/physics_interpolation_introduction.rst:56`, `tutorials/physics/interpolation/2d_and_3d_physics_interpolation.rst:12` |
 | Partículas CPU o GPU | FPS con cada una en el S50; la razón de la elección, escrita | `tutorials/2d/particle_systems_2d.rst:28` |
-| Fondo en VRAM o Lossless | Artefactos visibles y memoria (`dumpsys meminfo`) | `tutorials/assets_pipeline/importing_images.rst:187`, `:260` |
 | Calentar shaders y partículas | Tirón al primer uso de un efecto con el APK recién instalado; si lo hay, mostrarlo un cuadro durante el fundido de entrada (Compatibility no tiene ubershaders) | `tutorials/performance/pipeline_compilations.rst:15`, `tutorials/rendering/jitter_stutter.rst:93` |
 | Cambio de sala | Tiempo en negro de `change_scene_to_file`: el APK de desarrollo imprime `SALA <clave> carga_ms=<n>` (`adb logcat`); carga en segundo plano solo si se nota | `tutorials/scripting/scene_tree.rst:189`, `tutorials/io/background_loading.rst:14`; guion `nucleo/cambio_de_sala` |

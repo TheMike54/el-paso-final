@@ -1,0 +1,10 @@
+# Ya se esta curando y el area de ataque no detecta nada: empezar la curacion corta el ataque a medias, como la
+# picada, sentarse o hablar. Si no, el ataque queda encendido (monitoring true) mientras dura la curacion.
+# Medido el 17-oct-2026: en 171 el ataque sigue encendido y aun no cura; en 172 empieza la curacion y lo apaga.
+# Sin estas lineas el final no distingue un ataque que se corto de uno que nunca se encendio.
+en 171 valor Jugador curando false
+en 171 valor Jugador/Ataque monitoring true
+en 172 valor Jugador curando true
+en 172 valor Jugador/Ataque monitoring false
+valor Jugador curando true
+valor Jugador/Ataque monitoring false

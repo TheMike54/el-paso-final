@@ -451,13 +451,13 @@
   },
   {
     "id": "configuracion-tactil",
-    "que": "Configuracion sin interruptores: cada opcion de si o no muestra su valor en una pastilla y se cambia tocando el boton; Recursos pasa a bajo, alto y auto con cada toque; cada volumen tiene una barra ancha que salta al toque, se arrastra y con teclas se mueve de 10 en 10, y un altavoz que silencia y vuelve al valor de antes; Brillo abre su pantalla con la escena (la foto de la sala desde la pausa o una de muestra), un cuadro de calibracion y la barra, que guarda al soltarla",
+    "que": "Configuracion sin interruptores: cada opcion de si o no muestra su valor en un ovalo de gis y se cambia tocando el boton; Recursos pasa a bajo, alto y auto con cada toque; cada volumen tiene una barra ancha que salta al toque, se arrastra y con teclas se mueve de 10 en 10, y un altavoz que silencia y vuelve al valor de antes; Brillo abre su pantalla con la escena (la foto de la sala desde la pausa o una de muestra), un cuadro de calibracion y la barra, que guarda al soltarla",
     "comprobacion": "herramientas/guiones/nucleo/menu_configuracion.guion",
     "pasa": true
   },
   {
     "id": "marco-menus-telefono",
-    "que": "En el telefono el marco de menus se abre con el boton Mapa de pie y con el que sentado dice Inventario, se cambia de pagina con la barra y se cierra con Volver y Atras; la pausa abre Configuracion encima sin un tiron visible; las pastillas, las barras, el altavoz y la pantalla de brillo se usan con el pulgar",
+    "que": "En el telefono el marco de menus se abre con el boton Mapa de pie y con el que sentado dice Inventario, se cambia de pagina con la barra y se cierra con Volver y Atras; la pausa abre Configuracion encima sin un tiron visible; los botones de si o no, las barras, el altavoz y la pantalla de brillo se usan con el pulgar",
     "comprobacion": "manual: filas Marco de menus en el telefono y Configuracion tactil de docs/pruebas.md, en el S50 y el S20",
     "pasa": true
   },
@@ -555,7 +555,7 @@
     "id": "selector-fps-telefono",
     "que": "En un telefono de 120 Hz con Recursos en alto, FPS en 60 deja el juego a ~60 y en 120 a ~120, sin reiniciar; en el S50 (60 Hz) la opcion no aparece",
     "comprobacion": "manual: APK de desarrollo con --print-fps; S21 en alto: FPS 60 y 120, 2 min cada uno en la sala de arte, logcat; cambiarlo desde la pausa; S50: Configuracion sin la opcion",
-    "pasa": false
+    "pasa": true
   },
   {
     "id": "iconos-boton",
@@ -591,6 +591,306 @@
     "id": "muros-palancas-telefono",
     "que": "En el telefono, la sala de secretos se siente bien: golpes del muro, de donde sale, retraso de la palanca y el porton al abrirse",
     "comprobacion": "manual: sala Secretos de la zona de pruebas en un telefono: romper cada muro, el techo y mover la palanca; decir si cuatro golpes sobran, si se entiende el retraso y si se ve abrir el porton",
+    "pasa": true
+  },
+  {
+    "id": "enemigo-cuerpo",
+    "que": "El Enemigo es un CharacterBody2D en la capa cuerpo_enemigo que choca con el escenario (el que vuela flota) y ComportamientoEnemigo ofrece caer, mover, en_suelo, pared_delante, orilla_delante, ve_al_jugador y girar; los enemigos de antes siguen igual",
+    "comprobacion": "herramientas/guiones/nucleo/capas_fisica.guion;herramientas/guiones/nucleo/enemigo_base.guion;herramientas/guiones/nucleo/enemigos_moviles.guion",
+    "pasa": true
+  },
+  {
+    "id": "enemigo-caminante",
+    "que": "Un enemigo que camina va y viene sin caer de su plataforma, se detiene 60 ticks y gira ante una pared o una orilla, y un golpe no lo empuja fuera de la orilla",
+    "comprobacion": "herramientas/guiones/nucleo/enemigos_moviles.guion",
+    "pasa": true
+  },
+  {
+    "id": "enemigo-volador",
+    "que": "Un enemigo que vuela zumba en su sitio, despierta con el jugador cerca y a la vista (una pared tapa), lo persigue con aceleracion y tope por eje sin atravesar paredes y lo olvida tras 600 ticks sin verlo",
+    "comprobacion": "herramientas/guiones/nucleo/enemigos_moviles.guion",
+    "pasa": true
+  },
+  {
+    "id": "enemigo-arco",
+    "que": "ProyectilEnemigo en arco con gravedad propia: lanzar_en_arco calcula la rapidez para un angulo fijo y cae cerca del objetivo, se detiene en los solidos y se puede parar; sin gravedad sigue recto",
+    "comprobacion": "herramientas/guiones/nucleo/enemigos_moviles.guion",
+    "pasa": true
+  },
+  {
+    "id": "enemigos-moviles-telefono",
+    "que": "En el telefono los tres enemigos de prueba se leen y dan tiempo de reaccionar, y el S50 no baja de 50 FPS con los tres a la vez",
+    "comprobacion": "manual: sala Enemigos Moviles de la zona de pruebas en el S50 con el APK de desarrollo: decir si el caminante se lee, si el volador da tiempo de reaccionar, si el arco se ve venir, y los FPS con los tres en pantalla",
+    "pasa": true
+  },
+  {
+    "id": "perdido-al-morir",
+    "que": "Morir con PejeCoins deja la mochila {sala, x, y, monto} en el ultimo punto seguro del jugador y las monedas en 0, antes del autoguardado; sin monedas no la toca; morir otra vez la reemplaza y la vieja se pierde; el guardado la lleva",
+    "comprobacion": "herramientas/guiones/nucleo/lo_perdido.guion",
+    "pasa": true
+  },
+  {
+    "id": "perdido-mochila-reto",
+    "que": "La Mochila aparece solo en su sala; interactuar abre un reto con preguntas_por_reto preguntas al azar de la bolsa y es una sola oportunidad: con meta aciertos devuelve el monto exacto, vacia la mochila, emite mochila_recuperada, autoguarda y desaparece; sin la meta la vacia sin devolver nada, autoguarda y desaparece; sin bolsa se recupera al interactuar; un golpe corta el reto sin contar y el intento siguiente usa otras preguntas",
+    "comprobacion": "herramientas/guiones/nucleo/lo_perdido.guion",
+    "pasa": true
+  },
+  {
+    "id": "perdido-telefono",
+    "que": "En el telefono se entiende que hay que volver por lo perdido, la mochila se encuentra y el reto se lee y se responde con el pulgar",
+    "comprobacion": "manual: sala Lo Perdido de la zona de pruebas en el S50: morir en el pincho con monedas, volver y responder el reto; perderlo una vez y ganarlo despues",
+    "pasa": true
+  },
+  {
+    "id": "tienda-monedas",
+    "que": "Partida.gastar_monedas(n) resta y devuelve true solo si alcanza; si no, no cambia nada",
+    "comprobacion": "herramientas/guiones/nucleo/tienda.guion",
+    "pasa": true
+  },
+  {
+    "id": "lista-elegir",
+    "que": "ListaElegir muestra filas con nombre y un dato a la derecha; el foco empieza en la primera fila elegible (o en la que se pida), una fila apagada en gris no se elige, y Volver o Circulo / B la cierran; senal elegida(indice)",
+    "comprobacion": "herramientas/guiones/nucleo/tienda.guion",
+    "pasa": true
+  },
+  {
+    "id": "tienda-comprar",
+    "que": "Una Tienda abre su menu con interactuar: las PejeCoins arriba, los articulos no comprados cuyo requisito se cumple, en gris los que no alcanzan y la descripcion del que tiene el foco; comprar pide Si / No, cobra una vez, entrega la Recompensa, marca <id>_<articulo> en su sala, emite articulo_comprado y autoguarda; lo comprado ya no sale, tampoco al volver a la sala",
+    "comprobacion": "herramientas/guiones/nucleo/tienda.guion",
+    "pasa": true
+  },
+  {
+    "id": "tienda-telefono",
+    "que": "En el telefono el precio se lee, se entiende lo gris y confirmar la compra se hace con el pulgar y con el control",
+    "comprobacion": "manual: sala Tienda de la zona de pruebas en el S50: comprar el barato, ver el caro en gris y confirmar con Si y con No, con el dedo y con un control",
     "pasa": false
+  },
+  {
+    "id": "estaciones-partida",
+    "que": "Partida.estaciones guarda los ids de las estaciones abiertas (campo nuevo con valor por omision: un guardado sin el campo carga con la lista vacia); abrir_estacion no repite ids",
+    "comprobacion": "herramientas/guiones/nucleo/estaciones.guion",
+    "pasa": true
+  },
+  {
+    "id": "estacion-abrir",
+    "que": "Una Estacion cerrada pregunta si se paga su costo: sin monedas no abre; con monedas cobra una vez, la abre y autoguarda; abierta no vuelve a cobrar",
+    "comprobacion": "herramientas/guiones/nucleo/estaciones.guion",
+    "pasa": true
+  },
+  {
+    "id": "estacion-viaje",
+    "que": "Una Estacion abierta muestra las estaciones abiertas en el orden de la tabla, con el foco en la actual, que no se elige; elegir otra funde a negro, cambia a su sala y deja al jugador en su llegada, emite viaje_hecho y no cambia vidas, banco ni guardado",
+    "comprobacion": "herramientas/guiones/nucleo/estaciones.guion",
+    "pasa": true
+  },
+  {
+    "id": "estaciones-telefono",
+    "que": "En el telefono se entiende pagar la estacion, el menu de destinos se usa con el dedo y con el control y el fundido del viaje se siente bien",
+    "comprobacion": "manual: zona de pruebas, Zonas, Prueba 1 en el S50: pagar la estacion de 50, viajar a la otra y volver, con el dedo y con un control",
+    "pasa": false
+  },
+  {
+    "id": "aviso-accion",
+    "que": "Un AvisoAccion aparece en TICKS_APARECER con el jugador dentro y se va al salir; con el control dibuja el IconoBoton de su accion y, tras un toque, el boton de la pantalla, que late mientras se ve y no esta hecho; una accion del joystick no hace latir nada y un boton sin su habilidad o hablando no late",
+    "comprobacion": "herramientas/guiones/nucleo/aviso_accion.guion",
+    "pasa": true
+  },
+  {
+    "id": "aviso-accion-telefono",
+    "que": "En el telefono se entiende que boton ensena cada pizarron, el latido del boton de la pantalla se nota y el dibujo sobre el pizarron se lee, con el dedo y con un control",
+    "comprobacion": "manual: zona de pruebas, sala Pizarrones, en el S50: recorrer los pizarrones con un control (la prueba con el dedo esta en aviso-accion-rediseno-telefono)",
+    "pasa": false
+  },
+  {
+    "id": "aviso-accion-hecha",
+    "que": "Un AvisoAccion espera TICKS_ESPERA antes de aparecer, dibuja su palabra junto al boton, se va tras TICKS_MINIMO al hacer la accion y con id no vuelve en la partida; hecha antes de entrar no aparece y curar cuenta al curar una vida, no al tocar",
+    "comprobacion": "herramientas/guiones/nucleo/aviso_accion.guion",
+    "pasa": true
+  },
+  {
+    "id": "aviso-accion-rediseno-telefono",
+    "que": "En el telefono la sala Pizarrones se entiende en orden (saltar, atacar al caminante, curar, sentarse): cada aviso con su palabra se lee, se va al hacer la accion y el caminante deja con ganas de curarse",
+    "comprobacion": "manual: zona de pruebas, Mundo, Pizarrones, en el telefono con el dedo: recorrer la sala de izquierda a derecha y volver a entrar",
+    "pasa": false
+  },
+  {
+    "id": "botones-por-ensenar",
+    "que": "En una sala con botones_por_ensenar los botones de la pantalla de esas acciones no se ven hasta que su AvisoAccion aparece o se hace; lo ensenado se guarda en Partida.botones_ensenados (una partida vieja sin el campo carga vacia); la sala Pizarrones empieza sin saltar, atacar ni curar y con una vida menos, y avanzar una conversacion no cuenta como hacer la accion",
+    "comprobacion": "herramientas/guiones/nucleo/aviso_accion.guion;herramientas/guiones/nucleo/guardado.guion",
+    "pasa": true
+  },
+  {
+    "id": "botones-por-ensenar-telefono",
+    "que": "En el telefono, en la sala Pizarrones, cada boton de la pantalla aparece al llegar a su pizarron y se entiende que es nuevo; con una vida menos se puede probar curar",
+    "comprobacion": "manual: zona de pruebas, sala Pizarrones, en el telefono con el dedo: recorrerla de izquierda a derecha y curarse en el pizarron de curar",
+    "pasa": false
+  },
+  {
+    "id": "menus-gis",
+    "que": "Los menus en gis: Cabin Sketch en todo (gruesa en los titulos), opciones sin caja con la flechita y el subrayado de gis en el foco (EstiloGis, oculto tras un toque), un solo encabezado con Volver, titulo y raya en cada pantalla, menu principal y pausa en una columna a la izquierda, Si / No y 60 / 120 con un ovalo en lo que vale, y fichas y dialogo en tarjetas de gis",
+    "comprobacion": "herramientas/guiones/nucleo/zona_pruebas_categorias.guion;herramientas/guiones/nucleo/menu_configuracion.guion;herramientas/guiones/nucleo/pausa_foco.guion",
+    "pasa": true
+  },
+  {
+    "id": "menus-gis-telefono",
+    "que": "En el S50 y en el S21 con el dedo los menus en gis se leen, nada se corta (Configuracion en el S50), una opcion sin caja se entiende como algo que se toca y el dialogo en Cabin Sketch se lee de corrido",
+    "comprobacion": "manual: docs/pruebas.md, fila Menus en gis",
+    "pasa": false
+  },
+  {
+    "id": "cerrar-menu-con-b-no-cura",
+    "que": "Cerrar la tienda, el menu de estaciones, la pausa o el marco de menus con B (volver y curar a la vez), tocado o mantenido, no le llega al jugador: no cuenta un toque del boton de poderes ni empieza a curar. Todo menu que quita la pausa corre en la fisica despues del jugador (MarcoMenus.PRIORIDAD_FISICA)",
+    "comprobacion": "herramientas/guiones/nucleo/tienda.guion;herramientas/guiones/nucleo/estaciones.guion;herramientas/guiones/nucleo/marco.guion",
+    "pasa": true
+  },
+  {
+    "id": "curar-corta-el-ataque",
+    "que": "Empezar a curar corta un ataque a medias y el que estaba en cola: el area de ataque no queda encendida mientras dura la curacion. Lo que se corta al quedar quieto sale de dos funciones, _cortar_empujes y _cortar_ataque, en vez de listas repetidas",
+    "comprobacion": "herramientas/guiones/nucleo/jugador_curar_atacar.guion",
+    "pasa": true
+  },
+  {
+    "id": "sonidos-muro-y-porton",
+    "que": "FichaSonidos tiene un campo de efecto para romper un muro (muro_roto) y abrir un porton (porton), vacios mientras no haya archivo. Sonido.EVENTOS lista cada evento que Sonido toca y cada uno es campo de la ficha; tocar() avisa con push_warning si le llega uno que no lo es",
+    "comprobacion": "herramientas/guiones/nucleo/sonido.guion",
+    "pasa": true
+  },
+  {
+    "id": "tactiles-ocultos-con-control",
+    "que": "Los controles tactiles de una sala nueva no se ven si lo ultimo que se uso fue el control o el teclado (UltimaEntrada.con_control): al entrar y al cambiar de entrada jugando decide la misma regla, ControlesTactiles.deben_verse. Con el dedo y en la PC sin pantalla tactil no cambia nada",
+    "comprobacion": "herramientas/guiones/nucleo/controles_tactiles.guion",
+    "pasa": true
+  },
+  {
+    "id": "soltar-dedos-al-perder-foco",
+    "que": "Los controles tactiles sueltan todo al perder el foco la ventana o la app y al pausarla Android; un dedo que vuelve a tocar con un indice ya registrado suelta antes su boton o el joystick, y un toque cancelado suelta como levantar el dedo. Ninguna accion queda presionada sin dedo",
+    "comprobacion": "herramientas/guiones/nucleo/controles_tactiles.guion",
+    "pasa": true
+  },
+  {
+    "id": "tactiles-inactivos-con-menu",
+    "que": "Con un menu abierto (arbol detenido: pausa, marco de menus, tienda o estaciones) solo los botones tactiles Pausa y Mapa toman un dedo nuevo y siguen cerrando su menu (Pausa en Configuracion vuelve un nivel); Saltar, Atacar, Curar, Impulso (o cualquier boton fuera de BOTONES_DE_MENU) y el joystick no responden a un toque nuevo. Soltar y arrastrar siguen y al detenerse el arbol se suelta todo. Los botones se siguen dibujando",
+    "comprobacion": "herramientas/guiones/nucleo/controles_tactiles.guion",
+    "pasa": true
+  },
+  {
+    "id": "dispositivo-un-solo-origen",
+    "que": "Lo ultimo que se uso tiene un solo origen: UltimaEntrada.dispositivo, del enum Mando.Dispositivo (TOQUE, TECLADO, XBOX, PLAYSTATION), y con_control() se deriva de el. UltimaEntrada.clasificar dice sin anotar que dispositivo implica un evento (o SIN_CAMBIO) y la usan anotar y ControlesTactiles.procesar. La familia de cada control se calcula una vez por device y se vuelve a calcular al conectar o desconectar uno. Lo que se ve no cambia",
+    "comprobacion": "herramientas/guiones/nucleo/icono_boton.guion;herramientas/guiones/nucleo/controles_tactiles.guion;herramientas/guiones/nucleo/menu_configuracion.guion",
+    "pasa": true
+  },
+  {
+    "id": "nombres-de-boton-una-tabla",
+    "que": "Los nombres de los botones del control salen de una sola tabla, Mando.BOTONES (una fila por indice 0..14 con columnas neutro, Xbox y PlayStation; en la cara, letra y simbolo): Mando.nombre_de para Configuracion, Mando.nombre_en para IconoBoton y Mando.nombre_de_eje para los ejes. Ningun texto visible cambia: Select / View / Share, Start / Menu / Options, Stick izq. / LS / L3, Izquierda / Izq.",
+    "comprobacion": "herramientas/guiones/nucleo/icono_boton.guion;herramientas/guiones/nucleo/menu_configuracion.guion",
+    "pasa": true
+  },
+  {
+    "id": "iconos-por-senal",
+    "que": "IconoBoton se pone al dia por el bus y no por cuadro: UltimaEntrada emite Eventos.dispositivo_cambiado solo cuando dispositivo cambia de verdad y Mando emite Eventos.mando_cambiado una vez al final de asignar, aplicar o por_omision si puso algun boton (aunque sea el mismo). IconoBoton conecta en _enter_tree, desconecta en _exit_tree y al volver al arbol se pone al dia. Mando.cambios sigue como contador. Lo que se ve no cambia",
+    "comprobacion": "herramientas/guiones/nucleo/icono_boton.guion;herramientas/guiones/nucleo/bus_eventos.guion",
+    "pasa": true
+  },
+  {
+    "id": "reglas-de-entrada-con-nombre",
+    "que": "Las dos reglas sobre que entrada cuenta tienen nombre en UltimaEntrada y no se unifican: marca_teclado (cualquier tecla pulsada marca TECLADO en clasificar, tambien Atras y el volumen) y es_de_juego (tecla, boton o eje que dispara una accion que no es ui_*; con ella ControlesTactiles.procesar oculta los controles). Unificarlas cambiaria el juego y es decision de la persona. Lo que se ve no cambia",
+    "comprobacion": "herramientas/guiones/nucleo/icono_boton.guion;herramientas/guiones/nucleo/controles_tactiles.guion",
+    "pasa": true
+  },
+  {
+    "id": "tema-variaciones-y-foco-a-los-lados",
+    "que": "El aspecto de los menus sale de variaciones del tema y no de overrides por nodo (M15): Tema.TITULO_JUEGO y TITULO_PAUSA (de TITULO), DESTACADA, PREGUNTA, QUIEN y TENUE (Label) y OPCION_CHICA (Button) reemplazan los overrides de caja_dialogo, ranuras, menu_tienda, pagina_inventario (modulate), menu.tscn y pausa.tscn, y los cuatro font_size 48 de configuracion.tscn, redundantes con TITULO, se quitan; ningun pixel cambia. Ademas, la variacion Tema.OPCION_CENTRADA (Button) con EstiloGis.Forma.LADOS, una flechita de gis a cada lado y sin subrayado, y los adornos Tema.ADORNO_ANCHO y ADORNO_CHICO (PanelContainer con EstiloGis.Forma.ADORNO, que miden lo que dice el tema), para la pausa y la confirmacion Si / No",
+    "comprobacion": "herramientas/validar.ps1;herramientas/correr-guiones.ps1",
+    "pasa": true
+  },
+  {
+    "id": "confirmacion-compartida",
+    "que": "Una sola confirmacion Si / No, Confirmacion (nucleo/confirmacion.gd, armada en codigo, ColorRect a pantalla completa), para Borrar y Restaurar de las ranuras y Salir del menu principal (M1, primera mitad): abrir(pregunta, texto Si, texto No, foco) con el foco en Si o en No, senales confirmada (una vez por abrir, sin cerrarla) y cancelada (No o cancelar() desde el Atras de quien la abre, que la cierra); el aspecto (velo, separacion, ancho y variacion de la pregunta, variacion de Si y No) se elige al crearla, para que la tienda y la estacion la usen despues. Ranuras y Salir conservan textos, foco inicial en No, foco al cancelar y aspecto: capturas a 1280x720 y 1600x720 identicas pixel por pixel. Los nodos siguen llamandose Confirmar y Si",
+    "comprobacion": "herramientas/guiones/nucleo/ranuras.guion;herramientas/guiones/nucleo/menu.guion;herramientas/guiones/nucleo/menu_configuracion.guion",
+    "pasa": true
+  },
+  {
+    "id": "cobro-con-confirmacion-silksong",
+    "que": "La confirmacion de la tienda y el cobro de una estacion usan la Confirmacion compartida con el aspecto del cobro de Silksong (M1, segunda mitad; H1 de nucleo-tienda-gis): pregunta centrada, el precio en su linea con el texto PejeCoins, Si y No lado a lado con Tema.OPCION_CENTRADA y el foco en Si. Volver, pausa, Atras y No cancelan sin cobrar; Si cobra una vez. La estacion pregunta con CobroEstacion (nucleo/cobro_estacion.gd), un CanvasLayer de la capa 20 que pausa el arbol como la tienda, con MarcoMenus.PRIORIDAD_FISICA y en el grupo pantalla_encima: cerrarlo con B no cura ni cuenta un toque del boton de poderes, y la pausa no se abre encima. El resultado del pago (abierta o no alcanza) lo sigue diciendo la caja de dialogo",
+    "comprobacion": "herramientas/guiones/nucleo/tienda.guion;herramientas/guiones/nucleo/estaciones.guion",
+    "pasa": true
+  },
+  {
+    "id": "pausa-como-silksong",
+    "que": "El menu de pausa como el de Silksong (paso 7 de la auditoria, pieza 4; nucleo-tienda-gis, Menu de pausa): la columna centrada en la pantalla con el titulo Pausa, el adorno ancho de gis, Continuar, Configuracion y Salir al menu con Tema.OPCION_CENTRADA (sin subrayado; con el foco una flechita a cada lado, que no choca con el icono de volver de Continuar) y el adorno chico debajo; sin caja alrededor de las opciones, sobre el velo negro al 0,7 que deja ver el juego. Los botones siguen en Panel/Opciones con los mismos nombres y orden, y el foco inicial, Configuracion encima, el cierre con B y pausa y el icono de Continuar no cambian. Capturas a 1280x720, 1600x720 y 960x720 sin cortes ni encimados; las de Configuracion y del marco, identicas a las de antes",
+    "comprobacion": "herramientas/guiones/nucleo/pausa.guion;herramientas/guiones/nucleo/pausa_foco.guion;herramientas/guiones/nucleo/pausa_volver.guion;herramientas/guiones/nucleo/marco.guion",
+    "pasa": true
+  },
+  {
+    "id": "tienda-panel-derecho",
+    "que": "La tienda como las de Hollow Knight y Silksong (paso 7 de la auditoria, pieza 5; H2 de nucleo-tienda-gis): el juego detenido y a la vista a la izquierda, con un Control transparente a pantalla completa que sigue deteniendo los toques, y el panel en la mitad derecha del area util sobre un velo que cubre solo esa mitad. En el panel, la lista: cada fila con el icono de gis del tipo de su recompensa (IconoArticulo: vida, mapa, amuleto, habilidad o monedas), la moneda y el precio, en gris lo que no alcanza, y la fila con el foco en una franja de gis con un adorno arriba y otro abajo (Tema.FRANJA, visible tambien tras un toque); a la derecha el detalle, nombre en gis grueso y descripcion, que sigue al foco (debajo de la lista si no cabe; con la vista de 1280, 4:3 y 16:9, cabe al lado). La lista sigue con follow_focus, sin franja fija. Las PejeCoins dejan el panel: la tienda emite tienda_abierta y tienda_cerrada por el bus y el HUD las muestra fijas, corriendo con el arbol detenido solo mientras la tienda esta abierta, y al cerrarla vuelve a su ciclo. La confirmacion no cambia: el velo pasa a toda la pantalla mientras pregunta y sus capturas solo difieren en el contador del HUD. MenuEstaciones se ve igual",
+    "comprobacion": "herramientas/guiones/nucleo/tienda.guion;herramientas/guiones/interfaz/monedas_conteo.guion;herramientas/guiones/nucleo/bus_eventos.guion;herramientas/guiones/nucleo/estaciones.guion",
+    "pasa": true
+  },
+  {
+    "id": "viaje-rapido-mapa-gis",
+    "que": "El menu de estaciones como el del Ciervo de Hollow Knight (paso 7 de la auditoria, pieza 6; H3 de nucleo-tienda-gis): a la izquierda la lista de estaciones abiertas bajo el titulo Viajar, como antes; a la derecha un MapaEstaciones de gis dibujado en codigo, con un circulo por estacion en el centro del rectangulo de su sala en mapa/indice_salas.tres, escalado al area, una linea de cada estacion a la siguiente en el orden de la tabla, la del foco con un anillo y la actual en gris con Aqui; abajo las ayudas Viajar (ui_accept) y Cancelar (volver) con IconoBoton, en lugar del pie vacio. El nucleo lee el indice con ResourceLoader.exists, load() y get(), sin nombrar IndiceSalas: sin el indice o sin el rectangulo de alguna estacion queda la lista sola a lo ancho, y si al mapa le quedan menos de 240 px tambien. Capturas a 960, 1280, 1600 y 1760 x 720 sin cortes ni encimados",
+    "comprobacion": "herramientas/guiones/nucleo/estaciones.guion;herramientas/pruebas/prueba_estaciones.gd",
+    "pasa": true
+  },
+  {
+    "id": "pagina-marco-y-encabezado",
+    "que": "Las paginas del marco extienden PaginaMarco (nucleo/pagina_marco.gd, paso 7 de la auditoria, pieza 7: M3 y M4): la base pone capa 20, grupo pagina_marco, PROCESS_MODE_ALWAYS y oculta, y da abierta, id_pagina, titulo_pagina, mostrar_en_marco y ocultar_de_marco; PaginaInventario, PantallaAmuletos y PantallaMapa (mapa/ extiende la base del nucleo) la extienden, y MarcoMenus guarda un Array[PaginaMarco] y les habla con llamadas tipadas en lugar de call() por nombre. Tema.encabezado pone tambien el boton del control de volver dentro de Volver (opcional, sin duplicarlo), y lo usan barra_arriba, Configuracion, la zona de pruebas y la barra del marco en lugar de armarlo a mano. Nada cambia a la vista ni en el comportamiento: capturas a 1280x720 de configuracion, mando, audio, creditos, brillo, ranuras, nueva partida, zona, pausa, las tres paginas del marco, tienda y estaciones identicas pixel por pixel a las de antes, y la barra del marco sigue con 3 iconos",
+    "comprobacion": "herramientas/guiones/nucleo/marco.guion;herramientas/guiones/nucleo/amuletos.guion;herramientas/guiones/mapa/mapa_cuentas.guion;herramientas/guiones/nucleo/menu_configuracion.guion;herramientas/guiones/nucleo/zona_pruebas_volver.guion;herramientas/guiones/nucleo/ranuras.guion",
+    "pasa": true
+  },
+  {
+    "id": "amuletos-con-desplazamiento",
+    "que": "La lista de la pagina Amuletos va en un ScrollContainer con follow_focus (paso 7 de la auditoria, pieza 8: M10): con mas amuletos de los que caben a lo alto se desplaza y el que tiene el foco queda a la vista (el arrastre con el dedo es el del ScrollContainer, como en las ranuras, y se ve en el telefono); con los que caben se ve igual que antes, centrada bajo la barra del marco (capturas a 1280x720 de la pagina sin amuletos y con 3 y 4, identicas pixel por pixel a las de antes)",
+    "comprobacion": "herramientas/guiones/nucleo/amuletos.guion;herramientas/guiones/nucleo/marco.guion",
+    "pasa": true
+  },
+  {
+    "id": "configuracion-partida",
+    "que": "Configuracion partida en piezas (paso 7 de la auditoria, pieza 10: M6 y M7): el panel de audio es PanelAudio (nucleo/panel_audio.gd, script del nodo PanelAudio de configuracion.tscn: filas de volumen, altavoces, probar efecto y musica de prueba) y la pantalla de brillo es PantallaBrillo (nucleo/pantalla_brillo.gd, creada en codigo con el nombre PanelBrillo: escena tenue, ventana con foto o EscenaMuestra, cuadro de calibracion, shader de la foto y barra); avisan a Configuracion con barra_movida y barra_soltada, y guardar sigue siendo de Configuracion. El panel a la vista es un solo valor (enum Seccion) en lugar de cinco visible, y atras() vuelve a la lista con el foco en el boton que abrio el subpanel. Las rutas de nodo y la API que usan otros archivos no cambian (las constantes que solo usaban el audio o el brillo pasan a PanelAudio y PantallaBrillo); nada cambia a la vista ni en el comportamiento: capturas a 1280x720 de configuracion, mando, audio, creditos, brillo, ranuras, nueva partida, zona, pausa y las tres paginas del marco identicas pixel por pixel a las de antes",
+    "comprobacion": "herramientas/guiones/nucleo/menu_configuracion.guion;herramientas/pruebas/prueba_menu_configuracion.gd;herramientas/guiones/nucleo/marco.guion;nucleo/panel_audio.gd;nucleo/pantalla_brillo.gd",
+    "pasa": true
+  },
+  {
+    "id": "interactuable-base",
+    "que": "Base Interactuable (nucleo/interactuable.gd, paso 8 de la auditoria, pieza 1: m1, m3 y W5) para Npc, RetoPreguntas y Mochila: la capa INTERACCION, cerca con su redibujo, el disparador en el tick (interactuar recien pulsado, Jugador.encima_de y sin congelado) con los ganchos _al_interactuar y _puede_interactuar, el interruptor con_aviso, la caja de dialogo que se abre con _abrir_caja y se cierra o se corta con _cerrar_caja (caja.ficha = null antes de queue_free), _crear_forma y el dibujo partido: el rectangulo provisional solo sin un CanvasItem hijo (los CanvasLayer no cuentan) y el triangulo de aviso siempre que cerca. Los nombres publicos no cambian y nada cambia a la vista ni en el comportamiento: capturas a 1280x720 de sala_dialogo y sala_reto con el jugador encima identicas pixel por pixel a las de antes; con un ColorRect hijo del Npc no se dibuja el rectangulo y el triangulo si",
+    "comprobacion": "herramientas/guiones/nucleo/dialogo.guion;herramientas/guiones/nucleo/dialogo_completo.guion;herramientas/guiones/nucleo/dialogo_no.guion;herramientas/guiones/nucleo/dialogo_quieto.guion;herramientas/guiones/nucleo/reto.guion;herramientas/guiones/nucleo/lo_perdido.guion;herramientas/guiones/nucleo/capas_fisica.guion",
+    "pasa": true
+  },
+  {
+    "id": "interactuable-tienda-estacion",
+    "que": "Tienda y Estacion extienden Interactuable (paso 8 de la auditoria, pieza 2): la base pone la capa, sigue cerca, dispara con Congelado y dibuja con dibujar_provisional y dibujar_aviso (aviso a 240 px); _puede_interactuar es falso con el menu (Tienda) o con el menu o el cobro (Estacion) abiertos. Tienda no usa la caja. Estacion conserva interactuar(jugador) publica, que llama _al_interactuar; abre la caja del pago con _abrir_caja; su cuenta del viaje corre antes del tick de la base, y su _cerrar_caja no suelta a _jugador porque viajar lo reutiliza. Los nombres publicos y los .tscn no cambian y nada cambia a la vista ni en el comportamiento: capturas a 1280x720 de sala_tienda y prueba_1 con el jugador encima identicas pixel por pixel a las de antes",
+    "comprobacion": "herramientas/guiones/nucleo/tienda.guion;herramientas/guiones/nucleo/estaciones.guion;herramientas/guiones/nucleo/capas_fisica.guion;herramientas/guiones/nucleo/bus_eventos.guion;herramientas/guiones/contenido/zona_prueba_banco.guion;herramientas/guiones/contenido/zona_prueba_puertas.guion;herramientas/guiones/contenido/zona_prueba_vitrina.guion",
+    "pasa": true
+  },
+  {
+    "id": "banco-y-entrega-respetan-congelado",
+    "que": "Banco y EntregaRecompensas extienden Interactuable con con_aviso en falso (paso 8 de la auditoria, pieza 3, con W4): interactuar recien pulsado durante el congelado comun no sienta en el banco ni entrega, como en el Npc (antes un golpe sobre un banco y la pulsacion dentro del hit-stop cancelaban el retroceso y curaban al instante); fuera del congelado descansan y entregan igual que antes. Sin aviso no siguen cerca ni dibujan nada propio: capturas a 1280x720 de sala_banco y prueba_4 con el jugador encima identicas pixel por pixel a las de antes. descansar(), entregar(), id, ruta_guardado, recompensas, entregadas y los .tscn no cambian",
+    "comprobacion": "herramientas/guiones/nucleo/estado_sala.guion;herramientas/pruebas/prueba_estado_sala.gd;docs/errores/2026-10-18-banco-durante-hit-stop.md;herramientas/guiones/nucleo/banco.guion;herramientas/guiones/nucleo/capas_fisica.guion;herramientas/guiones/contenido/zona_prueba_vitrina.guion",
+    "pasa": true
+  },
+  {
+    "id": "camara-jugador-script-propio",
+    "que": "La camara del jugador tiene script propio (paso 9 de la auditoria, pieza 4): CamaraJugador (nucleo/camara_jugador.gd, script del nodo Camara de jugador.tscn) lleva suavizado_camara_x, tiempo_camara_y, adelanto_camara, temblor_fraccion_x, los limites, la altura, el suavizado vertical y el temblor en curso. No tiene _ready, _process ni _physics_process: el Jugador la llama en los mismos puntos que antes (iniciar en su _ready, seguir al final de cada tick tambien congelado, muerto o sentado, avanzar_temblor en _aterrizar, detener_temblor y colocar al reaparecer, fijar_limites desde la sala). Jugador.temblar y Jugador.fijar_limites siguen publicas y delegan; temblor_x y temblor_y siguen siendo propiedades del Jugador, de solo lectura, que leen de la camara. Nada cambia en el comportamiento: la traza por tick de 36 guiones del jugador y la camara (trazador fuera del repo) (posicion y offset de la camara, centro de la pantalla, temblor) sale identica a la de antes",
+    "comprobacion": "herramientas/guiones/nucleo/camara_caida.guion;herramientas/guiones/nucleo/camara_centrada.guion;herramientas/guiones/nucleo/camara_escalera.guion;herramientas/guiones/nucleo/camara_temblor.guion;herramientas/guiones/nucleo/camara_temblor_corta.guion;herramientas/guiones/nucleo/camara_temblor_picada.guion;herramientas/guiones/nucleo/camara_temblor_picada_baja.guion;herramientas/guiones/nucleo/camara_temblor_picada_fragil.guion;herramientas/guiones/nucleo/camara_temblor_picada_ras.guion;herramientas/guiones/nucleo/camara_temblor_salto.guion;herramientas/guiones/nucleo/camara_temblor_termina.guion",
+    "pasa": true
+  },
+  {
+    "id": "bola-corta-el-pasto",
+    "que": "La bola del jugador corta cada Cortable que toca con el mismo cortar() que el ataque (oculta Entero, muestra Cortado, suelta los trozos) y sigue su camino: el pasto no es solido, no la detiene ni la deshace. No cambia ninguna mascara (la bola ya veia la capa golpeable del Cortable) ni ninguna otra interaccion de la bola. Como la bola sale a 70-110 px sobre los pies y la forma del Cortable mide 48 px, la bola lanzada de pie no toca el pasto del mismo suelo: en sala_bola el pasto flota a la altura de la bola",
+    "comprobacion": "herramientas/guiones/nucleo/poder_bola_pasto.guion",
+    "pasa": true
+  },
+  {
+    "id": "salto-tras-cerrar-menu",
+    "que": "A (aceptar en los menus y saltar en el juego) pulsado y soltado sobre un Button de un menu que quita la pausa (Continuar de la Pausa, No del CobroEstacion, Volver del marco), en el mismo cuadro o en dos seguidos sin tick de fisica entre medio (120 FPS), cierra el menu sin que el jugador salte: el Button se pulsa al despachar el evento, antes del tick, y la prioridad de fisica de los menus no lo cubre. El jugador, al recibir NOTIFICATION_UNPAUSED fuera de la fisica, no cuenta saltar en su tick siguiente (ni salto, ni cola, ni coyote, ni levantarse del banco); una pulsacion nueva de saltar en el tick siguiente si salta. La traza por tick de 36 guiones del jugador (trazador fuera del repo) sale identica a la de antes",
+    "comprobacion": "herramientas/guiones/nucleo/salto_tras_menu.guion;herramientas/pruebas/prueba_salto_tras_menu.gd;docs/errores/2026-10-20-salto-al-cerrar-un-menu.md",
+    "pasa": true
+  },
+  {
+    "id": "animacion-cuerpo-jugador",
+    "que": "El cuerpo del jugador se dibuja con un AnimatedSprite2D (nodo Dibujo de nucleo/jugador.tscn) y el SpriteFrames nucleo/arte/jugador_hombre/jugador_hombre.tres, hecho de AtlasTexture sobre atlas_0.png con un lienzo comun (todos los cuadros miden lo mismo). AnimacionJugador.elegir, pura, elige la animacion con la tabla de prioridades de Hollow Knight (muerte, fundido de peligro, dormir, dano, aterrizaje duro, picada, curar, bola, estocada, ataque abajo, arriba o al lado, voltereta, impulso, pared, aire, carrera, correr, quieto); el giro en carrera es una capa aparte, solo en el suelo. Los clips con tiempo propio toman el cuadro de los contadores de ticks; los bucles los corre el sprite, quieto en el congelado. Volteo con Dibujo.scale.x, parpadeo de invulnerable y tinte de curar con modulate, destello en blanco con un shader de un uniforme. _draw conserva solo los efectos, encima del cuerpo. El dibujo solo lee: la traza por tick de 36 guiones del jugador sale identica",
+    "comprobacion": "herramientas/guiones/nucleo/animacion_jugador.guion;herramientas/pruebas/prueba_animacion_jugador.gd;herramientas/guiones/nucleo/animacion_bucles.guion;herramientas/guiones/nucleo/animacion_reaparicion.guion",
+    "pasa": true
   }
 ]

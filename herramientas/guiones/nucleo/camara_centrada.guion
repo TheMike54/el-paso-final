@@ -1,4 +1,4 @@
-# En la sala de movimiento (2400 x 760, sin paredes) el jugador camina a la izquierda, sale por el borde y
+# En la sala de movimiento (2400 x 720, sin paredes) el jugador camina a la izquierda, sale por el borde y
 # cae. Sin pantalla la vista mide 1280 x 1280: mas alta que la sala y mas angosta que ella.
 escena res://herramientas/salas/sala_movimiento.tscn
 2 mover_izquierda press

@@ -5,8 +5,7 @@ extends StaticBody2D
 # uno y, al romperse, suelta escombros, descubre lo que tapaba (tapas) y se queda roto: con id se marca en el estado
 # de su sala. Golpearlo no da Inspiracion (su Golpeable no es un enemigo). Va en la sala con su forma y su dibujo.
 
-## Cada golpe que cuenta, y al romperse.
-signal golpeado()
+## Al romperse.
 signal se_rompio()
 
 ## Lado desde el que se le pega: el de quien golpea respecto al muro.
@@ -134,7 +133,6 @@ func _al_recibir_golpe(atacante: Node2D, _dano: int) -> void:
 	quedan -= 1
 	_sentido_sacudida = _sentido_desde(atacante.global_position)
 	_ticks_sacudiendo = ticks_sacudida
-	golpeado.emit()
 	var jugador: Jugador = _jugador()
 	if quedan > 0:
 		if jugador != null:

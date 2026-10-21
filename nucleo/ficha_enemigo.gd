@@ -24,3 +24,9 @@ enum Reaparicion {
 @export var reaparicion: Reaparicion = Reaparicion.AL_VOLVER_A_ENTRAR
 ## Script que hereda de ComportamientoEnemigo (los del juego en contenido/enemigos/). Vacio: se queda quieto.
 @export var comportamiento: GDScript = null
+## Rapidez al moverse, en px/s, para su comportamiento. 0: no se mueve.
+@export var velocidad: float = 0.0
+## Gravedad, en px/s^2. 0: vuela (su cuerpo flota: no hay suelo y todo choque cuenta como pared).
+@export var gravedad: float = 0.0
+## Rapidez maxima al caer, en px/s.
+@export var caida_maxima: float = 1200.0

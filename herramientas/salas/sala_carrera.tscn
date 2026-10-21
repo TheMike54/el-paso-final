@@ -40,7 +40,7 @@ offset_top = -40.0
 offset_right = 2000.0
 offset_bottom = 40.0
 mouse_filter = 2
-color = Color(0.25, 0.25, 0.25, 1)
+color = Color(0.3, 0.3, 0.32, 1)
 
 [node name="ParedIzquierda" type="StaticBody2D" parent="."]
 position = Vector2(40, 360)

@@ -1,0 +1,4 @@
+# Los 18 casos de herramientas/pruebas/prueba_lo_perdido.gd corrieron y ninguno fallo. Cada caso que falla imprime una
+# linea "FALLO lo_perdido: <caso>".
+valor . casos 18
+valor . fallos 0

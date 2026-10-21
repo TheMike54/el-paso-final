@@ -11,7 +11,7 @@ size = Vector2(2400, 80)
 [node name="SalaMovimiento" type="Node2D"]
 script = ExtResource("1_sala")
 habilidades_de_prueba = Array[StringName]([&"pluma"])
-limites = Rect2(0, 0, 2400, 760)
+limites = Rect2(0, 0, 2400, 720)
 
 [node name="Entrada" type="Marker2D" parent="."]
 position = Vector2(200, 480)
@@ -28,7 +28,7 @@ offset_top = -40.0
 offset_right = 320.0
 offset_bottom = 40.0
 mouse_filter = 2
-color = Color(0.3, 0.3, 0.3, 1)
+color = Color(0.3, 0.3, 0.32, 1)
 
 [node name="Suelo" type="StaticBody2D" parent="."]
 position = Vector2(1200, 720)
@@ -42,4 +42,4 @@ offset_top = -40.0
 offset_right = 1200.0
 offset_bottom = 40.0
 mouse_filter = 2
-color = Color(0.25, 0.25, 0.25, 1)
+color = Color(0.3, 0.3, 0.32, 1)

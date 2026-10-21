@@ -17,3 +17,11 @@ const MAX_OPCIONES: int = 3
 @export var opciones: Array[String] = []
 ## Una por opcion: indice de la linea a la que salta, FIN o CANCELAR.
 @export var destinos: Array[int] = []
+
+
+## Una linea sin opciones: quien habla y lo que dice.
+static func nueva(de_quien: String, que_dice: String) -> LineaDialogo:
+	var linea: LineaDialogo = LineaDialogo.new()
+	linea.quien = de_quien
+	linea.texto = que_dice
+	return linea

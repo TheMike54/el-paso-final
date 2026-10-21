@@ -1,4 +1,5 @@
-# La prueba de los botones del control en la interfaz (herramientas/salas/prueba_icono_boton.gd): familia del
-# control, dibujo de cada accion por familia y teclado, UltimaEntrada.dispositivo e IconoBoton.
-escena res://herramientas/salas/sala_icono_boton.tscn
+# La prueba de los botones del control en la interfaz (herramientas/pruebas/prueba_icono_boton.gd): familia del
+# control, dibujo de cada accion por familia y teclado, UltimaEntrada.dispositivo, marca_teclado y es_de_juego, e
+# IconoBoton.
+escena res://herramientas/pruebas/sala_icono_boton.tscn
 fin 30

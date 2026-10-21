@@ -1,0 +1,7 @@
+# La bola corta el pasto de su camino y sigue: golpea despues al muneco lejano y se deshace contra la pared, asi
+# que el pasto de detras de la pared queda entero y el muneco de detras sin golpes.
+valor CortableCamino esta_cortado true
+valor MunecoLejos/Golpeable golpes 1
+valor CortableTras esta_cortado false
+valor MunecoTras/Golpeable golpes 0
+valor Jugador toques_poder 1

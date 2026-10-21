@@ -5,6 +5,7 @@
 [ext_resource type="Script" path="res://nucleo/vitrina_coleccionables.gd" id="3_vitrina"]
 [ext_resource type="Script" path="res://nucleo/entrega_recompensas.gd" id="4_entrega"]
 [ext_resource type="Script" path="res://nucleo/recompensa.gd" id="5_recompensa"]
+[ext_resource type="Script" path="res://nucleo/estacion.gd" id="9_estacion"]
 
 [sub_resource type="RectangleShape2D" id="forma_suelo"]
 size = Vector2(1600, 80)
@@ -60,7 +61,7 @@ offset_top = -40.0
 offset_right = 800.0
 offset_bottom = 40.0
 mouse_filter = 2
-color = Color(0.25, 0.25, 0.25, 1)
+color = Color(0.3, 0.3, 0.32, 1)
 
 [node name="PuertaIzquierda" parent="." instance=ExtResource("2_puerta")]
 position = Vector2(20, 680)
@@ -109,3 +110,9 @@ position = Vector2(1620, 360)
 
 [node name="Forma" type="CollisionShape2D" parent="ParedTrasPuertaDerecha"]
 shape = SubResource("forma_pared_puerta")
+
+[node name="Estacion" type="Area2D" parent="."]
+position = Vector2(800, 680)
+script = ExtResource("9_estacion")
+id = "estacion_prueba_4"
+costo = 50

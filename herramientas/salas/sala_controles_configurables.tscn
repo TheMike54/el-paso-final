@@ -1,6 +1,0 @@
-[gd_scene format=3]
-
-[ext_resource type="Script" path="res://herramientas/salas/prueba_controles_configurables.gd" id="1_prueba"]
-
-[node name="SalaControlesConfigurables" type="Node"]
-script = ExtResource("1_prueba")

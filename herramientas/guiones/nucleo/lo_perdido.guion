@@ -1,0 +1,4 @@
+# Corre herramientas/pruebas/prueba_lo_perdido.gd: morir deja la mochila, la mochila aparece en su sala y el reto la
+# devuelve. Sin entradas propias: la prueba mueve al jugador y presiona interactuar.
+escena res://herramientas/pruebas/sala_perdido.tscn
+fin 900

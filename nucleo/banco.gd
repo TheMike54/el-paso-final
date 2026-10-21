@@ -1,9 +1,10 @@
 class_name Banco
-extends Area2D
+extends Interactuable
 # Banco: con el jugador encima y en el suelo, la accion interactuar lo hace descansar. Descansar
 # sienta al jugador sobre el banco, llena las vidas, deja este banco como punto de reaparicion,
 # emite Eventos.descanso_en_banco y guarda la partida, en ese orden: lo que cambia al descansar (el
-# mapa dibujado) entra en el archivo. Va como hijo directo de la raiz de una sala, con su forma.
+# mapa dibujado) entra en el archivo. Va como hijo directo de la raiz de una sala, con su forma. La capa y el
+# disparador (sin congelado) son de la base Interactuable, sin aviso: el banco no lo dibuja.
 
 ## Id del banco, unico en todo el juego: es lo que se guarda.
 @export var id: String = ""
@@ -11,16 +12,13 @@ extends Area2D
 ## partida en curso; una sala de prueba puede fijar otro para no tocar la partida real.
 @export var ruta_guardado: String = Guardado.RUTA
 
-func _ready() -> void:
-	Capas.poner(self, Capas.INTERACCION, Capas.JUGADOR)
+
+func _init() -> void:
+	con_aviso = false
 
 
-func _physics_process(_delta: float) -> void:
-	if not Input.is_action_just_pressed(&"interactuar"):
-		return
-	var jugador: Jugador = Jugador.encima_de(self)
-	if jugador != null:
-		descansar(jugador)
+func _al_interactuar(jugador: Jugador) -> void:
+	descansar(jugador)
 
 
 func descansar(jugador: Jugador = null) -> void:

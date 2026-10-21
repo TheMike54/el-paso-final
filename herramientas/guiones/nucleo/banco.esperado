@@ -7,3 +7,7 @@ valor Jugador vidas 4
 valor /root/Partida banco banco_prueba
 senal /root/Eventos descanso_en_banco 1
 senal /root/Eventos jugador_muerto 1
+# En el cuadro 300 ya descanso y aun no murio. Repetir la senal a mitad y al final cubre
+# docs/errores/2026-10-17-senal-repetida-en-esperado.md.
+en 300 senal /root/Eventos descanso_en_banco 1
+en 300 senal /root/Eventos jugador_muerto 0

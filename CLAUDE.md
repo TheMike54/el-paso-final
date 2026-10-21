@@ -52,6 +52,8 @@ PowerShell, desde la raíz del repo. `GODOT_PATH` es la ruta al ejecutable de co
 - Validar todo: `.\herramientas\validar.ps1` (pasa solo si imprime `OK  VALIDACION ... fallos=0`); sin reimportar,
   agregar `-SinImportar`
 - Correr un guion: `& $env:GODOT_PATH --headless --path . --fixed-fps 60 --quit-after 7200 -- --guion=herramientas/guiones/<bloque>/<nombre>.guion`
+- Correr todos los guiones como el CI: `.\herramientas\correr-guiones.ps1` (pasa solo si imprime `RESUMEN ... MALOS=0`;
+  tarda varios minutos); solo algunos, `-Guiones nucleo/tienda,mapa/mapa_cuentas`
 - Correr el juego: `& $env:GODOT_PATH --path .`
 - Lo que no se comprueba sin ventana (táctil, sensación del salto, FPS en el teléfono) se le pide a la persona
   como prueba manual, diciendo qué observar.
@@ -93,15 +95,18 @@ PowerShell, desde la raíz del repo. `GODOT_PATH` es la ruta al ejecutable de co
 - La lógica lee acciones con nombre, nunca el toque ni la tecla. Lógica en `_physics_process` a 60 ticks.
 - Todo lo persistente tiene un ID de texto estable. El guardado es JSON con versión y detección de dañado.
 - Colisión con formas invisibles; el arte no colisiona.
-- `herramientas/` y la zona de pruebas viajan en el paquete publicado; el núcleo las carga con `load()` solo si existen,
-  nunca con `preload` ni autoload. Detalle en `docs/contrato.md`, «Paquete de publicación».
+- La zona de pruebas y sus salas (`herramientas/salas/`) viajan en el paquete publicado; las pruebas de código
+  (`herramientas/pruebas/`), el validador, `generar_mapa`, `generar_sprites` y el puerto de depuración no. El núcleo carga lo de
+  `herramientas/` con `load()` solo si existe, nunca con `preload` ni autoload. Detalle en `docs/contrato.md`,
+  «Paquete de publicación».
 - Pruebas solo donde la lógica puede romperse: guardado, cuentas (daño, amuletos), reglas y el validador de
   contenido, más un guion corto por sala. No se prueba que una escena se dibuje ni que exista un nodo.
 - Las pruebas, los guiones y el validador imprimen el resumen y los fallos, no cada caso que pasa.
 - `.gitattributes` con `eol=lf`: los hooks de `sh` y el CI corren en Linux. `LICENSE` solo MIT; el arte queda fuera.
 - CI: `ci.yml` con `chickensoft-games/setup-godot@v2`, sin plantillas; el check que exige el ruleset se llama `validar`.
-- Android: id `com.themike54.elpasofinal`, ARM de 32 (S50) y 64 bits. El preset «Publicacion» excluye solo
-  `*funciones.json`; «Desarrollo» lleva todo y arranca con `--print-fps`.
+- Android: id `com.themike54.elpasofinal`, ARM de 32 (S50) y 64 bits. El preset «Publicacion» excluye
+  `*funciones.json`, `herramientas/pruebas/*`, `herramientas/validar.*`, `herramientas/generar_mapa.*`,
+  `herramientas/generar_sprites.*` y `herramientas/puerto_depuracion.*`; «Desarrollo» lleva todo y arranca con `--print-fps`.
 
 ## Reglas de este proyecto
 - IMPORTANT: Claude nunca ejecuta `git commit`, `git push`, `git merge`, `git rebase`, `git tag`, `gh pr create` ni
@@ -143,7 +148,7 @@ PowerShell, desde la raíz del repo. `GODOT_PATH` es la ruta al ejecutable de co
 | Instalación desde clon limpio | `README.md` | Si falla el arranque |
 
 ## Al compactar
-El hook `al-compactar.ps1` ya reinyecta la rama, `git status --short`, `ESTADO.md` y los nombres de `planes/activos/` (el
-plan se relee). Conservar
+El hook `al-compactar.ps1` ya reinyecta la rama, `ESTADO.md`, los nombres de `planes/activos/` (el plan se
+relee) y las primeras 25 líneas de `git status --short`. Conservar
 solo lo que vive en el chat: la última salida de `validar.ps1`, las pruebas manuales que faltan pedir, el número
 del último bloque de commit pendiente y las decisiones recién tomadas que aún no estén escritas.

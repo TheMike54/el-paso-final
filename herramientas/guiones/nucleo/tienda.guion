@@ -1,0 +1,4 @@
+# Corre herramientas/pruebas/prueba_tienda.gd: gastar monedas, la ListaElegir y la sala Tienda de punta a punta. Sin
+# entradas propias: la prueba mueve al jugador y presiona interactuar, pausa y volver.
+escena res://herramientas/pruebas/sala_tienda_cuentas.tscn
+fin 1000

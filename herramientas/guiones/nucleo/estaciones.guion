@@ -1,0 +1,5 @@
+# Corre herramientas/pruebas/prueba_estaciones.gd: Partida.estaciones y su guardado, pagar una estacion (el cobro con
+# la Confirmacion), el menu de destinos y un viaje de verdad de prueba_1 a prueba_4. Sin entradas propias: la prueba
+# mueve al jugador y presiona interactuar, volver, pausa y B.
+escena res://herramientas/pruebas/sala_estaciones.tscn
+fin 900

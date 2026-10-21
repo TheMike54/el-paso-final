@@ -39,7 +39,6 @@ text = "Volver"
 [node name="Titulo" type="Label" parent="Marco/Arriba"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 48
 text = "Zona de pruebas"
 vertical_alignment = 1
 

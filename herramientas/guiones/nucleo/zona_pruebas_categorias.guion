@@ -1,4 +1,4 @@
-# La prueba de la zona de pruebas con L1 / R1 (herramientas/salas/prueba_zona_pruebas.gd): pasa de categoria, da
+# La prueba de la zona de pruebas con L1 / R1 (herramientas/pruebas/prueba_zona_pruebas.gd): pasa de categoria, da
 # la vuelta en los extremos y deja el foco en la primera sala.
-escena res://herramientas/salas/sala_zona_pruebas.tscn
+escena res://herramientas/pruebas/sala_zona_pruebas.tscn
 fin 60

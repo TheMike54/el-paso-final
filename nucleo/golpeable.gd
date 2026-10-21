@@ -67,10 +67,7 @@ func _paso_libre(paso: float) -> float:
 	var centro: Vector2 = forma.global_position
 	var sentido: float = signf(paso)
 	var libre: float = absf(paso)
-	var consulta: PhysicsRayQueryParameters2D = PhysicsRayQueryParameters2D.create(
-			centro, centro + Vector2(sentido * (mitad + libre), 0.0))
-	consulta.collision_mask = Capas.ESCENARIO
-	var choque: Dictionary = get_world_2d().direct_space_state.intersect_ray(consulta)
+	var choque: Dictionary = Capas.rayo_a_escenario(self, centro, centro + Vector2(sentido * (mitad + libre), 0.0))
 	if not choque.is_empty():
 		var punto: Vector2 = choque["position"] as Vector2
 		libre = minf(libre, maxf(absf(punto.x - centro.x) - mitad, 0.0))
@@ -79,6 +76,13 @@ func _paso_libre(paso: float) -> float:
 		var limites: Rect2 = Rect2(sala.global_position + sala.limites.position, sala.limites.size)
 		var borde: float = limites.end.x if sentido > 0.0 else limites.position.x
 		libre = minf(libre, maxf(absf(borde - centro.x) - mitad, 0.0))
+	# Un cuerpo que camina y esta en el suelo no sale empujado por la orilla (como el barrido de Hollow Knight).
+	var cuerpo: CharacterBody2D = get_parent() as CharacterBody2D
+	if (cuerpo != null and cuerpo.motion_mode == CharacterBody2D.MOTION_MODE_GROUNDED and cuerpo.is_on_floor()
+			and libre > 0.0):
+		var pie: Vector2 = Vector2(centro.x + sentido * (mitad + libre), cuerpo.global_position.y - 4.0)
+		if Capas.rayo_a_escenario(self, pie, pie + Vector2(0.0, 16.0)).is_empty():
+			libre = 0.0
 	return sentido * libre
 
 

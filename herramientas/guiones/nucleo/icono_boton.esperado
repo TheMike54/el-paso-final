@@ -1,3 +1,3 @@
-# Los 20 casos de herramientas/salas/prueba_icono_boton.gd corrieron y ninguno fallo.
-valor . casos 20
+# Los 68 casos de herramientas/pruebas/prueba_icono_boton.gd corrieron y ninguno fallo.
+valor . casos 68
 valor . fallos 0

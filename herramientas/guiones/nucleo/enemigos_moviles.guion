@@ -1,0 +1,4 @@
+# Corre herramientas/pruebas/prueba_moviles.gd: caminante, volador y disparo en arco en la sala de enemigos
+# moviles. Sin entradas: la prueba mueve al jugador.
+escena res://herramientas/pruebas/sala_moviles.tscn
+fin 3000

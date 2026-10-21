@@ -14,11 +14,6 @@ const COLOR_SIMBOLO: Color = Color(0.1, 0.1, 0.12, 1.0)
 const LETRA_BOTON: int = 24
 const SEPARACION_TEXTO: float = 12.0
 const RELLENO_PASTILLA: float = 12.0
-# Texto de cada boton que no es de la cara (indices de JoyButton), para Xbox y para PlayStation.
-const PASTILLAS_XBOX: Dictionary[int, String] = {4: "View", 5: "Guia", 6: "Menu", 7: "LS", 8: "RS", 9: "LB", 10: "RB", 11: "Arriba", 12: "Abajo", 13: "Izq.", 14: "Der."}
-const PASTILLAS_PLAYSTATION: Dictionary[int, String] = {4: "Share", 5: "PS", 6: "Options", 7: "L3", 8: "R3", 9: "L1", 10: "R1", 11: "Arriba", 12: "Abajo", 13: "Izq.", 14: "Der."}
-const LETRAS_XBOX: PackedStringArray = ["A", "B", "X", "Y"]
-const SIMBOLOS_PLAYSTATION: PackedStringArray = ["cruz", "circulo", "cuadrado", "triangulo"]
 
 ## Accion del InputMap cuyo boton se dibuja.
 @export var accion: StringName = &"":
@@ -36,13 +31,17 @@ const SIMBOLOS_PLAYSTATION: PackedStringArray = ["cruz", "circulo", "cuadrado", 
 		boton_a_la_derecha = valor
 		_refrescar()
 
+## Lo que dibuja ahora, como lo da dibujo() para su accion y la ultima entrada; vacio si no se ve. Solo
+## lectura: devuelve una copia.
+var dibujo_actual: Dictionary:
+	get:
+		return _dibujo.duplicate()
+
 # Huecos transparentes por tamano, compartidos: el icono del Button que reserva el lugar.
 static var _huecos: Dictionary[Vector2i, ImageTexture] = {}
 
-# Lo que se dibuja ahora (dibujo()), y la entrada y los cambios del InputMap con que se calculo.
+# Lo que se dibuja ahora (dibujo()).
 var _dibujo: Dictionary = {}
-var _dispositivo: String = ""
-var _cambios: int = -1
 
 
 ## Pone el boton de una accion dentro de un Button, a la izquierda o a la derecha de su texto.
@@ -64,63 +63,63 @@ static func en_boton(boton: Button, nombre_accion: StringName, a_la_derecha: boo
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	focus_mode = Control.FOCUS_NONE
-	process_mode = Node.PROCESS_MODE_ALWAYS
 	_refrescar()
 
 
-# Se compara un texto y un numero por cuadro: es mas simple que una senal y cuesta casi nada con pocos iconos.
-func _process(_delta: float) -> void:
-	if _dispositivo != UltimaEntrada.dispositivo or _cambios != Mando.cambios:
-		_refrescar()
+# Se redibuja cuando cambia lo ultimo que se uso o un boton del InputMap, por el bus y no por cuadro. Fuera del arbol
+# no escucha: al volver se pone al dia (la primera vez no hace nada, porque _ready aun no corrio y refresca el).
+func _enter_tree() -> void:
+	if not Eventos.dispositivo_cambiado.is_connected(_al_cambiar_dispositivo):
+		Eventos.dispositivo_cambiado.connect(_al_cambiar_dispositivo)
+	if not Eventos.mando_cambiado.is_connected(_refrescar):
+		Eventos.mando_cambiado.connect(_refrescar)
+	_refrescar()
+
+
+func _exit_tree() -> void:
+	if Eventos.dispositivo_cambiado.is_connected(_al_cambiar_dispositivo):
+		Eventos.dispositivo_cambiado.disconnect(_al_cambiar_dispositivo)
+	if Eventos.mando_cambiado.is_connected(_refrescar):
+		Eventos.mando_cambiado.disconnect(_refrescar)
 
 
 ## Como se dibuja el boton de una accion para un dispositivo (UltimaEntrada.dispositivo): {forma, texto, simbolo};
 ## vacio si no se dibuja (tras un toque, o la accion no tiene boton para ese dispositivo). Publica para la prueba.
-static func dibujo(nombre_accion: StringName, dispositivo: String) -> Dictionary:
+static func dibujo(nombre_accion: StringName, dispositivo: Mando.Dispositivo) -> Dictionary:
 	if not InputMap.has_action(nombre_accion):
 		return {}
-	if dispositivo == UltimaEntrada.TECLADO:
+	if dispositivo == Mando.Dispositivo.TECLADO:
 		for evento: InputEvent in InputMap.action_get_events(nombre_accion):
 			var tecla: InputEventKey = evento as InputEventKey
 			if tecla != null:
 				var codigo: Key = tecla.physical_keycode if tecla.physical_keycode != KEY_NONE else tecla.keycode
 				return {"forma": PASTILLA, "texto": OS.get_keycode_string(codigo), "simbolo": ""}
 		return {}
-	if dispositivo != Mando.XBOX and dispositivo != Mando.PLAYSTATION:
+	if dispositivo != Mando.Dispositivo.XBOX and dispositivo != Mando.Dispositivo.PLAYSTATION:
 		return {}
-	var playstation: bool = dispositivo == Mando.PLAYSTATION
+	# Los nombres salen de Mando.BOTONES; en la cara, la columna de la familia es la letra (Xbox) o el simbolo (PlayStation).
 	var boton: int = Mando.boton_de(nombre_accion)
-	if boton >= 0 and boton < 4:
-		if playstation:
-			return {"forma": DISCO, "texto": "", "simbolo": SIMBOLOS_PLAYSTATION[boton]}
-		return {"forma": DISCO, "texto": LETRAS_XBOX[boton], "simbolo": ""}
+	if boton >= 0 and boton < Mando.CARA:
+		if dispositivo == Mando.Dispositivo.PLAYSTATION:
+			return {"forma": DISCO, "texto": "", "simbolo": Mando.nombre_en(boton, dispositivo)}
+		return {"forma": DISCO, "texto": Mando.nombre_en(boton, dispositivo), "simbolo": ""}
 	if boton >= 0:
-		var pastillas: Dictionary[int, String] = PASTILLAS_PLAYSTATION if playstation else PASTILLAS_XBOX
-		return {"forma": PASTILLA, "texto": pastillas.get(boton, "Boton %d" % boton), "simbolo": ""}
+		return {"forma": PASTILLA, "texto": Mando.nombre_en(boton, dispositivo), "simbolo": ""}
 	for evento: InputEvent in InputMap.action_get_events(nombre_accion):
 		var eje: InputEventJoypadMotion = evento as InputEventJoypadMotion
 		if eje != null:
-			return {"forma": PASTILLA, "texto": _nombre_eje(eje.axis, playstation), "simbolo": ""}
+			return {"forma": PASTILLA, "texto": Mando.nombre_de_eje(eje.axis, dispositivo), "simbolo": ""}
 	return {}
 
 
-static func _nombre_eje(eje: JoyAxis, playstation: bool) -> String:
-	match eje:
-		JOY_AXIS_TRIGGER_LEFT:
-			return "L2" if playstation else "LT"
-		JOY_AXIS_TRIGGER_RIGHT:
-			return "R2" if playstation else "RT"
-		JOY_AXIS_LEFT_X, JOY_AXIS_LEFT_Y:
-			return "Stick izq."
-	return "Stick der."
+func _al_cambiar_dispositivo(_dispositivo: int) -> void:
+	_refrescar()
 
 
 func _refrescar() -> void:
 	if not is_node_ready():
 		return
-	_dispositivo = UltimaEntrada.dispositivo
-	_cambios = Mando.cambios
-	_dibujo = dibujo(accion, _dispositivo)
+	_dibujo = dibujo(accion, UltimaEntrada.dispositivo)
 	visible = not _dibujo.is_empty()
 	custom_minimum_size = _medir()
 	var boton: Button = get_parent() as Button
@@ -227,6 +226,5 @@ func _dibujar_boton(caja: Rect2, fuente: Font) -> void:
 
 
 func _texto_centrado(fuente: Font, cadena: String, centro: Vector2) -> void:
-	var medida: Vector2 = fuente.get_string_size(cadena, HORIZONTAL_ALIGNMENT_LEFT, -1.0, LETRA_BOTON)
 	var base: float = centro.y + (fuente.get_ascent(LETRA_BOTON) - fuente.get_descent(LETRA_BOTON)) / 2.0
-	draw_string(fuente, Vector2(centro.x - medida.x / 2.0, base), cadena, HORIZONTAL_ALIGNMENT_LEFT, -1.0, LETRA_BOTON, COLOR_SIMBOLO)
+	Tema.texto_centrado(self, fuente, cadena, Vector2(centro.x, base), LETRA_BOTON, COLOR_SIMBOLO)

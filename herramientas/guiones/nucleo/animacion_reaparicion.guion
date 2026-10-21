@@ -1,0 +1,6 @@
+# Cae por abajo de la sala (un peligro) y reaparece en el ultimo suelo firme: mientras espera quieto ahi, el dibujo
+# es quieto y no aire (la teletransportacion no pasa por move_and_slide y is_on_floor sigue con el valor de la caida).
+escena res://herramientas/salas/sala_salida_abajo.tscn
+2 mover_derecha press
+150 mover_derecha release
+fin 185

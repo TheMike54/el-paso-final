@@ -1,0 +1,3 @@
+# Casos de herramientas/pruebas/prueba_validador.gd: reglas del validador sobre nodos y entradas armados en memoria.
+escena res://herramientas/pruebas/sala_validador.tscn
+fin 2

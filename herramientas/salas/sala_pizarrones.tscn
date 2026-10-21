@@ -1,0 +1,138 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" uid="uid://k7a08bqsbqd0" path="res://nucleo/sala.gd" id="1_sala"]
+[ext_resource type="PackedScene" uid="uid://dljj3hd7ldowx" path="res://nucleo/banco.tscn" id="2_banco"]
+[ext_resource type="Script" path="res://nucleo/aviso_accion.gd" id="3_aviso"]
+[ext_resource type="PackedScene" uid="uid://dgy2sncgkvcml" path="res://nucleo/enemigo.tscn" id="4_enemigo"]
+[ext_resource type="Resource" path="res://herramientas/salas/fichas/caminante.tres" id="5_caminante"]
+[ext_resource type="Script" path="res://herramientas/salas/vida_menos_prueba.gd" id="6_vida_menos"]
+
+[sub_resource type="RectangleShape2D" id="forma_suelo"]
+size = Vector2(3600, 80)
+
+[sub_resource type="RectangleShape2D" id="forma_pared"]
+size = Vector2(40, 720)
+
+[sub_resource type="RectangleShape2D" id="forma_bloque"]
+size = Vector2(120, 160)
+
+[node name="SalaPizarrones" type="Node2D"]
+script = ExtResource("1_sala")
+habilidades_de_prueba = Array[StringName]([&"pluma"])
+botones_por_ensenar = Array[StringName]([&"saltar", &"atacar", &"curar"])
+limites = Rect2(0, 0, 3600, 720)
+
+[node name="VidaMenos" type="Node" parent="."]
+script = ExtResource("6_vida_menos")
+
+[node name="Entrada" type="Marker2D" parent="."]
+position = Vector2(150, 680)
+
+[node name="Suelo" type="StaticBody2D" parent="."]
+position = Vector2(1800, 720)
+
+[node name="Forma" type="CollisionShape2D" parent="Suelo"]
+shape = SubResource("forma_suelo")
+
+[node name="Dibujo" type="ColorRect" parent="Suelo"]
+offset_left = -1800.0
+offset_top = -40.0
+offset_right = 1800.0
+offset_bottom = 40.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="ParedIzquierda" type="StaticBody2D" parent="."]
+position = Vector2(20, 360)
+
+[node name="Forma" type="CollisionShape2D" parent="ParedIzquierda"]
+shape = SubResource("forma_pared")
+
+[node name="Dibujo" type="ColorRect" parent="ParedIzquierda"]
+offset_left = -20.0
+offset_top = -360.0
+offset_right = 20.0
+offset_bottom = 360.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="ParedDerecha" type="StaticBody2D" parent="."]
+position = Vector2(3580, 360)
+
+[node name="Forma" type="CollisionShape2D" parent="ParedDerecha"]
+shape = SubResource("forma_pared")
+
+[node name="Dibujo" type="ColorRect" parent="ParedDerecha"]
+offset_left = -20.0
+offset_top = -360.0
+offset_right = 20.0
+offset_bottom = 360.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="Bloque" type="StaticBody2D" parent="."]
+position = Vector2(1300, 600)
+
+[node name="Forma" type="CollisionShape2D" parent="Bloque"]
+shape = SubResource("forma_bloque")
+
+[node name="Dibujo" type="ColorRect" parent="Bloque"]
+offset_left = -60.0
+offset_top = -80.0
+offset_right = 60.0
+offset_bottom = 80.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="Corral" type="StaticBody2D" parent="."]
+position = Vector2(2500, 600)
+
+[node name="Forma" type="CollisionShape2D" parent="Corral"]
+shape = SubResource("forma_bloque")
+
+[node name="Dibujo" type="ColorRect" parent="Corral"]
+offset_left = -60.0
+offset_top = -80.0
+offset_right = 60.0
+offset_bottom = 80.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="AvisoSaltar" type="Area2D" parent="."]
+position = Vector2(1000, 680)
+script = ExtResource("3_aviso")
+acciones = Array[StringName]([&"saltar"])
+id = "aviso_saltar"
+
+[node name="AvisoAtacar" type="Area2D" parent="."]
+position = Vector2(1600, 680)
+script = ExtResource("3_aviso")
+acciones = Array[StringName]([&"atacar"])
+id = "aviso_atacar"
+
+[node name="Caminante" parent="." instance=ExtResource("4_enemigo")]
+position = Vector2(2100, 680)
+ficha = ExtResource("5_caminante")
+id = &"caminante_pizarrones"
+
+[node name="AvisoCurar" type="Area2D" parent="."]
+position = Vector2(2850, 680)
+script = ExtResource("3_aviso")
+acciones = Array[StringName]([&"curar"])
+id = "aviso_curar"
+nota = "Golpea enemigos para ganar Inspiración"
+
+[node name="Banco" parent="." instance=ExtResource("2_banco")]
+position = Vector2(3300, 680)
+id = "banco_pizarrones"
+ruta_guardado = "user://prueba_pizarrones.json"
+
+[node name="AvisoSentarse" type="Area2D" parent="."]
+position = Vector2(3300, 680)
+script = ExtResource("3_aviso")
+acciones = Array[StringName]([&"interactuar"])
+id = "aviso_sentarse"
+texto = "Sentarse"
+pizarron = false
+tamano = Vector2(240, 200)
+punto = Vector2(0, -180)

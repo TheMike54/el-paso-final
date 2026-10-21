@@ -19,6 +19,8 @@ var _fallos: PackedStringArray = []
 var _total: int = 0
 # Salas con id: id -> {ruta, puertas: {id_puerta: [sala_destino, puerta_destino]}}.
 var _salas: Dictionary[String, Dictionary] = {}
+# Cada .gd, .tscn y .tres revisado, para _revisar_pruebas_aparte.
+var _revisados: PackedStringArray = []
 
 
 func _ready() -> void:
@@ -26,6 +28,7 @@ func _ready() -> void:
 	_revisar_puertas()
 	_revisar_indice_mapa()
 	_revisar_zona_pruebas()
+	_revisar_pruebas_aparte()
 	for fallo: String in _fallos:
 		print("FALLO ", fallo)
 	print("VALIDACION archivos=%d fallos=%d" % [_total, _fallos.size()])
@@ -103,17 +106,16 @@ func _revisar_importacion(ruta: String) -> void:
 
 func _revisar(ruta: String) -> void:
 	_total += 1
+	_revisados.append(ruta)
 	var recurso: Resource = ResourceLoader.load(ruta)
 	if recurso == null:
 		_fallos.append(ruta + " (no carga)")
 	elif recurso is GDScript:
 		if not (recurso as GDScript).can_instantiate():
 			_fallos.append(ruta + " (script con errores)")
-	elif recurso is FichaDialogo:
-		for fallo: String in (recurso as FichaDialogo).fallos():
-			_fallos.append("%s (%s)" % [ruta, fallo])
-	elif recurso is FichaPregunta:
-		for fallo: String in (recurso as FichaPregunta).fallos():
+	elif _es_ficha_con_fallos(recurso):
+		var fallos_ficha: PackedStringArray = recurso.call(&"fallos")
+		for fallo: String in fallos_ficha:
 			_fallos.append("%s (%s)" % [ruta, fallo])
 	elif recurso is PackedScene:
 		var escena: PackedScene = recurso as PackedScene
@@ -135,7 +137,32 @@ func _revisar(ruta: String) -> void:
 				_revisar_peligros(ruta, nodo)
 				_revisar_habilidades(ruta, nodo)
 				_revisar_npcs(ruta, nodo)
+				_revisar_tiendas(ruta, nodo)
+				_revisar_avisos(ruta, nodo)
+				_revisar_estaciones(ruta, nodo)
 				nodo.free()
+
+
+# Fichas de datos que traen su propio fallos() (BolsaPreguntas es la de la mochila): el validador anota cada fallo con
+# la ruta del recurso.
+var _fichas_con_fallos: Array[Script] = [FichaDialogo, FichaPregunta, BolsaPreguntas, FichaEstaciones]
+
+
+func _es_ficha_con_fallos(recurso: Resource) -> bool:
+	for clase: Script in _fichas_con_fallos:
+		if is_instance_of(recurso, clase):
+			return true
+	return false
+
+
+# Nodos de una clase propia (class_name) bajo raiz, en orden de arbol; con con_raiz, tambien la raiz si es de esa
+# clase, al principio. Sin clase, todos los nodos (y la raiz al principio si con_raiz).
+func _de_tipo(raiz: Node, clase: Script, con_raiz: bool) -> Array[Node]:
+	var tipo: String = String(clase.get_global_name()) if clase != null else ""
+	var nodos: Array[Node] = raiz.find_children("*", tipo, true, false)
+	if con_raiz and (clase == null or is_instance_of(raiz, clase)):
+		nodos.push_front(raiz)
+	return nodos
 
 
 # Una puerta en el borde izquierdo o derecho de limites lleva detras un StaticBody2D fuera de limites, pegado al
@@ -320,8 +347,8 @@ func _revisar_funciones(ruta: String) -> void:
 
 # Devuelve por que una entrada no es valida, o "" si lo es. Una entrada con "pasa": true
 # necesita que exista cada archivo de su comprobacion (varias rutas van separadas por ";"),
-# salvo que sea "manual: ...".
-func _fallo_de_entrada(valor: Variant, ids: Array[String]) -> String:
+# salvo que sea "manual: ...", y cada .guion, su .esperado al lado. raiz solo cambia en la prueba del validador.
+func _fallo_de_entrada(valor: Variant, ids: Array[String], raiz: String = "res://") -> String:
 	if not (valor is Dictionary):
 		return "no es un objeto"
 	var entrada: Dictionary = valor
@@ -339,8 +366,10 @@ func _fallo_de_entrada(valor: Variant, ids: Array[String]) -> String:
 	if pasa and not comprobacion.begins_with("manual:"):
 		for parte: String in comprobacion.split(";"):
 			var ruta: String = parte.strip_edges()
-			if ruta.is_empty() or not FileAccess.file_exists("res://" + ruta):
+			if ruta.is_empty() or not FileAccess.file_exists(raiz + ruta):
 				return "pasa es true y no existe '%s'" % ruta
+			if ruta.ends_with(".guion") and not FileAccess.file_exists(raiz + ruta.trim_suffix(".guion") + ".esperado"):
+				return "pasa es true y falta el .esperado de '%s'" % ruta
 	return ""
 
 
@@ -374,12 +403,10 @@ func _destino_de_puerta(ruta: String, puerta: Puerta) -> String:
 
 
 # Cada id de habilidad de una escena esta en Habilidades.TODAS: el de un ObjetoHabilidad puesto en una sala, el de las recompensas de
-# una EntregaRecompensas o un RetoPreguntas y los de habilidades_de_prueba. Las de un Npc las revisa
+# una EntregaRecompensas, un RetoPreguntas o un articulo de una Tienda (y su requisito) y los de habilidades_de_prueba. Las de un Npc las revisa
 # FichaDialogo.fallos().
 func _revisar_habilidades(ruta: String, raiz: Node) -> void:
-	var nodos: Array[Node] = raiz.find_children("*", "", true, false)
-	nodos.push_front(raiz)
-	for nodo: Node in nodos:
+	for nodo: Node in _de_tipo(raiz, null, true):
 		var ids: Array[StringName] = []
 		var recompensas: Array[Recompensa] = []
 		# La escena de la pieza sola (nucleo/objeto_habilidad.tscn) va sin habilidad: la pone la sala que la usa.
@@ -389,6 +416,12 @@ func _revisar_habilidades(ruta: String, raiz: Node) -> void:
 			recompensas = (nodo as EntregaRecompensas).recompensas
 		elif nodo is RetoPreguntas:
 			recompensas.append((nodo as RetoPreguntas).recompensa)
+		elif nodo is Tienda:
+			for articulo: ArticuloTienda in (nodo as Tienda).articulos:
+				if articulo != null:
+					recompensas.append(articulo.recompensa)
+					if not articulo.requisito.is_empty():
+						ids.append(articulo.requisito)
 		elif nodo is Sala:
 			ids.append_array((nodo as Sala).habilidades_de_prueba)
 		for recompensa: Recompensa in recompensas:
@@ -454,12 +487,9 @@ func _revisar_sala(ruta: String, nodo: Node) -> void:
 # Cada Npc y cada RetoPreguntas de una escena tiene sus fichas bien formadas y un id que no choca con otras marcas de
 # la sala.
 func _revisar_npcs(ruta: String, raiz: Node) -> void:
-	var npcs: Array[Node] = raiz.find_children("*", "Npc", true, false)
-	if raiz is Npc:
-		npcs.append(raiz)
-	for nodo: Node in npcs:
+	for nodo: Node in _de_tipo(raiz, Npc, true):
 		var npc: Npc = nodo as Npc
-		if npc.id.begins_with(Partida.PREFIJO_COLECCIONABLE) or npc.id.begins_with(EntregaRecompensas.PREFIJO_ENTREGADO):
+		if _id_reservado(npc.id):
 			_fallos.append("%s (el npc %s usa un id reservado: %s)" % [ruta, npc.name, npc.id])
 		# La escena del Npc suelto (nucleo/npc.tscn) no trae conversaciones: las pone cada sala.
 		if npc != raiz and npc.conversaciones.is_empty():
@@ -470,12 +500,9 @@ func _revisar_npcs(ruta: String, raiz: Node) -> void:
 				continue
 			for fallo: String in ficha.fallos():
 				_fallos.append("%s (npc %s: %s)" % [ruta, npc.name, fallo])
-	var retos: Array[Node] = raiz.find_children("*", "RetoPreguntas", true, false)
-	if raiz is RetoPreguntas:
-		retos.append(raiz)
-	for nodo: Node in retos:
+	for nodo: Node in _de_tipo(raiz, RetoPreguntas, true):
 		var reto: RetoPreguntas = nodo as RetoPreguntas
-		if reto.id.begins_with(Partida.PREFIJO_COLECCIONABLE) or reto.id.begins_with(EntregaRecompensas.PREFIJO_ENTREGADO):
+		if _id_reservado(reto.id):
 			_fallos.append("%s (el reto %s usa un id reservado: %s)" % [ruta, reto.name, reto.id])
 		# La escena suelta (nucleo/reto_preguntas.tscn) no trae preguntas: las pone cada sala.
 		if reto == raiz:
@@ -488,6 +515,92 @@ func _revisar_npcs(ruta: String, raiz: Node) -> void:
 				continue
 			for fallo: String in pregunta.fallos():
 				_fallos.append("%s (reto %s: %s)" % [ruta, reto.name, fallo])
+
+
+# Un id con el prefijo de coleccionable o de entregado choca con esas marcas de la partida.
+func _id_reservado(id: String) -> bool:
+	return id.begins_with(Partida.PREFIJO_COLECCIONABLE) or id.begins_with(EntregaRecompensas.PREFIJO_ENTREGADO)
+
+
+# Cada AvisoAccion ensena una o dos acciones que existen en el InputMap: con un nombre mal escrito el pizarron
+# quedaria en blanco sin aviso. Su id no se repite en la escena ni usa un prefijo reservado: dos avisos con el mismo
+# id se apagarian juntos, y uno con el de coleccionable contaria como coleccionable.
+func _revisar_avisos(ruta: String, raiz: Node) -> void:
+	var avisos: Array[Node] = raiz.find_children("*", "AvisoAccion", true, false)
+	var ids: Array[String] = []
+	for nodo: Node in avisos:
+		var aviso: AvisoAccion = nodo as AvisoAccion
+		if not aviso.id.is_empty():
+			if ids.has(aviso.id):
+				_fallos.append("%s (el aviso %s repite el id '%s')" % [ruta, aviso.name, aviso.id])
+			if _id_reservado(aviso.id):
+				_fallos.append("%s (el aviso %s usa un id reservado: %s)" % [ruta, aviso.name, aviso.id])
+			ids.append(aviso.id)
+		if aviso.acciones.is_empty() or aviso.acciones.size() > AvisoAccion.MAXIMO_ACCIONES:
+			_fallos.append("%s (el aviso %s ensena %d acciones; van 1 o %d)" % [ruta, aviso.name, aviso.acciones.size(), AvisoAccion.MAXIMO_ACCIONES])
+		for accion: StringName in aviso.acciones:
+			if not InputMap.has_action(accion):
+				_fallos.append("%s (el aviso %s nombra la accion '%s', que no esta en el InputMap)" % [ruta, aviso.name, accion])
+	# Un boton por ensenar es un boton de la pantalla y algun aviso de la sala lo ensena: si no, el jugador se queda
+	# sin el en tactil.
+	var sala: Sala = raiz as Sala
+	if sala != null:
+		for accion: StringName in sala.botones_por_ensenar:
+			if not ControlesTactiles.ACCIONES.has(accion):
+				_fallos.append("%s (botones_por_ensenar nombra '%s', que no es un boton de la pantalla)" % [ruta, accion])
+				continue
+			var ensenado: bool = false
+			for nodo: Node in avisos:
+				if (nodo as AvisoAccion).acciones.has(accion):
+					ensenado = true
+			if not ensenado:
+				_fallos.append("%s (el boton '%s' esta por ensenar y ningun aviso de la sala lo ensena)" % [ruta, accion])
+
+
+# Cada Estacion va como hija directa de una sala con id, se llama estacion_<id de la sala> (una por sala), esta en la
+# tabla de su sala (Estacion.tabla_de) con esa misma sala y cuesta 0 o mas. Si no, el viaje llevaria a una sala que no
+# la tiene o el menu no la listaria.
+func _revisar_estaciones(ruta: String, raiz: Node) -> void:
+	var estaciones: Array[Node] = raiz.find_children("*", "Estacion", true, false)
+	if estaciones.size() > 1:
+		_fallos.append("%s (%d estaciones; va una por sala, con id estacion_<sala>)" % [ruta, estaciones.size()])
+	for nodo: Node in estaciones:
+		var estacion: Estacion = nodo as Estacion
+		var sala: Sala = estacion.get_parent() as Sala
+		if sala == null or sala != raiz or sala.id.is_empty():
+			_fallos.append("%s (la estacion %s debe ser hija directa de una sala con id)" % [ruta, estacion.name])
+			continue
+		if estacion.id != Estacion.PREFIJO + sala.id:
+			_fallos.append("%s (la estacion %s debe tener id %s%s; tiene '%s')" % [ruta, estacion.name, Estacion.PREFIJO, sala.id, estacion.id])
+		if estacion.costo < 0:
+			_fallos.append("%s (la estacion %s cuesta %d; debe costar 0 o mas)" % [ruta, estacion.name, estacion.costo])
+		var tabla: FichaEstaciones = Estacion.tabla_de(sala.id)
+		var dato: DatoEstacion = tabla.buscar(estacion.id) if tabla != null else null
+		if dato == null:
+			_fallos.append("%s (la estacion %s no esta en la tabla de estaciones de su sala)" % [ruta, estacion.id])
+		elif dato.sala != sala.id:
+			_fallos.append("%s (la tabla dice que la estacion %s esta en %s)" % [ruta, estacion.id, dato.sala])
+
+
+# Cada Tienda de una escena vende algo, y cada articulo tiene id sin repetir en su tienda (con el se marca comprado),
+# precio mayor que 0 y una Recompensa. Las habilidades de los articulos las revisa _revisar_habilidades.
+func _revisar_tiendas(ruta: String, raiz: Node) -> void:
+	for nodo: Node in _de_tipo(raiz, Tienda, true):
+		var tienda: Tienda = nodo as Tienda
+		if tienda.articulos.is_empty():
+			_fallos.append("%s (la tienda %s no vende nada)" % [ruta, tienda.name])
+		var vistos: Dictionary = {}
+		for articulo: ArticuloTienda in tienda.articulos:
+			if articulo == null:
+				_fallos.append("%s (la tienda %s tiene un articulo vacio)" % [ruta, tienda.name])
+				continue
+			if articulo.id.is_empty() or vistos.has(articulo.id):
+				_fallos.append("%s (tienda %s: articulo '%s' sin id o con id repetido)" % [ruta, tienda.name, articulo.id])
+			vistos[articulo.id] = true
+			if articulo.precio <= 0:
+				_fallos.append("%s (tienda %s: el articulo %s cuesta %d; debe costar mas de 0)" % [ruta, tienda.name, articulo.id, articulo.precio])
+			if articulo.recompensa == null:
+				_fallos.append("%s (tienda %s: el articulo %s no entrega nada)" % [ruta, tienda.name, articulo.id])
 
 
 # Cada ruta de portones de una Palanca lleva a un Porton y cada tapa de un MuroRompible a un dibujo: una ruta rota
@@ -505,30 +618,22 @@ func _revisar_rutas_de_secretos(ruta: String, nodo: Node) -> void:
 				_fallos.append("%s (el muro %s tapa con %s, que no es un dibujo)" % [ruta, muro.name, destino])
 
 
+# Clases que se recuerdan en el estado de su sala y necesitan id; todas lo declaran como String. El aviso va aparte:
+# su id es opcional.
+var _recordados_con_id: Array[Script] = [SueloFragil, MuroRompible, Palanca, Porton, Coleccionable, Npc, RetoPreguntas, Tienda]
+
+
 # Id de un objeto que se recuerda en el estado de su sala (suelo fragil, muro rompible, palanca, porton, coleccionable,
-# npc, reto): "" si el nodo no es de esos, "?" si lo es y no tiene id.
+# npc, reto, tienda, aviso): "" si el nodo no es de esos, "?" si lo es y no tiene id.
 func _id_recordado(nodo: Node) -> String:
-	var suelo: SueloFragil = nodo as SueloFragil
-	if suelo != null:
-		return suelo.id if not suelo.id.is_empty() else "?"
-	var muro: MuroRompible = nodo as MuroRompible
-	if muro != null:
-		return muro.id if not muro.id.is_empty() else "?"
-	var palanca: Palanca = nodo as Palanca
-	if palanca != null:
-		return palanca.id if not palanca.id.is_empty() else "?"
-	var porton: Porton = nodo as Porton
-	if porton != null:
-		return porton.id if not porton.id.is_empty() else "?"
-	var coleccionable: Coleccionable = nodo as Coleccionable
-	if coleccionable != null:
-		return coleccionable.id if not coleccionable.id.is_empty() else "?"
-	var npc: Npc = nodo as Npc
-	if npc != null:
-		return npc.id if not npc.id.is_empty() else "?"
-	var reto: RetoPreguntas = nodo as RetoPreguntas
-	if reto != null:
-		return reto.id if not reto.id.is_empty() else "?"
+	for clase: Script in _recordados_con_id:
+		if is_instance_of(nodo, clase):
+			var id: String = nodo.get(&"id")
+			return id if not id.is_empty() else "?"
+	# El id del aviso es opcional: sin id vuelve en cada visita y no se recuerda.
+	var aviso: AvisoAccion = nodo as AvisoAccion
+	if aviso != null:
+		return aviso.id
 	return ""
 
 
@@ -559,6 +664,45 @@ func _revisar_zona_pruebas() -> void:
 	for sala: String in nombradas:
 		if not ResourceLoader.exists(carpeta + sala):
 			_fallos.append("%s (nombra %s, que no existe)" % [ZONA_PRUEBAS, sala])
+	# Cada sala de GRUPOS con su nombre y su detalle en SALAS, y SALAS sin salas que no esten en GRUPOS.
+	var salas: Dictionary = constantes["SALAS"]
+	var agrupadas: Array = []
+	for categoria: String in grupos:
+		agrupadas.append_array(grupos[categoria] as Array)
+	for sala: String in agrupadas:
+		var info: Array = salas.get(sala, [])
+		if info.size() != 2 or (info[0] as String).is_empty() or (info[1] as String).is_empty():
+			_fallos.append("%s (%s no tiene nombre y detalle en SALAS)" % [ZONA_PRUEBAS, sala])
+	for sala: String in salas:
+		if not agrupadas.has(sala):
+			_fallos.append("%s (SALAS nombra %s, que no esta en GRUPOS)" % [ZONA_PRUEBAS, sala])
+
+
+# Las pruebas de codigo no viajan en el paquete de publicacion (exclude_filter de «Publicacion», docs/contrato.md,
+# «Paquete de publicacion»): un script, escena o recurso de fuera, o project.godot, que nombre una por su ruta o por
+# su uid cargaria en el APK algo que no esta. Este script se salta: nombra la carpeta para buscarla.
+const CARPETA_PRUEBAS_CODIGO: String = "res://herramientas/pruebas/"
+
+
+func _revisar_pruebas_aparte() -> void:
+	var buscados: PackedStringArray = [CARPETA_PRUEBAS_CODIGO]
+	for archivo: String in DirAccess.get_files_at(CARPETA_PRUEBAS_CODIGO):
+		if not ["gd", "tscn", "tres"].has(archivo.get_extension()):
+			continue
+		var uid: int = ResourceLoader.get_resource_uid(CARPETA_PRUEBAS_CODIGO + archivo)
+		if uid != ResourceUID.INVALID_ID:
+			buscados.append(ResourceUID.id_to_text(uid))
+	var propio: String = (get_script() as Script).resource_path
+	var rutas: PackedStringArray = _revisados.duplicate()
+	rutas.append("res://project.godot")
+	for ruta: String in rutas:
+		if ruta.begins_with(CARPETA_PRUEBAS_CODIGO) or ruta == propio:
+			continue
+		var texto: String = FileAccess.get_file_as_string(ruta)
+		for buscado: String in buscados:
+			if texto.contains(buscado):
+				_fallos.append("%s (nombra %s, de herramientas/pruebas/, que no viaja en el paquete de publicacion)" % [ruta, buscado])
+				break
 
 
 # Puertas de ida y vuelta entre salas con id: si A lleva a la puerta P de B, B tiene la puerta P y lleva de

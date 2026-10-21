@@ -30,10 +30,8 @@ jobs:
           HEAD: ${{ github.event.pull_request.head.sha }}
         run: |
           if [ "$EVENTO" = "pull_request" ]; then rango=("$BASE..$HEAD"); else rango=(-1 HEAD); fi
-          if git log --format=%B "${rango[@]}" | grep -inE '^(co-authored-by:.*(claude|anthropic)|claude-session:)|generated with \[?claude'; then
-            echo "::error::A commit message carries an AI assistant attribution line"
-            exit 1
-          fi
+          git log --format=%B "${rango[@]}" > "$RUNNER_TEMP/mensajes.txt"
+          sh herramientas/githooks/commit-msg "$RUNNER_TEMP/mensajes.txt" || { echo "::error::A commit message carries an AI assistant attribution line"; exit 1; }
 
       - name: No local or binary files tracked
         shell: bash
@@ -58,7 +56,11 @@ jobs:
             echo "::error::Validation found errors"
             exit 1
           fi
-          grep -qE '^VALIDACION archivos=[0-9]+ fallos=0' validar.log || { echo "::error::The validator scene did not finish"; exit 1; }
+          resumenes=$(grep -cE '^VALIDACION archivos=[0-9]+ fallos=[0-9]+$' validar.log || true)
+          if [ "$resumenes" != 1 ] || ! grep -qE '^VALIDACION archivos=[0-9]+ fallos=0$' validar.log; then
+            echo "::error::The validator scene did not print exactly one summary with fallos=0"
+            exit 1
+          fi
 
       - name: Input scripts
         shell: bash

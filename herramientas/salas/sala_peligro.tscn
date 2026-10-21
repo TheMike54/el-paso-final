@@ -35,7 +35,7 @@ offset_top = -40.0
 offset_right = 400.0
 offset_bottom = 220.0
 mouse_filter = 2
-color = Color(0.25, 0.25, 0.25, 1)
+color = Color(0.3, 0.3, 0.32, 1)
 
 [node name="SueloDerecho" type="StaticBody2D" parent="."]
 position = Vector2(1550, 720)
@@ -49,7 +49,7 @@ offset_top = -40.0
 offset_right = 450.0
 offset_bottom = 220.0
 mouse_filter = 2
-color = Color(0.25, 0.25, 0.25, 1)
+color = Color(0.3, 0.3, 0.32, 1)
 
 [node name="FondoFoso" type="StaticBody2D" parent="."]
 position = Vector2(950, 900)
@@ -63,7 +63,7 @@ offset_top = -40.0
 offset_right = 150.0
 offset_bottom = 40.0
 mouse_filter = 2
-color = Color(0.25, 0.25, 0.25, 1)
+color = Color(0.3, 0.3, 0.32, 1)
 
 [node name="Pinchos" type="Area2D" parent="."]
 position = Vector2(950, 860)

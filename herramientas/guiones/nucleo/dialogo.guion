@@ -1,4 +1,4 @@
 # La escena de prueba del dialogo corre sus casos al entrar: forma de las fichas, etapas del Npc, la caja con las
 # acciones y el golpe que corta la charla. Deja la cuenta en sus propiedades.
-escena res://herramientas/salas/sala_dialogo_prueba.tscn
+escena res://herramientas/pruebas/sala_dialogo_prueba.tscn
 fin 240

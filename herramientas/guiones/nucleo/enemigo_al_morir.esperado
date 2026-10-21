@@ -1,4 +1,4 @@
-# Los 3 casos de herramientas/salas/prueba_enemigo_al_morir.gd corrieron y ninguno fallo. Cada caso que
+# Los 3 casos de herramientas/pruebas/prueba_enemigo_al_morir.gd corrieron y ninguno fallo. Cada caso que
 # falla imprime una linea "FALLO enemigo_al_morir: <caso>".
 valor . casos 3
 valor . fallos 0

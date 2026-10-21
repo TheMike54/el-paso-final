@@ -1,6 +1,9 @@
 [gd_scene format=3 uid="uid://dgvsn3dxmkpcl"]
 
 [ext_resource type="Script" uid="uid://c3ooqhaj3mao0" path="res://nucleo/jugador.gd" id="1_jugador"]
+[ext_resource type="Script" uid="uid://cll06a0vvercv" path="res://nucleo/camara_jugador.gd" id="2_camara"]
+[ext_resource type="SpriteFrames" path="res://nucleo/arte/jugador_hombre/jugador_hombre.tres" id="3_cuadros"]
+[ext_resource type="Shader" uid="uid://uw0ho608bpyy" path="res://nucleo/arte/destello.gdshader" id="4_destello"]
 
 [sub_resource type="RectangleShape2D" id="forma_jugador"]
 size = Vector2(80, 160)
@@ -8,8 +11,22 @@ size = Vector2(80, 160)
 [sub_resource type="RectangleShape2D" id="forma_ataque"]
 size = Vector2(100, 100)
 
+[sub_resource type="ShaderMaterial" id="material_destello"]
+resource_local_to_scene = true
+shader = ExtResource("4_destello")
+shader_parameter/cantidad = 0.0
+
 [node name="Jugador" type="CharacterBody2D" groups=["jugador"]]
 script = ExtResource("1_jugador")
+
+[node name="Dibujo" type="AnimatedSprite2D" parent="."]
+show_behind_parent = true
+material = SubResource("material_destello")
+position = Vector2(0, -80)
+sprite_frames = ExtResource("3_cuadros")
+animation = &"quieto"
+centered = false
+offset = Vector2(-158, -96)
 
 [node name="Forma" type="CollisionShape2D" parent="."]
 position = Vector2(0, -80)
@@ -25,3 +42,4 @@ shape = SubResource("forma_ataque")
 [node name="Camara" type="Camera2D" parent="."]
 position = Vector2(0, -80)
 process_callback = 0
+script = ExtResource("2_camara")

@@ -1,4 +1,4 @@
 # La escena de prueba del guardado corre todos sus casos al entrar (guardar, cargar, temporal,
 # archivos danados y versiones incompatibles) y deja la cuenta en sus propiedades.
-escena res://herramientas/salas/sala_guardado.tscn
+escena res://herramientas/pruebas/sala_guardado.tscn
 fin 2

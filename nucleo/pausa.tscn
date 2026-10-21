@@ -24,25 +24,32 @@ anchor_right = 0.5
 anchor_bottom = 0.5
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 20
+theme_override_constants/separation = 8
+alignment = 1
 
 [node name="Titulo" type="Label" parent="Panel/Opciones"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 48
+theme_type_variation = &"TituloPausa"
 text = "Pausa"
 horizontal_alignment = 1
 
 [node name="Continuar" type="Button" parent="Panel/Opciones"]
-custom_minimum_size = Vector2(480, 108)
+custom_minimum_size = Vector2(0, 108)
 layout_mode = 2
+size_flags_horizontal = 4
+theme_type_variation = &"OpcionCentrada"
 text = "Continuar"
 
 [node name="Configuracion" type="Button" parent="Panel/Opciones"]
-custom_minimum_size = Vector2(480, 108)
+custom_minimum_size = Vector2(0, 108)
 layout_mode = 2
+size_flags_horizontal = 4
+theme_type_variation = &"OpcionCentrada"
 text = "Configuración"
 
 [node name="SalirAlMenu" type="Button" parent="Panel/Opciones"]
-custom_minimum_size = Vector2(480, 108)
+custom_minimum_size = Vector2(0, 108)
 layout_mode = 2
+size_flags_horizontal = 4
+theme_type_variation = &"OpcionCentrada"
 text = "Salir al menú"

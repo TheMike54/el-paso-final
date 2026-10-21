@@ -1,5 +1,5 @@
 # Ya en el piso de abajo, el ataque que empezo antes de la picada esta cortado: no sigue en el suelo.
 y 1160 1
 en_suelo true
-valor Jugador _ticks_atacando 0
+valor Jugador atacando false
 valor Jugador/Ataque monitoring false

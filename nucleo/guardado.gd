@@ -40,9 +40,14 @@ const ESQUEMA: Dictionary[String, int] = {
 	"tiempo_jugado": TYPE_FLOAT,
 }
 ## Campos agregados despues de la version 3, con su valor por omision como queda al leer el JSON (0.0 y no 0, Array
-## sin tipo): una partida que no los tiene se rellena al cargar en vez de quedar danada. Hoy ninguno. Cambiar la
-## forma de un campo que ya existe no va aqui: sube VERSION y lleva su funcion de conversion.
-const NUEVOS: Dictionary[String, Variant] = {}
+## sin tipo): una partida que no los tiene se rellena al cargar en vez de quedar danada. Cambiar la forma de un campo
+## que ya existe no va aqui: sube VERSION y lleva su funcion de conversion.
+const NUEVOS: Dictionary[String, Variant] = {
+	# Estaciones del viaje rapido abiertas (17-oct-2026).
+	"estaciones": [],
+	# Botones de la pantalla ya ensenados por los pizarrones (17-oct-2026).
+	"botones_ensenados": [],
+}
 
 
 ## Lo que devuelve cargar(): el estado y, solo si es VALIDA, la partida.
@@ -55,8 +60,14 @@ class Resultado:
 		partida = partida_leida
 
 
-static func guardar(partida: Dictionary, ruta: String = RUTA) -> Error:
+static func guardar(partida: Dictionary, ruta: String) -> Error:
 	return Archivo.escribir_atomico(ruta, JSON.stringify({"version": VERSION, "partida": partida}, "\t"))
+
+
+## Un numero leido de una partida como int, o por_omision si no es numero: el JSON devuelve los enteros como float y
+## por eso no basta con "as int". Trunca, como int().
+static func entero(valor: Variant, por_omision: int) -> int:
+	return int(valor as float) if valor is int or valor is float else por_omision
 
 
 static func ruta_ranura(numero: int) -> String:

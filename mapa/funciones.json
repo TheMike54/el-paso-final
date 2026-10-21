@@ -16,5 +16,17 @@
     "que": "En el telefono, la zona de prueba Mapa: tomar el mapa y la pluma y descansar dibuja las salas; + y - cambian de estado; la brujula muestra al jugador; el boton tactil del mapa lo abre y lo cierra",
     "comprobacion": "manual: con el APK de desarrollo, la fila Mapa de docs/pruebas.md",
     "pasa": true
+  },
+  {
+    "id": "mapa-mochila",
+    "que": "El mapa dibuja un icono donde esta la mochila si su sala esta entre las dibujadas; sin mochila, o con su sala fuera del mapa, no hay icono",
+    "comprobacion": "herramientas/guiones/mapa/mapa_cuentas.guion",
+    "pasa": true
+  },
+  {
+    "id": "mapa-rapido-tras-cerrar-menu",
+    "que": "El mapa rapido solo se muestra si mapa_rapido empezo a pulsarse con el juego andando: cerrar el marco de menus (tambien abierto en Mapa desde el mapa rapido) o la pausa con LB o mapa_rapido sostenido no lo muestra hasta soltarlo y volver a pulsarlo; al cruzar una puerta con mapa_rapido sostenido la sala nueva lo sigue mostrando",
+    "comprobacion": "herramientas/guiones/nucleo/marco.guion;herramientas/guiones/mapa/mapa_cuentas.guion",
+    "pasa": true
   }
 ]

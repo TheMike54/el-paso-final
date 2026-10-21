@@ -1,0 +1,127 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://herramientas/salas/sala_tienda.gd" id="1_sala"]
+[ext_resource type="Script" path="res://nucleo/tienda.gd" id="2_tienda"]
+[ext_resource type="Script" path="res://nucleo/articulo_tienda.gd" id="3_articulo"]
+[ext_resource type="Script" path="res://nucleo/recompensa.gd" id="4_recompensa"]
+[ext_resource type="PackedScene" uid="uid://ru6ttknobjs5" path="res://nucleo/objeto_habilidad.tscn" id="5_objeto"]
+
+[sub_resource type="RectangleShape2D" id="forma_suelo"]
+size = Vector2(2000, 80)
+
+[sub_resource type="RectangleShape2D" id="forma_pared"]
+size = Vector2(40, 720)
+
+[sub_resource type="Resource" id="recompensa_mapa"]
+script = ExtResource("4_recompensa")
+tipo = 3
+id = &"pluma_mapa"
+
+[sub_resource type="Resource" id="recompensa_vida"]
+script = ExtResource("4_recompensa")
+tipo = 1
+monto = 1
+
+[sub_resource type="Resource" id="recompensa_doble"]
+script = ExtResource("4_recompensa")
+tipo = 3
+id = &"doble_salto"
+
+[sub_resource type="Resource" id="recompensa_amuleto"]
+script = ExtResource("4_recompensa")
+tipo = 2
+id = &"amuleto_prueba"
+
+[sub_resource type="Resource" id="articulo_barato"]
+script = ExtResource("3_articulo")
+id = "pluma"
+nombre = "Pluma del mapa"
+descripcion = "Dibuja en el mapa las salas visitadas al descansar en un banco."
+precio = 50
+recompensa = SubResource("recompensa_mapa")
+
+[sub_resource type="Resource" id="articulo_caro"]
+script = ExtResource("3_articulo")
+id = "vida"
+nombre = "Vida máxima"
+descripcion = "Una vida más. Cuesta más de lo que traes al entrar."
+precio = 500
+recompensa = SubResource("recompensa_vida")
+
+[sub_resource type="Resource" id="articulo_requisito"]
+script = ExtResource("3_articulo")
+id = "doble"
+nombre = "Doble salto"
+descripcion = "Solo aparece si ya tienes el impulso: tómalo a la izquierda."
+precio = 100
+recompensa = SubResource("recompensa_doble")
+requisito = &"impulso"
+
+[sub_resource type="Resource" id="articulo_amuleto"]
+script = ExtResource("3_articulo")
+id = "amuleto"
+nombre = "Amuleto de prueba"
+descripcion = "Un amuleto para ponerse sentado en un banco."
+precio = 120
+recompensa = SubResource("recompensa_amuleto")
+
+[node name="SalaTienda" type="Node2D"]
+script = ExtResource("1_sala")
+habilidades_de_prueba = Array[StringName]([&"pluma"])
+limites = Rect2(0, 0, 2000, 720)
+
+[node name="Entrada" type="Marker2D" parent="."]
+position = Vector2(900, 680)
+
+[node name="Suelo" type="StaticBody2D" parent="."]
+position = Vector2(1000, 720)
+
+[node name="Forma" type="CollisionShape2D" parent="Suelo"]
+shape = SubResource("forma_suelo")
+
+[node name="Dibujo" type="ColorRect" parent="Suelo"]
+offset_left = -1000.0
+offset_top = -40.0
+offset_right = 1000.0
+offset_bottom = 40.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="ParedIzquierda" type="StaticBody2D" parent="."]
+position = Vector2(20, 360)
+
+[node name="Forma" type="CollisionShape2D" parent="ParedIzquierda"]
+shape = SubResource("forma_pared")
+
+[node name="Dibujo" type="ColorRect" parent="ParedIzquierda"]
+offset_left = -20.0
+offset_top = -360.0
+offset_right = 20.0
+offset_bottom = 360.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="ParedDerecha" type="StaticBody2D" parent="."]
+position = Vector2(1980, 360)
+
+[node name="Forma" type="CollisionShape2D" parent="ParedDerecha"]
+shape = SubResource("forma_pared")
+
+[node name="Dibujo" type="ColorRect" parent="ParedDerecha"]
+offset_left = -20.0
+offset_top = -360.0
+offset_right = 20.0
+offset_bottom = 360.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="Impulso" parent="." instance=ExtResource("5_objeto")]
+position = Vector2(300, 680)
+habilidad = &"impulso"
+
+[node name="Tienda" type="Area2D" parent="."]
+position = Vector2(1400, 680)
+script = ExtResource("2_tienda")
+id = "tienda_prueba"
+nombre = "Tienda de prueba"
+articulos = Array[ExtResource("3_articulo")]([SubResource("articulo_barato"), SubResource("articulo_caro"), SubResource("articulo_requisito"), SubResource("articulo_amuleto")])

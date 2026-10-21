@@ -1,8 +1,8 @@
 extends Node
 # Autoload de arranque del nucleo. Carga los ajustes, crea los efectos (Sonido, que asi no
 # muere al cambiar de escena) y UltimaEntrada (si se usa el dedo o un control) y, solo si el build es de depuracion y el
-# archivo viajo en el paquete, el puerto de depuracion: herramientas/ viaja tambien en
-# publicacion (zona de pruebas con el modo desarrollador), pero el puerto nunca corre ahi.
+# archivo viajo en el paquete, el puerto de depuracion: la zona de pruebas viaja tambien en
+# publicacion (con el modo desarrollador), pero el puerto no (exclude_filter de «Publicacion») y nunca corre ahi.
 const RUTA_PUERTO: String = "res://herramientas/puerto_depuracion.gd"
 
 ## Rango de proporciones de la vista (ver nucleo/vista.gd): de 4:3 a 22:9, el mismo en escritorio,
