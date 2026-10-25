@@ -213,9 +213,15 @@ solo lee al jugador: la física, el control y las áreas no dependen de él.
   corre el sprite (`play`). Un bucle que no corre (el de la escena al aparecer) arranca; `muerte` y `sentarse` se
   quedan en su último cuadro.
   Con la interpolación de física apagada, el cuadro va a la par del tick. En el congelado común, `speed_scale` 0.
-- Volteo con `Dibujo.scale.x` igual a hacia dónde mira, no con `flip_h`. Invulnerable: el alfa del `modulate` baja a
+- Volteo con `Dibujo.scale.x` igual a hacia dónde mira, no con `flip_h` (`AnimacionJugador.volteo`). Pegado a la
+  pared (`pared`) va al revés: mira hacia afuera, con la pared a la espalda como en la hoja, aunque «mirar» apunte a
+  la pared (decidido el 21-oct-2026). Como la mano y los pies de esa hoja sobresalen 90 px por detrás del eje, el
+  `Dibujo` se aparta de la pared lo que sobra sobre medio ancho del jugador (`AnimacionJugador.separacion_pared`, de
+  los márgenes de los `AtlasTexture`: 50 px), para que toquen su borde sin meterse. Invulnerable: el alfa del `modulate` baja a
   `PARPADEO` (0,35) 4 ticks de cada 8, como el `InvulnerablePulse` de Hollow Knight. Curando: tinte `TINTE_CURANDO`.
-- Destello en blanco mientras dura el congelado común y `TICKS_DESTELLO_PARRY` ticks tras un parry (no muerto): un
+- Destello en blanco solo en el parry, mientras dura su congelado y `TICKS_DESTELLO_PARRY` ticks después (no muerto).
+  El congelado de un golpe recibido o dado no aclara el cuerpo: el golpe recibido se lee por el parpadeo, como en
+  Hollow Knight y Silksong, que no aclaran al héroe en el parry ni durante el congelado (decidido el 21-oct-2026). Es un
   `ShaderMaterial` con `nucleo/arte/destello.gdshader` (`mix` del color con blanco según el uniforme `cantidad`). Un
   `modulate` mayor que 1 no aclara: Compatibility satura el color en 1 (`tutorials/rendering/renderers.rst:352,377`).
   El valor se cambia solo cuando cambia.

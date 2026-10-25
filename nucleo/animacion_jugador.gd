@@ -156,6 +156,24 @@ static func con_giro(nombre: StringName, e: Estado) -> StringName:
 	return nombre
 
 
+## Volteo del cuerpo (Dibujo.scale.x). Pegado a la pared mira hacia afuera, con la pared a la espalda como en la hoja:
+## mirando apunta hacia la pared, que es donde se empuja (y donde sale el ataque).
+static func volteo(nombre: StringName, mirando: float) -> float:
+	return -mirando if nombre == PARED else mirando
+
+
+## Cuanto se aparta el cuerpo de la pared (hacia donde mira el dibujo) en la animacion pared: lo que la mano o los pies
+## sobresalen por detras del eje del lienzo (eje) menos medio ancho del jugador, para que toquen el borde de la pared
+## sin meterse. Sale de los margenes de los AtlasTexture: no cambia si el arte se vuelve a generar.
+static func separacion_pared(cuadros: SpriteFrames, eje: float, medio_ancho: float) -> float:
+	var atras: float = 0.0
+	for i: int in range(cuadros.get_frame_count(PARED)):
+		var cuadro: AtlasTexture = cuadros.get_frame_texture(PARED, i) as AtlasTexture
+		if cuadro != null:
+			atras = maxf(atras, eje - cuadro.margin.position.x)
+	return maxf(atras - medio_ancho, 0.0)
+
+
 ## Cuadro de un clip con tiempo propio, o -1 si es un bucle que corre el sprite. duraciones: las relativas del clip en
 ## el SpriteFrames, para repartir los ticks del estado en la misma proporcion.
 static func cuadro(nombre: StringName, e: Estado, duraciones: PackedFloat32Array) -> int:

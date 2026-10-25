@@ -12,14 +12,15 @@
   Hasta entonces, `export_presets.cfg` de esta rama solo tiene «Publicacion» (H23 de la auditoría).
 - Ruleset `main` (12-oct): solo por PR, 1 aprobación, `validar` en verde, Squash and merge, sin force push ni borrado.
 - Al 21-oct: `validar.ps1` → `OK  VALIDACION archivos=267 fallos=0`; `correr-guiones.ps1` → `RESUMEN total=157
-  OK=157 MALOS=0`; trazador del jugador → `TRAZA IDENTICA n=36`; `animacion_jugador` 48 casos, 0 fallos.
+  OK=157 MALOS=0`; trazador del jugador → `TRAZA IDENTICA n=36`; `animacion_jugador` 50 casos, 0 fallos.
 
 ## Pruebas manuales pendientes
 
 - **#7 y #8:** la lista de cada uno está en su issue.
-- **S50, la persona** (APK `dev-2026-10-21` instalado): el cuerpo animado, caso «Cuerpo animado del jugador» de
-  `docs/pruebas.md` (va sin mipmaps, decidido el 21-oct: que los bordes no parpadeen al moverse la cámara). También
-  cerrar con A sin saltar, con un control, y el mapa (+ / – y el texto vacío).
+- **S50, la persona:** el 21-oct pasaron el cuerpo animado y el mapa, salvo la pared, que se veía al revés
+  (`docs/errores/2026-10-21-pared-al-reves.md`): arreglada y vista bien en el S50, igual que el blanco solo en el
+  parry (decidido ese día) y la sala Picada. Cerrar con A con un control
+  queda para el #7 y el #8 (la persona no tiene control).
 - **Rendimiento en el S20:** no se midió; el S50 se midió el 18 y el 21-oct.
 - **Esperan hardware o firma:** `menu-desarrollo`, `paquete-publicacion` y `recursos-medicion-publicacion`
   (keystore). `sonidos-telefono` falla hasta que el golpe recibido tenga su propio sonido.
@@ -31,6 +32,7 @@
 - `nucleo-menus-gis`: falta H6, la prueba en los teléfonos (#7).
 - `nucleo-tienda-gis`: hechos H1 a H4. Falta H5, la tienda y las estaciones con el dedo (#7).
 - `nucleo-auditoria-codigo`: el índice de la auditoría; se cierra con el paso 13.
+- `contenido-celda`: aprobado el 21-oct con las cinco decisiones recomendadas; va en `feature/contenido-celda` tras el #6.
 
 ## Auditoría del código: paso 13 diferido
 

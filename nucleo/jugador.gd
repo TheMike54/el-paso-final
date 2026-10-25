@@ -356,6 +356,8 @@ var _cantidad_destello: float = 0.0
 # Duraciones relativas de cada clip y si se repite, leidas una vez del SpriteFrames en _ready (no cada tick).
 var _duraciones: Dictionary[StringName, PackedFloat32Array] = {}
 var _en_bucle: Dictionary[StringName, bool] = {}
+# Cuanto se aparta el cuerpo de la pared en la animacion pared para que la mano y los pies toquen su borde.
+var _separacion_pared: float = 0.0
 
 @onready var _camara: CamaraJugador = $Camara as CamaraJugador
 @onready var _forma: CollisionShape2D = $Forma as CollisionShape2D
@@ -453,7 +455,8 @@ func _animar() -> void:
 		if _dibujo.frame != cuadro:
 			_dibujo.set_frame_and_progress(cuadro, 0.0)
 	_dibujo.speed_scale = 0.0 if Congelado.activo() else 1.0
-	_dibujo.scale.x = _mirando
+	_dibujo.scale.x = AnimacionJugador.volteo(nombre, _mirando)
+	_dibujo.position.x = _dibujo.scale.x * _separacion_pared if nombre == AnimacionJugador.PARED else 0.0
 	_dibujo.rotation = AnimacionJugador.giro_voltereta(e) * _mirando if nombre == AnimacionJugador.VOLTERETA else 0.0
 	var color: Color = Color.WHITE
 	if curando:
@@ -461,7 +464,8 @@ func _animar() -> void:
 	if _ticks_sin_dano > 0 and not muerto and posmod(Engine.get_physics_frames(), 2 * TICKS_PARPADEO) >= TICKS_PARPADEO:
 		color.a = PARPADEO
 	_dibujo.modulate = color
-	var cantidad: float = 1.0 if not muerto and (Congelado.activo() or _ticks_destello > 0) else 0.0
+	# Blanco solo en el parry: el golpe recibido se lee por su parpadeo, como en Hollow Knight (decidido el 21-oct-2026).
+	var cantidad: float = 1.0 if not muerto and _ticks_destello > 0 else 0.0
 	if cantidad != _cantidad_destello:
 		_cantidad_destello = cantidad
 		_destello.set_shader_parameter(&"cantidad", cantidad)
@@ -475,6 +479,7 @@ func _leer_clips() -> void:
 			duraciones.append(cuadros.get_frame_duration(nombre, i))
 		_duraciones[nombre] = duraciones
 		_en_bucle[nombre] = cuadros.get_animation_loop_mode(nombre) != SpriteFrames.LOOP_NONE
+	_separacion_pared = AnimacionJugador.separacion_pared(cuadros, -_dibujo.offset.x, TAMANO.x / 2.0)
 
 
 # Lee el estado del jugador en la foto del dibujo. No cambia nada del jugador.

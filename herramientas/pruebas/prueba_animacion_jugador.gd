@@ -87,6 +87,10 @@ func _giro() -> void:
 	e.ticks_hasta_ataque = 10
 	_caso("giro: no tapa un ataque",
 			AnimacionJugador.con_giro(AnimacionJugador.elegir(e), e) == AnimacionJugador.ATAQUE_LADO)
+	_caso("volteo: pegado a la pared mira hacia afuera; atacando en ella y en el aire, hacia donde mira",
+			AnimacionJugador.volteo(AnimacionJugador.PARED, -1.0) == 1.0
+			and AnimacionJugador.volteo(AnimacionJugador.ATAQUE_LADO, -1.0) == -1.0
+			and AnimacionJugador.volteo(AnimacionJugador.AIRE, 1.0) == 1.0)
 
 
 # La cola del ataque (tras el golpe, hasta ticks_entre_ataques) no vuelve si algo la interrumpio: ticks_hasta_ataque
@@ -178,6 +182,10 @@ func _recurso() -> void:
 			cuadros.get_animation_loop_mode(AnimacionJugador.MUERTE) == SpriteFrames.LOOP_NONE
 			and cuadros.get_animation_loop_mode(AnimacionJugador.SENTARSE) == SpriteFrames.LOOP_NONE
 			and cuadros.get_animation_loop_mode(AnimacionJugador.DORMIR) != SpriteFrames.LOOP_NONE)
+	# Eje del lienzo en x = 158 (offset del Dibujo); la mano del cuadro 1 empieza en x = 68: 90 px detras, menos 40.
+	var separacion: float = AnimacionJugador.separacion_pared(cuadros, 158.0, 40.0)
+	_caso("pared: el cuerpo se aparta 50 px para que la mano toque la pared (dio %s)" % separacion,
+			is_equal_approx(separacion, 50.0))
 
 
 func _escena() -> void:
