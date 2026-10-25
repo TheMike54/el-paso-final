@@ -5,14 +5,18 @@ extends Control
 # tiene un boton para oir un efecto), brillo (su pantalla, con la escena de la sala o una de muestra), vibracion,
 # temblor, recursos (con aviso si se elige alto en un telefono debil), botones tactiles (abre el editor), botones del
 # control (con aviso si no hay uno conectado), modo desarrollador (el menu muestra entonces la zona de pruebas) y
-# creditos. Cada opcion es un BotonValor: su valor en una pastilla, sin interruptores (mockup del 13-oct-2026). La
+# creditos. Cada opcion es un BotonValor: su valor en gis, con un ovalo en lo que vale, sin interruptores (mockup del 13-oct-2026). La
 # partida se borra en su ranura (Ranuras). Cada cambio se guarda al momento en los ajustes (las barras, al
 # soltarlas). Volver va siempre arriba a la izquierda, y las cuadriculas toman las columnas que caben (Tema). Atras y
-# pausa vuelven un nivel a la vez: del subpanel a la lista, y de la lista al menu (cerrado). Se usa con toque,
-# teclado y control.
+# pausa vuelven un nivel a la vez: del subpanel a la lista, y de la lista al menu (cerrado); se ve un solo panel a la
+# vez (Seccion). El panel de audio (PanelAudio) y la pantalla de brillo (PantallaBrillo) son scripts aparte; aqui
+# queda guardar sus barras. Se usa con toque, teclado y control.
 
 signal cerrado()
 signal editor_pedido()
+
+## El panel a la vista: la lista o uno de sus subpaneles.
+enum Seccion {LISTA, MANDO, CREDITOS, AUDIO, BRILLO}
 
 ## Nombre en pantalla de cada accion reasignable del control.
 const NOMBRES_ACCION: Dictionary[StringName, String] = {&"saltar": "Saltar", &"atacar": "Atacar", &"curar": "Curar", &"mapa": "Mapa", &"mapa_rapido": "Mapa rápido", &"inventario": "Inventario", &"pausa": "Pausa"}
@@ -20,35 +24,23 @@ const NOMBRES_ACCION: Dictionary[StringName, String] = {&"saltar": "Saltar", &"a
 const PASO_TECLAS: float = 10.0
 ## Al quitar el silencio de una barra que se silencio arrastrandola a 0: no hay valor anterior al que volver.
 const VOLUMEN_AL_QUITAR_SILENCIO: float = 50.0
-## Lo que se oye en el panel de audio: la musica en su bus mientras esta abierto y un efecto al pedirlo.
-const MUSICA_PRUEBA: AudioStream = preload("res://nucleo/sonidos/musica_prueba.ogg")
-const EFECTO_PRUEBA: AudioStream = preload("res://nucleo/sonidos/efecto_golpe.wav")
-## Pantalla de brillo: tamano de la ventana con la escena, lo tenue de la escena de fondo y el cuadro de calibracion.
-const VENTANA_BRILLO: Vector2 = Vector2(576.0, 324.0)
-const FONDO_TENUE: Color = Color(1.0, 1.0, 1.0, 0.3)
-const CALIBRACION: float = 96.0
-const COLOR_CALIBRACION: Color = Color(0.05, 0.05, 0.05, 1.0)
-const TEXTO_BRILLO: String = "Ajusta el brillo hasta que el cuadro de la esquina apenas se vea."
-# Deshace en la foto el rectangulo de Brillo con el que se tomo (Brillo.color_para): sin esto la escena se veria
-# con el brillo aplicado dos veces. Solo se dibuja en la ventana y el fondo, no copia la pantalla.
-const SHADER_FOTO: String = "shader_type canvas_item;
-uniform float alfa = 0.0;
-uniform float blanco = 0.0;
-void fragment() {
-	COLOR.rgb = (COLOR.rgb - blanco * alfa) / (1.0 - alfa);
-}
-"
+## Aviso al tocar Recursos abierto desde la pausa. Publico para la prueba.
+const AVISO_RECURSOS_EN_PARTIDA: String = "Para cambiar los gráficos, sal al menú principal."
 
 ## Archivo de los ajustes: publico para que la prueba trabaje con el suyo.
 var ruta_ajustes: String = Ajustes.RUTA
 ## Abierta desde la pausa: sin Desarrollador (solo cambia el menu principal, que ahi no se ve) y avisando que
-## Recursos vale al entrar a la siguiente sala (Prescindible, Niebla y Planta lo leen al entrar).
+## Recursos queda bloqueado: Prescindible, Niebla y Planta lo leen al entrar a una sala, asi que en la partida no se
+## veria el cambio; se cambia desde el menu principal, como los graficos en otros juegos.
 var en_partida: bool = false
 ## Foto de la sala tomada al abrir la pausa (la pone Pausa): la pantalla de brillo la muestra. Sin foto, o vacia
 ## (en el menu, en headless), muestra EscenaMuestra.
 var foto: Image = null
-## Brillo con el que se tomo la foto: la foto ya lo trae (la capa Brillo sale en ella) y se deshace al mostrarla.
+## Brillo con el que se tomo la foto: la foto ya lo trae (el modulado de la sala) y se deshace al mostrarla.
 var foto_brillo: float = Ajustes.BRILLO_POR_OMISION
+## Refresco de la pantalla en Hz (-1 si no se sabe), leido al abrir: con 90 o mas y Recursos en alto se ofrece
+## elegir 120 FPS. Publico para que la prueba lo fije, porque sin pantalla no hay.
+var refresco: float = -1.0
 ## Accion del control que espera que se presione un boton, o vacio.
 var esperando: StringName = &""
 ## Franja de abajo que se deja libre (el aviso de pocos toques del menu), en px de la vista: sin ella, el aviso de
@@ -64,8 +56,10 @@ var reservado_abajo: float = 0.0:
 var _tick_asignado: int = -10
 # Una barra (volumen o brillo) cambio y no se ha guardado: arrastrarla escribia ajustes.json en cada paso.
 var _barra_sin_guardar: bool = false
-# Recursos al abrir: en la partida, el aviso de la siguiente sala sale solo si cambio.
-var _recursos_al_abrir: String = ""
+# En la partida se toco Recursos (bloqueado): el aviso dice donde se cambia.
+var _recursos_bloqueado_tocado: bool = false
+# El panel a la vista (_mostrar).
+var _actual: Seccion = Seccion.LISTA
 
 @onready var _lista: Control = $Lista as Control
 @onready var _opciones: GridContainer = $Lista/Desplazable/Centro/Opciones as GridContainer
@@ -77,10 +71,10 @@ var _recursos_al_abrir: String = ""
 @onready var _temblor: BotonValor = $Lista/Desplazable/Centro/Opciones/Temblor as BotonValor
 @onready var _audio: BotonValor = $Lista/Desplazable/Centro/Opciones/Audio as BotonValor
 @onready var _brillo: BotonValor = $Lista/Desplazable/Centro/Opciones/Brillo as BotonValor
-@onready var _panel_audio: Control = $PanelAudio as Control
-@onready var _filas_audio: VBoxContainer = $PanelAudio/Desplazable/Centro/Filas as VBoxContainer
+@onready var _panel_audio: PanelAudio = $PanelAudio as PanelAudio
 @onready var _volver_audio: Button = $PanelAudio/Arriba/Volver as Button
 @onready var _recursos: BotonValor = $Lista/Desplazable/Centro/Opciones/Recursos as BotonValor
+@onready var _fps: BotonValor = $Lista/Desplazable/Centro/Opciones/Fps as BotonValor
 @onready var _aviso_recursos: Label = $Lista/AvisoRecursos as Label
 @onready var _modo: BotonValor = $Lista/Desplazable/Centro/Opciones/ModoDesarrollador as BotonValor
 @onready var _creditos: BotonValor = $Lista/Desplazable/Centro/Opciones/Creditos as BotonValor
@@ -95,30 +89,19 @@ var _recursos_al_abrir: String = ""
 @onready var _volver_creditos: Button = $PanelCreditos/Arriba/Volver as Button
 
 var _botones_mando: Dictionary[StringName, Button] = {}
-# Por el nombre de su fila (General, Musica, Efectos): la barra, el porcentaje, el altavoz y el valor antes de
-# silenciar (para volver a el).
-var _barras_audio: Dictionary[String, HSlider] = {}
-var _porcentajes_audio: Dictionary[String, Label] = {}
-var _altavoces: Dictionary[String, Button] = {}
-var _antes_de_silenciar: Dictionary[String, float] = {}
-var _musica: AudioStreamPlayer = null
-var _efecto: AudioStreamPlayer = null
 # Debajo del aviso de recursos, del alto de reservado_abajo.
 var _hueco_abajo: Control = null
-# Pantalla de brillo (se arma en codigo, _armar_brillo).
-var _panel_brillo: Control = null
-var _columna_brillo: VBoxContainer = null
-var _barra_brillo: HSlider = null
-var _porcentaje_brillo: Label = null
-var _volver_brillo: Button = null
-var _fondo_foto: TextureRect = null
-var _fondo_muestra: EscenaMuestra = null
-var _ventana_foto: TextureRect = null
-var _ventana_muestra: EscenaMuestra = null
+# Pantalla de brillo (se arma en codigo, PantallaBrillo).
+var _panel_brillo: PantallaBrillo = null
+# El panel de cada Seccion, en el orden del enum, y el boton de la lista que abre cada subpanel (el foco al volver).
+var _paneles: Array[Control] = []
+var _boton_de: Dictionary[Seccion, Button] = {}
 
 
 func _ready() -> void:
 	Ajustes.cargar_una_vez()
+	for arriba: NodePath in [^"Lista/Arriba", ^"PanelMando/Arriba", ^"PanelAudio/Arriba", ^"PanelCreditos/Arriba"]:
+		Tema.encabezado(get_node(arriba) as Control)
 	_controles.pressed.connect(editor_pedido.emit)
 	_mando.pressed.connect(_abrir_mando)
 	_vibracion.pressed.connect(_al_tocar_vibracion)
@@ -126,10 +109,20 @@ func _ready() -> void:
 	_audio.pressed.connect(_abrir_audio)
 	_volver_audio.pressed.connect(atras)
 	_brillo.pressed.connect(_abrir_brillo)
-	_armar_audio()
-	_armar_brillo()
+	_panel_audio.barra_movida.connect(_al_mover_barra)
+	_panel_audio.barra_soltada.connect(_guardar_barras)
+	_panel_brillo = PantallaBrillo.new()
+	add_child(_panel_brillo)
+	_panel_brillo.volver_pedido.connect(atras)
+	_panel_brillo.barra_movida.connect(_al_mover_barra)
+	_panel_brillo.barra_soltada.connect(_guardar_barras)
+	_paneles = [_lista, _panel_mando, _panel_creditos, _panel_audio, _panel_brillo]
+	_boton_de = {Seccion.MANDO: _mando, Seccion.CREDITOS: _creditos, Seccion.AUDIO: _audio, Seccion.BRILLO: _brillo}
 	_recursos.estilo = BotonValor.Estilo.NEUTRO
 	_recursos.pressed.connect(_al_tocar_recursos)
+	_fps.estilo = BotonValor.Estilo.NEUTRO
+	_fps.opciones = ["60", "120"]
+	_fps.pressed.connect(_al_tocar_fps)
 	_modo.pressed.connect(_al_tocar_modo)
 	_creditos.pressed.connect(_abrir_creditos)
 	_volver.pressed.connect(atras)
@@ -142,6 +135,8 @@ func _ready() -> void:
 		boton.custom_minimum_size = Tema.CELDA
 		boton.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		boton.pressed.connect(_esperar_boton.bind(accion))
+		# Con el control, el boton asignado dibujado como el de ese control, a la derecha del texto.
+		IconoBoton.en_boton(boton, accion, true)
 		_filas.add_child(boton)
 		_botones_mando[accion] = boton
 	Input.joy_connection_changed.connect(_al_cambiar_controles)
@@ -150,7 +145,7 @@ func _ready() -> void:
 	_hueco_abajo.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_lista.add_child(_hueco_abajo)
 	reservado_abajo = reservado_abajo
-	for panel: Control in [_lista, _panel_mando, _panel_audio, _panel_creditos, _columna_brillo]:
+	for panel: Control in [_lista, _panel_mando, _panel_audio, _panel_creditos, _panel_brillo.columna]:
 		Tema.ajustar(panel)
 		panel.resized.connect(_acomodar_columnas)
 	_acomodar_columnas()
@@ -160,11 +155,14 @@ func _ready() -> void:
 ## Muestra la lista con los valores actuales y pone el foco en el primer boton.
 func abrir() -> void:
 	_modo.visible = not en_partida
-	_recursos_al_abrir = Ajustes.recursos
+	_recursos.bloqueado = en_partida
+	_recursos_bloqueado_tocado = false
+	if DisplayServer.get_name() != "headless":
+		refresco = DisplayServer.screen_get_refresh_rate()
 	_poner_valores()
 	_mostrar_aviso_recursos()
 	visible = true
-	_mostrar(_lista)
+	_mostrar(Seccion.LISTA)
 	Tema.dar_foco(_audio)
 	# Seguir el foco bajaba la lista unos 20 px y cortaba la primera fila (vista de 1280x720, 12-oct-2026).
 	_desplazable.set_deferred(&"scroll_vertical", 0)
@@ -181,16 +179,19 @@ func _acomodar_columnas() -> void:
 	_filas.columns = columnas_para(_panel_mando.size.x)
 
 
-# El valor de cada opcion, en su pastilla.
+# El valor de cada opcion, con su ovalo.
 func _poner_valores() -> void:
 	_vibracion.poner_si_no(Ajustes.vibracion)
 	_temblor.poner_si_no(Ajustes.temblor)
 	_modo.poner_si_no(Ajustes.modo_desarrollador)
 	_recursos.valor = nombre_recursos(Ajustes.recursos, Recursos.es_debil())
+	# FPS solo con Recursos en alto (elegido o por la deteccion) y una pantalla rapida; si no, el juego va a 60.
+	_fps.visible = Ajustes.fps_disponible(not Recursos.bajos(), refresco)
+	_fps.valor = str(Ajustes.fps)
 	_brillo.valor = "%d %%" % roundi(Ajustes.brillo * 100.0)
 
 
-## Lo que dice la pastilla de Recursos: en auto, tambien lo que la deteccion eligio.
+## Lo que dice el valor de Recursos: en auto, tambien lo que la deteccion eligio.
 static func nombre_recursos(modo: String, debil: bool) -> String:
 	match modo:
 		Recursos.BAJO:
@@ -213,45 +214,33 @@ func atras() -> void:
 		esperando = &""
 		_aviso_mando.text = ""
 		Tema.dar_foco(_botones_mando[Mando.REASIGNABLES[0]])
-	elif _panel_mando.visible:
-		_mostrar(_lista)
-		Tema.dar_foco(_mando)
-	elif _panel_audio.visible:
-		_mostrar(_lista)
-		Tema.dar_foco(_audio)
-	elif _panel_brillo.visible:
-		_mostrar(_lista)
-		_poner_valores()
-		Tema.dar_foco(_brillo)
-	elif _panel_creditos.visible:
-		_mostrar(_lista)
-		Tema.dar_foco(_creditos)
-	else:
+	elif _actual == Seccion.LISTA:
 		_guardar_barras()
 		visible = false
 		cerrado.emit()
+	else:
+		# Del subpanel a la lista, con el foco en el boton que lo abrio; Brillo pone al dia su valor.
+		var desde: Seccion = _actual
+		_mostrar(Seccion.LISTA)
+		if desde == Seccion.BRILLO:
+			_poner_valores()
+		Tema.dar_foco(_boton_de[desde])
 
 
 ## Vuelve a la lista con el foco en Controles: al cerrar el editor de botones.
 func volver_del_editor() -> void:
 	visible = true
-	_mostrar(_lista)
+	_mostrar(Seccion.LISTA)
 	Tema.dar_foco(_controles)
 
 
-func _mostrar(panel: Control) -> void:
+# Un solo panel a la vista: el de la seccion; la musica de prueba suena solo con el de audio.
+func _mostrar(seccion: Seccion) -> void:
 	_guardar_barras()
-	_lista.visible = panel == _lista
-	_panel_mando.visible = panel == _panel_mando
-	_panel_creditos.visible = panel == _panel_creditos
-	_panel_audio.visible = panel == _panel_audio
-	_panel_brillo.visible = panel == _panel_brillo
-	# Sin pantalla no se toca: nadie la oye y, con el audio de mentira, a veces deja la reproduccion viva al salir
-	# («2 resources still in use at exit», 1 de cada 6 corridas del guion el 13-oct-2026).
-	if _panel_audio.visible and not _musica.playing and DisplayServer.get_name() != "headless":
-		_musica.play()
-	elif not _panel_audio.visible:
-		_musica.stop()
+	_actual = seccion
+	for i: int in range(_paneles.size()):
+		_paneles[i].visible = i == seccion
+	_panel_audio.musica_de_prueba(seccion == Seccion.AUDIO)
 
 
 func _al_tocar_vibracion() -> void:
@@ -274,17 +263,30 @@ func _al_tocar_modo() -> void:
 
 # Cada toque pasa al siguiente: auto, bajo, alto y de nuevo auto.
 func _al_tocar_recursos() -> void:
+	if en_partida:
+		_recursos_bloqueado_tocado = true
+		_mostrar_aviso_recursos()
+		return
 	var i: int = Recursos.MODOS.find(Ajustes.recursos)
 	Ajustes.recursos = Recursos.MODOS[(i + 1) % Recursos.MODOS.size()]
 	_poner_valores()
 	_mostrar_aviso_recursos()
+	Ajustes.aplicar_fps()
 	_guardar()
 
 
-# Las barras aplican al momento y guardan al soltarlas, con el altavoz, al cambiar de panel, al cerrar y al perder el
-# foco la app (con teclado o control se mueven sin arrastre).
-func _al_soltar_barra(_cambio: bool) -> void:
-	_guardar_barras()
+# Alterna 60 y 120 y lo aplica al momento, tambien desde la pausa: el limite de FPS no recarga nada.
+func _al_tocar_fps() -> void:
+	Ajustes.fps = 120 if Ajustes.fps == 60 else 60
+	_poner_valores()
+	Ajustes.aplicar_fps()
+	_guardar()
+
+
+# Las barras (PanelAudio, PantallaBrillo) aplican al momento y guardan al soltarlas, con el altavoz, al cambiar de
+# panel, al cerrar y al perder el foco la app (con teclado o control se mueven sin arrastre).
+func _al_mover_barra() -> void:
+	_barra_sin_guardar = true
 
 
 func _guardar_barras() -> void:
@@ -325,265 +327,34 @@ static func _teclas_de_barra(evento: InputEvent, barra: HSlider) -> void:
 		barra.accept_event()
 
 
-# Las tres filas de volumen (nombre, barra, porcentaje y altavoz), el boton de probar y los reproductores.
-func _armar_audio() -> void:
-	var nombres: PackedStringArray = ["General", "Musica", "Efectos"]
-	var textos: PackedStringArray = ["General", "Música", "Efectos"]
-	for i: int in range(nombres.size()):
-		_fila_volumen(nombres[i], textos[i])
-	var probar: Button = Button.new()
-	probar.name = "Probar"
-	probar.text = "Probar efecto"
-	probar.custom_minimum_size = Tema.CELDA
-	probar.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	_filas_audio.add_child(probar)
-	_musica = AudioStreamPlayer.new()
-	_musica.stream = MUSICA_PRUEBA
-	_musica.bus = Ajustes.BUS_MUSICA
-	add_child(_musica)
-	_efecto = AudioStreamPlayer.new()
-	_efecto.stream = EFECTO_PRUEBA
-	_efecto.bus = Ajustes.BUS_EFECTOS
-	add_child(_efecto)
-	probar.pressed.connect(_efecto.play)
-	# La musica de prueba vuelve a empezar al terminar, mientras el panel siga abierto.
-	_musica.finished.connect(_musica.play)
-
-
-func _fila_volumen(nombre: String, texto: String) -> void:
-	var fila: HBoxContainer = HBoxContainer.new()
-	fila.name = nombre
-	fila.custom_minimum_size = Vector2(960.0, Tema.ALTO_TOQUE)
-	fila.add_theme_constant_override(&"separation", int(Tema.SEPARACION))
-	_filas_audio.add_child(fila)
-	var etiqueta: Label = Label.new()
-	etiqueta.name = "Nombre"
-	etiqueta.text = texto
-	etiqueta.custom_minimum_size.x = 200.0
-	etiqueta.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	fila.add_child(etiqueta)
-	var barra: HSlider = barra_ancha(0.0, 100.0)
-	fila.add_child(barra)
-	var porcentaje: Label = Label.new()
-	porcentaje.name = "Porcentaje"
-	porcentaje.custom_minimum_size.x = 110.0
-	porcentaje.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	porcentaje.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	fila.add_child(porcentaje)
-	var altavoz: Button = Button.new()
-	altavoz.name = "Silencio"
-	altavoz.custom_minimum_size = Vector2(Tema.ALTO_TOQUE, Tema.ALTO_TOQUE)
-	altavoz.draw.connect(_dibujar_altavoz.bind(altavoz, barra))
-	fila.add_child(altavoz)
-	_barras_audio[nombre] = barra
-	_porcentajes_audio[nombre] = porcentaje
-	_altavoces[nombre] = altavoz
-	barra.value_changed.connect(_al_cambiar_volumen.bind(nombre))
-	barra.drag_ended.connect(_al_soltar_barra)
-	altavoz.pressed.connect(_silenciar.bind(nombre))
-
-
-# Altavoz: cuerpo y cono; con ondas si suena y con una cruz si esta en 0.
-func _dibujar_altavoz(boton: Button, barra: HSlider) -> void:
-	var c: Vector2 = boton.size / 2.0
-	var color: Color = Color(0.92, 0.92, 0.94)
-	boton.draw_rect(Rect2(c.x - 26.0, c.y - 10.0, 14.0, 20.0), color)
-	boton.draw_colored_polygon(PackedVector2Array([Vector2(c.x - 12.0, c.y - 10.0), Vector2(c.x + 4.0, c.y - 24.0), Vector2(c.x + 4.0, c.y + 24.0), Vector2(c.x - 12.0, c.y + 10.0)]), color)
-	if barra.value <= 0.0:
-		boton.draw_line(Vector2(c.x + 12.0, c.y - 10.0), Vector2(c.x + 28.0, c.y + 10.0), color, 5.0)
-		boton.draw_line(Vector2(c.x + 12.0, c.y + 10.0), Vector2(c.x + 28.0, c.y - 10.0), color, 5.0)
-	else:
-		boton.draw_arc(Vector2(c.x + 4.0, c.y), 14.0, -PI / 4.0, PI / 4.0, 8, color, 4.0)
-		boton.draw_arc(Vector2(c.x + 4.0, c.y), 24.0, -PI / 4.0, PI / 4.0, 8, color, 4.0)
-
-
-# Silencia un volumen o lo devuelve al valor que tenia antes de silenciarlo; se guarda al momento.
-func _silenciar(nombre: String) -> void:
-	var barra: HSlider = _barras_audio[nombre]
-	if barra.value > 0.0:
-		_antes_de_silenciar[nombre] = barra.value
-		barra.value = 0.0
-	else:
-		var antes: float = _antes_de_silenciar.get(nombre, VOLUMEN_AL_QUITAR_SILENCIO)
-		barra.value = antes
-	_guardar_barras()
-
-
 func _abrir_audio() -> void:
 	_guardar_barras()
-	_barras_audio["General"].value = roundf(Ajustes.volumen * 100.0)
-	_barras_audio["Musica"].value = roundf(Ajustes.volumen_musica * 100.0)
-	_barras_audio["Efectos"].value = roundf(Ajustes.volumen_efectos * 100.0)
+	_panel_audio.poner_valores()
 	# Poner los valores no es un cambio del jugador: no se guarda por eso.
 	_barra_sin_guardar = false
-	_mostrar(_panel_audio)
-	Tema.dar_foco(_barras_audio["General"])
-	_desplazable_audio().set_deferred(&"scroll_vertical", 0)
-
-
-func _desplazable_audio() -> ScrollContainer:
-	return $PanelAudio/Desplazable as ScrollContainer
-
-
-func _al_cambiar_volumen(valor: float, nombre: String) -> void:
-	match nombre:
-		"General":
-			Ajustes.volumen = valor / 100.0
-		"Musica":
-			Ajustes.volumen_musica = valor / 100.0
-		"Efectos":
-			Ajustes.volumen_efectos = valor / 100.0
-	Ajustes.aplicar_volumen()
-	_porcentajes_audio[nombre].text = "%d %%" % roundi(valor)
-	_altavoces[nombre].queue_redraw()
-	_barra_sin_guardar = true
-
-
-# La pantalla de brillo, como la de Hollow Knight: detras, la escena tenue a pantalla completa; arriba, Volver y el
-# titulo; al centro, la misma escena en una ventana con el cuadro de calibracion en la esquina; abajo, el texto y la
-# barra. La capa Brillo (100) tapa todo, asi que la escena se ve con el brillo elegido.
-func _armar_brillo() -> void:
-	_panel_brillo = Control.new()
-	_panel_brillo.name = "PanelBrillo"
-	_panel_brillo.set_anchors_preset(Control.PRESET_FULL_RECT)
-	_panel_brillo.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_panel_brillo.visible = false
-	add_child(_panel_brillo)
-	var fondo: Control = Control.new()
-	fondo.name = "Fondo"
-	fondo.set_anchors_preset(Control.PRESET_FULL_RECT)
-	fondo.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	fondo.modulate = FONDO_TENUE
-	_panel_brillo.add_child(fondo)
-	_fondo_muestra = EscenaMuestra.new()
-	_fondo_muestra.set_anchors_preset(Control.PRESET_FULL_RECT)
-	fondo.add_child(_fondo_muestra)
-	_fondo_foto = _foto_nueva()
-	fondo.add_child(_fondo_foto)
-	_columna_brillo = VBoxContainer.new()
-	_columna_brillo.name = "Columna"
-	_columna_brillo.add_theme_constant_override(&"separation", int(Tema.SEPARACION_FILAS))
-	_panel_brillo.add_child(_columna_brillo)
-	var arriba: HBoxContainer = Tema.barra_arriba("Brillo", atras)
-	_columna_brillo.add_child(arriba)
-	_volver_brillo = arriba.get_node(^"Volver") as Button
-	var centro: CenterContainer = CenterContainer.new()
-	centro.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	centro.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_columna_brillo.add_child(centro)
-	var ventana: Control = Control.new()
-	ventana.name = "Ventana"
-	ventana.custom_minimum_size = VENTANA_BRILLO
-	ventana.clip_contents = true
-	ventana.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	centro.add_child(ventana)
-	_ventana_muestra = EscenaMuestra.new()
-	_ventana_muestra.set_anchors_preset(Control.PRESET_FULL_RECT)
-	ventana.add_child(_ventana_muestra)
-	_ventana_foto = _foto_nueva()
-	ventana.add_child(_ventana_foto)
-	# Cuadro de calibracion: casi negro sobre negro, en la esquina de abajo a la derecha.
-	var negro: ColorRect = ColorRect.new()
-	negro.name = "Calibracion"
-	negro.color = Color.BLACK
-	negro.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	negro.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
-	negro.offset_left = -CALIBRACION
-	negro.offset_top = -CALIBRACION
-	ventana.add_child(negro)
-	var cuadro: ColorRect = ColorRect.new()
-	cuadro.color = COLOR_CALIBRACION
-	cuadro.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	cuadro.position = Vector2(CALIBRACION / 4.0, CALIBRACION / 4.0)
-	cuadro.size = Vector2(CALIBRACION / 2.0, CALIBRACION / 2.0)
-	negro.add_child(cuadro)
-	var borde: Panel = Panel.new()
-	var caja: StyleBoxFlat = StyleBoxFlat.new()
-	caja.draw_center = false
-	caja.border_color = Tema.BORDE_BOTON.lightened(0.3)
-	caja.set_border_width_all(4)
-	borde.add_theme_stylebox_override(&"panel", caja)
-	borde.set_anchors_preset(Control.PRESET_FULL_RECT)
-	borde.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	ventana.add_child(borde)
-	var texto: Label = Label.new()
-	texto.text = TEXTO_BRILLO
-	texto.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	texto.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_columna_brillo.add_child(texto)
-	var fila: HBoxContainer = HBoxContainer.new()
-	fila.name = "Fila"
-	fila.alignment = BoxContainer.ALIGNMENT_CENTER
-	fila.add_theme_constant_override(&"separation", int(Tema.SEPARACION))
-	_columna_brillo.add_child(fila)
-	_barra_brillo = barra_ancha(Ajustes.BRILLO_MINIMO * 100.0, Ajustes.BRILLO_MAXIMO * 100.0)
-	_barra_brillo.size_flags_horizontal = Control.SIZE_FILL
-	_barra_brillo.custom_minimum_size.x = 720.0
-	fila.add_child(_barra_brillo)
-	_porcentaje_brillo = Label.new()
-	_porcentaje_brillo.name = "Porcentaje"
-	_porcentaje_brillo.custom_minimum_size.x = 130.0
-	_porcentaje_brillo.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	_porcentaje_brillo.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	fila.add_child(_porcentaje_brillo)
-	_barra_brillo.value_changed.connect(_al_cambiar_brillo)
-	_barra_brillo.drag_ended.connect(_al_soltar_barra)
-
-
-func _foto_nueva() -> TextureRect:
-	var imagen: TextureRect = TextureRect.new()
-	imagen.name = "Foto"
-	imagen.set_anchors_preset(Control.PRESET_FULL_RECT)
-	imagen.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	imagen.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-	imagen.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	return imagen
+	_mostrar(Seccion.AUDIO)
+	Tema.dar_foco(_panel_audio.primera_barra())
+	_panel_audio.desplazar_arriba()
 
 
 ## Suelta la foto de la sala y su textura (la pausa se cerro): en el telefono pesa unos megas de memoria de video.
 func soltar_foto() -> void:
 	foto = null
-	for imagen: TextureRect in [_fondo_foto, _ventana_foto]:
-		imagen.texture = null
-		imagen.material = null
+	_panel_brillo.soltar_foto()
 
 
 ## Si la pantalla de brillo muestra la foto de la sala (y no la escena de muestra). Publico para la prueba.
 func brillo_con_foto() -> bool:
-	return _ventana_foto.texture != null
+	return _panel_brillo.con_foto()
 
 
 func _abrir_brillo() -> void:
-	# La textura se arma aqui y no al abrir la pausa: casi nunca se abre esta pantalla.
-	var textura: ImageTexture = null
-	if foto != null and not foto.is_empty():
-		textura = ImageTexture.create_from_image(foto)
-	var material: ShaderMaterial = null
-	if textura != null:
-		var shader: Shader = Shader.new()
-		shader.code = SHADER_FOTO
-		material = ShaderMaterial.new()
-		material.shader = shader
-		var capa: Color = Brillo.color_para(foto_brillo)
-		material.set_shader_parameter(&"alfa", minf(capa.a, 0.9))
-		material.set_shader_parameter(&"blanco", 1.0 if capa.r > 0.5 else 0.0)
-	for imagen: TextureRect in [_fondo_foto, _ventana_foto]:
-		imagen.texture = textura
-		imagen.material = material
-	_fondo_muestra.visible = textura == null
-	_ventana_muestra.visible = textura == null
+	_panel_brillo.poner_foto(foto, foto_brillo)
 	_guardar_barras()
-	_barra_brillo.value = roundf(Ajustes.brillo * 100.0)
+	_panel_brillo.poner_valor()
 	_barra_sin_guardar = false
-	_mostrar(_panel_brillo)
-	Tema.dar_foco(_barra_brillo)
-
-
-func _al_cambiar_brillo(valor: float) -> void:
-	Ajustes.brillo = valor / 100.0
-	Ajustes.aplicar_brillo()
-	_porcentaje_brillo.text = "%d %%" % roundi(valor)
-	_barra_sin_guardar = true
+	_mostrar(Seccion.BRILLO)
+	Tema.dar_foco(_panel_brillo.barra)
 
 
 # Elegir alto en un telefono que la deteccion marca como debil se permite, con aviso.
@@ -591,8 +362,8 @@ func _mostrar_aviso_recursos() -> void:
 	var textos: PackedStringArray = []
 	if Recursos.avisar(Ajustes.recursos, Recursos.es_debil()):
 		textos.append("Este teléfono parece de gama baja (%s): en alto puede ir lento." % Recursos.motivo())
-	if en_partida and Ajustes.recursos != _recursos_al_abrir:
-		textos.append("Recursos cambia al entrar a la siguiente sala.")
+	if _recursos_bloqueado_tocado:
+		textos.append(AVISO_RECURSOS_EN_PARTIDA)
 	_aviso_recursos.text = " ".join(textos)
 	_aviso_recursos.visible = not textos.is_empty()
 
@@ -604,7 +375,7 @@ func _guardar() -> void:
 
 
 func _abrir_mando() -> void:
-	_mostrar(_panel_mando)
+	_mostrar(Seccion.MANDO)
 	_aviso_mando.text = ""
 	_mostrar_sin_control()
 	_poner_nombres_mando()
@@ -665,5 +436,5 @@ func _mando_por_omision() -> void:
 
 
 func _abrir_creditos() -> void:
-	_mostrar(_panel_creditos)
+	_mostrar(Seccion.CREDITOS)
 	Tema.dar_foco(_volver_creditos)

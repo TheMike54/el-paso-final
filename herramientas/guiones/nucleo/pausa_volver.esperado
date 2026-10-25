@@ -1,0 +1,6 @@
+# La pausa se cerro con B y la Inspiracion sigue en 33: no curo ni gasto nada.
+valor Pausa abierta false
+valor /root/Partida inspiracion 33
+valor Jugador vidas 3
+valor Jugador curando false
+senal /root/Eventos jugador_curado 0

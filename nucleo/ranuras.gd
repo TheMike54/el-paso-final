@@ -36,7 +36,6 @@ var reservado_abajo: float = 0.0:
 			_acomodar()
 
 var _marco: VBoxContainer = null
-var _volver: Button = null
 var _fichas: GridContainer = null
 var _principales: Array[Button] = []
 var _detalles: Array[Label] = []
@@ -44,10 +43,7 @@ var _titulos: Array[Label] = []
 var _rastros: Array[HFlowContainer] = []
 var _borrar: Array[Button] = []
 var _restaurar: Array[Button] = []
-var _confirmar: ColorRect = null
-var _pregunta: Label = null
-var _si: Button = null
-var _no: Button = null
+var _confirmar: Confirmacion = null
 var _accion: Accion = Accion.BORRAR
 var _numero_accion: int = 0
 
@@ -72,7 +68,7 @@ func ruta(numero: int) -> String:
 func abrir() -> void:
 	leer()
 	visible = true
-	_ver_confirmacion(false)
+	_volver_a_fichas()
 	_enfocar(1)
 
 
@@ -95,8 +91,7 @@ func atras() -> void:
 	if not visible:
 		return
 	if _confirmar.visible:
-		_ver_confirmacion(false)
-		Tema.dar_foco(_borrar[_numero_accion - 1] if _accion == Accion.BORRAR else _restaurar[_numero_accion - 1])
+		_confirmar.cancelar()
 	else:
 		visible = false
 		cerrado.emit()
@@ -106,21 +101,25 @@ func atras() -> void:
 func pedir(accion: Accion, numero: int) -> void:
 	_accion = accion
 	_numero_accion = numero
+	# Con la confirmacion abierta las fichas se ocultan, como el menu en la de salir: si no, con teclado o control el
+	# foco se escapaba a los botones de detras.
+	_marco.visible = false
 	if accion == Accion.BORRAR:
-		_pregunta.text = "¿Borrar la partida %d? No se puede deshacer." % numero
-		_si.text = "Borrar"
+		_confirmar.abrir("¿Borrar la partida %d? No se puede deshacer." % numero, "Borrar", "Cancelar", Confirmacion.Foco.NO)
 	else:
-		_pregunta.text = "¿Volver la partida %d al inicio de la última sesión?" % numero
-		_si.text = "Restaurar"
-	_ver_confirmacion(true)
-	Tema.dar_foco(_no)
+		_confirmar.abrir("¿Volver la partida %d al inicio de la última sesión?" % numero, "Restaurar", "Cancelar", Confirmacion.Foco.NO)
 
 
-# Con la confirmacion abierta las fichas se ocultan, como el menu en la de salir: si no, con teclado o control el
-# foco se escapaba a los botones de detras.
-func _ver_confirmacion(abierta: bool) -> void:
-	_confirmar.visible = abierta
-	_marco.visible = not abierta
+# Cierra la confirmacion (si esta abierta) y vuelve a mostrar las fichas.
+func _volver_a_fichas() -> void:
+	_confirmar.cerrar()
+	_marco.visible = true
+
+
+# Cancelar (No o Atras) vuelve a las fichas con el foco en el boton que la pidio.
+func _al_cancelar() -> void:
+	_volver_a_fichas()
+	Tema.dar_foco(_borrar[_numero_accion - 1] if _accion == Accion.BORRAR else _restaurar[_numero_accion - 1])
 
 
 ## Hace lo que se confirmo; publico para la prueba.
@@ -129,7 +128,7 @@ func confirmar() -> void:
 	var error: Error = Guardado.borrar(destino) if _accion == Accion.BORRAR else Guardado.restaurar(destino)
 	if error != OK:
 		push_error("Ranuras: no se pudo %s la partida %d (error %d)" % ["borrar" if _accion == Accion.BORRAR else "restaurar", _numero_accion, error])
-	_ver_confirmacion(false)
+	_volver_a_fichas()
 	leer()
 	_enfocar(_numero_accion)
 
@@ -230,7 +229,6 @@ func _armar() -> void:
 	add_child(_marco)
 	var arriba: HBoxContainer = Tema.barra_arriba("Elige una partida", atras)
 	_marco.add_child(arriba)
-	_volver = arriba.get_node(^"Volver") as Button
 	# Con el area segura muy recortada las fichas van en 2x2 y pueden no caber a lo alto: se desplazan.
 	var desplazable: ScrollContainer = ScrollContainer.new()
 	desplazable.name = "Desplazable"
@@ -259,6 +257,7 @@ func _armar_ficha(numero: int) -> void:
 	_fichas.add_child(ficha)
 	var principal: Button = Tema.boton("", Vector2(ANCHO_FICHA, ALTO_PRINCIPAL))
 	principal.name = "Principal"
+	principal.theme_type_variation = Tema.TARJETA
 	principal.pressed.connect(elegida.emit.bind(numero))
 	ficha.add_child(principal)
 	# El contenido va dentro del boton y no recibe toques: el toque es del boton.
@@ -274,7 +273,7 @@ func _armar_ficha(numero: int) -> void:
 	var titulo: Label = Label.new()
 	titulo.text = "Partida %d" % numero
 	titulo.name = "Titulo"
-	titulo.add_theme_font_size_override(&"font_size", Tema.LETRA)
+	titulo.theme_type_variation = Tema.DESTACADA
 	titulo.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	titulo.clip_text = true
 	titulo.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
@@ -309,34 +308,11 @@ func _armar_ficha(numero: int) -> void:
 	_restaurar.append(restaurar)
 
 
+# La confirmacion compartida (Confirmacion) con el aspecto de las ranuras, el de sus valores por omision. Se llama
+# Confirmar: asi la buscan las pruebas.
 func _armar_confirmacion() -> void:
-	_confirmar = ColorRect.new()
+	_confirmar = Confirmacion.new()
 	_confirmar.name = "Confirmar"
-	_confirmar.color = Color(0.0, 0.0, 0.0, 0.8)
-	_confirmar.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	_confirmar.visible = false
+	_confirmar.confirmada.connect(confirmar)
+	_confirmar.cancelada.connect(_al_cancelar)
 	add_child(_confirmar)
-	var caja: VBoxContainer = VBoxContainer.new()
-	caja.add_theme_constant_override(&"separation", 32)
-	caja.set_anchors_preset(Control.PRESET_CENTER)
-	caja.grow_horizontal = Control.GROW_DIRECTION_BOTH
-	caja.grow_vertical = Control.GROW_DIRECTION_BOTH
-	_confirmar.add_child(caja)
-	_pregunta = Label.new()
-	_pregunta.custom_minimum_size = Vector2(800.0, 0.0)
-	_pregunta.add_theme_font_size_override(&"font_size", 40)
-	_pregunta.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_pregunta.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	caja.add_child(_pregunta)
-	var botones: HBoxContainer = HBoxContainer.new()
-	botones.add_theme_constant_override(&"separation", 64)
-	botones.alignment = BoxContainer.ALIGNMENT_CENTER
-	caja.add_child(botones)
-	_si = Tema.boton("Borrar", Vector2(300.0, Tema.ALTO_TOQUE))
-	_si.name = "Si"
-	_si.pressed.connect(confirmar)
-	botones.add_child(_si)
-	_no = Tema.boton("Cancelar", Vector2(300.0, Tema.ALTO_TOQUE))
-	_no.name = "No"
-	_no.pressed.connect(atras)
-	botones.add_child(_no)

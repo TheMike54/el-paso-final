@@ -34,7 +34,7 @@ offset_top = -40.0
 offset_right = 800.0
 offset_bottom = 40.0
 mouse_filter = 2
-color = Color(0.25, 0.25, 0.25, 1)
+color = Color(0.3, 0.3, 0.32, 1)
 
 [node name="Reto" parent="." instance=ExtResource("2_reto")]
 position = Vector2(600, 680)

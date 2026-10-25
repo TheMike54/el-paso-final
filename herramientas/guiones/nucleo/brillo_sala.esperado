@@ -1,0 +1,4 @@
+# El nodo existe (si no, el guion falla) y su alfa es 1: multiplica el color, no tapa nada. El gris depende del
+# brillo guardado en el equipo, asi que la cuenta del color la revisa prueba_guardado.gd.
+valor Brillo color:a 1 0.01
+escena res://herramientas/salas/sala_movimiento.tscn

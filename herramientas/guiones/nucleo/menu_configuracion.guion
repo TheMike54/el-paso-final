@@ -2,5 +2,5 @@
 # y el editor de controles con Atras y con la accion pausa; reasigna un boton del control, enciende el modo
 # desarrollador y cambia el volumen. Deja la cuenta en sus propiedades. No
 # sustituye la prueba en el telefono ni con un control real.
-escena res://herramientas/salas/sala_menu_configuracion.tscn
+escena res://herramientas/pruebas/sala_menu_configuracion.tscn
 fin 30

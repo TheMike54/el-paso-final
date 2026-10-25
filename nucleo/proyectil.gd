@@ -1,7 +1,7 @@
 class_name Proyectil
 extends Area2D
 # Poder del boton de curar (habilidad proyectil; nombre neutro hasta decidir que es en el mundo):
-# avanza recto y sin gravedad, golpea una sola vez a cada Golpeable que toca y lo atraviesa, y
+# avanza recto y sin gravedad, golpea una sola vez a cada Golpeable que toca y lo atraviesa, corta cada Cortable, y
 # desaparece contra un solido o al acabar su recorrido. Los solidos se buscan con un rayo: este Area2D, movido
 # por posicion, no detecto los StaticBody2D de las salas (docs/errores/2026-10-06-bola-atravesaba-paredes.md).
 # Lo crea el jugador en su sala.
@@ -33,9 +33,13 @@ func _physics_process(delta: float) -> void:
 	# se salta aunque la bola avance mas de su grosor en un tick.
 	var paso: float = sentido * velocidad * delta
 	var frente: Vector2 = global_position + Vector2(paso + sentido * TAMANO.x / 2.0, 0.0)
-	var consulta: PhysicsRayQueryParameters2D = PhysicsRayQueryParameters2D.create(global_position, frente)
-	consulta.collision_mask = Capas.ESCENARIO
-	if not get_world_2d().direct_space_state.intersect_ray(consulta).is_empty():
+	var choque: Dictionary = Capas.rayo_a_escenario(self, global_position, frente)
+	if not choque.is_empty():
+		# Un muro rompible para a la bola en su solido, antes de que toque su area de golpe: se le pega aqui.
+		var muro: MuroRompible = choque["collider"] as MuroRompible
+		if muro != null and muro.golpeable != null and not _golpeados.has(muro.golpeable):
+			_golpeados.append(muro.golpeable)
+			muro.golpeable.recibir_golpe(self, dano)
 		queue_free()
 		return
 	position.x += paso
@@ -45,6 +49,11 @@ func _physics_process(delta: float) -> void:
 
 
 func _al_tocar_area(area: Area2D) -> void:
+	# El pasto se corta como con el ataque y la bola sigue: no es solido.
+	var cortable: Cortable = area as Cortable
+	if cortable != null:
+		cortable.cortar()
+		return
 	var golpeable: Golpeable = area as Golpeable
 	if golpeable != null and not _golpeados.has(golpeable):
 		_golpeados.append(golpeable)

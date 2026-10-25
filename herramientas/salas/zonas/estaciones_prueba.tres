@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="FichaEstaciones" format=3]
+
+[ext_resource type="Script" path="res://nucleo/ficha_estaciones.gd" id="1_ficha"]
+[ext_resource type="Script" path="res://nucleo/dato_estacion.gd" id="2_dato"]
+
+[sub_resource type="Resource" id="estacion_1"]
+script = ExtResource("2_dato")
+id = "estacion_prueba_1"
+nombre = "Prueba 1 (gratis)"
+sala = "prueba_1"
+
+[sub_resource type="Resource" id="estacion_4"]
+script = ExtResource("2_dato")
+id = "estacion_prueba_4"
+nombre = "Prueba 4"
+sala = "prueba_4"
+
+[resource]
+script = ExtResource("1_ficha")
+estaciones = Array[ExtResource("2_dato")]([SubResource("estacion_1"), SubResource("estacion_4")])

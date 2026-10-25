@@ -2,13 +2,16 @@ class_name MarcoMenus
 extends CanvasLayer
 # Marco de los menus del juego, como el inventario de Hollow Knight: paginas en ciclo (Inventario, Amuletos, Mapa)
 # encima del juego detenido, con una barra arriba que nombra la actual y sus vecinas. Lo crea cada sala; las
-# paginas son nodos en el grupo pagina_marco y el marco las busca por el grupo, sin conocer sus clases: asi el
+# paginas extienden PaginaMarco y el marco las busca por el grupo pagina_marco, sin conocer sus clases: asi el
 # nucleo no depende del bloque mapa. Lo abren mapa (en Mapa) e inventario (en Amuletos sentado, si no en Inventario).
 
 const GRUPO: StringName = &"pantalla_encima"
-## Grupo de las paginas. Cada una ofrece id_pagina(), titulo_pagina(), mostrar_en_marco() y ocultar_de_marco().
+## Prioridad de fisica de todo menu que quita la pausa: corre despues del jugador (0), para que el boton que lo cierra
+## (B es volver y curar) no le llegue en el mismo tick. Positiva: el puerto de depuracion usa -100 para ir antes.
+const PRIORIDAD_FISICA: int = 100
+## Grupo de las paginas (PaginaMarco lo pone). Un nodo del grupo que no extiende PaginaMarco no cuenta.
 const GRUPO_PAGINAS: StringName = &"pagina_marco"
-## Encima de las paginas (capa 20) y debajo de Configuracion abierta desde la pausa (22).
+## Encima de las paginas (PaginaMarco.CAPA) y debajo de Configuracion abierta desde la pausa (22).
 const CAPA: int = 21
 ## Alto de la barra de arriba: una pagina deja libre esa franja.
 const ALTO_BARRA: float = Tema.ALTO_TOQUE + 2.0 * Tema.MARGEN_VERTICAL
@@ -19,16 +22,19 @@ const ORDEN: Array[StringName] = [&"inventario", &"amuletos", &"mapa"]
 var abierta: bool = false
 var pagina: StringName = &""
 
-var _paginas: Array[Node] = []
+var _paginas: Array[PaginaMarco] = []
 var _tick_cerrada: int = -10
 var _volver: Button = null
 var _anterior: Button = null
 var _siguiente: Button = null
 var _titulo: Label = null
+var _barra: HBoxContainer = null
+var _contrapeso: Control = null
 
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	process_physics_priority = PRIORIDAD_FISICA
 	layer = CAPA
 	add_to_group(GRUPO)
 	var barra: HBoxContainer = HBoxContainer.new()
@@ -40,37 +46,51 @@ func _ready() -> void:
 	barra.offset_top = Tema.MARGEN_VERTICAL
 	barra.add_theme_constant_override(&"separation", int(Tema.SEPARACION))
 	add_child(barra)
+	_barra = barra
 	_volver = _boton(barra, "Volver", cerrar)
 	_volver.name = "Volver"
 	_volver.custom_minimum_size.x = Tema.ANCHO_VOLVER
 	barra.add_child(_relleno())
 	_anterior = _boton(barra, "", cambiar.bind(-1))
 	_anterior.name = "Anterior"
+	IconoBoton.en_boton(_anterior, &"pagina_anterior")
 	_titulo = Label.new()
 	_titulo.name = "Titulo"
-	_titulo.add_theme_font_size_override(&"font_size", Tema.LETRA_TITULO)
-	_titulo.custom_minimum_size = Vector2(360.0, Tema.ALTO_TOQUE)
+	_titulo.custom_minimum_size.y = Tema.ALTO_TOQUE
 	_titulo.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_titulo.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	barra.add_child(_titulo)
 	_siguiente = _boton(barra, "", cambiar.bind(1))
 	_siguiente.name = "Siguiente"
+	IconoBoton.en_boton(_siguiente, &"pagina_siguiente", true)
 	barra.add_child(_relleno())
-	# Del ancho de Volver, para que el titulo quede al centro de la pantalla.
-	var contrapeso: Control = Control.new()
-	contrapeso.custom_minimum_size.x = Tema.ANCHO_VOLVER
-	contrapeso.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	barra.add_child(contrapeso)
+	# Hasta el ancho de Volver, para que el titulo quede al centro de la pantalla (_acomodar_contrapeso).
+	_contrapeso = Control.new()
+	_contrapeso.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	barra.add_child(_contrapeso)
+	# Volver con su flecha y su boton del control, Titulo en gis grueso y la raya: el encabezado de todos los menus.
+	Tema.encabezado(barra)
+	barra.minimum_size_changed.connect(_acomodar_contrapeso, CONNECT_DEFERRED)
+	get_viewport().size_changed.connect(_acomodar_contrapeso)
+	_acomodar_contrapeso()
 	visible = false
 
 
 func _boton(barra: HBoxContainer, texto: String, al_tocar: Callable) -> Button:
-	var boton: Button = Button.new()
-	boton.text = texto
-	boton.custom_minimum_size.y = Tema.ALTO_TOQUE
+	var boton: Button = Tema.boton(texto, Vector2(0.0, Tema.ALTO_TOQUE))
 	boton.pressed.connect(al_tocar)
 	barra.add_child(boton)
 	return boton
+
+
+# El contrapeso iguala a Volver solo con lo que sobra: en la vista de 1280 la barra con los botones del control no
+# cabe con el entero, y empujaba Siguiente fuera de la pantalla (16-oct-2026).
+func _acomodar_contrapeso() -> void:
+	var otros: float = _barra.get_combined_minimum_size().x - _contrapeso.custom_minimum_size.x
+	var ancho: float = _barra.get_viewport_rect().size.x - 2.0 * Tema.MARGEN_LATERAL
+	var nuevo: float = clampf(ancho - otros, 0.0, Tema.ANCHO_VOLVER)
+	if not is_equal_approx(nuevo, _contrapeso.custom_minimum_size.x):
+		_contrapeso.custom_minimum_size.x = nuevo
 
 
 func _relleno() -> Control:
@@ -83,7 +103,8 @@ func _relleno() -> Control:
 # Se leen acciones con nombre: lo abren y lo manejan igual el teclado, el control, el boton tactil y un guion.
 func _physics_process(_delta: float) -> void:
 	if abierta:
-		if Input.is_action_just_pressed(&"pausa") or Input.is_action_just_pressed(&"mapa") or Input.is_action_just_pressed(&"inventario"):
+		if (Input.is_action_just_pressed(&"pausa") or Input.is_action_just_pressed(&"volver")
+				or Input.is_action_just_pressed(&"mapa") or Input.is_action_just_pressed(&"inventario")):
 			cerrar()
 		elif Input.is_action_just_pressed(&"pagina_anterior"):
 			cambiar(-1)
@@ -118,8 +139,8 @@ func abrir(id: StringName) -> void:
 func cerrar() -> void:
 	if not abierta:
 		return
-	for nodo: Node in _paginas:
-		nodo.call(&"ocultar_de_marco")
+	for una: PaginaMarco in _paginas:
+		una.ocultar_de_marco()
 	abierta = false
 	visible = false
 	pagina = &""
@@ -132,7 +153,7 @@ func cambiar(paso: int) -> void:
 	if not abierta or _paginas.size() < 2:
 		return
 	var i: int = posmod(_indice_de(pagina) + paso, _paginas.size())
-	_ver(_id(_paginas[i]))
+	_ver(_paginas[i].id_pagina())
 
 
 ## Con el marco abierto, y en el tick en que se cerro, la pausa no se abre (la misma pulsacion de pausa o Atras).
@@ -144,24 +165,24 @@ func bloquea_pausa() -> bool:
 func ids() -> Array[StringName]:
 	_buscar_paginas()
 	var lista: Array[StringName] = []
-	for nodo: Node in _paginas:
-		lista.append(_id(nodo))
+	for una: PaginaMarco in _paginas:
+		lista.append(una.id_pagina())
 	return lista
 
 
 func _ver(id: StringName) -> void:
 	pagina = id
-	for nodo: Node in _paginas:
-		if _id(nodo) != id:
-			nodo.call(&"ocultar_de_marco")
-	_paginas[_indice_de(id)].call(&"mostrar_en_marco")
+	for una: PaginaMarco in _paginas:
+		if una.id_pagina() != id:
+			una.ocultar_de_marco()
+	_paginas[_indice_de(id)].mostrar_en_marco()
 	var i: int = _indice_de(id)
 	var n: int = _paginas.size()
-	_titulo.text = _titulo_de(_paginas[i])
+	_titulo.text = _paginas[i].titulo_pagina()
 	_anterior.visible = n > 1
 	_siguiente.visible = n > 1
-	_anterior.text = "‹ " + _titulo_de(_paginas[posmod(i - 1, n)])
-	_siguiente.text = _titulo_de(_paginas[posmod(i + 1, n)]) + " ›"
+	_anterior.text = "‹ " + _paginas[posmod(i - 1, n)].titulo_pagina()
+	_siguiente.text = _paginas[posmod(i + 1, n)].titulo_pagina() + " ›"
 	# Si la pagina no tomo el foco (sin nada que tocar), lo toma Volver: con el control siempre hay foco.
 	var foco: Control = get_viewport().gui_get_focus_owner()
 	if foco == null or not foco.is_visible_in_tree():
@@ -171,30 +192,22 @@ func _ver(id: StringName) -> void:
 func _buscar_paginas() -> void:
 	_paginas.clear()
 	for nodo: Node in get_tree().get_nodes_in_group(GRUPO_PAGINAS):
-		_paginas.append(nodo)
-	_paginas.sort_custom(func(a: Node, b: Node) -> bool: return _orden(a) < _orden(b))
+		var una: PaginaMarco = nodo as PaginaMarco
+		if una != null:
+			_paginas.append(una)
+	_paginas.sort_custom(func(a: PaginaMarco, b: PaginaMarco) -> bool: return _orden(a) < _orden(b))
 
 
-func _orden(nodo: Node) -> int:
-	var i: int = ORDEN.find(_id(nodo))
+func _orden(una: PaginaMarco) -> int:
+	var i: int = ORDEN.find(una.id_pagina())
 	return i if i >= 0 else ORDEN.size()
 
 
 func _indice_de(id: StringName) -> int:
 	for i: int in range(_paginas.size()):
-		if _id(_paginas[i]) == id:
+		if _paginas[i].id_pagina() == id:
 			return i
 	return -1
-
-
-func _id(nodo: Node) -> StringName:
-	var id: StringName = nodo.call(&"id_pagina")
-	return id
-
-
-func _titulo_de(nodo: Node) -> String:
-	var titulo: String = nodo.call(&"titulo_pagina")
-	return titulo
 
 
 func _sentado() -> bool:

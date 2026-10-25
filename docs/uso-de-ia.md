@@ -14,7 +14,7 @@ Se registra cada herramienta y para qué se usa, no cada archivo. Herramienta nu
 | Tipo | Herramienta | Para qué |
 |---|---|---|
 | Código y documentación | Claude Code (Anthropic) | Scripts, escenas, pruebas y documentos, con revisión del equipo; cada PR dice qué parte |
-| Imágenes | Gemini (Google), app de Gemini | Fondos, fotos nocturnas de ESCOM y adornos de la sala de arte (`herramientas/salas/arte/`) |
+| Imágenes | Gemini (Google), app de Gemini | Fondos, fotos nocturnas de ESCOM y adornos de la sala de arte (`herramientas/salas/arte/`); las hojas de animación del personaje, recortadas y juntadas por un script en el atlas del jugador (`nucleo/arte/jugador_hombre/`) |
 | Sonidos | Script escrito con Claude Code | Los sonidos de prueba de `nucleo/sonidos/` (efectos y música sintetizados, sin muestras ajenas) |
 
 ## De terceros
@@ -24,5 +24,4 @@ juego, y aquí se anota su autor y su licencia.
 
 | Recurso | Autor | Licencia |
 |---|---|---|
-
-Ninguno por ahora.
+| Fuente Cabin Sketch, normal y negrita (`nucleo/fuentes/cabin_sketch.ttf`, `cabin_sketch_bold.ttf`), letra de los menús | The Cabin Project Authors (Copyright 2011) | SIL Open Font License 1.1, texto en `nucleo/fuentes/ofl.txt` |

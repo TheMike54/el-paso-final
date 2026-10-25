@@ -40,7 +40,7 @@ offset_top = -20.0
 offset_right = 1600.0
 offset_bottom = 20.0
 mouse_filter = 2
-color = Color(0.3, 0.3, 0.3, 1)
+color = Color(0.3, 0.3, 0.32, 1)
 
 [node name="Techo" type="StaticBody2D" parent="."]
 position = Vector2(1600, 20)
@@ -54,7 +54,7 @@ offset_top = -20.0
 offset_right = 1600.0
 offset_bottom = 20.0
 mouse_filter = 2
-color = Color(0.3, 0.3, 0.3, 1)
+color = Color(0.3, 0.3, 0.32, 1)
 
 [node name="ParedIzquierda" type="StaticBody2D" parent="."]
 position = Vector2(20, 720)
@@ -68,7 +68,7 @@ offset_top = -720.0
 offset_right = 20.0
 offset_bottom = 720.0
 mouse_filter = 2
-color = Color(0.3, 0.3, 0.3, 1)
+color = Color(0.3, 0.3, 0.32, 1)
 
 [node name="ParedDerecha" type="StaticBody2D" parent="."]
 position = Vector2(3180, 720)
@@ -82,7 +82,7 @@ offset_top = -720.0
 offset_right = 20.0
 offset_bottom = 720.0
 mouse_filter = 2
-color = Color(0.3, 0.3, 0.3, 1)
+color = Color(0.3, 0.3, 0.32, 1)
 
 [node name="Pedestal" type="StaticBody2D" parent="."]
 position = Vector2(3000, 1320)

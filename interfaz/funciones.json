@@ -28,5 +28,17 @@
     "que": "Al guardar se ve 2 s un icono provisional bajo las PejeCoins, alineado a la izquierda del grupo, en lugar del texto, y bajo la barra de Inspiracion se ven las PejeCoins",
     "comprobacion": "herramientas/guiones/contenido/zona_prueba_coleccionable.guion; herramientas/guiones/contenido/zona_prueba_vitrina.guion",
     "pasa": true
+  },
+  {
+    "id": "monedas-como-silksong",
+    "que": "Las PejeCoins del HUD van como el contador de Silksong: ocultas al entrar; al ganar o gastar aparecen con el +N o -N, que suma las ganancias seguidas; esperan 60 ticks (cada cambio reinicia la espera), cuentan hasta el valor nuevo en unos 34 ticks y quitan el +N; siguen 90 ticks y se desvanecen en 18; descansar en un banco las muestra sin contar; morir las cuenta hasta 0 antes de reaparecer; con la tienda abierta no se muestran por si solas: comprar las muestra por el cambio de monedas",
+    "comprobacion": "herramientas/guiones/interfaz/monedas_conteo.guion",
+    "pasa": true
+  },
+  {
+    "id": "monedas-telefono",
+    "que": "En el telefono se nota cuanto se gano o gasto, el conteo se lee y que el contador se vaya no estorba para jugar",
+    "comprobacion": "manual: en el S50 con el APK de desarrollo: zona de pruebas, Tienda (da 300 al entrar) y comprar algo; Zonas, Prueba 4, entregar un coleccionable; sentarse en un banco; decir si se lee el +N, si se entiende el conteo y si se echa de menos el total",
+    "pasa": true
   }
 ]

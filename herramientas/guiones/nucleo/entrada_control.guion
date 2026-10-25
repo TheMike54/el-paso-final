@@ -1,4 +1,4 @@
 # La escena de prueba del control arma un evento por cada boton y eje del mapeo y revisa que
 # el InputMap lo traduzca a su accion. No sustituye la prueba con un control conectado.
-escena res://herramientas/salas/sala_control.tscn
+escena res://herramientas/pruebas/sala_control.tscn
 fin 2

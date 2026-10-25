@@ -1,0 +1,4 @@
+# Del otro lado del pilar (su cara derecha esta en x 2030), en el suelo y sin perder vidas.
+valor Jugador global_position:x 2470 60
+valor Jugador global_position:y 1040 2
+valor Jugador vidas 4 0.5

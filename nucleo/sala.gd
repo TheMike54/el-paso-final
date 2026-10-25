@@ -23,6 +23,8 @@ const MARGEN_FONDO: float = 280.0
 static var puerta_llegada: StringName = &""
 ## Verdadero si el jugador debe aparecer en el banco Partida.banco de la proxima sala.
 static var llegada_a_banco: bool = false
+## Id de la Estacion donde aparece el jugador en la proxima sala (viaje rapido); manda sobre puerta_llegada.
+static var estacion_llegada: String = ""
 ## Time.get_ticks_msec() cuando una puerta pidio el cambio de escena; -1 si no hay uno en curso. En un build de
 ## depuracion, el primer tick de la sala nueva imprime cuanto tardo (decision del 14-oct-2026: se mide en el S50
 ## antes de pensar en cargar en segundo plano).
@@ -41,6 +43,9 @@ const CARPETA_PRUEBAS: String = "res://herramientas/salas/zonas/"
 ## Solo salas de prueba: habilidades que la sala da en silencio al entrar (sin aviso ni autoguardado), para
 ## probar algo sin conseguirlo antes. Una sala del juego la deja vacia (lo revisa el validador).
 @export var habilidades_de_prueba: Array[StringName] = []
+## Botones de la pantalla que en esta sala no se ven hasta que un AvisoAccion los ensena (Partida.botones_ensenados):
+## la sala Pizarrones empieza sin saltar, atacar ni curar. Solo tactil; el validador exige que un aviso de la sala ensene cada uno.
+@export var botones_por_ensenar: Array[StringName] = []
 ## Esquina de la sala en el mapa del mundo, en px: el mapa la dibuja en posicion_mapa + limites. Las salas de una
 ## zona se acomodan como se recorren (la de la derecha empieza donde acaba la otra).
 @export var posicion_mapa: Vector2 = Vector2.ZERO
@@ -93,11 +98,14 @@ func _ready() -> void:
 	Partida.visitar(clave())
 	var jugador: Jugador = ESCENA_JUGADOR.instantiate() as Jugador
 	jugador.position = _punto_de_llegada()
-	var puerta: StringName = puerta_llegada
+	# Si manda la estacion, no se llego por una puerta: cambio_de_sala no se emite.
+	var puerta: StringName = puerta_llegada if estacion_llegada.is_empty() else &""
 	puerta_llegada = &""
 	llegada_a_banco = false
+	estacion_llegada = ""
 	add_child(jugador)
 	jugador.fijar_limites(limites)
+	_poner_mochila()
 	add_child(ESCENA_CONTROLES.instantiate())
 	add_child(ESCENA_PAUSA.instantiate())
 	# El marco de menus y sus paginas del nucleo; la pagina Mapa la agrega el bloque mapa si existe (abajo).
@@ -117,6 +125,9 @@ func _ready() -> void:
 	var vibracion: Vibracion = Vibracion.new()
 	vibracion.name = &"Vibracion"
 	add_child(vibracion)
+	var brillo: Brillo = Brillo.new()
+	brillo.name = &"Brillo"
+	add_child(brillo)
 	for ruta: String in [INTERFAZ, MAPA]:
 		if ResourceLoader.exists(ruta):
 			var escena: PackedScene = load(ruta) as PackedScene
@@ -145,6 +156,16 @@ func _extender_fondo() -> void:
 	move_child(extendido, 0)
 
 
+# Lo perdido al morir aparece en su sala, donde quedo (Partida.mochila).
+func _poner_mochila() -> void:
+	if Partida.mochila.is_empty() or str(Partida.mochila.get("sala", "")) != clave():
+		return
+	var mochila: Mochila = Mochila.new()
+	mochila.name = &"Mochila"
+	mochila.position = Partida.punto_de_mochila()
+	add_child(mochila)
+
+
 # Se reaparece en el ultimo banco donde se descanso; si no hay, en la Entrada de esta sala.
 func _al_morir_el_jugador() -> void:
 	_ticks_para_reaparecer = TICKS_PARA_REAPARECER
@@ -164,6 +185,7 @@ func _physics_process(_delta: float) -> void:
 	if _ticks_para_reaparecer == 0:
 		Partida.llenar_vidas()
 		puerta_llegada = &""
+		estacion_llegada = ""
 		if Partida.sala.is_empty():
 			get_tree().reload_current_scene()
 		else:
@@ -183,6 +205,13 @@ func _punto_de_llegada() -> Vector2:
 			if banco != null and banco.id == Partida.banco:
 				return banco.position
 		push_error("Sala %s: no hay un banco con id '%s'" % [scene_file_path, Partida.banco])
+	elif not estacion_llegada.is_empty():
+		# Si una puerta y una estacion piden a la vez, manda la estacion: el viaje es lo ultimo que se pidio.
+		for hijo: Node in get_children():
+			var estacion: Estacion = hijo as Estacion
+			if estacion != null and estacion.id == estacion_llegada:
+				return estacion.position + estacion.llegada
+		push_error("Sala %s: no hay una estacion con id '%s'" % [scene_file_path, estacion_llegada])
 	elif not puerta_llegada.is_empty():
 		for hijo: Node in get_children():
 			var puerta: Puerta = hijo as Puerta

@@ -1,0 +1,4 @@
+# Casos de herramientas/pruebas/prueba_animacion_jugador.gd: prioridades de AnimacionJugador, el giro como capa, el
+# reparto de cuadros por ticks, el SpriteFrames del hombre (nombres, lienzo, muerte) y el Dibujo del jugador.
+escena res://herramientas/pruebas/sala_animacion_jugador.tscn
+fin 30

@@ -1,0 +1,6 @@
+# Como jugador_coyote.guion, pero presiona saltar un cuadro despues del ultimo del tiempo coyote (4 ticks):
+# ya no salta y cae hacia el suelo bajo.
+escena res://herramientas/salas/sala_movimiento.tscn
+10 mover_derecha press
+94 saltar press
+fin 110

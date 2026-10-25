@@ -23,9 +23,9 @@ toque los comprueba un guion o una prueba manual en el teléfono.
 | Se aplica con `control.theme_type_variation = Tema.NOMBRE` (vacía = solo el tipo base) | `tutorials/ui/gui_theme_type_variations.rst:66` | Grep de `theme_type_variation`; guion `menu_configuracion` |
 | `add_theme_*_override` solo para acomodo (separaciones, márgenes); el aspecto sale del tema | `tutorials/ui/gui_skinning.rst:172`, `tutorials/ui/gui_containers.rst:98` | Grep de `add_theme_` en el archivo cambiado: solo separaciones y márgenes |
 | Un `Control` propio bajo una raíz de menú lee fuente, tamaño y stylebox con `get_theme_*` (ejemplo: `nucleo/boton_valor.gd`, `_draw`) | `tutorials/ui/gui_skinning.rst:36` | Guion `menu_configuracion` |
-| El stylebox `focus` es un contorno sin relleno (`Tema.FOCO`): se dibuja encima de `normal` o `pressed`. El foco se da con `Tema.dar_foco(control)`, nunca con `grab_focus()` directo: se dibuja solo si lo último que se usó fue un control o el teclado (`UltimaEntrada.con_control`); tras un toque se da oculto. Su color sale de `Tema.FOCO`; lo encendido o lleno (pastilla «Sí», barras) usa `Tema.ENCENDIDO`, o con el control no se sabe dónde está el foco | `tutorials/ui/gui_skinning.rst:92` | Guiones `pausa_foco`, `menu_configuracion`; prueba manual con teclado o control |
+| El stylebox `focus` es la marca de gis (`EstiloGis`, `nucleo/estilo_gis.gd`, un `StyleBox` con `_draw`): flechita y subrayado, en las barras una caja; se dibuja encima de `normal` o `pressed`, que no tienen caja. Un `StyleBox` no conoce el texto del botón: el subrayado cruza el contenido, así que en una columna el botón mide lo que su texto (`size_flags_horizontal` = 0). El foco se da con `Tema.dar_foco(control)`, nunca con `grab_focus()` directo: se dibuja solo si lo último que se usó fue un control o el teclado (`UltimaEntrada.con_control()`); tras un toque se da oculto. Con el foco el texto pasa de `Tema.GASTADO` a `Tema.GIS`; lo elegido va subrayado y el valor que vale de un `BotonValor`, en un óvalo; lo lleno de las barras usa `Tema.ENCENDIDO`. Un botón con contenido propio (ficha, caja de diálogo) usa la variación `Tema.TARJETA`, o queda un hueco sin caja | `tutorials/ui/gui_skinning.rst:92` | Guiones `pausa_foco`, `menu_configuracion`; prueba manual con teclado o control |
 | Un `Control` propio que puede tomar el foco muestra un indicador; el que no debe tomarlo lleva `focus_mode = Control.FOCUS_NONE` (`nucleo/caja_dialogo.gd`) | `tutorials/ui/custom_gui_controls.rst:41` | Guiones `pausa_foco`, `dialogo` |
-| El tamaño de letra va en el tema o en el nodo (`Tema.LETRA`, `Tema.LETRA_CHICA`, `Tema.LETRA_TITULO`), no en un recurso de fuente por tamaño. Las medidas de `Tema` (`ALTO_LETRA`) son de la fuente por omisión: al cambiar de fuente se vuelven a medir | `tutorials/ui/gui_using_fonts.rst:20` | Prueba manual en el teléfono |
+| El tamaño de letra va en el tema o en el nodo (`Tema.LETRA`, `Tema.LETRA_CHICA`, `Tema.LETRA_TITULO`), no en un recurso de fuente por tamaño. La fuente de los menús es Cabin Sketch (`Tema.RUTA_FUENTE`, gruesa en `Tema.TITULO`), cargada con `load()` al armar el tema: un `preload` hace fallar la primera importación de un clon limpio. Las medidas de `Tema` (`ALTO_LETRA`) son de esa fuente: al cambiarla se vuelven a medir con `get_height` | `tutorials/ui/gui_using_fonts.rst:20` | Prueba manual en el teléfono |
 
 ## Tamaño, anclas y contenedores
 
@@ -105,12 +105,3 @@ toque los comprueba un guion o una prueba manual en el teléfono.
   cabecera (`nucleo/ranuras.gd`, `nucleo/nueva_partida.gd`). — `tutorials/best_practices/scenes_versus_scripts.rst:192`, `:205`.
   Grep de `preload(` e `instantiate(` en el archivo nuevo; `validar.ps1`.
 - Si un menú armado en código tarda en abrir: medir en el S50 antes de cambiarlo a escena.
-
-## Estilo
-
-- Tipo explícito siempre, aunque la guía de estilo prefiera `:=` (`:1011`): la propia guía pone la consistencia
-  del equipo por encima de ella. — `tutorials/scripting/gdscript/gdscript_styleguide.rst:19`. Grep de `:=` en los `.gd` del cambio
-  (`validar.ps1` no lo atrapa: `:=` compila).
-- Cabecera de cada `.gd` con `#`, no con `##`: el `##` documenta y solo va pegado a un miembro público (`nucleo/tema.gd`
-  es el ejemplo). — `tutorials/scripting/gdscript/gdscript_documentation_comments.rst:9`. Grep de `^##` en el
-  `.gd`: solo sobre `const`, `var`, `func` y `signal` sin `_`.

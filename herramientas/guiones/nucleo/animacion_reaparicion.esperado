@@ -1,0 +1,5 @@
+en 160 valor Jugador/Dibujo animation dano
+en 170 valor Jugador _ticks_congelado 12 0
+en 170 valor Jugador/Dibujo animation quieto
+en 180 valor Jugador/Dibujo animation quieto
+valor Jugador/Dibujo animation quieto

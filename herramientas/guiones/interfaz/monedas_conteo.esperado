@@ -1,0 +1,4 @@
+# Los 18 casos de herramientas/pruebas/prueba_monedas_hud.gd corrieron y ninguno fallo. Cada caso que falla imprime una
+# linea "FALLO monedas_hud: <caso>".
+valor . casos 18
+valor . fallos 0

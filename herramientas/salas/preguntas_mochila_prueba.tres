@@ -1,0 +1,46 @@
+[gd_resource type="Resource" script_class="BolsaPreguntas" format=3]
+
+[ext_resource type="Script" path="res://nucleo/bolsa_preguntas.gd" id="1_bolsa"]
+[ext_resource type="Script" path="res://nucleo/ficha_pregunta.gd" id="2_pregunta"]
+
+[sub_resource type="Resource" id="pregunta_1"]
+script = ExtResource("2_pregunta")
+pregunta = "¿Cuántos bits tiene un byte?"
+opciones = Array[String](["4", "8", "16"])
+correcta = 1
+
+[sub_resource type="Resource" id="pregunta_2"]
+script = ExtResource("2_pregunta")
+pregunta = "¿Qué estructura saca primero lo último que entró?"
+opciones = Array[String](["Cola", "Pila", "Árbol"])
+correcta = 1
+
+[sub_resource type="Resource" id="pregunta_3"]
+script = ExtResource("2_pregunta")
+pregunta = "¿Cuánto es 1010 en binario?"
+opciones = Array[String](["10", "12", "8"])
+correcta = 0
+
+[sub_resource type="Resource" id="pregunta_4"]
+script = ExtResource("2_pregunta")
+pregunta = "¿Qué protocolo usa el puerto 443?"
+opciones = Array[String](["HTTP", "FTP", "HTTPS"])
+correcta = 2
+
+[sub_resource type="Resource" id="pregunta_5"]
+script = ExtResource("2_pregunta")
+pregunta = "¿Qué búsqueda necesita la lista ordenada?"
+opciones = Array[String](["Binaria", "Lineal"])
+correcta = 0
+
+[sub_resource type="Resource" id="pregunta_6"]
+script = ExtResource("2_pregunta")
+pregunta = "¿Qué compuerta da 1 solo si las dos entradas son 1?"
+opciones = Array[String](["OR", "AND", "XOR"])
+correcta = 1
+
+[resource]
+script = ExtResource("1_bolsa")
+preguntas = Array[ExtResource("2_pregunta")]([SubResource("pregunta_1"), SubResource("pregunta_2"), SubResource("pregunta_3"), SubResource("pregunta_4"), SubResource("pregunta_5"), SubResource("pregunta_6")])
+preguntas_por_reto = 3
+meta = 2

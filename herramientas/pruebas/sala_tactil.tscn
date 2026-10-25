@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://cybvu1pxcdgj3"]
+
+[ext_resource type="Script" uid="uid://c7sn6sobc7wi2" path="res://herramientas/pruebas/prueba_tactil.gd" id="1_prueba"]
+
+[node name="SalaTactil" type="Node"]
+script = ExtResource("1_prueba")

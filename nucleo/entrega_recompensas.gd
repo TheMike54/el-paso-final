@@ -1,9 +1,10 @@
 class_name EntregaRecompensas
-extends Area2D
+extends Interactuable
 # Quien entrega las recompensas de los coleccionables (el padre de las larvas de Hollow Knight): con el
 # jugador encima y en el suelo, interactuar entrega cada recompensa cuya cantidad ya se junto y que no se
 # entrego antes. Cada entrega queda marcada en el estado de su sala (entregado_<cantidad>) y autoguarda.
-# Va como hija directa de la raiz de una sala, con su forma.
+# Va como hija directa de la raiz de una sala, con su forma. La capa y el disparador (sin congelado) son de la
+# base Interactuable, sin aviso: la entrega no lo dibuja.
 
 ## Las marcas de las entregas en el estado de la sala empiezan asi; un Npc o un reto no usan ese id.
 const PREFIJO_ENTREGADO: String = "entregado_"
@@ -15,15 +16,12 @@ const PREFIJO_ENTREGADO: String = "entregado_"
 var entregadas: int = 0
 
 
-func _ready() -> void:
-	Capas.poner(self, Capas.INTERACCION, Capas.JUGADOR)
+func _init() -> void:
+	con_aviso = false
 
 
-func _physics_process(_delta: float) -> void:
-	if not Input.is_action_just_pressed(&"interactuar"):
-		return
-	if Jugador.encima_de(self) != null:
-		entregar()
+func _al_interactuar(_jugador_encima: Jugador) -> void:
+	entregar()
 
 
 ## Entrega lo pendiente; devuelve cuantas recompensas dio.

@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://k7a08bqsbqd0" path="res://nucleo/sala.gd" id="1_sala"]
 [ext_resource type="Script" uid="uid://dmunerkne8s1e" path="res://nucleo/golpeable.gd" id="2_golpeable"]
 [ext_resource type="PackedScene" uid="uid://ru6ttknobjs5" path="res://nucleo/objeto_habilidad.tscn" id="4_objeto"]
+[ext_resource type="PackedScene" path="res://nucleo/cortable.tscn" id="5_cortable"]
 
 [sub_resource type="RectangleShape2D" id="forma_0"]
 size = Vector2(1600, 80)
@@ -148,3 +149,9 @@ velocidad_retroceso = 0.0
 [node name="Forma" type="CollisionShape2D" parent="MunecoTras/Golpeable"]
 position = Vector2(0, -80)
 shape = SubResource("forma_muneco")
+
+[node name="CortableCamino" parent="." instance=ExtResource("5_cortable")]
+position = Vector2(850, 620)
+
+[node name="CortableTras" parent="." instance=ExtResource("5_cortable")]
+position = Vector2(1400, 620)

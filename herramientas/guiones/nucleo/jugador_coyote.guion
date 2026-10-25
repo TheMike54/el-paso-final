@@ -1,6 +1,7 @@
 # El jugador camina a la derecha y sale de la orilla de la plataforma (x=640).
-# Presiona saltar en el ultimo cuadro del tiempo coyote: todavia salta.
+# Presiona saltar en el ultimo cuadro del tiempo coyote (4 ticks): todavia salta. Un cuadro despues ya no
+# (jugador_coyote_tarde.guion).
 escena res://herramientas/salas/sala_movimiento.tscn
 10 mover_derecha press
-92 saltar press
+93 saltar press
 fin 110

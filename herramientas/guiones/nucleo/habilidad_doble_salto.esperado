@@ -1,6 +1,6 @@
 # Parado sobre la plataforma (su superficie esta en y=320). Sin el doble salto se quedaria en el
 # suelo (y=680), debajo de ella.
-x 858 2
+x 882 2
 y 320 1
 en_suelo true
 senal /root/Eventos habilidad_obtenida 1

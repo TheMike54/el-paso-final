@@ -10,7 +10,7 @@ Leer `funciones.json` de esta carpeta y la sección «Mapa» de `docs/contrato.m
 | Pieza | Contrato |
 |---|---|
 | `pantalla_mapa.tscn` | La crea la sala. Es la página Mapa del marco de menús («Marco de menús» en `docs/contrato.md`): `mapa` abre el marco en ella; `mapa_rapido` mantenida la muestra sin detener el juego |
-| `indice_salas.tres` | Lo escribe `herramientas/generar_mapa.tscn`; no se edita a mano. El paquete exportado no lista escenas con fiabilidad: por eso existe |
+| `indice_salas.tres` | Lo escribe `herramientas/generar_mapa.tscn`; no se edita a mano. El paquete exportado no lista escenas con fiabilidad: por eso existe. El `MenuEstaciones` del núcleo lo lee por ruta y su campo `rectangulos` con `get()`: moverlo o renombrar el campo deja el viaje rápido sin mapa |
 | Dibujo de una sala | `<id>_mapa.png` junto a la escena de la sala; sin él se dibuja su rectángulo |
 
 ## Reglas

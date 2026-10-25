@@ -1,4 +1,4 @@
-# Los 11 casos de herramientas/salas/prueba_peligro_anti_bucle.gd corrieron y ninguno fallo. Cada caso que
+# Los 11 casos de herramientas/pruebas/prueba_peligro_anti_bucle.gd corrieron y ninguno fallo. Cada caso que
 # falla imprime una linea "FALLO peligro_anti_bucle: <caso>".
 valor . casos 11
 valor . fallos 0

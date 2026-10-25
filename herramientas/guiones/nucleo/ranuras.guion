@@ -1,5 +1,5 @@
 # La escena de prueba de las ranuras corre sus casos al entrar: rutas, migracion de la partida de antes, copia y
 # Restaurar, Borrar, el texto de las fichas y, con el menu, cada estado, la confirmacion, Atras y la entrada a una
 # ranura. Deja la cuenta en sus propiedades.
-escena res://herramientas/salas/sala_ranuras.tscn
+escena res://herramientas/pruebas/sala_ranuras.tscn
 fin 10

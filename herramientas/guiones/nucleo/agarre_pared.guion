@@ -1,3 +1,3 @@
-# Casos de herramientas/salas/prueba_agarre_pared.gd: altura_agarre_pared en 0 y en 0,5 en la esquina de una pared.
-escena res://herramientas/salas/sala_agarre_pared.tscn
+# Casos de herramientas/pruebas/prueba_agarre_pared.gd: altura_agarre_pared en 0 y en 0,5 en la esquina de una pared.
+escena res://herramientas/pruebas/sala_agarre_pared.tscn
 fin 30

@@ -24,7 +24,7 @@ esos documentos.
 | La gravedad se suma a mano a `velocity` (por `delta`) antes de `move_and_slide()`; la velocidad no se multiplica por `delta` al llamarlo | `tutorials/physics/using_character_body_2d.rst:36`, `tutorials/physics/physics_introduction.rst:473` | Guiones `jugador_caida`, `jugador_salto_corto`, `jugador_coyote`, `jugador_salto_en_cola` |
 | `move_and_slide()` cambia `velocity` (la deja en 0 al aterrizar): la velocidad de caída se lee antes de llamarlo | `tutorials/physics/using_character_body_2d.rst:204` | Guiones `aterrizaje`, `jugador_aterrizaje_duro`, `vibracion_aterrizaje` |
 | Para reaccionar a cada choque, recorrer `get_slide_collision_count()` / `get_slide_collision(i)` tras moverse; solo cuenta los choques que cambiaron la dirección, no todo contacto | `tutorials/physics/using_character_body_2d.rst:126`, `:160` | Guiones `habilidad_caida_en_picada`, `camara_temblor_picada_fragil` (rompen el `SueloFragil`) |
-| `is_on_floor()` / `is_on_wall()` dependen del modo `GROUNDED` y de `up_direction` por omisión: no cambiarlos. Antes de la primera rampa, revisar `floor_max_angle` (45° por omisión) | `tutorials/physics/using_character_body_2d.rst:89`, `:111` | Grep de `motion_mode` y `up_direction` (sin resultado) |
+| `is_on_floor()` / `is_on_wall()` dependen del modo `GROUNDED` y de `up_direction` por omisión: no cambiarlos en el jugador ni en lo que camina. Única excepción: el enemigo sin gravedad (vuela) usa `MOTION_MODE_FLOATING`, sin suelo y con todo choque como pared; lo fija `nucleo/enemigo.gd` según la ficha. Antes de la primera rampa, revisar `floor_max_angle` (45° por omisión) | `tutorials/physics/using_character_body_2d.rst:89`, `:111`, `classes/class_characterbody2d.rst:156-158` | Grep de `motion_mode =` (solo `nucleo/enemigo.gd`; `nucleo/golpeable.gd` solo lo lee) y de `up_direction` (sin resultado); guion `enemigos_moviles` |
 | Sin deslizar (rebotar con la normal): `move_and_collide()` y la respuesta a mano | `tutorials/physics/using_character_body_2d.rst:65` | `validar.ps1` y un guion de la pieza nueva |
 | Un `RigidBody2D` se controla en `_integrate_forces` (fuerzas, impulsos, velocidad), nunca asignando `position` cada tick | `tutorials/physics/physics_introduction.rst:283` | `validar.ps1` y un guion de la pieza nueva |
 | Algo que va hacia un punto se detiene bajo un umbral de distancia, o tiembla al llegar | `tutorials/2d/2d_movement.rst:300` | Guion del comportamiento nuevo |
@@ -51,7 +51,7 @@ El arte no colisiona (decisión cerrada en `CLAUDE.md`): las formas son invisibl
 | `body_entered` si lo que llega es un cuerpo (el jugador), `area_entered` si es un área (un `Golpeable`) | `tutorials/physics/using_area_2d.rst:63` | Guiones `combate_chico`, `poder_bola`; ejemplo `nucleo/proyectil.gd` |
 | Apagar lo que no debe detectar o ser detectado con `monitoring` / `monitorable`. Convención del repo: dentro del tick, con `set_deferred(&"monitoring", ...)` (`nucleo/jugador.gd`, `nucleo/ataque_enemigo.gd`) | `tutorials/physics/using_area_2d.rst:37` | Guiones `jugador_ataque_y_vida`, `parry` |
 | Agregar nodos desde un callback de física con `add_child.call_deferred(...)` (así nace la bola en `nucleo/jugador.gd`) | `tutorials/performance/thread_safe_apis.rst:41` | Guiones `poder_bola`, `poder_bola_recarga` |
-| Radio de visión de un enemigo: un `Area2D` circular grande alrededor | `tutorials/physics/using_area_2d.rst:96` | Guion del comportamiento nuevo |
+| Visión de un enemigo: `ComportamientoEnemigo.ve_al_jugador(radio)`, distancia más un rayo contra `escenario`, para que una pared tape la vista. Un `Area2D` circular solo detecta cercanía: ve a través de las paredes | `tutorials/physics/ray-casting.rst:103`, `:113` | Guion `enemigos_moviles` (quieto con el jugador tras una pared) |
 
 Medido en este repo (`docs/errores/2026-10-06-bola-atravesaba-paredes.md`): un `Area2D` movido con `position` dio 0
 cuerpos estáticos en `get_overlapping_bodies()`, y la causa en el motor no se comprobó. Por eso un `Area2D` que deba
@@ -64,10 +64,10 @@ lo cubre el guion `poder_bola`. La documentación dice que un `Area2D` detecta c
 | Regla | Doc | Cómo se comprueba aquí |
 |---|---|---|
 | `intersect_ray` / `intersect_shape` solo dentro de `_physics_process` o lo que este llama; si nace de una entrada, se guarda la intención y se consulta en el tick | `tutorials/physics/ray-casting.rst:42`, `:319` | `validar.ps1` y el guion de la pieza |
-| Extremos en coordenadas globales (`global_position`) | `tutorials/physics/ray-casting.rst:111` | Ejemplo `nucleo/proyectil.gd` |
+| Extremos en coordenadas globales (`global_position`) | `tutorials/physics/ray-casting.rst:111` | Ejemplo `nucleo/proyectil.gd` (pasa `global_position` a `Capas.rayo_a_escenario`) |
 | El resultado es un `Dictionary` vacío si no choca: comprobar `is_empty()` antes de leer `collider`, `normal`, `position`; leerlo con cast tipado | `tutorials/physics/ray-casting.rst:125` | `validar.ps1` (tipado); ejemplo `nucleo/golpeable.gd` |
-| Cada rayo fija su `collision_mask` con `Capas` (los de sólidos, `Capas.ESCENARIO`): así no choca con quien lo lanza. `exclude = [x.get_rid()]` solo si quien lanza está en una capa que el rayo sí busca | `tutorials/physics/ray-casting.rst:204`, `tutorials/physics/physics_introduction.rst:115` | Guiones `capas_fisica` y `poder_bola` (la bola sale del jugador sin chocar consigo); ejemplo `nucleo/proyectil.gd` |
-| Las áreas solo cuentan con `collide_with_areas = true` (por omisión no): se fija cuando el rayo busca áreas; el que solo busca sólidos lo deja en false | `tutorials/physics/ray-casting.rst:156` | Ejemplos `nucleo/jugador.gd` (la picada, true y máscara `GOLPEABLE`) y `nucleo/proyectil_enemigo.gd` (solo `ESCENARIO`) |
+| Cada rayo fija su `collision_mask` con `Capas` (los de sólidos, `Capas.ESCENARIO`): así no choca con quien lo lanza. `exclude = [x.get_rid()]` solo si quien lanza está en una capa que el rayo sí busca | `tutorials/physics/ray-casting.rst:204`, `tutorials/physics/physics_introduction.rst:115` | Guiones `capas_fisica` y `poder_bola` (la bola sale del jugador sin chocar consigo); un rayo contra sólidos usa `Capas.rayo_a_escenario` (`nucleo/capas.gd`), que ya fija la máscara |
+| Las áreas solo cuentan con `collide_with_areas = true` (por omisión no): se fija cuando el rayo busca áreas; el que solo busca sólidos lo deja en false | `tutorials/physics/ray-casting.rst:156` | Ejemplos `nucleo/jugador.gd` (la picada, true y máscara `GOLPEABLE`) y `Capas.rayo_a_escenario` en `nucleo/capas.gd` (solo `ESCENARIO`) |
 | Para un rayo fijo que se revisa cada tick basta un nodo `RayCast2D` | `tutorials/physics/ray-casting.rst:16` | `validar.ps1` y el guion de la pieza |
 
 ## Entrada del jugador
@@ -89,10 +89,8 @@ genera evento).
 
 ## Medir en el S50 antes de cambiar
 
-- Interpolación de física: suaviza si el teléfono no llega a 60 FPS, pero suma retraso a la entrada (parry, salto
-  en cola) (`tutorials/physics/interpolation/physics_interpolation_introduction.rst:194`,
-  `tutorials/rendering/jitter_stutter.rst:64`). Toca `project.godot`. Si se activa, revisar
-  `reset_physics_interpolation()` al teletransportar
+- Interpolación de física: apagada, decidido con medida (`docs/contrato.md`, «Configuración del proyecto»). Si
+  algún día se activa, revisar `reset_physics_interpolation()` al teletransportar
   (`tutorials/physics/interpolation/using_physics_interpolation.rst:136`) y la cámara
   (`tutorials/physics/interpolation/advanced_physics_interpolation.rst:48`).
 - Mezclar fuentes de tiempo (algo en `_process` junto a la cámara en física) puede temblar
@@ -103,9 +101,3 @@ genera evento).
   origen» (contrato) y se queda.
 - Sacar de la física lo que está fuera de vista, solo si salas largas con muchos enemigos bajan los FPS
   (`tutorials/performance/cpu_optimization.rst:256`).
-
-## Estilo
-
-Tipo explícito siempre, cabecera de los `.gd` con `#` y `##` solo para miembros públicos (skill `gdscript4`). La
-guía de estilo pone la consistencia del equipo por encima de sí misma
-(`tutorials/scripting/gdscript/gdscript_styleguide.rst:19`).

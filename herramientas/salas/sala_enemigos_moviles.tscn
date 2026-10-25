@@ -1,0 +1,174 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" uid="uid://k7a08bqsbqd0" path="res://nucleo/sala.gd" id="1_sala"]
+[ext_resource type="PackedScene" uid="uid://dgy2sncgkvcml" path="res://nucleo/enemigo.tscn" id="2_enemigo"]
+[ext_resource type="Resource" path="res://herramientas/salas/fichas/caminante.tres" id="3_caminante"]
+[ext_resource type="Resource" path="res://herramientas/salas/fichas/volador.tres" id="4_volador"]
+[ext_resource type="Resource" path="res://herramientas/salas/fichas/escupidor.tres" id="5_escupidor"]
+
+[sub_resource type="RectangleShape2D" id="forma_suelo"]
+size = Vector2(3600, 40)
+
+[sub_resource type="RectangleShape2D" id="forma_pared"]
+size = Vector2(40, 1080)
+
+[sub_resource type="RectangleShape2D" id="forma_plataforma"]
+size = Vector2(600, 40)
+
+[sub_resource type="RectangleShape2D" id="forma_tope"]
+size = Vector2(40, 200)
+
+[sub_resource type="RectangleShape2D" id="forma_pilar"]
+size = Vector2(60, 480)
+
+[sub_resource type="RectangleShape2D" id="forma_escalon_bajo"]
+size = Vector2(150, 40)
+
+[sub_resource type="RectangleShape2D" id="forma_escalon_alto"]
+size = Vector2(120, 40)
+
+[node name="SalaEnemigosMoviles" type="Node2D"]
+script = ExtResource("1_sala")
+habilidades_de_prueba = Array[StringName]([&"pluma"])
+limites = Rect2(0, 0, 3600, 1080)
+
+[node name="Fondo" type="ColorRect" parent="."]
+offset_right = 3600.0
+offset_bottom = 1080.0
+mouse_filter = 2
+color = Color(0.12, 0.12, 0.14, 1)
+
+[node name="Entrada" type="Marker2D" parent="."]
+position = Vector2(1450, 1040)
+
+[node name="Suelo" type="StaticBody2D" parent="."]
+position = Vector2(1800, 1060)
+
+[node name="Forma" type="CollisionShape2D" parent="Suelo"]
+shape = SubResource("forma_suelo")
+
+[node name="Dibujo" type="ColorRect" parent="Suelo"]
+offset_left = -1800.0
+offset_top = -20.0
+offset_right = 1800.0
+offset_bottom = 20.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="ParedIzquierda" type="StaticBody2D" parent="."]
+position = Vector2(20, 540)
+
+[node name="Forma" type="CollisionShape2D" parent="ParedIzquierda"]
+shape = SubResource("forma_pared")
+
+[node name="Dibujo" type="ColorRect" parent="ParedIzquierda"]
+offset_left = -20.0
+offset_top = -540.0
+offset_right = 20.0
+offset_bottom = 540.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="ParedDerecha" type="StaticBody2D" parent="."]
+position = Vector2(3580, 540)
+
+[node name="Forma" type="CollisionShape2D" parent="ParedDerecha"]
+shape = SubResource("forma_pared")
+
+[node name="Dibujo" type="ColorRect" parent="ParedDerecha"]
+offset_left = -20.0
+offset_top = -540.0
+offset_right = 20.0
+offset_bottom = 540.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="Plataforma" type="StaticBody2D" parent="."]
+position = Vector2(700, 760)
+
+[node name="Forma" type="CollisionShape2D" parent="Plataforma"]
+shape = SubResource("forma_plataforma")
+
+[node name="Dibujo" type="ColorRect" parent="Plataforma"]
+offset_left = -300.0
+offset_top = -20.0
+offset_right = 300.0
+offset_bottom = 20.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="Tope" type="StaticBody2D" parent="."]
+position = Vector2(1300, 940)
+
+[node name="Forma" type="CollisionShape2D" parent="Tope"]
+shape = SubResource("forma_tope")
+
+[node name="Dibujo" type="ColorRect" parent="Tope"]
+offset_left = -20.0
+offset_top = -100.0
+offset_right = 20.0
+offset_bottom = 100.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="Pilar" type="StaticBody2D" parent="."]
+position = Vector2(2000, 800)
+
+[node name="Forma" type="CollisionShape2D" parent="Pilar"]
+shape = SubResource("forma_pilar")
+
+[node name="Dibujo" type="ColorRect" parent="Pilar"]
+offset_left = -30.0
+offset_top = -240.0
+offset_right = 30.0
+offset_bottom = 240.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="EscalonBajo" type="StaticBody2D" parent="."]
+position = Vector2(1575, 880)
+
+[node name="Forma" type="CollisionShape2D" parent="EscalonBajo"]
+shape = SubResource("forma_escalon_bajo")
+
+[node name="Dibujo" type="ColorRect" parent="EscalonBajo"]
+offset_left = -75.0
+offset_top = -20.0
+offset_right = 75.0
+offset_bottom = 20.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="EscalonAlto" type="StaticBody2D" parent="."]
+position = Vector2(1760, 700)
+
+[node name="Forma" type="CollisionShape2D" parent="EscalonAlto"]
+shape = SubResource("forma_escalon_alto")
+
+[node name="Dibujo" type="ColorRect" parent="EscalonAlto"]
+offset_left = -60.0
+offset_top = -20.0
+offset_right = 60.0
+offset_bottom = 20.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="CaminantePlataforma" parent="." instance=ExtResource("2_enemigo")]
+position = Vector2(700, 740)
+ficha = ExtResource("3_caminante")
+id = &"caminante_plataforma"
+
+[node name="CaminanteSuelo" parent="." instance=ExtResource("2_enemigo")]
+position = Vector2(600, 1040)
+ficha = ExtResource("3_caminante")
+id = &"caminante_suelo"
+
+[node name="Volador" parent="." instance=ExtResource("2_enemigo")]
+position = Vector2(1880, 760)
+ficha = ExtResource("4_volador")
+id = &"volador"
+
+[node name="Escupidor" parent="." instance=ExtResource("2_enemigo")]
+position = Vector2(3300, 1040)
+ficha = ExtResource("5_escupidor")
+id = &"escupidor"

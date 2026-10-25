@@ -4,7 +4,7 @@
 [ext_resource type="Script" uid="uid://dmunerkne8s1e" path="res://nucleo/golpeable.gd" id="2_golpeable"]
 [ext_resource type="Script" uid="uid://jy2tkfmforul" path="res://nucleo/dano_contacto.gd" id="3_dano"]
 
-[node name="Enemigo" type="Node2D"]
+[node name="Enemigo" type="CharacterBody2D"]
 script = ExtResource("1_enemigo")
 
 [node name="Golpeable" type="Area2D" parent="."]

@@ -1,0 +1,5 @@
+# El muro A se rompio una vez y el jugador entro caminando al cuarto que tapaba (x 1360; frente al muro se
+# quedaria en 766, por el rebote de los golpes).
+senal MuroA se_rompio 1
+x 1360 20
+en_suelo true

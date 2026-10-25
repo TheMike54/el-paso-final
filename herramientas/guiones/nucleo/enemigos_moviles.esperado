@@ -1,0 +1,4 @@
+# Los 17 casos de herramientas/pruebas/prueba_moviles.gd corrieron y ninguno fallo. Cada caso que falla imprime una
+# linea "FALLO moviles: <caso>".
+valor . casos 17
+valor . fallos 0

@@ -1,0 +1,4 @@
+# Los 38 casos de herramientas/pruebas/prueba_tienda.gd corrieron y ninguno fallo. Cada caso que falla imprime una
+# linea "FALLO tienda: <caso>".
+valor . casos 38
+valor . fallos 0

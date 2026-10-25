@@ -1,0 +1,17 @@
+# En la sala de secretos el jugador camina a la derecha hasta el muro A, le pega cuatro veces, el muro se rompe y
+# entra caminando al cuarto escondido. Falla si el muro no se rompe con el ataque de verdad (el
+# jugador se quedaria frente al muro).
+escena res://herramientas/salas/sala_secretos.tscn
+2 mover_derecha press
+150 mover_derecha release
+160 atacar press
+162 atacar release
+185 atacar press
+187 atacar release
+210 atacar press
+212 atacar release
+235 atacar press
+237 atacar release
+260 mover_derecha press
+359 mover_derecha release
+fin 360

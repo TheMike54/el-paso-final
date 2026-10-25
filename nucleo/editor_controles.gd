@@ -178,5 +178,4 @@ func _draw() -> void:
 			draw_arc(c, r, 0.0, TAU, 48, color, 2.0)
 		var etiqueta: String = ControlesTactiles.ETIQUETAS[i]
 		var tamano_letra: int = maxi(12, roundi(r * 0.35))
-		var ancho: float = fuente.get_string_size(etiqueta, HORIZONTAL_ALIGNMENT_LEFT, -1, tamano_letra).x
-		draw_string(fuente, c + Vector2(-ancho / 2.0, tamano_letra * 0.35), etiqueta, HORIZONTAL_ALIGNMENT_LEFT, -1, tamano_letra, color if i != seleccion else COLOR_SELECCION)
+		Tema.texto_centrado(self, fuente, etiqueta, c + Vector2(0.0, tamano_letra * 0.35), tamano_letra, color if i != seleccion else COLOR_SELECCION)

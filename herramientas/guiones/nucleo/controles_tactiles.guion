@@ -1,4 +1,4 @@
 # La escena de prueba de los controles tactiles les pasa toques y arrastres simulados al
 # entrar y deja la cuenta en sus propiedades. No sustituye la prueba en el telefono.
-escena res://herramientas/salas/sala_tactil.tscn
-fin 20
+escena res://herramientas/pruebas/sala_tactil.tscn
+fin 40

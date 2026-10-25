@@ -4,6 +4,9 @@ extends Resource
 # escribe sin tocar el nucleo. Caben 3 opciones porque se muestran en la fila de opciones de CajaDialogo.
 
 const MIN_OPCIONES: int = 2
+## Lo que se dice tras acertar y tras fallar (%s es la respuesta correcta), si quien pregunta no pone otro.
+const TEXTO_CORRECTO: String = "¡Correcto!"
+const TEXTO_INCORRECTO: String = "No. Era: %s."
 
 ## El texto de la pregunta.
 @export_multiline var pregunta: String = ""
@@ -11,6 +14,22 @@ const MIN_OPCIONES: int = 2
 @export var opciones: Array[String] = []
 ## Indice de la opcion correcta dentro de opciones.
 @export var correcta: int = 0
+
+
+## Las dos lineas de esta pregunta en una FichaDialogo, con la pregunta en el indice en: la pregunta con sus opciones,
+## todas hacia la siguiente, y la de la respuesta, vacia (se escribe al elegir, con respuesta()).
+func lineas_para(quien: String, en: int) -> Array[LineaDialogo]:
+	var linea: LineaDialogo = LineaDialogo.nueva(quien, pregunta)
+	linea.opciones = opciones.duplicate()
+	for i: int in range(opciones.size()):
+		linea.destinos.append(en + 1)
+	var lineas: Array[LineaDialogo] = [linea, LineaDialogo.nueva(quien, "")]
+	return lineas
+
+
+## El texto de la linea de respuesta: correcto si acerto; si no, incorrecto con la opcion correcta.
+func respuesta(acerto: bool, correcto: String = TEXTO_CORRECTO, incorrecto: String = TEXTO_INCORRECTO) -> String:
+	return correcto if acerto else incorrecto % opciones[correcta]
 
 
 ## Fallos de forma de la ficha (vacio si esta bien); lo usan el validador y la prueba.

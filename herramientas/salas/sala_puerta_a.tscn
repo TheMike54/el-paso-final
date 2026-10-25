@@ -55,7 +55,7 @@ offset_top = -40.0
 offset_right = 1200.0
 offset_bottom = 40.0
 mouse_filter = 2
-color = Color(0.25, 0.25, 0.25, 1)
+color = Color(0.3, 0.3, 0.32, 1)
 
 [node name="PuertaDerecha" parent="." instance=ExtResource("2_puerta")]
 position = Vector2(2380, 680)
@@ -76,7 +76,7 @@ offset_top = -360.0
 offset_right = 20.0
 offset_bottom = 360.0
 mouse_filter = 2
-color = Color(0.25, 0.25, 0.25, 1)
+color = Color(0.3, 0.3, 0.32, 1)
 
 [node name="ParedTrasPuerta" type="StaticBody2D" parent="."]
 position = Vector2(2420, 360)

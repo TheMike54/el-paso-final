@@ -1,0 +1,11 @@
+# En la sala Enemigos Moviles, solo con la pluma, el jugador sube los dos escalones y salta el pilar del volador
+# para llegar al escupidor. Sin los escalones el pilar (480 px) no se salta y se queda en x 1930.
+escena res://herramientas/salas/sala_enemigos_moviles.tscn
+2 mover_derecha press
+5 saltar press
+30 saltar release
+50 saltar press
+75 saltar release
+90 saltar press
+115 saltar release
+fin 200

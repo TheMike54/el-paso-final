@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://herramientas/pruebas/prueba_salto_tras_menu.gd" id="1_prueba"]
+
+[node name="SalaSaltoTrasMenu" type="Node"]
+script = ExtResource("1_prueba")

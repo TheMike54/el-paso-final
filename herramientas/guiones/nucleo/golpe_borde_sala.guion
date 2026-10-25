@@ -1,5 +1,7 @@
 # En la sala de combate el jugador camina a la izquierda atacando sin parar: cada golpe empuja al muneco hacia la
 # puerta de la izquierda, donde no hay pared. El muneco se detiene en el borde de la sala (x=40, su mitad) y no sale.
+# Llega al borde en el golpe 8 (60 px por golpe); los cuatro siguientes lo dejan ahi. Con mas ciclos el jugador
+# alcanzaria la puerta y cambiaria de sala.
 escena res://herramientas/salas/sala_combate.tscn
 1 mover_izquierda press
 6 mover_izquierda release
@@ -81,44 +83,4 @@ escena res://herramientas/salas/sala_combate.tscn
 481 mover_izquierda release
 482 atacar press
 483 atacar release
-501 mover_izquierda press
-506 mover_izquierda release
-507 atacar press
-508 atacar release
-526 mover_izquierda press
-531 mover_izquierda release
-532 atacar press
-533 atacar release
-551 mover_izquierda press
-556 mover_izquierda release
-557 atacar press
-558 atacar release
-576 mover_izquierda press
-581 mover_izquierda release
-582 atacar press
-583 atacar release
-601 mover_izquierda press
-606 mover_izquierda release
-607 atacar press
-608 atacar release
-626 mover_izquierda press
-631 mover_izquierda release
-632 atacar press
-633 atacar release
-651 mover_izquierda press
-656 mover_izquierda release
-657 atacar press
-658 atacar release
-676 mover_izquierda press
-681 mover_izquierda release
-682 atacar press
-683 atacar release
-701 mover_izquierda press
-706 mover_izquierda release
-707 atacar press
-708 atacar release
-726 mover_izquierda press
-731 mover_izquierda release
-732 atacar press
-733 atacar release
-fin 761
+fin 511

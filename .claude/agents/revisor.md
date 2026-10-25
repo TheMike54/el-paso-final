@@ -18,7 +18,8 @@ La rama o el rango a revisar y contra qué: el plan (`planes/activos/<bloque>-<t
 2. Mira el cambio completo: `git status --short`, `git diff` y `git diff <base>...HEAD`. Lee enteros los archivos
    tocados, no solo las líneas del diff.
 3. Corre `.\herramientas\validar.ps1`. Pasa solo si imprime `OK  VALIDACION ... fallos=0`.
-4. Corre cada guion del bloque tocado con el comando del `CLAUDE.md` raíz. Pasa solo con `GUION OK` y salida 0.
+4. Corre los guiones con `.\herramientas\correr-guiones.ps1` (los del bloque tocado, con `-Guiones`). Pasa solo si
+   imprime `RESUMEN ... MALOS=0`.
 5. Compara con el plan o con la entrada: qué pide, qué hace el cambio y qué falta.
 
 ## Qué es un fallo
@@ -30,7 +31,7 @@ La rama o el rango a revisar y contra qué: el plan (`planes/activos/<bloque>-<t
 - Un documento afirma algo que el código no cumple.
 
 ## Respuesta
-- Sin fallos: la palabra `aprobado` y, en una línea, la salida de `validar.ps1` y de cada guion.
+- Sin fallos: la palabra `aprobado` y, en una línea, la salida de `validar.ps1` y la línea `RESUMEN` de `correr-guiones.ps1`.
 - Con fallos: una lista. Cada fallo lleva archivo y línea, qué falla y cómo lo comprobaste (salida o cita). Lo
   que no pudiste comprobar va aparte, marcado como no comprobado.
 

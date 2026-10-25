@@ -1,5 +1,5 @@
-# En el eje donde la vista es mayor que la sala, el objetivo de la camara queda centrado (y = 760 / 2),
+# En el eje donde la vista es mayor que la sala, el objetivo de la camara queda centrado (y = 720 / 2),
 # como lo centra Camera2D con sus limites. En el otro eje se recorta al limite (x = 1280 / 2). Sin la
 # rama que centra, el recorte con los bordes invertidos deja la camara en y = 120.
-valor Jugador/Camara global_position:y 380 0.5
+valor Jugador/Camara global_position:y 360 0.5
 valor Jugador/Camara global_position:x 640 0.5

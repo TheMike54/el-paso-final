@@ -1,5 +1,5 @@
-# Los 17 casos de herramientas/salas/prueba_control.gd: las filas del mapeo (LB da mapa rapido y pagina
-# anterior; RB, pagina siguiente), el gatillo a medias, el stick dentro de la zona muerta, el gatillo izquierdo
+# Los 17 casos de herramientas/pruebas/prueba_control.gd: las filas del mapeo (B da curar y volver; LB, mapa
+# rapido y pagina anterior; RB, pagina siguiente), el gatillo a medias, el stick dentro de la zona muerta, el gatillo izquierdo
 # libre y A, que tambien acepta en los menus (ui_accept).
 valor . casos 17
 valor . fallos 0

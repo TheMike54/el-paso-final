@@ -4,7 +4,8 @@ extends CanvasLayer
 # juego, y se abre sola al salir de la app o cambiar de ventana. Pausar detiene el arbol y no
 # guarda la partida; salir al menu si guarda lo obtenido, y pasar a segundo plano lo guarda Partida. Continuar,
 # Configuracion (la misma del menu, encima y con el juego detenido; de ahi sale el editor de botones tactiles) y
-# Salir al menu, como en Hollow Knight. Los amuletos y el mapa estan en el marco de menus. La crea cada sala.
+# Salir al menu, como en Hollow Knight, centradas como en Silksong. Los amuletos y el mapa estan en el marco de
+# menus. La crea cada sala.
 const ESCENA_EDITOR: PackedScene = preload("res://nucleo/editor_controles.tscn")
 const ESCENA_CONFIGURACION: PackedScene = preload("res://nucleo/configuracion.tscn")
 ## Configuracion abierta desde la pausa: encima de la pausa y del marco, debajo del editor de botones (23).
@@ -31,18 +32,24 @@ var _editor_desde_configuracion: bool = false
 
 func _ready() -> void:
 	_panel.theme = Tema.crear()
+	_adornar(_panel.get_node(^"Opciones") as VBoxContainer)
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	process_physics_priority = MarcoMenus.PRIORIDAD_FISICA
 	_panel.visible = false
 	_continuar.pressed.connect(cerrar)
+	IconoBoton.en_boton(_continuar, &"volver")
 	_salir.pressed.connect(_salir_al_menu)
 	_boton_configuracion.pressed.connect(abrir_configuracion)
 
 
 # Se lee la accion y no el evento: asi la abren igual el teclado, el boton tactil y un guion.
 func _physics_process(_delta: float) -> void:
-	if not Input.is_action_just_pressed(&"pausa") or editor != null:
+	# B (volver) solo sirve con la pausa abierta: en la partida es curar y no la abre.
+	var volver: bool = Input.is_action_just_pressed(&"volver") and abierta
+	if not (Input.is_action_just_pressed(&"pausa") or volver) or editor != null:
 		return
-	# Con Configuracion abierta, pausa vuelve un nivel, como Atras; salvo el Start recien asignado a una accion.
+	# Con Configuracion abierta, pausa y volver vuelven un nivel, como Atras; salvo el boton recien asignado a una
+	# accion.
 	if _configuracion_abierta():
 		if not configuracion.acaba_de_asignar():
 			configuracion.atras()
@@ -107,11 +114,7 @@ func abrir_configuracion() -> void:
 		capa.name = "CapaConfiguracion"
 		capa.layer = CAPA_CONFIGURACION
 		add_child(capa)
-		var fondo: ColorRect = ColorRect.new()
-		fondo.name = "Fondo"
-		fondo.color = Color(0.0, 0.0, 0.0, 0.9)
-		fondo.set_anchors_preset(Control.PRESET_FULL_RECT)
-		fondo.theme = Tema.crear()
+		var fondo: ColorRect = Tema.fondo_menu(0.9)
 		capa.add_child(fondo)
 		configuracion = ESCENA_CONFIGURACION.instantiate() as Configuracion
 		configuracion.en_partida = true
@@ -163,6 +166,17 @@ func _al_cerrar_editor() -> void:
 	else:
 		_panel.visible = abierta
 		Tema.dar_foco(_boton_configuracion)
+
+
+# Como la pausa de Silksong: la columna centrada en la pantalla, el adorno ancho entre el titulo y las opciones y el
+# chico debajo. Van en Opciones porque son parte de la columna; no toman foco ni toques.
+func _adornar(opciones: VBoxContainer) -> void:
+	var ancho: PanelContainer = Tema.adorno(Tema.ADORNO_ANCHO)
+	var chico: PanelContainer = Tema.adorno(Tema.ADORNO_CHICO)
+	for adorno: PanelContainer in [ancho, chico]:
+		adorno.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		opciones.add_child(adorno)
+	opciones.move_child(ancho, _continuar.get_index())
 
 
 # Salir al menu guarda lo obtenido (no la posicion): al continuar se aparece en el ultimo banco.

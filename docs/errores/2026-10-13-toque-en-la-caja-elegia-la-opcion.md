@@ -9,4 +9,4 @@
 - **Arreglo:** con opciones a la vista, el toque en la caja ya no elige; se elige tocando la opción. Las acciones
   (teclado y control) siguen tomando la marcada.
 - **Lo cubre:** `herramientas/guiones/nucleo/dialogo.guion`, caso «con opciones, tocar la caja no elige» de
-  `herramientas/salas/prueba_dialogo.gd` (sin el arreglo, ese caso y los cinco siguientes fallan).
+  `herramientas/pruebas/prueba_dialogo.gd` (sin el arreglo, ese caso y los cinco siguientes fallan).

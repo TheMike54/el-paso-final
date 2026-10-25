@@ -12,11 +12,11 @@ escena res://herramientas/salas/sala_enemigos.tscn
 165 atacar press
 166 atacar release
 180 mover_derecha press
-184 mover_derecha release
+188 mover_derecha release
 190 atacar press
 191 atacar release
 205 mover_derecha press
-209 mover_derecha release
+213 mover_derecha release
 215 atacar press
 216 atacar release
 245 mover_derecha press

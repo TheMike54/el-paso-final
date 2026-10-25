@@ -1,7 +1,7 @@
 # El jugador camina a la derecha contra el bloque rojo. El golpe lo detiene unos ticks (hit-stop) y
 # lo empuja hacia atras y hacia arriba aunque siga empujando a la derecha; saltar justo despues
-# del golpe (cuadro 61, cuando sin la regla saldria un salto completo) no da un salto.
+# del golpe (cuadro 67, al acabar el hit-stop de 10 ticks, cuando sin la regla saldria un salto completo) no da un salto.
 escena res://herramientas/salas/sala_combate.tscn
 2 mover_derecha press
-61 saltar press
-fin 70
+67 saltar press
+fin 76

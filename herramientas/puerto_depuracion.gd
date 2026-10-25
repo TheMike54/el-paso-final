@@ -14,8 +14,13 @@ var _cuadros: PackedInt32Array = []
 var _acciones: Array[StringName] = []
 var _pulsar: Array[bool] = []
 var _esperado: Array[PackedStringArray] = []
-# Una cuenta por cada linea "senal" del esperado, en el mismo orden.
+# El cuadro en que se lee cada linea de _esperado: _fin, o el de su prefijo "en <cuadro>".
+var _cuadro_de: PackedInt32Array = []
+# Una cuenta por cada senal distinta (nodo y nombre) de las lineas "senal"; dos lineas de la
+# misma senal (una "en" y la final) comparten la cuenta, porque se conecta una sola vez.
 var _conteos: PackedInt32Array = []
+# Para cada linea de _esperado, su indice en _conteos, o -1 si no es "senal".
+var _cuenta_de: PackedInt32Array = []
 
 
 func _ready() -> void:
@@ -45,9 +50,14 @@ func _physics_process(_delta: float) -> void:
 			_terminar(false, motivo)
 			return
 	if _cuadro >= _fin:
-		var diferencias: PackedStringArray = _comparar()
+		var diferencias: PackedStringArray = _comparar(_fin)
 		_terminar(diferencias.is_empty(), "; ".join(diferencias))
 		return
+	if _cuadro_de.has(_cuadro):
+		var intermedias: PackedStringArray = _comparar(_cuadro)
+		if not intermedias.is_empty():
+			_terminar(false, "; ".join(intermedias))
+			return
 	for i: int in range(_cuadros.size()):
 		if _cuadros[i] == _cuadro:
 			if _pulsar[i]:
@@ -88,11 +98,20 @@ func _cargar() -> String:
 		return "no existe el archivo .esperado del guion"
 	for linea: String in _lineas(ruta_esperado):
 		var partes: PackedStringArray = linea.split(" ", false)
+		var cuadro: int = _fin
+		# "en <cuadro> <linea>": la misma linea, leida al empezar ese cuadro y no en fin.
+		if partes[0] == "en":
+			if partes.size() < 3 or not partes[1].is_valid_int():
+				return "linea de esperado no valida: '%s'" % linea
+			cuadro = partes[1].to_int()
+			if cuadro < 1 or cuadro >= _fin:
+				return "la linea 'en %d' queda fuera de 1..%d: '%s'" % [cuadro, _fin - 1, linea]
+			partes = partes.slice(2)
 		if not _linea_esperada_valida(partes):
 			return "linea de esperado no valida: '%s'" % linea
 		_esperado.append(partes)
-		if partes[0] == "senal":
-			_conteos.append(0)
+		_cuadro_de.append(cuadro)
+		_cuenta_de.append(-1)
 	if _esperado.is_empty():
 		return "el archivo .esperado no comprueba nada"
 	return ""
@@ -135,9 +154,14 @@ func _escena_lista() -> bool:
 # Las lineas "senal" se conectan en el cuadro 1 y no en _ready: en _ready del puerto ni la
 # escena ni los autoloads que van despues de Arranque existen todavia.
 func _conectar_senales() -> String:
-	var k: int = 0
-	for partes: PackedStringArray in _esperado:
+	var indices: Dictionary[String, int] = {}
+	for i: int in range(_esperado.size()):
+		var partes: PackedStringArray = _esperado[i]
 		if partes[0] != "senal":
+			continue
+		var clave: String = partes[1] + " " + partes[2]
+		if indices.has(clave):
+			_cuenta_de[i] = indices[clave]
 			continue
 		var nodo: Node = _nodo(partes[1])
 		if nodo == null:
@@ -149,9 +173,12 @@ func _conectar_senales() -> String:
 				argumentos = lista.size()
 		if argumentos < 0:
 			return "senal: el nodo '%s' no tiene la senal '%s'" % [partes[1], partes[2]]
+		var k: int = _conteos.size()
+		_conteos.append(0)
+		indices[clave] = k
+		_cuenta_de[i] = k
 		var contar: Callable = _contar.bind(k)
 		nodo.connect(partes[2], contar.unbind(argumentos) if argumentos > 0 else contar)
-		k += 1
 	return ""
 
 
@@ -176,14 +203,19 @@ func _lineas(ruta: String) -> PackedStringArray:
 	return limpias
 
 
-# Compara cada linea del esperado con el estado actual. Devuelve las diferencias.
-func _comparar() -> PackedStringArray:
+# Compara con el estado actual las lineas del esperado que se leen en ese cuadro. Devuelve
+# las diferencias; las de una linea "en" llevan delante "en <cuadro>".
+func _comparar(cuadro: int) -> PackedStringArray:
 	var diferencias: PackedStringArray = []
 	var jugador: Node2D = get_tree().get_first_node_in_group(Jugador.GRUPO) as Node2D
 	var escena: Node = get_tree().current_scene
-	var k: int = 0
-	for partes: PackedStringArray in _esperado:
+	var prefijo: String = "" if cuadro == _fin else "en %d " % cuadro
+	for i: int in range(_esperado.size()):
+		var partes: PackedStringArray = _esperado[i]
 		var clave: String = partes[0]
+		if _cuadro_de[i] != cuadro:
+			continue
+		var antes: int = diferencias.size()
 		if clave == "escena":
 			var ruta_escena: String = escena.scene_file_path if escena != null else "(ninguna)"
 			if ruta_escena != partes[1]:
@@ -193,9 +225,9 @@ func _comparar() -> PackedStringArray:
 			if not diferencia.is_empty():
 				diferencias.append(diferencia)
 		elif clave == "senal":
-			if _conteos[k] != partes[3].to_int():
-				diferencias.append("senal %s %s esperado=%s obtenido=%d" % [partes[1], partes[2], partes[3], _conteos[k]])
-			k += 1
+			var cuenta: int = _conteos[_cuenta_de[i]]
+			if cuenta != partes[3].to_int():
+				diferencias.append("senal %s %s esperado=%s obtenido=%d" % [partes[1], partes[2], partes[3], cuenta])
 		elif jugador == null:
 			diferencias.append("%s: no hay un nodo en el grupo '%s'" % [clave, Jugador.GRUPO])
 		elif clave == "en_suelo":
@@ -208,6 +240,8 @@ func _comparar() -> PackedStringArray:
 			var tolerancia: float = partes[2].to_float() if partes.size() == 3 else TOLERANCIA
 			if absf(real - partes[1].to_float()) > tolerancia:
 				diferencias.append("%s esperado=%s tolerancia=%s obtenido=%.2f" % [clave, partes[1], tolerancia, real])
+		if diferencias.size() > antes and not prefijo.is_empty():
+			diferencias[antes] = prefijo + diferencias[antes]
 	return diferencias
 
 

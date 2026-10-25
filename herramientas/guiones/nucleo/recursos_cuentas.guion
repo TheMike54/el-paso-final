@@ -1,4 +1,4 @@
-# Casos de herramientas/salas/prueba_recursos.gd: deteccion, modo en vigor, prescindible, plantas, niebla
+# Casos de herramientas/pruebas/prueba_recursos.gd: deteccion, modo en vigor, prescindible, plantas, niebla
 # y el ajuste guardado.
-escena res://herramientas/salas/sala_recursos_cuentas.tscn
-fin 2
+escena res://herramientas/pruebas/sala_recursos_cuentas.tscn
+fin 30

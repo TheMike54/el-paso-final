@@ -1,0 +1,4 @@
+# Corre herramientas/pruebas/prueba_monedas_hud.gd: el contador de PejeCoins del Hud como el de Silksong. Sin entradas
+# propias: la prueba cambia Partida.monedas y emite el descanso en un banco.
+escena res://herramientas/pruebas/sala_monedas_hud.tscn
+fin 2400

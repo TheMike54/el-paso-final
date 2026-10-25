@@ -55,7 +55,7 @@
   },
   {
     "id": "hook-al-compactar",
-    "que": "Tras compactar, el hook SessionStart reinyecta la rama, git status --short, ESTADO.md con acentos correctos y la lista de planes activos",
+    "que": "Tras compactar, el hook SessionStart reinyecta la rama, ESTADO.md con acentos correctos, la lista de planes activos y las primeras 25 lineas de git status --short",
     "comprobacion": "manual: tras reiniciar la sesion y correr /compact, Claude repite la rama y la primera linea de Ahora de ESTADO.md sin haberlos leido",
     "pasa": true
   },
@@ -111,6 +111,90 @@
     "id": "validador-importacion",
     "que": "El validador falla si una imagen del arte del mundo (CARPETAS_ARTE_MUNDO) se importa sin mipmaps, o con transparencia en VRAM Compressed y fuera de ALFA_EN_VRAM",
     "comprobacion": "manual: en una copia del proyecto, mipmaps/generate=false en el .import de una imagen de herramientas/salas/arte/ da FALLO (sin mipmaps); compress/mode=2 en el de una con transparencia que no esta en ALFA_EN_VRAM da FALLO (tiene transparencia y va en VRAM Compressed); sin los cambios, fallos=0",
+    "pasa": true
+  },
+  {
+    "id": "validador-pared-tras-puerta",
+    "que": "El validador falla si una puerta en el borde izquierdo o derecho de limites no tiene detras un StaticBody2D fuera de limites, pegado al borde, desde lo alto de la sala hasta el pie de la puerta",
+    "comprobacion": "manual: en una copia del proyecto, ParedTrasPuertaDerecha de prueba_2.tscn movida a x=9999 da FALLO (borde derecho) y ParedTrasPuerta de sala_puerta_b.tscn cambiada a Node2D da FALLO (borde izquierdo), fallos=2; sin los cambios, fallos=0",
+    "pasa": true
+  },
+  {
+    "id": "zona-pruebas-l1-r1",
+    "que": "En la zona de pruebas L1 / R1 (pagina_anterior y pagina_siguiente) pasan a la categoria anterior o siguiente, dan la vuelta en los extremos y dejan el foco en la primera sala",
+    "comprobacion": "herramientas/guiones/nucleo/zona_pruebas_categorias.guion",
+    "pasa": true
+  },
+  {
+    "id": "validador-muros-palancas",
+    "que": "El validador falla si en una sala con id un MuroRompible, una Palanca o un Porton no tiene id unico, si una ruta de portones no lleva a un Porton o si una tapa no es un CanvasItem",
+    "comprobacion": "manual: en una copia del proyecto, romper cada regla en una sala con id y ver un FALLO por cada una",
+    "pasa": true
+  },
+  {
+    "id": "validador-bolsa-mochila",
+    "que": "El validador falla si la bolsa de preguntas de la mochila (la del juego o la de prueba) tiene menos de preguntas_por_reto preguntas, una meta fuera de 1 a preguntas_por_reto o una pregunta con fallos",
+    "comprobacion": "manual: en una copia del proyecto, romper cada regla en la bolsa de prueba y ver un FALLO por cada una",
+    "pasa": true
+  },
+  {
+    "id": "validador-tienda",
+    "que": "El validador falla si una Tienda en una sala con id no lleva id unico, si dos articulos de una tienda repiten id, si un precio no es mayor que 0 o si su recompensa falta o nombra una habilidad que no esta en Habilidades.TODAS",
+    "comprobacion": "manual: en una copia del proyecto, romper cada regla en la sala de la tienda y ver un FALLO por cada una",
+    "pasa": true
+  },
+  {
+    "id": "validador-estaciones",
+    "que": "El validador falla si una Estacion no esta en una sala con id, si su id se repite o no esta en la tabla de estaciones, si la tabla dice otra sala o si su costo es negativo",
+    "comprobacion": "manual: en una copia del proyecto, romper cada regla en una estacion de la zona de prueba y ver un FALLO por cada una",
+    "pasa": true
+  },
+  {
+    "id": "validador-avisos",
+    "que": "El validador falla si un AvisoAccion no ensena ninguna accion, si ensena mas de dos o si nombra una accion que no esta en el InputMap",
+    "comprobacion": "manual: en una copia del proyecto, romper cada regla en un aviso de la sala Pizarrones y ver un FALLO por cada una",
+    "pasa": true
+  },
+  {
+    "id": "validador-avisos-id",
+    "que": "El validador falla si dos AvisoAccion de una escena repiten id o si uno usa un prefijo reservado",
+    "comprobacion": "manual: en una copia del proyecto, repetir un id y poner uno con prefijo reservado en la sala Pizarrones y ver un FALLO por cada uno",
+    "pasa": true
+  },
+  {
+    "id": "validador-botones-por-ensenar",
+    "que": "El validador falla si botones_por_ensenar de una sala nombra una accion que no es boton de la pantalla o un boton que ningun AvisoAccion de la sala ensena",
+    "comprobacion": "manual: en una copia del proyecto, poner interactuar e impulso en botones_por_ensenar de la sala Pizarrones y ver un FALLO por cada uno",
+    "pasa": true
+  },
+  {
+    "id": "zona-pruebas-siete-categorias",
+    "que": "La zona de pruebas agrupa las salas en Movimiento, Combate, Enemigos, Mundo, Partida, Rendimiento y Zonas; cada sala lleva su nombre y una linea de para que sirve (SALAS), Puerta B no se lista, y el validador falla si una sala de GRUPOS no tiene su linea o si SALAS nombra una que no esta en GRUPOS",
+    "comprobacion": "manual: el guion herramientas/guiones/nucleo/zona_pruebas_categorias.guion en verde y, en una copia del proyecto, quitar la linea de una sala de SALAS y agregar una de una sala que no esta en GRUPOS, y ver un FALLO por cada una",
+    "pasa": true
+  },
+  {
+    "id": "validador-pruebas-aparte",
+    "que": "El validador falla si un .gd, .tscn o .tres fuera de herramientas/pruebas/, o project.godot, nombra algo de herramientas/pruebas/ por su ruta res:// o por su uid: esa carpeta no viaja en el paquete de publicacion",
+    "comprobacion": "manual: en una copia del proyecto, una constante con res://herramientas/pruebas/sala_guardado.tscn en nucleo/menu.gd y, en otro script de nucleo/, una constante con solo el uid de prueba_guardado.gd (uid://..., sin ruta) dan un FALLO cada uno (fallos=2, el segundo por el uid); sin los cambios, fallos=0",
+    "pasa": true
+  },
+  {
+    "id": "correr-guiones-local",
+    "que": "correr-guiones.ps1 corre todos los guiones, o los de -Guiones, con el criterio del CI (GUION OK y ninguna linea SCRIPT ERROR ni ERROR:), imprime solo los malos con sus lineas de fallo y RESUMEN total=N OK=N MALOS=N, y sale con 0 solo si MALOS=0; igual en powershell.exe 5.1 y pwsh 7",
+    "comprobacion": "manual: .\\herramientas\\correr-guiones.ps1 desde la raiz del repo imprime RESUMEN con MALOS=0 y sale con 0; en una copia del proyecto, un guion con un .esperado roto o con un SCRIPT ERROR aparece como MALO y la salida es 1",
+    "pasa": true
+  },
+  {
+    "id": "guion-estado-intermedio",
+    "que": "El .esperado acepta lineas opcionales en <cuadro> <linea>, con cualquier linea que ya acepta (x, y, en_suelo, escena, valor, senal), comparadas al empezar ese cuadro; si no coinciden el guion falla en ese cuadro con el motivo precedido de en <cuadro>, y un cuadro fuera de 1..fin-1 o una linea que no se entiende hacen fallar el guion al cargar",
+    "comprobacion": "herramientas/guiones/nucleo/jugador_curar_atacar.guion",
+    "pasa": true
+  },
+  {
+    "id": "validador-prueba-en-memoria",
+    "que": "Una prueba automatica hereda de validar.gd sin correr su _ready y llama a sus reglas con entradas y nodos rotos armados en memoria (ningun .tscn roto en el repo): _fallo_de_entrada, _id_recordado, _revisar_peligros, _revisar_avisos, _revisar_tiendas, _revisar_rutas_de_secretos, _revisar_habilidades y _revisar_sala sin puertas; por regla, un caso roto da su FALLO por texto parcial y uno sano no da ninguno",
+    "comprobacion": "herramientas/guiones/herramientas/validador.guion",
     "pasa": true
   }
 ]

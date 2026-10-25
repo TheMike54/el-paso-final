@@ -2,9 +2,13 @@
 
 [ext_resource type="Script" uid="uid://k7a08bqsbqd0" path="res://nucleo/sala.gd" id="1_sala"]
 [ext_resource type="PackedScene" uid="uid://cantrdqq1cwy8" path="res://nucleo/puerta.tscn" id="2_puerta"]
+[ext_resource type="Script" path="res://nucleo/dano_contacto.gd" id="3_dano"]
 
 [sub_resource type="RectangleShape2D" id="forma_suelo"]
 size = Vector2(1600, 80)
+
+[sub_resource type="RectangleShape2D" id="forma_pinchos"]
+size = Vector2(200, 40)
 
 [sub_resource type="RectangleShape2D" id="forma_pared_puerta"]
 size = Vector2(40, 1440)
@@ -37,7 +41,7 @@ offset_top = -40.0
 offset_right = 800.0
 offset_bottom = 40.0
 mouse_filter = 2
-color = Color(0.25, 0.25, 0.25, 1)
+color = Color(0.3, 0.3, 0.32, 1)
 
 [node name="PuertaIzquierda" parent="." instance=ExtResource("2_puerta")]
 position = Vector2(20, 1400)
@@ -51,3 +55,19 @@ position = Vector2(-20, 720)
 
 [node name="Forma" type="CollisionShape2D" parent="ParedTrasPuertaIzquierda"]
 shape = SubResource("forma_pared_puerta")
+
+[node name="Pinchos" type="Area2D" parent="."]
+position = Vector2(1300, 1400)
+script = ExtResource("3_dano")
+peligro = true
+
+[node name="Forma" type="CollisionShape2D" parent="Pinchos"]
+position = Vector2(0, -20)
+shape = SubResource("forma_pinchos")
+
+[node name="Dibujo" type="ColorRect" parent="Pinchos"]
+offset_left = -100.0
+offset_top = -40.0
+offset_right = 100.0
+mouse_filter = 2
+color = Color(0.7, 0.2, 0.2, 1)
