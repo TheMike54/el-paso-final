@@ -75,19 +75,6 @@ layout_mode = 2
 text = "Temblor"
 script = ExtResource("2_boton_valor")
 
-[node name="Recursos" type="Button" parent="Lista/Desplazable/Centro/Opciones"]
-custom_minimum_size = Vector2(420, 108)
-layout_mode = 2
-text = "Recursos"
-script = ExtResource("2_boton_valor")
-
-[node name="Fps" type="Button" parent="Lista/Desplazable/Centro/Opciones"]
-visible = false
-custom_minimum_size = Vector2(420, 108)
-layout_mode = 2
-text = "FPS"
-script = ExtResource("2_boton_valor")
-
 [node name="Controles" type="Button" parent="Lista/Desplazable/Centro/Opciones"]
 custom_minimum_size = Vector2(420, 108)
 layout_mode = 2
@@ -100,10 +87,10 @@ layout_mode = 2
 text = "Botones del control"
 script = ExtResource("2_boton_valor")
 
-[node name="ModoDesarrollador" type="Button" parent="Lista/Desplazable/Centro/Opciones"]
+[node name="Avanzado" type="Button" parent="Lista/Desplazable/Centro/Opciones"]
 custom_minimum_size = Vector2(420, 108)
 layout_mode = 2
-text = "Desarrollador"
+text = "Avanzado"
 script = ExtResource("2_boton_valor")
 
 [node name="Creditos" type="Button" parent="Lista/Desplazable/Centro/Opciones"]
@@ -112,7 +99,115 @@ layout_mode = 2
 text = "Créditos"
 script = ExtResource("2_boton_valor")
 
-[node name="AvisoRecursos" type="Label" parent="Lista"]
+[node name="PanelAvanzado" type="VBoxContainer" parent="."]
+visible = false
+layout_mode = 0
+offset_right = 1152.0
+offset_bottom = 688.0
+theme_override_constants/separation = 12
+
+[node name="Arriba" type="HBoxContainer" parent="PanelAvanzado"]
+layout_mode = 2
+theme_override_constants/separation = 32
+
+[node name="Volver" type="Button" parent="PanelAvanzado/Arriba"]
+custom_minimum_size = Vector2(240, 108)
+layout_mode = 2
+text = "Volver"
+
+[node name="Titulo" type="Label" parent="PanelAvanzado/Arriba"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Avanzado"
+vertical_alignment = 1
+
+[node name="Desplazable" type="ScrollContainer" parent="PanelAvanzado"]
+layout_mode = 2
+size_flags_vertical = 3
+follow_focus = true
+horizontal_scroll_mode = 3
+
+[node name="Centro" type="CenterContainer" parent="PanelAvanzado/Desplazable"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Grupos" type="VBoxContainer" parent="PanelAvanzado/Desplazable/Centro"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="TituloRendimiento" type="Label" parent="PanelAvanzado/Desplazable/Centro/Grupos"]
+layout_mode = 2
+theme_type_variation = &"Tenue"
+text = "Rendimiento"
+
+[node name="Rendimiento" type="GridContainer" parent="PanelAvanzado/Desplazable/Centro/Grupos"]
+layout_mode = 2
+theme_override_constants/h_separation = 16
+theme_override_constants/v_separation = 12
+columns = 3
+
+[node name="Recursos" type="Button" parent="PanelAvanzado/Desplazable/Centro/Grupos/Rendimiento"]
+custom_minimum_size = Vector2(420, 108)
+layout_mode = 2
+text = "Recursos"
+script = ExtResource("2_boton_valor")
+
+[node name="Fps" type="Button" parent="PanelAvanzado/Desplazable/Centro/Grupos/Rendimiento"]
+visible = false
+custom_minimum_size = Vector2(420, 108)
+layout_mode = 2
+text = "FPS"
+script = ExtResource("2_boton_valor")
+
+[node name="Luces" type="Button" parent="PanelAvanzado/Desplazable/Centro/Grupos/Rendimiento"]
+custom_minimum_size = Vector2(420, 108)
+layout_mode = 2
+text = "Luces 2D"
+script = ExtResource("2_boton_valor")
+
+[node name="Niebla" type="Button" parent="PanelAvanzado/Desplazable/Centro/Grupos/Rendimiento"]
+custom_minimum_size = Vector2(420, 108)
+layout_mode = 2
+text = "Niebla"
+script = ExtResource("2_boton_valor")
+
+[node name="MostrarFps" type="Button" parent="PanelAvanzado/Desplazable/Centro/Grupos/Rendimiento"]
+custom_minimum_size = Vector2(420, 108)
+layout_mode = 2
+text = "Mostrar FPS"
+script = ExtResource("2_boton_valor")
+
+[node name="TituloDesarrollo" type="Label" parent="PanelAvanzado/Desplazable/Centro/Grupos"]
+layout_mode = 2
+theme_type_variation = &"Tenue"
+text = "Desarrollo"
+
+[node name="Desarrollo" type="GridContainer" parent="PanelAvanzado/Desplazable/Centro/Grupos"]
+layout_mode = 2
+theme_override_constants/h_separation = 16
+theme_override_constants/v_separation = 12
+columns = 3
+
+[node name="ModoDesarrollador" type="Button" parent="PanelAvanzado/Desplazable/Centro/Grupos/Desarrollo"]
+custom_minimum_size = Vector2(420, 108)
+layout_mode = 2
+text = "Desarrollador"
+script = ExtResource("2_boton_valor")
+
+[node name="Pruebas" type="Button" parent="PanelAvanzado/Desplazable/Centro/Grupos/Desarrollo"]
+custom_minimum_size = Vector2(420, 108)
+layout_mode = 2
+text = "Pruebas"
+script = ExtResource("2_boton_valor")
+
+[node name="VerHitbox" type="Button" parent="PanelAvanzado/Desplazable/Centro/Grupos/Desarrollo"]
+custom_minimum_size = Vector2(420, 108)
+layout_mode = 2
+text = "Ver hitbox"
+script = ExtResource("2_boton_valor")
+
+[node name="AvisoRecursos" type="Label" parent="PanelAvanzado"]
 visible = false
 layout_mode = 2
 horizontal_alignment = 1

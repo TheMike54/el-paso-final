@@ -1,7 +1,8 @@
 extends Sala
 # Sala de arte y rendimiento: capas Parallax2D con imagenes generadas con IA (docs/uso-de-ia.md), variantes
 # alternadas y espejadas, adornos sembrados al azar, animaciones y particulas, para medir FPS en alto y en bajo
-# (Recursos.bajos()) en cada telefono y ver como evitar que el fondo se repita. Los botones de arriba apagan cada grupo.
+# (Recursos.bajos()) en cada telefono y ver como evitar que el fondo se repita. Los FPS los da ContadorFps y las
+# particulas y la niebla se apagan con el panel de pruebas; los botones de arriba apagan el frente y las animaciones.
 # La decoracion se arma en _ready, asi que el presupuesto del validador no la cuenta: es a proposito, es una sala de
 # medicion.
 
@@ -9,14 +10,10 @@ const T: String = "res://herramientas/salas/arte/"
 const ANCHO: float = 6400.0
 const PISO: float = 1040.0
 
-var _etiqueta: Label = null
 var _azar: RandomNumberGenerator = RandomNumberGenerator.new()
 var _bajo: bool = false
-var _acumulado: float = 0.0
 # Grupos que se apagan con los botones de arriba, para medir cuanto cuesta cada uno.
-var _emisores: Array[CPUParticles2D] = []
 var _tweens: Array[Tween] = []
-var _niebla: Sprite2D = null
 var _capa_frente: Parallax2D = null
 
 
@@ -155,7 +152,7 @@ func _frente() -> void:
 	niebla.modulate = Color(0.6, 0.8, 0.8, 0.12)
 	add_child(niebla)
 	niebla.z_index = 21
-	_niebla = niebla
+	niebla.add_to_group(Niebla.GRUPO)
 	var tn: Tween = niebla.create_tween().set_loops()
 	tn.tween_property(niebla, "position:x", 1500.0, 12.0)
 	tn.tween_property(niebla, "position:x", 0.0, 12.0)
@@ -200,19 +197,14 @@ func _emisor(nombre: String, centro: Vector2, medio: Vector2, cantidad: int, col
 		p.material = material_
 	p.z_index = 5
 	add_child(p)
-	_emisores.append(p)
 
 
 func _medidor() -> void:
 	var capa: CanvasLayer = CanvasLayer.new()
 	capa.layer = 11
 	add_child(capa)
-	_etiqueta = Label.new()
-	_etiqueta.position = Vector2(560.0, 8.0)
-	_etiqueta.add_theme_font_size_override(&"font_size", 28)
-	capa.add_child(_etiqueta)
 	var x: float = 120.0
-	for nombre: String in ["Part", "Frente", "Niebla", "Anim"]:
+	for nombre: String in ["Frente", "Anim"]:
 		var b: Button = Button.new()
 		b.text = nombre
 		b.toggle_mode = true
@@ -227,26 +219,12 @@ func _medidor() -> void:
 # Boton hundido = grupo apagado.
 func _apagar(apagado: bool, nombre: String) -> void:
 	match nombre:
-		"Part":
-			for p: CPUParticles2D in _emisores:
-				p.emitting = not apagado
-				p.visible = not apagado
 		"Frente":
 			if _capa_frente != null:
 				_capa_frente.visible = not apagado
-		"Niebla":
-			if _niebla != null:
-				_niebla.visible = not apagado
 		"Anim":
 			for t: Tween in _tweens:
 				if apagado:
 					t.pause()
 				else:
 					t.play()
-
-
-func _process(delta: float) -> void:
-	_acumulado += delta
-	if _acumulado >= 0.5 and _etiqueta != null:
-		_acumulado = 0.0
-		_etiqueta.text = "%s  %d FPS" % ["BAJO" if _bajo else "ALTO", Engine.get_frames_per_second()]

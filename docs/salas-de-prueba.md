@@ -8,7 +8,7 @@ fila aquí en el mismo cambio. Inventario del 15-oct-2026; siete categorías des
 
 ## Cómo se entra
 
-- Menú principal → «Zona de pruebas» (aparece con Configuración → Desarrollador en «Sí») → categoría → sala.
+- Menú principal → «Zona de pruebas» (aparece con Configuración → Avanzado → Desarrollador en «Sí») → categoría → sala.
 - Cada sala lleva su nombre y, debajo, para qué sirve (`SALAS` de `zona_pruebas.gd`); una de «Otras» lleva el
   nombre del archivo sin `sala_`. Puerta B no se lista: se llega por la puerta de Puerta A.
 - Al entrar se reinicia la partida (`Partida.reiniciar()`) y se guarda en el archivo de pruebas. Las habilidades de
@@ -82,16 +82,17 @@ propósito: Peligro (el foso de pinchos) e Impulso (los bloques altos). Igualado
 | Botón | Qué hay | Habilidades | Para probar |
 |---|---|---|---|
 | Recursos | 2560×720: 30 plantas, 2 nieblas, 3 emisores, 6 cortables | pluma | Qué se apaga en Recursos «bajo» y su costo |
-| Arte | 6400×1080: capas de arte generado con IA, adornos, animaciones y partículas; botones Part, Frente, Niebla y Anim para apagar cada grupo | pluma | FPS en el teléfono (fila «Sala de arte» de `docs/pruebas.md`) |
+| Arte | 6400×1080: capas de arte generado con IA, adornos, animaciones y partículas; botones Frente y Anim para apagar cada grupo (partículas y niebla, con el panel de pruebas; los FPS, con «Mostrar FPS») | pluma | FPS en el teléfono (fila «Sala de arte» de `docs/pruebas.md`) |
 
 ## Zonas
 
-Salas con id, unidas por puertas, como en el juego real. Todas dan `pluma`.
+Salas con id, unidas por puertas, como en el juego real. Todas dan `pluma`, salvo La Celda, que es del juego.
 
 | Botón | Qué hay | Para probar |
 |---|---|---|
+| La Celda | Va primero. La cinemática (`contenido/cinematicas/cinematica_celda.tscn`, heredada en `herramientas/salas/la_celda.tscn`) y después la sala `celda_1` del juego (`contenido/salas/celda/`): foso de varillas (1571-1757), banco `banco_celda_1` (x ≈ 2966), grieta con raíces como foso (3685-3875); con su arte, luces, cables, partículas y niebla | Cinemática (con el modo desarrollador se salta), la sala con su arte, FPS en el teléfono, panel de pruebas con grupos reales |
 | Mapa 1 | Mapa de la zona, mapa de «prueba», pluma del mapa, banco `banco_mapa_1`, brújula; puertas a «Prueba 4» y «Mapa 2» | Mapas, pluma del mapa, brújula, pantalla del mapa |
-| Mapa 2 | Sala alta, puerta a «Mapa 1»; pinchos en x 1300 | Sala de dos pantallas de alto en el mapa; morir con monedas y ver el rombo de la mochila en el mapa |
+| Mapa 2 | Sala alta, puerta a «Mapa 1»; pinchos en x 1300 | Sala de dos pantallas de alto en el mapa; morir con monedas y ver la mochila en el mapa |
 | Prueba 1 | Banco `banco_prueba_1`, estación gratis `estacion_prueba_1` (x 1100), puerta a «Prueba 2» | Puertas por id, banco de zona y viaje rápido |
 | Prueba 2 | Un coleccionable, puertas a 1 y 3 | Coleccionable recordado |
 | Prueba 3 | Dos coleccionables, puertas a 2 y 4 | Juntar coleccionables |

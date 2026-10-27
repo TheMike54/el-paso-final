@@ -6,7 +6,7 @@ extends RefCounted
 
 ## Suelos, paredes y todo StaticBody2D. Es la capa 1, la de omision: las formas de las salas no la fijan.
 const ESCENARIO: int = 1 << 0
-## El cuerpo del jugador (y la caja gris).
+## El cuerpo del jugador.
 const JUGADOR: int = 1 << 1
 ## Lo que el ataque del jugador golpea: Golpeable y Cortable.
 const GOLPEABLE: int = 1 << 2

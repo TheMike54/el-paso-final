@@ -182,6 +182,20 @@ func _ready() -> void:
 	Ajustes.fps = Ajustes.FPS_POR_OMISION
 	_caso("sin limite (0) solo con 120, Recursos en alto y pantalla de 90 Hz o mas", Ajustes.limite_fps(120, true, 120.0) == 0 and Ajustes.limite_fps(120, true, 90.0) == 0)
 	_caso("60 con 60 elegidos, con Recursos en bajo, con pantalla de 60 Hz o desconocida (-1)", Ajustes.limite_fps(60, true, 120.0) == 60 and Ajustes.limite_fps(120, false, 120.0) == 60 and Ajustes.limite_fps(120, true, 60.0) == 60 and Ajustes.limite_fps(120, true, -1.0) == 60)
+	_caso("en un menu, 60 aunque se elijan 120 con todo a favor", Ajustes.limite_fps(120, true, 120.0, true) == 60)
+	_caso("luces 2D: solo con el ajuste encendido y Recursos en alto", Ajustes.luces_avanzadas_activas(true, false) and not Ajustes.luces_avanzadas_activas(true, true) and not Ajustes.luces_avanzadas_activas(false, false))
+	_escribir(ruta_ajustes, '{"version": 1, "ajustes": {"vibracion": false}}')
+	Ajustes.cargar(ruta_ajustes)
+	_caso("un archivo de antes de Avanzado deja luces encendidas, niebla y FPS en pantalla apagados", Ajustes.luces_avanzadas and not Ajustes.niebla and not Ajustes.mostrar_fps)
+	Ajustes.luces_avanzadas = false
+	Ajustes.niebla = true
+	Ajustes.mostrar_fps = true
+	Ajustes.guardar(ruta_ajustes)
+	Ajustes.cargar(ruta_ajustes)
+	_caso("luces, niebla y FPS en pantalla vuelven como se guardaron", not Ajustes.luces_avanzadas and Ajustes.niebla and Ajustes.mostrar_fps)
+	_escribir(ruta_ajustes, '{"version": 1, "ajustes": {"niebla": "si", "mostrar_fps": 1}}')
+	Ajustes.cargar(ruta_ajustes)
+	_caso("una niebla o un mostrar FPS que no es si o no deja el valor por omision", not Ajustes.niebla and not Ajustes.mostrar_fps)
 	Ajustes.volumen_musica = 0.3
 	Ajustes.volumen_efectos = 0.6
 	Ajustes.brillo = 0.8

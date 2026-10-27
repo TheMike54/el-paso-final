@@ -145,8 +145,12 @@ static func actualizar_cola_ataque(e: Estado) -> void:
 	if e.hablando or e.ticks_congelado > 0:
 		e.cola_ataque_cortada = true
 		return
-	var nombre: StringName = elegir(e)
-	e.cola_ataque_cortada = nombre != ATAQUE_LADO and nombre != ATAQUE_ARRIBA and nombre != ATAQUE_ABAJO
+	e.cola_ataque_cortada = not es_ataque(elegir(e))
+
+
+## Si nombre es uno de los clips del golpe normal (a un lado, arriba o abajo; no la estocada).
+static func es_ataque(nombre: StringName) -> bool:
+	return nombre == ATAQUE_LADO or nombre == ATAQUE_ARRIBA or nombre == ATAQUE_ABAJO
 
 
 ## Capa del giro en carrera, como el Turn de Hollow Knight: solo en el suelo y solo sobre carrera, correr o quieto.

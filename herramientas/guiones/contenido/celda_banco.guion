@@ -1,0 +1,9 @@
+# La Celda: el jugador salta las varillas, se detiene en el banco y descansa: guarda en Partida la sala por su id.
+escena res://contenido/salas/celda/celda_1.tscn
+2 mover_derecha press
+208 saltar press
+240 saltar release
+453 mover_derecha release
+470 interactuar press
+472 interactuar release
+fin 500

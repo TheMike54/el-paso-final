@@ -1,1 +1,26 @@
-[]
+[
+  {
+    "id": "sala-celda-1",
+    "que": "La Celda (celda_1) es la primera sala del juego: suelo, foso de varillas y foso de la grieta que quitan una vida y devuelven al ultimo suelo firme, raices que no danan, y un banco que guarda celda_1; los dos fosos se cruzan saltando sin dano; cabe en el presupuesto del validador (13 emisores, ~101 particulas)",
+    "comprobacion": "herramientas/guiones/contenido/celda_salto.guion;herramientas/guiones/contenido/celda_hueco.guion;herramientas/guiones/contenido/celda_grieta.guion;herramientas/guiones/contenido/celda_banco.guion",
+    "pasa": true
+  },
+  {
+    "id": "sala-celda-1-telefono",
+    "que": "En el S50 (Recursos bajo) y el S20 (alto) La Celda se ve como la demo aprobada, los dos saltos se sienten bien y va a 60 FPS en el S50",
+    "comprobacion": "manual: docs/pruebas.md, «La Celda»",
+    "pasa": false
+  },
+  {
+    "id": "cinematica-celda",
+    "que": "La cinematica de La Celda se ve a todo lo ancho sobre negro y al terminar pasa a celda_1; solo con el modo desarrollador se salta; si el telefono no puede reproducirla, pasa directo a la sala",
+    "comprobacion": "herramientas/guiones/contenido/cinematica_celda.guion;herramientas/guiones/nucleo/video.guion",
+    "pasa": true
+  },
+  {
+    "id": "cinematica-celda-telefono",
+    "que": "En el telefono la cinematica se ve completa a 1080, con el audio junto a la imagen y el volumen de Musica",
+    "comprobacion": "manual: docs/pruebas.md, «Video del menu y cinematica»",
+    "pasa": true
+  }
+]

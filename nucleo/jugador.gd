@@ -4,29 +4,42 @@ extends CharacterBody2D
 # con toda su logica en _physics_process y las reglas de docs/jugador.md. Las habilidades solo
 # funcionan si Partida las tiene. Cada valor se exporta para afinarlo en la zona de pruebas.
 # Avisa al resto del juego por el bus Eventos.
-## Grupo de lo que controla la persona: el Jugador y tambien la caja gris (nucleo/caja_gris.tscn), que no es un
-## Jugador. Lo pone cada escena en groups; quien lo busca usa get_first_node_in_group(GRUPO).
+## Grupo del cuerpo que controla la persona. Lo pone cada escena en groups; quien lo busca usa
+## get_first_node_in_group(GRUPO).
 const GRUPO: StringName = &"jugador"
 const TAMANO: Vector2 = Vector2(80.0, 160.0)
 ## Cuerpo: el nodo Dibujo (AnimatedSprite2D) con nucleo/arte/jugador_hombre/jugador_hombre.tres; la animacion la
-## elige AnimacionJugador. Curando se tine; invulnerable parpadea (alfa PARPADEO cada TICKS_PARPADEO ticks, como el
-## InvulnerablePulse de Hollow Knight); congelado y unos ticks tras un parry se pone blanco con el shader
+## elige AnimacionJugador. Invulnerable parpadea (alfa PARPADEO cada TICKS_PARPADEO ticks, como el
+## InvulnerablePulse de Hollow Knight); unos ticks tras un parry se pone blanco con el shader
 ## nucleo/arte/destello.gdshader (Compatibility satura el color en 1: un modulate mayor no aclara).
-const TINTE_CURANDO: Color = Color(0.8, 1.0, 0.85)
 const PARPADEO: float = 0.35
 const TICKS_PARPADEO: int = 4
-## Efectos provisionales dibujados en _draw, encima del cuerpo, hasta tener los suyos (12-oct-2026): el rectangulo
-## del ataque, la estocada (una linea blanca larga al frente) y el estallido de rayos del parry en el punto del
-## choque (como Hollow Knight y Silksong).
-const COLOR_ATAQUE: Color = Color(1.0, 0.9, 0.5, 0.5)
-const COLOR_DESTELLO: Color = Color(1.0, 1.0, 1.0)
-const TICKS_DESTELLO_PARRY: int = 8
-const RAYOS_ESTALLIDO: int = 8
-const LARGO_RAYO: float = 110.0
-const HUECO_RAYO: float = 24.0
-const ANCHO_RAYO: float = 8.0
-const LARGO_ESTOCADA: float = 140.0
-const ANCHO_ESTOCADA: float = 6.0
+## El golpe se ve solo con su trazo blanco (TrazoAtaque; el area, con «Ver hitbox»: decidido por la persona el
+## 25-oct-2026). El parry deja un destello de luz (EfectoCuadros con nucleo/arte/efecto_parry.png, 0,2 s, que corre
+## durante el congelado) en la punta de la espada, como Hollow Knight y Silksong; el cuerpo queda en blanco
+## TICKS_DESTELLO_PARRY ticks (0,1 s, contados tambien congelado).
+const HOJA_PARRY: Texture2D = preload("res://nucleo/arte/efecto_parry.png")
+const CUADROS_PARRY: int = 4
+const TICKS_DESTELLO_PARRY: int = 6
+## Punta de la espada en el cuadro que golpea de lado, respecto de los pies y mirando a la derecha (medida en el atlas
+## del jugador). Arriba y abajo la espada del dibujo no llega al punto del golpe: ahi el destello va entre el area de
+## golpe y el ataque parado.
+const PUNTA_ESPADA_LADO: Vector2 = Vector2(122.0, -117.0)
+## Cuadro de los clips de ataque en que la espada golpea (el de PUNTA_ESPADA_LADO).
+const CUADRO_GOLPE: int = 1
+## Chispa de un disparo desviado: el mismo destello a la mitad, sin congelado ni cuerpo en blanco (como los disparos
+## de Silksong, que chocan con el aguijon en su version ligera, noClashFreeze).
+const ESCALA_CHISPA: float = 0.5
+## Curar: el aura en capas detras del jugador y sus rayas y chispas delante (nucleo/arte/efecto_curar*.png, 320x420,
+## los pies del cuadro 185 px bajo su centro), mas una luz falsa: un halo aditivo sin Light2D que crece con lo curado
+## (la fuerza del aura del HTML de diseno: 0,35 + t / 0,6) y titila.
+const HOJA_CURAR: Texture2D = preload("res://nucleo/arte/efecto_curar.png")
+const HOJA_CURAR_FRENTE: Texture2D = preload("res://nucleo/arte/efecto_curar_frente.png")
+const CUADROS_CURAR: int = 6
+const AURA_SOBRE_PIES: Vector2 = Vector2(0.0, -185.0)
+const LUZ_CURAR_SOBRE_PIES: Vector2 = Vector2(0.0, -110.0)
+const LUZ_CURAR_LADO: float = 660.0
+const LUZ_CURAR_TINTE: Color = Color(0.75, 0.85, 1.0, 0.0)
 ## Ticks de una vuelta completa de la voltereta (el sprite gira; ver AnimacionJugador.giro_voltereta).
 const TICKS_VUELTA: int = 24
 const NUNCA: int = 1000000
@@ -230,8 +243,10 @@ var descansando: bool = false
 var hablando: bool = false
 ## Golpes que dio la onda de la caida en picada desde que entro a la sala.
 var golpes_onda: int = 0
-## Ataques enemigos parados desde que entro a la sala.
+## Ataques enemigos parados desde que entro a la sala (los golpes; un disparo se desvia).
 var paradas: int = 0
+## Disparos enemigos desviados con el ataque desde que entro a la sala.
+var desviados: int = 0
 ## En carrera (sprint), girando dentro de ella y si el ataque en curso es un ataque en carrera.
 var corriendo: bool = false
 var girando: bool:
@@ -288,8 +303,6 @@ var _sentido_retroceso: float = 0.0
 var _ticks_rebote: int = 0
 var _sentido_rebote: float = 0.0
 var _velocidad_rebote: float = 0.0
-# Punto del ultimo parry, en coordenadas de la sala: ahi se dibuja el estallido.
-var _punto_parry: Vector2 = Vector2.ZERO
 var _sentido_voltereta: float = 1.0
 var _ticks_voltereta: int = 0
 var _ticks_en_suelo: int = 0
@@ -322,6 +335,8 @@ var _ticks_poder: int = -1
 # Ataque hacia abajo (pogo) o hacia arriba en curso, y si ya reboto en este ataque.
 var _atacando_abajo: bool = false
 var _atacando_arriba: bool = false
+# Si este golpe ya hizo un parry: su clip salta al cuadro del golpe (_animar).
+var _golpe_parado: bool = false
 var _rebotado: bool = false
 # Centro del area de ataque de la escena, mirando a la derecha.
 var _posicion_ataque: Vector2 = Vector2.ZERO
@@ -358,6 +373,12 @@ var _duraciones: Dictionary[StringName, PackedFloat32Array] = {}
 var _en_bucle: Dictionary[StringName, bool] = {}
 # Cuanto se aparta el cuerpo de la pared en la animacion pared para que la mano y los pies toquen su borde.
 var _separacion_pared: float = 0.0
+# Media luna blanca de cada golpe, hija del jugador: lo sigue sola (TrazoAtaque).
+var _trazo: TrazoAtaque = null
+# Aura de curar (detras y delante) y su luz, hijas del jugador: se ven solo curando.
+var _aura: EfectoCuadros = null
+var _aura_frente: EfectoCuadros = null
+var _luz_curar: Sprite2D = null
 
 @onready var _camara: CamaraJugador = $Camara as CamaraJugador
 @onready var _forma: CollisionShape2D = $Forma as CollisionShape2D
@@ -377,20 +398,20 @@ func _ready() -> void:
 	Ajustes.cargar_una_vez()
 	_ataque.monitoring = false
 	_posicion_ataque = _forma_ataque.position
+	_trazo = TrazoAtaque.new()
+	_trazo.name = &"Trazo"
+	add_child(_trazo)
+	_crear_aura()
 	_puntos_seguros = [global_position]
 	_punto_llegada = global_position
 	_leer_clips()
-
-
-func _process(_delta: float) -> void:
-	queue_redraw()
 
 
 func _physics_process(delta: float) -> void:
 	# Antes de _mover, igual que un DanoContacto (que se procesa antes que el jugador): asi el fundido de un
 	# peligro cuenta sus ticks a la par del Fundido y el jugador pasa al punto con la pantalla en negro.
 	_revisar_salida_por_abajo()
-	if _ticks_destello > 0 and not Congelado.activo():
+	if _ticks_destello > 0:
 		_ticks_destello -= 1
 	_mover(delta)
 	_saltar_del_menu = false
@@ -414,22 +435,6 @@ func _saltar_pulsado() -> bool:
 	return Input.is_action_just_pressed(&"saltar") and not _saltar_del_menu
 
 
-# Solo los efectos: el cuerpo es el nodo Dibujo, que lleva show_behind_parent para que esto quede encima.
-func _draw() -> void:
-	if _ticks_atacando > 0:
-		var forma: RectangleShape2D = _forma_ataque.shape as RectangleShape2D
-		if atacando_en_carrera:
-			# Estocada: una linea blanca larga al frente, a la altura del ataque.
-			var y: float = _forma_ataque.position.y
-			var desde: float = _mirando * TAMANO.x / 2.0
-			var hasta: float = _mirando * (absf(_forma_ataque.position.x) + forma.size.x / 2.0 + LARGO_ESTOCADA)
-			draw_line(Vector2(desde, y), Vector2(hasta, y), COLOR_DESTELLO, ANCHO_ESTOCADA)
-		else:
-			draw_rect(Rect2(_forma_ataque.position - forma.size / 2.0, forma.size), COLOR_ATAQUE)
-	if _ticks_destello > 0:
-		_dibujar_estallido()
-
-
 # Al final del tick, ya movido, y solo leyendo: llena la foto del estado, elige la animacion (AnimacionJugador) y
 # pone el cuadro. Los clips con tiempo propio toman el cuadro de los contadores de ticks (sin interpolacion de fisica,
 # el cuadro va a la par del tick); los bucles los corre el sprite, quieto durante el congelado comun.
@@ -442,6 +447,10 @@ func _animar() -> void:
 		if _dibujo.animation != AnimacionJugador.SENTARSE or _dibujo.is_playing():
 			nombre = AnimacionJugador.SENTARSE
 	var cuadro: int = AnimacionJugador.cuadro(nombre, e, _duraciones[nombre])
+	# El parry llega en la preparacion del golpe y el congelado la sostendria con la espada atras: se muestra ya el
+	# cuadro del golpe, con la espada sobre el destello.
+	if _golpe_parado and cuadro == 0 and AnimacionJugador.es_ataque(nombre):
+		cuadro = CUADRO_GOLPE
 	if cuadro < 0:
 		# Un bucle que no corre (el de la escena al aparecer, o tras un clip por ticks) arranca; muerte y sentarse no
 		# se repiten: al acabar se quedan en su ultimo cuadro.
@@ -458,9 +467,8 @@ func _animar() -> void:
 	_dibujo.scale.x = AnimacionJugador.volteo(nombre, _mirando)
 	_dibujo.position.x = _dibujo.scale.x * _separacion_pared if nombre == AnimacionJugador.PARED else 0.0
 	_dibujo.rotation = AnimacionJugador.giro_voltereta(e) * _mirando if nombre == AnimacionJugador.VOLTERETA else 0.0
+	_mostrar_curacion()
 	var color: Color = Color.WHITE
-	if curando:
-		color = TINTE_CURANDO
 	if _ticks_sin_dano > 0 and not muerto and posmod(Engine.get_physics_frames(), 2 * TICKS_PARPADEO) >= TICKS_PARPADEO:
 		color.a = PARPADEO
 	_dibujo.modulate = color
@@ -1124,6 +1132,7 @@ func _iniciar_ataque(abajo_en_el_aire: bool) -> void:
 	if atacando_en_carrera:
 		_ticks_hasta_ataque_carrera = ticks_entre_ataques_carrera
 	_rebotado = false
+	_golpe_parado = false
 	if _atacando_abajo:
 		_forma_ataque.position = posicion_pogo
 	elif _atacando_arriba:
@@ -1131,6 +1140,13 @@ func _iniciar_ataque(abajo_en_el_aire: bool) -> void:
 	else:
 		_forma_ataque.position = Vector2(absf(_posicion_ataque.x) * _mirando, _posicion_ataque.y)
 	_ataque.set_deferred(&"monitoring", true)
+	# El trazo sale del area de golpe ya colocada: si el area se mueve, el trazo la sigue.
+	var direccion: TrazoAtaque.Direccion = TrazoAtaque.Direccion.LADO
+	if _atacando_abajo:
+		direccion = TrazoAtaque.Direccion.ABAJO
+	elif _atacando_arriba:
+		direccion = TrazoAtaque.Direccion.ARRIBA
+	_trazo.mostrar(_forma_ataque.position, direccion, _mirando)
 
 
 # Lo que hace el ataque con un area que toca: cortar, parar, golpear una vez y empujar, o rebotar en un peligro.
@@ -1200,11 +1216,14 @@ func intentar_parar(ataque: AtaqueEnemigo) -> bool:
 
 
 # Parry, con el ataque normal en cualquier direccion: el ataque enemigo desaparece sin danar, el jugador queda
-# ticks_invulnerable_parry ticks sin dano de enemigos, todo se congela ticks_congelado_parry ticks con un estallido
-# en el punto del choque, despues el jugador sale empujado hacia atras y el enemigo recibe el golpe (con su
-# Inspiracion, como cualquier golpe; su Golpeable lo empuja). Un disparo no tiene cuerpo al que pegarle.
+# ticks_invulnerable_parry ticks sin dano de enemigos, todo se congela ticks_congelado_parry ticks con un destello
+# en la punta de la espada (_soltar_destello), despues el jugador sale empujado hacia atras y el enemigo recibe el golpe (con su
+# Inspiracion, como cualquier golpe; su Golpeable lo empuja). Un disparo no se para: se desvia (_desviar).
 func _parar(ataque: AtaqueEnemigo) -> void:
 	if ataque.parado:
+		return
+	if ataque is ProyectilEnemigo:
+		_desviar(ataque)
 		return
 	var centro_ataque: Vector2 = ataque.centro()
 	ataque.parar()
@@ -1212,7 +1231,11 @@ func _parar(ataque: AtaqueEnemigo) -> void:
 	_ticks_sin_dano = maxi(_ticks_sin_dano, ticks_invulnerable_parry)
 	Congelado.pedir(ticks_congelado_parry)
 	_ticks_destello = TICKS_DESTELLO_PARRY
-	_punto_parry = (_forma_ataque.global_position + centro_ataque) / 2.0
+	_golpe_parado = true
+	var punto: Vector2 = (_forma_ataque.global_position + centro_ataque) / 2.0
+	if not _atacando_abajo and not _atacando_arriba:
+		punto = global_position + Vector2(PUNTA_ESPADA_LADO.x * signf(_forma_ataque.position.x), PUNTA_ESPADA_LADO.y)
+	_soltar_destello(punto, 1.0, true)
 	# Despues del congelado, el jugador sale empujado lejos del ataque; parar corta la carrera y la voltereta.
 	var lado: float = signf(global_position.x - centro_ataque.x)
 	_dejar_de_correr()
@@ -1225,6 +1248,16 @@ func _parar(ataque: AtaqueEnemigo) -> void:
 		_golpeados.append(enemigo.golpeable)
 		enemigo.golpeable.recibir_golpe(self, dano_ataque)
 		Partida.ganar_inspiracion(inspiracion_por_golpe)
+
+
+# Disparo desviado con el ataque (decidido por la persona el 25-oct-2026, como la version ligera del choque de
+# Silksong, noClashFreeze): desaparece con una chispa chica, sin congelado, destello, retroceso, invulnerabilidad ni
+# Inspiracion (no hay enemigo al que pegarle). Suena y vibra como pegarle a un objeto.
+func _desviar(disparo: AtaqueEnemigo) -> void:
+	_soltar_destello(disparo.centro(), ESCALA_CHISPA, false)
+	disparo.parar()
+	desviados += 1
+	Eventos.objeto_golpeado.emit(disparo)
 
 
 # Pogo: el golpe hacia abajo a un Golpeable o a un peligro lanza al jugador hacia arriba (una vez por
@@ -1369,8 +1402,11 @@ static func encima_de(area: Area2D) -> Jugador:
 	return null
 
 
-## Lo llama el banco al descansar: el jugador se acomoda sobre el (en su x) y se queda sentado.
-func sentarse(x: float) -> void:
+## Lo llama el banco al descansar: el jugador se acomoda sobre el (en su x) y se queda sentado, mirando hacia lado
+## (1 o -1) si el banco lo dice; con 0, hacia donde miraba.
+func sentarse(x: float, lado: float = 0.0) -> void:
+	if lado != 0.0:
+		_mirando = lado
 	_cortar_empujes()
 	_cortar_ataque()
 	_cortar_curacion()
@@ -1429,9 +1465,49 @@ func fijar_limites(limites: Rect2) -> void:
 	_camara.fijar_limites(limites, global_position, _mirando)
 
 
-# Estallido del parry: rayos blancos desde el punto del choque, fijo en la sala aunque el jugador salga empujado.
-func _dibujar_estallido() -> void:
-	var centro: Vector2 = to_local(_punto_parry)
-	for i: int in range(RAYOS_ESTALLIDO):
-		var direccion: Vector2 = Vector2.RIGHT.rotated(TAU * float(i) / float(RAYOS_ESTALLIDO) + TAU / 16.0)
-		draw_line(centro + direccion * HUECO_RAYO, centro + direccion * LARGO_RAYO, COLOR_DESTELLO, ANCHO_RAYO)
+# Destello del parry o chispa de un disparo desviado en un punto de la sala: hijo de la sala, queda fijo aunque el
+# jugador salga empujado, va encima de el y se libera solo al acabar.
+func _soltar_destello(punto: Vector2, escala: float, corre_congelado: bool) -> void:
+	var efecto: EfectoCuadros = EfectoCuadros.crear(HOJA_PARRY, CUADROS_PARRY, 1, true, true, corre_congelado)
+	efecto.scale = Vector2.ONE * escala
+	efecto.z_index = z_index + 1
+	get_parent().add_child(efecto)
+	efecto.global_position = punto
+
+
+# El aura de curar detras del cuerpo, sus rayas delante y la luz; ocultas hasta curar. Detras sin bajar z_index (con
+# z -1 quedaba bajo el fondo de la sala): como el Dibujo, show_behind_parent, y primera de los hijos, antes que el.
+func _crear_aura() -> void:
+	_aura = EfectoCuadros.crear(HOJA_CURAR, CUADROS_CURAR, 1, false, false, false)
+	_aura.name = &"Aura"
+	_aura.show_behind_parent = true
+	_aura_frente = EfectoCuadros.crear(HOJA_CURAR_FRENTE, CUADROS_CURAR, 1, false, false, false)
+	_aura_frente.name = &"AuraFrente"
+	_luz_curar = Sprite2D.new()
+	_luz_curar.name = &"LuzCurar"
+	_luz_curar.texture = LuzSala.textura()
+	_luz_curar.material = LuzSala.material_aditivo()
+	_luz_curar.scale = Vector2.ONE * (LUZ_CURAR_LADO / LuzSala.LADO)
+	_luz_curar.position = LUZ_CURAR_SOBRE_PIES
+	_luz_curar.modulate = LUZ_CURAR_TINTE
+	for nodo: Node2D in [_aura, _aura_frente]:
+		nodo.position = AURA_SOBRE_PIES
+	for nodo: Node2D in [_aura, _aura_frente, _luz_curar]:
+		nodo.visible = false
+		nodo.set_physics_process(false)
+		add_child(nodo)
+	move_child(_aura, 0)
+
+
+# Muestra el aura y su luz mientras cura (el aura empieza en su primer cuadro); la luz crece con lo curado y titila.
+func _mostrar_curacion() -> void:
+	if curando != _aura.visible:
+		for nodo: Node2D in [_aura, _aura_frente, _luz_curar]:
+			nodo.visible = curando
+		for efecto: EfectoCuadros in [_aura, _aura_frente]:
+			efecto.set_physics_process(curando)
+			efecto.reiniciar()
+	if curando:
+		# Segundos curados, a 60 ticks por segundo.
+		var t: float = float(ticks_curados) / 60.0
+		_luz_curar.modulate.a = minf(1.0, 0.35 + t / 0.6) * (0.32 + 0.04 * sin(t * 30.0))

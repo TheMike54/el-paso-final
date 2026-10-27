@@ -6,12 +6,11 @@ extends Control
 
 const MARGEN: float = 60.0
 const COLOR_SALA: Color = Color(0.55, 0.5, 0.4, 1.0)
-const COLOR_BORDE: Color = Color(0.9, 0.85, 0.7, 1.0)
-const COLOR_MARCADOR: Color = Color(1.0, 0.85, 0.2, 1.0)
+const COLOR_BORDE: Color = FigurasVector.CLARO
 const COLORES_ZONA: Array[Color] = [Color(0.45, 0.55, 0.65), Color(0.6, 0.5, 0.4), Color(0.45, 0.6, 0.45), Color(0.6, 0.45, 0.6)]
-const RADIO_MARCADOR: float = 10.0
-const COLOR_MOCHILA: Color = Color(0.85, 0.35, 0.3, 1.0)
-const LADO_MOCHILA: float = 22.0
+## Alto en px de los marcadores (FigurasVector): la mascara del jugador, con la brujula, y la mochila.
+const ALTO_MASCARA: float = 36.0
+const ALTO_MOCHILA: float = 38.0
 
 ## Lo que quedo dibujado en la ultima llamada a dibujar(): salas, zonas, si hay marcador y si quedo acercado.
 var salas_dibujadas: int = 0
@@ -123,14 +122,11 @@ func _draw() -> void:
 		for i: int in range(_nombres_zona.size()):
 			draw_string(get_theme_default_font(), _centros_zona[i] - Vector2(150.0, -10.0), _nombres_zona[i], HORIZONTAL_ALIGNMENT_CENTER, 300.0, 30)
 	if mochila_visible:
-		# Un rombo, para que no se confunda con el punto redondo del jugador.
-		var m: Vector2 = mochila_en_pantalla
-		var l: float = LADO_MOCHILA / 2.0
-		draw_colored_polygon(PackedVector2Array([m + Vector2(0.0, -l), m + Vector2(l, 0.0), m + Vector2(0.0, l), m + Vector2(-l, 0.0)]), COLOR_MOCHILA)
+		FigurasVector.dibujar(self, FigurasVector.MOCHILA, mochila_en_pantalla, ALTO_MOCHILA)
 
 
 func _dibujar_punto() -> void:
-	_punto.draw_circle(Vector2.ZERO, RADIO_MARCADOR, COLOR_MARCADOR)
+	FigurasVector.dibujar(_punto, FigurasVector.MASCARA, Vector2.ZERO, ALTO_MASCARA)
 
 
 func _en_pantalla(rectangulo: Rect2, escala: float) -> Rect2:

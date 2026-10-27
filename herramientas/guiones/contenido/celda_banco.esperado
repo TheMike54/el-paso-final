@@ -1,0 +1,4 @@
+valor /root/Partida sala celda_1
+valor /root/Partida banco banco_celda_1
+valor Jugador descansando true
+senal /root/Eventos partida_guardada 1

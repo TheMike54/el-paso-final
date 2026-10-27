@@ -1,7 +1,7 @@
 class_name Ajustes
 extends RefCounted
 # Ajustes del jugador (vibracion, temblor de camara, volumen general, de musica y de efectos, brillo, FPS, modo
-# desarrollador, disposicion de los botones tactiles y botones del control), en su propio
+# desarrollador, luces 2D, niebla, mostrar FPS, disposicion de los botones tactiles y botones del control), en su propio
 # archivo JSON: son del telefono y no de la partida, y asi agregar uno no cambia la version del guardado.
 # Funciones estaticas, como Guardado; un archivo que falta o esta danado deja los valores por omision.
 
@@ -9,7 +9,24 @@ const VERSION: int = 1
 const RUTA: String = "user://ajustes.json"
 ## Valores por omision de las opciones de si o no; la disposicion de los botones tiene los suyos en
 ## DisposicionControles.por_omision().
-const POR_OMISION: Dictionary[String, bool] = {"vibracion": true, "temblor": true, "modo_desarrollador": false}
+const POR_OMISION: Dictionary[String, bool] = {
+	"vibracion": true, "temblor": true, "modo_desarrollador": false,
+	"luces_avanzadas": true, "niebla": false, "mostrar_fps": false, "panel_pruebas": false, "ver_hitbox": false,
+}
+## Ajustes graficos que se aplican al momento (Eventos.ajuste_grafico_cambiado con la clave): los escuchan LuzSala,
+## Niebla, ContadorFps, PanelPruebas y VerHitbox. MODO_DESARROLLADOR tambien se avisa: muestra o quita el panel, ver
+## hitbox y el monitor.
+const MODO_DESARROLLADOR: StringName = &"modo_desarrollador"
+const LUCES_AVANZADAS: StringName = &"luces_avanzadas"
+const NIEBLA: StringName = &"niebla"
+const MOSTRAR_FPS: StringName = &"mostrar_fps"
+const PANEL_PRUEBAS: StringName = &"panel_pruebas"
+const VER_HITBOX: StringName = &"ver_hitbox"
+## Claves de si o no: se reinician, se leen y se guardan en un bucle. Una nueva se agrega aqui, en POR_OMISION y en
+## si_no y poner_si_no, sin tocar cargar, _leer ni guardar.
+const CLAVES_SI_NO: Array[StringName] = [
+	&"vibracion", &"temblor", MODO_DESARROLLADOR, LUCES_AVANZADAS, NIEBLA, MOSTRAR_FPS, PANEL_PRUEBAS, VER_HITBOX,
+]
 const VOLUMEN_POR_OMISION: float = 1.0
 ## Bus de cada volumen (default_bus_layout.tres): general, musica y efectos.
 const BUS_MUSICA: StringName = &"Musica"
@@ -27,8 +44,20 @@ const REFRESCO_RAPIDO: float = 90.0
 static var vibracion: bool = POR_OMISION["vibracion"]
 ## Temblor de la camara al aterrizar de una caida; se apaga por mareo.
 static var temblor: bool = POR_OMISION["temblor"]
-## Muestra en Configuracion la entrada a la zona de pruebas (tambien en el paquete de publicacion).
+## Muestra en Configuracion la entrada a la zona de pruebas (tambien en el paquete de publicacion), y en Avanzado
+## el panel de pruebas y Ver hitbox.
 static var modo_desarrollador: bool = POR_OMISION["modo_desarrollador"]
+## Luces 2D (PointLight2D de LuzSala): solo valen con Recursos en alto (luces_avanzadas_activas).
+static var luces_avanzadas: bool = POR_OMISION["luces_avanzadas"]
+## Niebla de las salas: apagada por omision, cuesta 2 a 4 FPS en el S50 donde se ve.
+static var niebla: bool = POR_OMISION["niebla"]
+## Contador de FPS arriba al centro (ContadorFps).
+static var mostrar_fps: bool = POR_OMISION["mostrar_fps"]
+## Solo con el modo desarrollador: la pestana del panel de pruebas en las salas (PanelPruebas) y el monitor junto
+## al contador.
+static var panel_pruebas: bool = POR_OMISION["panel_pruebas"]
+## Solo con el modo desarrollador: dibuja las formas de colision encima del juego (VerHitbox).
+static var ver_hitbox: bool = POR_OMISION["ver_hitbox"]
 ## Volumen general, de 0 a 1 (bus Master).
 static var volumen: float = VOLUMEN_POR_OMISION
 ## Volumen de la musica y de los efectos, de 0 a 1 (buses Musica y Efectos, que pasan por Master).
@@ -53,9 +82,8 @@ static func cargar_una_vez(ruta: String = RUTA) -> void:
 
 static func cargar(ruta: String = RUTA) -> void:
 	_cargados = true
-	vibracion = POR_OMISION["vibracion"]
-	temblor = POR_OMISION["temblor"]
-	modo_desarrollador = POR_OMISION["modo_desarrollador"]
+	for clave: StringName in CLAVES_SI_NO:
+		poner_si_no(clave, POR_OMISION[String(clave)])
 	volumen = VOLUMEN_POR_OMISION
 	volumen_musica = VOLUMEN_POR_OMISION
 	volumen_efectos = VOLUMEN_POR_OMISION
@@ -86,15 +114,11 @@ static func _leer(ruta: String) -> void:
 		return
 	var ajustes: Dictionary = contenido
 	# Una clave que falta (un archivo de antes de que existiera) se queda con su valor por omision.
-	var valor: Variant = ajustes.get("vibracion")
-	if typeof(valor) == TYPE_BOOL:
-		vibracion = valor
-	valor = ajustes.get("temblor")
-	if typeof(valor) == TYPE_BOOL:
-		temblor = valor
-	valor = ajustes.get("modo_desarrollador")
-	if typeof(valor) == TYPE_BOOL:
-		modo_desarrollador = valor
+	var valor: Variant = null
+	for clave: StringName in CLAVES_SI_NO:
+		valor = ajustes.get(String(clave))
+		if typeof(valor) == TYPE_BOOL:
+			poner_si_no(clave, valor as bool)
 	volumen = _numero(ajustes.get("volumen"), volumen, 0.0, 1.0)
 	volumen_musica = _numero(ajustes.get("volumen_musica"), volumen_musica, 0.0, 1.0)
 	volumen_efectos = _numero(ajustes.get("volumen_efectos"), volumen_efectos, 0.0, 1.0)
@@ -145,9 +169,10 @@ static func aplicar_brillo() -> void:
 
 
 ## Limite de FPS para Engine.max_fps: 0 (sin limite: V-Sync lo deja en el refresco de la pantalla) solo con 120
-## elegidos, Recursos en alto y una pantalla rapida; si no, 60. Un refresco desconocido (-1) cuenta como 60 Hz.
-static func limite_fps(elegidos: int, recursos_altos: bool, refresco: float) -> int:
-	return 0 if elegidos == 120 and fps_disponible(recursos_altos, refresco) else 60
+## elegidos, Recursos en alto, una pantalla rapida y fuera de un menu; si no, 60. Un refresco desconocido (-1)
+## cuenta como 60 Hz. En un menu, 60 siempre: mas no se nota y gasta bateria (decision del 25-oct-2026).
+static func limite_fps(elegidos: int, recursos_altos: bool, refresco: float, en_menu: bool = false) -> int:
+	return 0 if elegidos == 120 and fps_disponible(recursos_altos, refresco) and not en_menu else 60
 
 
 ## Si Configuracion ofrece elegir 120: con Recursos en alto y una pantalla de REFRESCO_RAPIDO Hz o mas.
@@ -155,20 +180,77 @@ static func fps_disponible(recursos_altos: bool, refresco: float) -> bool:
 	return recursos_altos and refresco >= REFRESCO_RAPIDO
 
 
-## Pone el limite de FPS segun el ajuste, Recursos y la pantalla. Sin pantalla (guiones, CI) no lo toca: ahi los
-## cuadros van tan rapido como se pueda.
-static func aplicar_fps() -> void:
+## Pone el limite de FPS segun el ajuste, Recursos, la pantalla y si hay un menu abierto. Sin pantalla (guiones,
+## CI) no lo toca: ahi los cuadros van tan rapido como se pueda. Lo llama ContadorFps al cambiar de menu a juego.
+static func aplicar_fps(en_menu: bool = false) -> void:
 	if DisplayServer.get_name() == "headless":
 		return
-	Engine.max_fps = limite_fps(fps, not Recursos.bajos(), DisplayServer.screen_get_refresh_rate())
+	Engine.max_fps = limite_fps(fps, not Recursos.bajos(), DisplayServer.screen_get_refresh_rate(), en_menu)
+
+
+## Valor de una clave de si o no (CLAVES_SI_NO).
+static func si_no(clave: StringName) -> bool:
+	match clave:
+		&"vibracion":
+			return vibracion
+		&"temblor":
+			return temblor
+		MODO_DESARROLLADOR:
+			return modo_desarrollador
+		LUCES_AVANZADAS:
+			return luces_avanzadas
+		NIEBLA:
+			return niebla
+		MOSTRAR_FPS:
+			return mostrar_fps
+		PANEL_PRUEBAS:
+			return panel_pruebas
+		VER_HITBOX:
+			return ver_hitbox
+	push_error("Ajustes: no hay una clave de si o no '%s'" % clave)
+	return false
+
+
+static func poner_si_no(clave: StringName, valor: bool) -> void:
+	match clave:
+		&"vibracion":
+			vibracion = valor
+		&"temblor":
+			temblor = valor
+		MODO_DESARROLLADOR:
+			modo_desarrollador = valor
+		LUCES_AVANZADAS:
+			luces_avanzadas = valor
+		NIEBLA:
+			niebla = valor
+		MOSTRAR_FPS:
+			mostrar_fps = valor
+		PANEL_PRUEBAS:
+			panel_pruebas = valor
+		VER_HITBOX:
+			ver_hitbox = valor
+		_:
+			push_error("Ajustes: no hay una clave de si o no '%s'" % clave)
+
+
+## Las herramientas de desarrollo (panel de pruebas, ver hitbox) valen solo con el modo desarrollador encendido.
+static func desarrollo(clave: StringName) -> bool:
+	return modo_desarrollador and si_no(clave)
+
+
+## Si las luces 2D se ven: el ajuste encendido y Recursos en alto (en bajo no se ofrecen: 52 -> 7-10 FPS en el S50).
+static func luces_avanzadas_activas(valor: bool, recursos_bajos: bool) -> bool:
+	return valor and not recursos_bajos
+
+
+## Las luces 2D de este telefono, con el ajuste y Recursos en vigor.
+static func luces_activas() -> bool:
+	return luces_avanzadas_activas(luces_avanzadas, Recursos.bajos())
 
 
 ## Escribe con Archivo (a un temporal que despues renombra), como el guardado de la partida.
 static func guardar(ruta: String = RUTA) -> Error:
 	var ajustes: Dictionary = {
-		"vibracion": vibracion,
-		"temblor": temblor,
-		"modo_desarrollador": modo_desarrollador,
 		"volumen": volumen,
 		"volumen_musica": volumen_musica,
 		"volumen_efectos": volumen_efectos,
@@ -178,4 +260,6 @@ static func guardar(ruta: String = RUTA) -> Error:
 		"controles": disposicion.a_diccionario(),
 		"mando": Mando.a_diccionario(),
 	}
+	for clave: StringName in CLAVES_SI_NO:
+		ajustes[String(clave)] = si_no(clave)
 	return Archivo.escribir_atomico(ruta, JSON.stringify({"version": VERSION, "ajustes": ajustes}, "\t"))

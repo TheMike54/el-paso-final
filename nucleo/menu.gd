@@ -1,19 +1,26 @@
 class_name MenuPrincipal
 extends Control
 # Menu principal: Jugar (abre las ranuras de partida, Ranuras; una vacia pide personaje y nombre, NuevaPartida), Configuracion (nucleo/configuracion.tscn) y, con el
-# modo desarrollador encendido, la zona de pruebas. Usa el tema tactil de los menus (Tema). Al abrir pasa la partida
+# modo desarrollador encendido, la zona de pruebas. De fondo, el video de ESCOM en bucle (ReproductorVideo), con un
+# velo para leer el gis, desenfocado y quieto detras de Configuracion. Usa el tema tactil de los menus (Tema). Al abrir pasa la partida
 # de antes de las ranuras a la ranura 1, y pide confirmacion antes de cerrar la app con Atras o con pausa. Atras y
 # pausa vuelven un nivel a la vez: del editor de botones a Configuracion, de Nueva partida a las ranuras, de las ranuras o de Configuracion al menu,
 # y ahi piden salir. Abajo, el aviso de pocos toques si el telefono lo necesita.
-## Escena del menu principal: a ella vuelven la pausa, la zona de pruebas y el boton de volver al menu.
+## Escena del menu principal: a ella vuelven la pausa y la zona de pruebas.
 const RUTA: String = "res://nucleo/menu.tscn"
 const ZONA_PRUEBAS: String = "res://herramientas/salas/zona_pruebas.tscn"
 const ESCENA_EDITOR: PackedScene = preload("res://nucleo/editor_controles.tscn")
+## Video del fondo, sin extension (ver ReproductorVideo).
+const VIDEO_FONDO: String = "res://nucleo/video/menu"
+## Velo negro sobre el video: las letras de gis se leen encima (demo de La Celda, 24-oct-2026).
+const ALFA_VELO: float = 0.35
 
 ## Lo pone la zona de pruebas al volver: el menu abre con el foco en su entrada, un nivel atras de la zona.
 static var volver_a_zona: bool = false
 
-## Sala donde empieza una partida nueva, y la que se continua si la partida no tiene banco.
+## Escena con que empieza una partida nueva: la cinematica de La Celda, que al terminar pasa a la primera sala.
+@export_file("*.tscn") var inicio_partida_nueva: String = ""
+## Sala donde se continua una partida sin banco: la primera del juego, sin volver a ver la cinematica.
 @export_file("*.tscn") var sala_inicial: String = ""
 
 ## El editor de controles, mientras esta abierto. Publico para que la prueba lo maneje.
@@ -24,6 +31,7 @@ var ranuras: Ranuras = null
 var nueva_partida: NuevaPartida = null
 
 var _confirmar: Confirmacion = null
+var _video: ReproductorVideo = null
 
 @onready var _jugar: Button = $Centro/Opciones/Jugar as Button
 @onready var _configuracion: Button = $Centro/Opciones/Configuracion as Button
@@ -35,6 +43,10 @@ var _confirmar: Confirmacion = null
 
 func _ready() -> void:
 	theme = Tema.crear()
+	var contador: ContadorFps = ContadorFps.new()
+	contador.siempre_en_menu = true
+	add_child(contador)
+	_poner_video()
 	Tema.raya_abajo($Centro/Opciones/Titulo as Control)
 	_centro.offset_left = Tema.margen_columna(get_viewport_rect().size)
 	var error: Error = Guardado.migrar(Guardado.RUTA, Guardado.ruta_ranura(1))
@@ -71,6 +83,20 @@ func _ready() -> void:
 # publicacion; ver docs/contrato.md, «Paquete de publicacion»).
 func _mostrar_zona() -> void:
 	_zona.visible = Ajustes.modo_desarrollador and ResourceLoader.exists(ZONA_PRUEBAS)
+
+
+# El video y su velo, encima del Fondo de color y debajo de todo lo demas.
+func _poner_video() -> void:
+	_video = ReproductorVideo.crear(VIDEO_FONDO, true, AspectRatioContainer.STRETCH_COVER)
+	add_child(_video)
+	move_child(_video, ($Fondo as Control).get_index() + 1)
+	var velo: ColorRect = ColorRect.new()
+	velo.name = &"Velo"
+	velo.color = Color(0.0, 0.0, 0.0, ALFA_VELO)
+	velo.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	velo.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_video.add_sibling(velo)
+	_video.reproducir()
 
 
 # Telefono con pocos toques a la vez (ver Toques): una linea abajo, encima del fondo y debajo de la confirmacion de
@@ -119,8 +145,9 @@ func _al_cerrar_nueva() -> void:
 ## Deja la partida lista para jugar en una ranura y devuelve la escena a la que se va; publico para la prueba. Toda
 ## entrada fija Partida.ruta_guardado: sin eso el autoguardado iria al archivo de pruebas. Una ranura valida se copia
 ## (para Restaurar) y se continua en su banco (sin banco, en sala_inicial); una vacia empieza una partida nueva con el
-## personaje y el nombre elegidos y la escribe ya, para que su ficha quede ocupada. Una danada o de otra version no se toca y devuelve vacio: solo se
-## borra con su confirmacion.
+## personaje y el nombre elegidos, solo en memoria, y va a inicio_partida_nueva: el archivo nace con su primer guardado
+## (banco, autoguardado, morir, salir al menu), como en Hollow Knight y Silksong, asi que cerrar durante la cinematica
+## deja la ranura vacia. Una danada o de otra version no se toca y devuelve vacio: solo se borra con su confirmacion.
 func preparar_ranura(numero: int, personaje: String = "", nombre: String = "") -> String:
 	var ruta: String = ranuras.ruta(numero)
 	var leida: Guardado.Resultado = Guardado.cargar(ruta)
@@ -132,10 +159,7 @@ func preparar_ranura(numero: int, personaje: String = "", nombre: String = "") -
 		Partida.personaje = personaje
 		Partida.nombre = nombre
 		Partida.ruta_guardado = ruta
-		var error: Error = Partida.guardar(ruta)
-		if error != OK:
-			push_error("Menu: no se pudo escribir la partida %d (error %d)" % [numero, error])
-		return sala_inicial
+		return inicio_partida_nueva
 	var copia: Error = Guardado.respaldar(ruta)
 	if copia != OK:
 		push_error("Menu: no se pudo copiar la partida %d (error %d)" % [numero, copia])
@@ -189,10 +213,12 @@ func _al_cerrar_ranuras() -> void:
 
 func abrir_configuracion() -> void:
 	_centro.visible = false
+	_video.desenfocar(true)
 	configuracion.abrir()
 
 
 func _al_cerrar_configuracion() -> void:
+	_video.desenfocar(false)
 	_centro.visible = true
 	_mostrar_zona()
 	Tema.dar_foco(_configuracion)

@@ -151,7 +151,7 @@ func _ready() -> void:
 	var config: Configuracion = pausa.configuracion
 	var panel_pausa: Control = pausa.get_node(^"Panel") as Control
 	_caso("Configuracion de la pausa se abre encima con el juego detenido", config != null and config.is_visible_in_tree() and not panel_pausa.visible and get_tree().paused)
-	_caso("dentro de la partida no aparece Desarrollador", not (config.get_node(^"Lista/Desplazable/Centro/Opciones/ModoDesarrollador") as Control).visible)
+	_caso("dentro de la partida aparece Avanzado, con Desarrollador", (config.get_node(^"Lista/Desplazable/Centro/Opciones/Avanzado") as Control).visible and (config.get_node(^"PanelAvanzado/Desplazable/Centro/Grupos/Desarrollo/ModoDesarrollador") as Control).visible)
 	(config.get_node(^"Lista/Desplazable/Centro/Opciones/Controles") as Button).pressed.emit()
 	_caso("Botones tactiles abre el editor encima de Configuracion", pausa.editor != null and (pausa.editor.get_parent() as CanvasLayer).layer > Pausa.CAPA_CONFIGURACION and not config.visible)
 	_caso("con el editor abierto no queda el fondo negro de Configuracion: se ve la sala", not (pausa.get_node(^"CapaConfiguracion/Fondo") as Control).visible)

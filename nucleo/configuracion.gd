@@ -3,9 +3,11 @@ extends Control
 # Configuracion del menu principal y de la pausa, en orden de uso: audio (panel con el volumen general, de musica y de
 # efectos, cada uno con su barra ancha y un altavoz que silencia; mientras esta abierto toca la musica de prueba y
 # tiene un boton para oir un efecto), brillo (su pantalla, con la escena de la sala o una de muestra), vibracion,
-# temblor, recursos (con aviso si se elige alto en un telefono debil), botones tactiles (abre el editor), botones del
-# control (con aviso si no hay uno conectado), modo desarrollador (el menu muestra entonces la zona de pruebas) y
-# creditos. Cada opcion es un BotonValor: su valor en gis, con un ovalo en lo que vale, sin interruptores (mockup del 13-oct-2026). La
+# temblor, botones tactiles (abre el editor), botones del control (con aviso si no hay uno conectado), Avanzado y
+# creditos. Avanzado (maqueta aprobada el 25-oct-2026) agrupa Rendimiento: recursos (con aviso si se elige alto en un
+# telefono debil), FPS, luces 2D (bloqueadas en Recursos bajo), niebla y mostrar FPS; y Desarrollo: modo
+# desarrollador (el menu muestra la zona de pruebas) y, con el, el panel de pruebas y ver hitbox. Los ajustes graficos
+# se aplican al momento, tambien desde la pausa (Eventos.ajuste_grafico_cambiado). Cada opcion es un BotonValor: su valor en gis, con un ovalo en lo que vale, sin interruptores (mockup del 13-oct-2026). La
 # partida se borra en su ranura (Ranuras). Cada cambio se guarda al momento en los ajustes (las barras, al
 # soltarlas). Volver va siempre arriba a la izquierda, y las cuadriculas toman las columnas que caben (Tema). Atras y
 # pausa vuelven un nivel a la vez: del subpanel a la lista, y de la lista al menu (cerrado); se ve un solo panel a la
@@ -16,7 +18,7 @@ signal cerrado()
 signal editor_pedido()
 
 ## El panel a la vista: la lista o uno de sus subpaneles.
-enum Seccion {LISTA, MANDO, CREDITOS, AUDIO, BRILLO}
+enum Seccion {LISTA, MANDO, CREDITOS, AUDIO, BRILLO, AVANZADO}
 
 ## Nombre en pantalla de cada accion reasignable del control.
 const NOMBRES_ACCION: Dictionary[StringName, String] = {&"saltar": "Saltar", &"atacar": "Atacar", &"curar": "Curar", &"mapa": "Mapa", &"mapa_rapido": "Mapa rápido", &"inventario": "Inventario", &"pausa": "Pausa"}
@@ -26,11 +28,13 @@ const PASO_TECLAS: float = 10.0
 const VOLUMEN_AL_QUITAR_SILENCIO: float = 50.0
 ## Aviso al tocar Recursos abierto desde la pausa. Publico para la prueba.
 const AVISO_RECURSOS_EN_PARTIDA: String = "Para cambiar los gráficos, sal al menú principal."
+## Aviso al tocar Luces 2D con Recursos en bajo (bloqueadas); en la partida suma donde se cambia Recursos.
+const AVISO_LUCES: String = "Luces 2D pide Recursos en alto."
+const AVISO_LUCES_EN_PARTIDA: String = "Luces 2D pide Recursos en alto, y Recursos se cambia desde el menú principal."
 
 ## Archivo de los ajustes: publico para que la prueba trabaje con el suyo.
 var ruta_ajustes: String = Ajustes.RUTA
-## Abierta desde la pausa: sin Desarrollador (solo cambia el menu principal, que ahi no se ve) y avisando que
-## Recursos queda bloqueado: Prescindible, Niebla y Planta lo leen al entrar a una sala, asi que en la partida no se
+## Abierta desde la pausa: avisando que Recursos queda bloqueado: Prescindible, Niebla y Planta lo leen al entrar a una sala, asi que en la partida no se
 ## veria el cambio; se cambia desde el menu principal, como los graficos en otros juegos.
 var en_partida: bool = false
 ## Foto de la sala tomada al abrir la pausa (la pone Pausa): la pantalla de brillo la muestra. Sin foto, o vacia
@@ -48,8 +52,8 @@ var esperando: StringName = &""
 var reservado_abajo: float = 0.0:
 	set(valor):
 		reservado_abajo = valor
-		if _hueco_abajo != null:
-			_hueco_abajo.custom_minimum_size.y = maxf(valor - Tema.MARGEN_VERTICAL, 0.0)
+		for hueco: Control in _huecos_abajo:
+			hueco.custom_minimum_size.y = maxf(valor - Tema.MARGEN_VERTICAL, 0.0)
 
 # Tick en que se asigno un boton: si era Start, la accion pausa quedo recien presionada en ese tick y el menu
 # la tomaria como Atras (ver acaba_de_asignar).
@@ -58,6 +62,8 @@ var _tick_asignado: int = -10
 var _barra_sin_guardar: bool = false
 # En la partida se toco Recursos (bloqueado): el aviso dice donde se cambia.
 var _recursos_bloqueado_tocado: bool = false
+# Con Recursos en bajo se toco Luces 2D (bloqueadas): el aviso dice que piden alto.
+var _luces_bloqueadas_tocadas: bool = false
 # El panel a la vista (_mostrar).
 var _actual: Seccion = Seccion.LISTA
 
@@ -73,10 +79,20 @@ var _actual: Seccion = Seccion.LISTA
 @onready var _brillo: BotonValor = $Lista/Desplazable/Centro/Opciones/Brillo as BotonValor
 @onready var _panel_audio: PanelAudio = $PanelAudio as PanelAudio
 @onready var _volver_audio: Button = $PanelAudio/Arriba/Volver as Button
-@onready var _recursos: BotonValor = $Lista/Desplazable/Centro/Opciones/Recursos as BotonValor
-@onready var _fps: BotonValor = $Lista/Desplazable/Centro/Opciones/Fps as BotonValor
-@onready var _aviso_recursos: Label = $Lista/AvisoRecursos as Label
-@onready var _modo: BotonValor = $Lista/Desplazable/Centro/Opciones/ModoDesarrollador as BotonValor
+@onready var _avanzado: BotonValor = $Lista/Desplazable/Centro/Opciones/Avanzado as BotonValor
+@onready var _panel_avanzado: Control = $PanelAvanzado as Control
+@onready var _volver_avanzado: Button = $PanelAvanzado/Arriba/Volver as Button
+@onready var _rendimiento: GridContainer = $PanelAvanzado/Desplazable/Centro/Grupos/Rendimiento as GridContainer
+@onready var _desarrollo: GridContainer = $PanelAvanzado/Desplazable/Centro/Grupos/Desarrollo as GridContainer
+@onready var _recursos: BotonValor = $PanelAvanzado/Desplazable/Centro/Grupos/Rendimiento/Recursos as BotonValor
+@onready var _fps: BotonValor = $PanelAvanzado/Desplazable/Centro/Grupos/Rendimiento/Fps as BotonValor
+@onready var _luces: BotonValor = $PanelAvanzado/Desplazable/Centro/Grupos/Rendimiento/Luces as BotonValor
+@onready var _niebla: BotonValor = $PanelAvanzado/Desplazable/Centro/Grupos/Rendimiento/Niebla as BotonValor
+@onready var _mostrar_fps: BotonValor = $PanelAvanzado/Desplazable/Centro/Grupos/Rendimiento/MostrarFps as BotonValor
+@onready var _aviso_recursos: Label = $PanelAvanzado/AvisoRecursos as Label
+@onready var _modo: BotonValor = $PanelAvanzado/Desplazable/Centro/Grupos/Desarrollo/ModoDesarrollador as BotonValor
+@onready var _pruebas: BotonValor = $PanelAvanzado/Desplazable/Centro/Grupos/Desarrollo/Pruebas as BotonValor
+@onready var _ver_hitbox: BotonValor = $PanelAvanzado/Desplazable/Centro/Grupos/Desarrollo/VerHitbox as BotonValor
 @onready var _creditos: BotonValor = $Lista/Desplazable/Centro/Opciones/Creditos as BotonValor
 @onready var _volver: Button = $Lista/Arriba/Volver as Button
 @onready var _panel_mando: Control = $PanelMando as Control
@@ -89,8 +105,8 @@ var _actual: Seccion = Seccion.LISTA
 @onready var _volver_creditos: Button = $PanelCreditos/Arriba/Volver as Button
 
 var _botones_mando: Dictionary[StringName, Button] = {}
-# Debajo del aviso de recursos, del alto de reservado_abajo.
-var _hueco_abajo: Control = null
+# Al pie de la lista y de Avanzado (debajo del aviso de recursos), del alto de reservado_abajo.
+var _huecos_abajo: Array[Control] = []
 # Pantalla de brillo (se arma en codigo, PantallaBrillo).
 var _panel_brillo: PantallaBrillo = null
 # El panel de cada Seccion, en el orden del enum, y el boton de la lista que abre cada subpanel (el foco al volver).
@@ -100,12 +116,12 @@ var _boton_de: Dictionary[Seccion, Button] = {}
 
 func _ready() -> void:
 	Ajustes.cargar_una_vez()
-	for arriba: NodePath in [^"Lista/Arriba", ^"PanelMando/Arriba", ^"PanelAudio/Arriba", ^"PanelCreditos/Arriba"]:
+	for arriba: NodePath in [^"Lista/Arriba", ^"PanelMando/Arriba", ^"PanelAudio/Arriba", ^"PanelCreditos/Arriba", ^"PanelAvanzado/Arriba"]:
 		Tema.encabezado(get_node(arriba) as Control)
 	_controles.pressed.connect(editor_pedido.emit)
 	_mando.pressed.connect(_abrir_mando)
-	_vibracion.pressed.connect(_al_tocar_vibracion)
-	_temblor.pressed.connect(_al_tocar_temblor)
+	_vibracion.pressed.connect(_alternar.bind(&"vibracion"))
+	_temblor.pressed.connect(_alternar.bind(&"temblor"))
 	_audio.pressed.connect(_abrir_audio)
 	_volver_audio.pressed.connect(atras)
 	_brillo.pressed.connect(_abrir_brillo)
@@ -116,14 +132,22 @@ func _ready() -> void:
 	_panel_brillo.volver_pedido.connect(atras)
 	_panel_brillo.barra_movida.connect(_al_mover_barra)
 	_panel_brillo.barra_soltada.connect(_guardar_barras)
-	_paneles = [_lista, _panel_mando, _panel_creditos, _panel_audio, _panel_brillo]
-	_boton_de = {Seccion.MANDO: _mando, Seccion.CREDITOS: _creditos, Seccion.AUDIO: _audio, Seccion.BRILLO: _brillo}
+	_paneles = [_lista, _panel_mando, _panel_creditos, _panel_audio, _panel_brillo, _panel_avanzado]
+	_boton_de = {Seccion.MANDO: _mando, Seccion.CREDITOS: _creditos, Seccion.AUDIO: _audio, Seccion.BRILLO: _brillo, Seccion.AVANZADO: _avanzado}
+	_avanzado.pressed.connect(_abrir_avanzado)
+	_volver_avanzado.pressed.connect(atras)
+	_luces.pressed.connect(_al_tocar_luces)
+	_niebla.pressed.connect(_alternar.bind(Ajustes.NIEBLA))
+	_mostrar_fps.pressed.connect(_alternar.bind(Ajustes.MOSTRAR_FPS))
+	_pruebas.pressed.connect(_alternar.bind(Ajustes.PANEL_PRUEBAS))
+	_ver_hitbox.pressed.connect(_alternar.bind(Ajustes.VER_HITBOX))
 	_recursos.estilo = BotonValor.Estilo.NEUTRO
 	_recursos.pressed.connect(_al_tocar_recursos)
 	_fps.estilo = BotonValor.Estilo.NEUTRO
 	_fps.opciones = ["60", "120"]
 	_fps.pressed.connect(_al_tocar_fps)
-	_modo.pressed.connect(_al_tocar_modo)
+	# El contador, el panel de pruebas y ver hitbox dependen de el: cambian al momento, tambien desde la pausa.
+	_modo.pressed.connect(_alternar.bind(Ajustes.MODO_DESARROLLADOR))
 	_creditos.pressed.connect(_abrir_creditos)
 	_volver.pressed.connect(atras)
 	_por_omision.pressed.connect(_mando_por_omision)
@@ -140,12 +164,14 @@ func _ready() -> void:
 		_filas.add_child(boton)
 		_botones_mando[accion] = boton
 	Input.joy_connection_changed.connect(_al_cambiar_controles)
-	_hueco_abajo = Control.new()
-	_hueco_abajo.name = "HuecoAbajo"
-	_hueco_abajo.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_lista.add_child(_hueco_abajo)
+	for panel: Control in [_lista, _panel_avanzado]:
+		var hueco: Control = Control.new()
+		hueco.name = "HuecoAbajo"
+		hueco.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		panel.add_child(hueco)
+		_huecos_abajo.append(hueco)
 	reservado_abajo = reservado_abajo
-	for panel: Control in [_lista, _panel_mando, _panel_audio, _panel_creditos, _panel_brillo.columna]:
+	for panel: Control in [_lista, _panel_mando, _panel_audio, _panel_creditos, _panel_brillo.columna, _panel_avanzado]:
 		Tema.ajustar(panel)
 		panel.resized.connect(_acomodar_columnas)
 	_acomodar_columnas()
@@ -154,9 +180,9 @@ func _ready() -> void:
 
 ## Muestra la lista con los valores actuales y pone el foco en el primer boton.
 func abrir() -> void:
-	_modo.visible = not en_partida
 	_recursos.bloqueado = en_partida
 	_recursos_bloqueado_tocado = false
+	_luces_bloqueadas_tocadas = false
 	if DisplayServer.get_name() != "headless":
 		refresco = DisplayServer.screen_get_refresh_rate()
 	_poner_valores()
@@ -176,6 +202,8 @@ static func columnas_para(ancho: float) -> int:
 
 func _acomodar_columnas() -> void:
 	_opciones.columns = columnas_para(_lista.size.x)
+	_rendimiento.columns = columnas_para(_panel_avanzado.size.x)
+	_desarrollo.columns = _rendimiento.columns
 	_filas.columns = columnas_para(_panel_mando.size.x)
 
 
@@ -189,6 +217,15 @@ func _poner_valores() -> void:
 	_fps.visible = Ajustes.fps_disponible(not Recursos.bajos(), refresco)
 	_fps.valor = str(Ajustes.fps)
 	_brillo.valor = "%d %%" % roundi(Ajustes.brillo * 100.0)
+	# Luces 2D en bajo: bloqueadas y en No (lo que vale), no ocultas; el aviso sale solo al tocarlas.
+	_luces.poner_si_no(Ajustes.luces_activas())
+	_luces.bloqueado = Recursos.bajos()
+	_niebla.poner_si_no(Ajustes.niebla)
+	_mostrar_fps.poner_si_no(Ajustes.mostrar_fps)
+	_pruebas.poner_si_no(Ajustes.panel_pruebas)
+	_ver_hitbox.poner_si_no(Ajustes.ver_hitbox)
+	_pruebas.visible = Ajustes.modo_desarrollador
+	_ver_hitbox.visible = Ajustes.modo_desarrollador
 
 
 ## Lo que dice el valor de Recursos: en auto, tambien lo que la deteccion eligio.
@@ -243,22 +280,28 @@ func _mostrar(seccion: Seccion) -> void:
 	_panel_audio.musica_de_prueba(seccion == Seccion.AUDIO)
 
 
-func _al_tocar_vibracion() -> void:
-	Ajustes.vibracion = not Ajustes.vibracion
+# Luces 2D: con Recursos en bajo no cambian y avisan; si no, se alternan al momento.
+func _al_tocar_luces() -> void:
+	if Recursos.bajos():
+		_luces_bloqueadas_tocadas = true
+		_mostrar_aviso_recursos()
+		return
+	_alternar(Ajustes.LUCES_AVANZADAS)
+
+
+# Cualquier ajuste de si o no (Ajustes.CLAVES_SI_NO): se alterna, se avisa por el bus (lo grafico se aplica al
+# momento; el resto no tiene quien lo escuche) y se guarda.
+func _alternar(clave: StringName) -> void:
+	Ajustes.poner_si_no(clave, not Ajustes.si_no(clave))
 	_poner_valores()
+	Eventos.ajuste_grafico_cambiado.emit(clave)
 	_guardar()
 
 
-func _al_tocar_temblor() -> void:
-	Ajustes.temblor = not Ajustes.temblor
-	_poner_valores()
-	_guardar()
-
-
-func _al_tocar_modo() -> void:
-	Ajustes.modo_desarrollador = not Ajustes.modo_desarrollador
-	_poner_valores()
-	_guardar()
+func _abrir_avanzado() -> void:
+	_mostrar(Seccion.AVANZADO)
+	Tema.dar_foco(_recursos)
+	(_panel_avanzado.get_node(^"Desplazable") as ScrollContainer).set_deferred(&"scroll_vertical", 0)
 
 
 # Cada toque pasa al siguiente: auto, bajo, alto y de nuevo auto.
@@ -271,15 +314,17 @@ func _al_tocar_recursos() -> void:
 	Ajustes.recursos = Recursos.MODOS[(i + 1) % Recursos.MODOS.size()]
 	_poner_valores()
 	_mostrar_aviso_recursos()
-	Ajustes.aplicar_fps()
+	# Configuracion siempre es un menu: al volver al juego, ContadorFps pone el limite de juego.
+	Ajustes.aplicar_fps(true)
 	_guardar()
 
 
-# Alterna 60 y 120 y lo aplica al momento, tambien desde la pausa: el limite de FPS no recarga nada.
+# Alterna 60 y 120. En un menu el limite es 60 siempre; el elegido vale al volver al juego (ContadorFps), sin recargar nada.
 func _al_tocar_fps() -> void:
 	Ajustes.fps = 120 if Ajustes.fps == 60 else 60
 	_poner_valores()
-	Ajustes.aplicar_fps()
+	# Configuracion siempre es un menu: al volver al juego, ContadorFps pone el limite de juego.
+	Ajustes.aplicar_fps(true)
 	_guardar()
 
 
@@ -364,6 +409,8 @@ func _mostrar_aviso_recursos() -> void:
 		textos.append("Este teléfono parece de gama baja (%s): en alto puede ir lento." % Recursos.motivo())
 	if _recursos_bloqueado_tocado:
 		textos.append(AVISO_RECURSOS_EN_PARTIDA)
+	if _luces_bloqueadas_tocadas:
+		textos.append(AVISO_LUCES_EN_PARTIDA if en_partida else AVISO_LUCES)
 	_aviso_recursos.text = " ".join(textos)
 	_aviso_recursos.visible = not textos.is_empty()
 

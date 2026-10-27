@@ -38,7 +38,7 @@
   {
     "id": "puerto-guion",
     "que": "El puerto de depuracion corre un guion de entradas, lo compara con su .esperado e imprime GUION OK o GUION FALLA; falla si falta el guion o la accion",
-    "comprobacion": "herramientas/guiones/nucleo/caja.guion",
+    "comprobacion": "herramientas/guiones/contenido/cinematica_celda.guion",
     "pasa": true
   },
   {
@@ -79,7 +79,7 @@
   },
   {
     "id": "validador-presupuesto",
-    "que": "Cada sala respeta el presupuesto de decoracion: a lo mas 3 emisores de particulas con 60 particulas entre todos, 30 plantas y ninguna luz 2D; si no, FALLO",
+    "que": "Cada sala respeta el presupuesto de decoracion: a lo mas 16 emisores de particulas con 200 particulas entre todos, 30 plantas y ninguna luz 2D en la escena (LuzSala la crea en codigo con el ajuste); si no, FALLO",
     "comprobacion": "manual: en una copia del proyecto, una planta 31 y un PointLight2D en sala_recursos.tscn dan cada uno su FALLO y salida 1; la sala tal cual pasa",
     "pasa": true
   },
@@ -195,6 +195,12 @@
     "id": "validador-prueba-en-memoria",
     "que": "Una prueba automatica hereda de validar.gd sin correr su _ready y llama a sus reglas con entradas y nodos rotos armados en memoria (ningun .tscn roto en el repo): _fallo_de_entrada, _id_recordado, _revisar_peligros, _revisar_avisos, _revisar_tiendas, _revisar_rutas_de_secretos, _revisar_habilidades y _revisar_sala sin puertas; por regla, un caso roto da su FALLO por texto parcial y uno sano no da ninguno",
     "comprobacion": "herramientas/guiones/herramientas/validador.guion",
+    "pasa": true
+  },
+  {
+    "id": "validador-mapa-zonas",
+    "que": "El validador falla si dos salas de zonas distintas se enciman en el indice del mapa: cada zona tiene su franja del plano (posicion_mapa)",
+    "comprobacion": "manual: en una copia del proyecto, poner la posicion_mapa de celda_1 sobre la de otra zona y regenerar el indice da FALLO «son de zonas distintas y se enciman en el mapa» y salida 1; el proyecto tal cual pasa",
     "pasa": true
   }
 ]

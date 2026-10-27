@@ -2,13 +2,7 @@
   {
     "id": "arranque",
     "que": "El autoload Arranque carga el puerto de depuracion solo en un build de depuracion y si el archivo viaja en el paquete",
-    "comprobacion": "herramientas/guiones/nucleo/caja.guion",
-    "pasa": true
-  },
-  {
-    "id": "caja-gris",
-    "que": "La sala_inicial (donde cae una partida nueva hasta que exista la primera sala real) es una caja gris que camina y salta con las acciones mover_izquierda, mover_derecha y saltar",
-    "comprobacion": "herramientas/guiones/nucleo/caja.guion",
+    "comprobacion": "herramientas/guiones/contenido/cinematica_celda.guion",
     "pasa": true
   },
   {
@@ -265,7 +259,7 @@
   },
   {
     "id": "enemigo-comportamiento",
-    "que": "La ficha de un enemigo puede llevar un script de comportamiento (ComportamientoEnemigo) que ataca con un AtaqueEnemigo separado del cuerpo y dispara ProyectilEnemigo; el muneco que ataca de la zona de pruebas lo usa: su golpe parable y su disparo se paran y su golpe no parable dana aunque el jugador ataque",
+    "que": "La ficha de un enemigo puede llevar un script de comportamiento (ComportamientoEnemigo) que ataca con un AtaqueEnemigo separado del cuerpo y dispara ProyectilEnemigo; el muneco que ataca de la zona de pruebas lo usa: su golpe parable se para, su disparo se desvia y su golpe no parable dana aunque el jugador ataque",
     "comprobacion": "herramientas/guiones/nucleo/parry.guion",
     "pasa": true
   },
@@ -325,7 +319,7 @@
   },
   {
     "id": "parry-visible",
-    "que": "Un parry congela todo 20 ticks, dibuja un estallido blanco en el punto de choque y empuja al jugador hacia atras; el golpe parado no quita vida",
+    "que": "Un parry congela todo 20 ticks, muestra un destello en la punta de la espada y empuja al jugador hacia atras; el golpe parado no quita vida",
     "comprobacion": "herramientas/guiones/nucleo/parry.guion; herramientas/guiones/nucleo/parry_ventana.guion",
     "pasa": true
   },
@@ -361,8 +355,8 @@
   },
   {
     "id": "ranuras-telefono",
-    "que": "En el telefono las 4 fichas caben en una fila y se leen y se tocan con el pulgar, con y sin el aviso de pocos toques; una partida nueva deja ocupada su ficha y Borrar y Restaurar funcionan con su confirmacion",
-    "comprobacion": "manual: en el S50 o el S20 con el APK de desarrollo: Jugar, ranura 1, un personaje y Empezar (caja gris), Volver al menu, Jugar: la ficha 1 dice Inicio y 0 min; entrar otra vez y volver: aparece Restaurar; Borrar con su confirmacion la deja vacia",
+    "que": "En el telefono las 4 fichas caben en una fila y se leen y se tocan con el pulgar, con y sin el aviso de pocos toques; una partida nueva ocupa su ficha desde su primer guardado y Borrar y Restaurar funcionan con su confirmacion",
+    "comprobacion": "manual: en el S50 o el S20 con el APK de desarrollo: Jugar, ranura 1 y Empezar, ver la cinematica, en La Celda pausa y Salir al menu, Jugar: la ficha 1 dice Celda 1 y 0 min; entrar otra vez y volver: aparece Restaurar; Borrar con su confirmacion la deja vacia",
     "pasa": true
   },
   {
@@ -391,14 +385,14 @@
   },
   {
     "id": "personaje-y-nombre",
-    "que": "Una ranura vacia abre Nueva partida: elegir Hombre o Mujer (sin eso Empezar no responde) y un nombre limpio de hasta 12 caracteres (vacio, Alumno o Alumna); la partida guarda personaje y nombre y su ficha lleva el nombre; Atras vuelve a las ranuras",
+    "que": "Una ranura vacia abre Nueva partida: un nombre limpio de hasta 12 caracteres (vacio, Alumno) con el personaje hombre; la eleccion de Hombre o Mujer existe pero esta oculta (`NuevaPartida.ELEGIR_PERSONAJE`) hasta tener el segundo personaje; la partida guarda personaje y nombre y su ficha lleva el nombre; Atras vuelve a las ranuras",
     "comprobacion": "herramientas/guiones/nucleo/ranuras.guion",
     "pasa": true
   },
   {
     "id": "personaje-y-nombre-telefono",
     "que": "En el telefono el campo del nombre abre el teclado de Android, Enter empieza la partida y la ficha muestra el nombre",
-    "comprobacion": "manual: en el S50 o el S20: Jugar, ranura vacia, Mujer, tocar Nombre y escribir con el teclado del telefono, Enter; Volver al menu, Jugar: la ficha lleva el nombre",
+    "comprobacion": "manual: en el S50 o el S20: Jugar, ranura vacia, tocar Nombre y escribir con el teclado del telefono, Enter; Volver al menu, Jugar: la ficha lleva el nombre",
     "pasa": true
   },
   {
@@ -613,7 +607,7 @@
   },
   {
     "id": "enemigo-arco",
-    "que": "ProyectilEnemigo en arco con gravedad propia: lanzar_en_arco calcula la rapidez para un angulo fijo y cae cerca del objetivo, se detiene en los solidos y se puede parar; sin gravedad sigue recto",
+    "que": "ProyectilEnemigo en arco con gravedad propia: lanzar_en_arco calcula la rapidez para un angulo fijo y cae cerca del objetivo, se detiene en los solidos y se puede desviar; sin gravedad sigue recto",
     "comprobacion": "herramientas/guiones/nucleo/enemigos_moviles.guion",
     "pasa": true
   },
@@ -889,8 +883,68 @@
   },
   {
     "id": "animacion-cuerpo-jugador",
-    "que": "El cuerpo del jugador se dibuja con un AnimatedSprite2D (nodo Dibujo de nucleo/jugador.tscn) y el SpriteFrames nucleo/arte/jugador_hombre/jugador_hombre.tres, hecho de AtlasTexture sobre atlas_0.png con un lienzo comun (todos los cuadros miden lo mismo). AnimacionJugador.elegir, pura, elige la animacion con la tabla de prioridades de Hollow Knight (muerte, fundido de peligro, dormir, dano, aterrizaje duro, picada, curar, bola, estocada, ataque abajo, arriba o al lado, voltereta, impulso, pared, aire, carrera, correr, quieto); el giro en carrera es una capa aparte, solo en el suelo. Los clips con tiempo propio toman el cuadro de los contadores de ticks; los bucles los corre el sprite, quieto en el congelado. Volteo con Dibujo.scale.x, parpadeo de invulnerable y tinte de curar con modulate, destello en blanco con un shader de un uniforme. _draw conserva solo los efectos, encima del cuerpo. El dibujo solo lee: la traza por tick de 36 guiones del jugador sale identica",
+    "que": "El cuerpo del jugador se dibuja con un AnimatedSprite2D (nodo Dibujo de nucleo/jugador.tscn) y el SpriteFrames nucleo/arte/jugador_hombre/jugador_hombre.tres, hecho de AtlasTexture sobre atlas_0.png con un lienzo comun (todos los cuadros miden lo mismo). AnimacionJugador.elegir, pura, elige la animacion con la tabla de prioridades de Hollow Knight (muerte, fundido de peligro, dormir, dano, aterrizaje duro, picada, curar, bola, estocada, ataque abajo, arriba o al lado, voltereta, impulso, pared, aire, carrera, correr, quieto); el giro en carrera es una capa aparte, solo en el suelo. Los clips con tiempo propio toman el cuadro de los contadores de ticks; los bucles los corre el sprite, quieto en el congelado. Volteo con Dibujo.scale.x, parpadeo de invulnerable con modulate, destello en blanco con un shader de un uniforme. El dibujo solo lee: la traza por tick de 36 guiones del jugador sale identica",
     "comprobacion": "herramientas/guiones/nucleo/animacion_jugador.guion;herramientas/pruebas/prueba_animacion_jugador.gd;herramientas/guiones/nucleo/animacion_bucles.guion;herramientas/guiones/nucleo/animacion_reaparicion.guion",
+    "pasa": true
+  },
+  {
+    "id": "partida-nueva-cinematica",
+    "que": "Una ranura vacia empieza la partida en memoria y va a la cinematica de La Celda; el archivo se escribe con el primer guardado (banco, autoguardado, morir, salir al menu o segundo plano dentro de una sala), como Hollow Knight y Silksong: cerrar durante la cinematica deja la ranura vacia y la cinematica se repite. Continuar sin banco lleva a La Celda (sala_inicial), sin cinematica",
+    "comprobacion": "herramientas/guiones/nucleo/ranuras.guion",
+    "pasa": true
+  },
+  {
+    "id": "video-reproductor",
+    "que": "ReproductorVideo reproduce un .mp4 H.264 a 1080 con el decodificador del telefono (JavaClassWrapper y ExternalTexture, sin plugin) copiado una vez a user://video/; en la PC, el .ogv (Theora), que no viaja en el APK; si Android falla, la imagen de respaldo (o termina, si no tiene bucle); se pausa en segundo plano y sigue al volver; el volumen sigue a Master y Musica",
+    "comprobacion": "manual: registro del APK de desarrollo en el S50 y el S21 (menu 57-60 FPS en el S50, sin avisos de ReproductorVideo); herramientas/guiones/contenido/cinematica_celda.guion",
+    "pasa": false
+  },
+  {
+    "id": "menu-video-fondo",
+    "que": "El menu principal tiene de fondo el video en bucle bajo un velo; con Configuracion abierta se ve desenfocado y congelado, y sigue al cerrarla; los menus van a 60 FPS como maximo",
+    "comprobacion": "manual: docs/pruebas.md, «Video del menu y cinematica» (audio, costura del bucle, volumen con Musica)",
+    "pasa": true
+  },
+  {
+    "id": "ajustes-avanzados",
+    "que": "Configuracion tiene Avanzado (tambien desde la pausa): Recursos, FPS, Luces 2D (bloqueadas en bajo; en alto, encendidas por omision), Niebla (apagada por omision) y Mostrar FPS; con el modo desarrollador, Pruebas y Ver hitbox; cada cambio se guarda y avisa al bus",
+    "comprobacion": "herramientas/guiones/nucleo/menu_configuracion.guion;herramientas/guiones/nucleo/guardado.guion",
+    "pasa": true
+  },
+  {
+    "id": "contador-fps",
+    "que": "Mostrar FPS pone un contador en una esquina, encima de todo, que no tapa ningun control a 1280x720, 1920x1080 y 2560x1440",
+    "comprobacion": "manual: docs/pruebas.md, «Avanzado y trazo del ataque»",
+    "pasa": true
+  },
+  {
+    "id": "panel-pruebas-y-hitbox",
+    "que": "Con el modo desarrollador, el panel de pruebas apaga y enciende por grupo lo que la sala tenga (luces, niebla, cables, fondos, particulas) sin codigo por sala, y Ver hitbox dibuja cada forma con el color de lo que es",
+    "comprobacion": "herramientas/guiones/nucleo/piezas_sala.guion",
+    "pasa": true
+  },
+  {
+    "id": "piezas-sala",
+    "que": "Piezas para armar salas sin codigo: FondoTapado (se dibuja solo pasado el fin de la pared), LuzSala (pulso, destello o parpadeo; luz 2D solo en alto con Luces 2D), oscuridad de la sala, Niebla en banda, Colgante que se mece al empujarlo y EmisorRafaga",
+    "comprobacion": "herramientas/guiones/nucleo/piezas_sala.guion",
+    "pasa": true
+  },
+  {
+    "id": "trazo-ataque",
+    "que": "Cada ataque del jugador (lado, arriba, abajo, en carrera) dibuja un trazo blanco del tamano de su area de golpe que se apaga solo; los ataques enemigos que se pueden parar dibujan el mismo trazo",
+    "comprobacion": "herramientas/guiones/nucleo/trazo_ataque.guion;herramientas/guiones/nucleo/trazo_jugador.guion",
+    "pasa": true
+  },
+  {
+    "id": "recursos-memoria-android",
+    "que": "Recursos en automatico lee la memoria del telefono (MemTotal e isLowRamDevice): el S50 queda en bajo y el S21 en alto",
+    "comprobacion": "manual: registro del APK de desarrollo; S50 bajo comprobado el 25-oct-2026, falta el S21",
+    "pasa": false
+  },
+  {
+    "id": "efectos-jugador-telefono",
+    "que": "En el telefono, el parry muestra su destello en la punta de la espada, la bola se ve como bola de fuego en capas y curar muestra el aura con su luz, sin bajar los FPS de la sala curando ni con la bola en pantalla",
+    "comprobacion": "manual: docs/pruebas.md, fila Efectos del jugador (S50)",
     "pasa": true
   }
 ]

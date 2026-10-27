@@ -5,6 +5,7 @@
 [resource]
 script = ExtResource("1_vteuf")
 rectangulos = Dictionary[String, Rect2]({
+"celda_1": Rect2(0, 1440, 4838, 720),
 "mapa_1": Rect2(7200, 0, 2400, 720),
 "mapa_2": Rect2(9600, -720, 1600, 1440),
 "prueba_1": Rect2(0, 0, 1600, 720),
@@ -13,6 +14,7 @@ rectangulos = Dictionary[String, Rect2]({
 "prueba_4": Rect2(5600, 0, 1600, 720)
 })
 rutas = Dictionary[String, String]({
+"celda_1": "res://contenido/salas/celda/celda_1.tscn",
 "mapa_1": "res://herramientas/salas/zonas/mapa/mapa_1.tscn",
 "mapa_2": "res://herramientas/salas/zonas/mapa/mapa_2.tscn",
 "prueba_1": "res://herramientas/salas/zonas/prueba/prueba_1.tscn",

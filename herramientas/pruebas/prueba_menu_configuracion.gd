@@ -1,12 +1,14 @@
 extends "res://herramientas/pruebas/prueba_base.gd"
 # Prueba de la Configuracion del menu principal: recorre menu, Configuracion, sus subpaneles y el editor de controles
 # con Atras y con pausa, un nivel a la vez, y lo que puede romperse en cada panel: disposicion, botones del control,
-# modo desarrollador, audio, opciones de si o no, Recursos, brillo, columnas y el aviso de pocos toques. Todo en
+# modo desarrollador, audio, opciones de si o no, Avanzado (Recursos, luces 2D, niebla, panel de pruebas), brillo,
+# columnas y el aviso de pocos toques. Todo en
 # archivos de prueba. Deja casos y fallos para menu_configuracion.guion.
 
 const ESCENA_MENU: PackedScene = preload("res://nucleo/menu.tscn")
 const RUTA_PRUEBA: String = "user://prueba_menu_configuracion.json"
 const OPCIONES: String = "Lista/Desplazable/Centro/Opciones/"
+const GRUPOS: String = "PanelAvanzado/Desplazable/Centro/Grupos/"
 
 
 # Atras es la notificacion de Android. Lo que puede romperse: Listo guarda la disposicion, reasignar un boton del
@@ -182,7 +184,7 @@ func _ready() -> void:
 	_caso("B (volver) en el panel del control vuelve a la lista, como Atras", lista.visible and not panel_mando.visible)
 
 	# Modo desarrollador: al volver al menu, este muestra la zona de pruebas; se recuerda.
-	var modo: BotonValor = config.get_node(NodePath(OPCIONES + "ModoDesarrollador")) as BotonValor
+	var modo: BotonValor = config.get_node(NodePath(GRUPOS + "Desarrollo/ModoDesarrollador")) as BotonValor
 	_caso("las opciones de si o no son botones con pastilla, sin interruptor", modo != null and not modo.toggle_mode and modo.valor == "No" and modo.estilo == BotonValor.Estilo.NO)
 	modo.pressed.emit()
 	_caso("tocar el boton cambia el valor y la pastilla queda en Si", Ajustes.modo_desarrollador and modo.valor == "Sí" and modo.estilo == BotonValor.Estilo.SI)
@@ -210,7 +212,7 @@ func _ready() -> void:
 
 	# Recursos: cada toque pasa al siguiente y se guarda.
 	var recursos_real: String = Ajustes.recursos
-	var recursos: BotonValor = _boton(config, "Recursos") as BotonValor
+	var recursos: BotonValor = config.get_node(NodePath(GRUPOS + "Rendimiento/Recursos")) as BotonValor
 	Ajustes.recursos = Recursos.AUTO
 	var vistos: PackedStringArray = []
 	for i: int in range(3):
@@ -220,7 +222,7 @@ func _ready() -> void:
 		vistos.append(Ajustes.recursos)
 	_caso("cada toque de Recursos pasa al siguiente y se guarda: bajo, alto y auto", vistos == PackedStringArray([Recursos.BAJO, Recursos.ALTO, Recursos.AUTO]))
 	_caso("en auto la pastilla dice lo que se eligio", Configuracion.nombre_recursos(Recursos.AUTO, true) == "Auto (bajo)" and Configuracion.nombre_recursos(Recursos.ALTO, true) == "Alto")
-	var aviso_de_recursos: Label = config.get_node(^"Lista/AvisoRecursos") as Label
+	var aviso_de_recursos: Label = config.get_node(^"PanelAvanzado/AvisoRecursos") as Label
 	_caso("desde el menu Recursos no esta bloqueado ni avisa", not recursos.bloqueado and not aviso_de_recursos.text.contains(Configuracion.AVISO_RECURSOS_EN_PARTIDA))
 	config.en_partida = true
 	config.abrir()
@@ -228,12 +230,13 @@ func _ready() -> void:
 	var recursos_antes: String = Ajustes.recursos
 	recursos.pressed.emit()
 	_caso("en la partida, tocar Recursos no lo cambia y dice que se cambia desde el menu", Ajustes.recursos == recursos_antes and aviso_de_recursos.visible and aviso_de_recursos.text.contains(Configuracion.AVISO_RECURSOS_EN_PARTIDA))
-	_caso("en la partida no aparece Desarrollador", not modo.visible)
+	# Desde el 25-oct-2026 Desarrollador si aparece en la partida: enciende el panel de pruebas y ver hitbox al momento.
+	_caso("en la partida aparece Desarrollador", modo.visible)
 	config.en_partida = false
 	config.abrir()
 	# FPS: solo con Recursos en alto y pantalla rapida; el refresco se fija aqui porque sin pantalla no hay.
 	var fps_real: int = Ajustes.fps
-	var fps: BotonValor = _boton(config, "Fps") as BotonValor
+	var fps: BotonValor = config.get_node(NodePath(GRUPOS + "Rendimiento/Fps")) as BotonValor
 	Ajustes.recursos = Recursos.ALTO
 	Ajustes.fps = 60
 	config.refresco = 60.0
@@ -257,6 +260,47 @@ func _ready() -> void:
 	Ajustes.fps = fps_real
 	config.refresco = -1.0
 	config.abrir()
+
+	# Avanzado: se abre desde la lista y Volver regresa con el foco en Avanzado.
+	var avanzado: BotonValor = _boton(config, "Avanzado") as BotonValor
+	var panel_avanzado: Control = config.get_node(^"PanelAvanzado") as Control
+	avanzado.pressed.emit()
+	_caso("Avanzado es un enlace y abre su panel", avanzado.estilo == BotonValor.Estilo.ENLACE and panel_avanzado.visible and not lista.visible)
+	config.atras()
+	_caso("Atras en Avanzado vuelve a la lista", lista.visible and not panel_avanzado.visible)
+	# Luces 2D: en bajo se ven bloqueadas en No y avisan solo al tocarlas; en alto cambian, avisan al bus y se guardan.
+	var luces_real: bool = Ajustes.luces_avanzadas
+	var niebla_real: bool = Ajustes.niebla
+	var luces: BotonValor = config.get_node(NodePath(GRUPOS + "Rendimiento/Luces")) as BotonValor
+	var avisadas: Array[StringName] = []
+	var anotar: Callable = func(clave: StringName) -> void: avisadas.append(clave)
+	Eventos.ajuste_grafico_cambiado.connect(anotar)
+	Ajustes.luces_avanzadas = true
+	Ajustes.recursos = Recursos.BAJO
+	config.abrir()
+	var sin_aviso: bool = not aviso_de_recursos.visible
+	luces.pressed.emit()
+	_caso("en bajo, Luces 2D bloqueadas en No; tocarlas no cambia nada y avisa", luces.bloqueado and luces.valor == "No"
+		and sin_aviso and Ajustes.luces_avanzadas and aviso_de_recursos.text.contains(Configuracion.AVISO_LUCES) and avisadas.is_empty())
+	Ajustes.recursos = Recursos.ALTO
+	config.abrir()
+	luces.pressed.emit()
+	Ajustes.luces_avanzadas = true
+	Ajustes.cargar(RUTA_PRUEBA)
+	_caso("en alto, tocar Luces 2D las apaga, avisa al bus y se guarda", not luces.bloqueado and not Ajustes.luces_avanzadas
+		and avisadas == ([Ajustes.LUCES_AVANZADAS] as Array[StringName]))
+	(config.get_node(NodePath(GRUPOS + "Rendimiento/Niebla")) as BotonValor).pressed.emit()
+	_caso("tocar Niebla la cambia y avisa al bus", Ajustes.niebla != niebla_real and (avisadas.back() as StringName) == Ajustes.NIEBLA)
+	# Pruebas y Ver hitbox: solo con el modo desarrollador.
+	var pruebas: BotonValor = config.get_node(NodePath(GRUPOS + "Desarrollo/Pruebas")) as BotonValor
+	Ajustes.modo_desarrollador = false
+	config.abrir()
+	var ocultas: bool = not pruebas.visible
+	modo.pressed.emit()
+	_caso("Pruebas aparece al encender Desarrollador, que avisa al bus", ocultas and pruebas.visible and (avisadas.back() as StringName) == Ajustes.MODO_DESARROLLADOR)
+	Eventos.ajuste_grafico_cambiado.disconnect(anotar)
+	Ajustes.luces_avanzadas = luces_real
+	Ajustes.niebla = niebla_real
 	Ajustes.recursos = recursos_real
 	await _esperar(3)
 
@@ -393,7 +437,8 @@ func _ready() -> void:
 	# El aviso de recursos de Configuracion queda arriba de esa linea, no encima (S50, 13-oct-2026).
 	var conf: Configuracion = con_aviso.get_node(^"Configuracion") as Configuracion
 	conf.abrir()
-	var aviso_recursos: Label = conf.get_node(^"Lista/AvisoRecursos") as Label
+	(conf.get_node(NodePath(OPCIONES + "Avanzado")) as Button).pressed.emit()
+	var aviso_recursos: Label = conf.get_node(^"PanelAvanzado/AvisoRecursos") as Label
 	aviso_recursos.text = "x"
 	aviso_recursos.visible = true
 	await get_tree().process_frame

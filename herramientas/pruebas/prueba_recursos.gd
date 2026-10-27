@@ -11,10 +11,15 @@ const GB: int = 1024 * 1024 * 1024
 func _ready() -> void:
 	Ajustes.cargar_una_vez()
 	var real: String = Ajustes.recursos
+	# La niebla solo se ve y avanza con su ajuste (apagado por omision): aqui se mide su movimiento.
+	Ajustes.niebla = true
 	_caso("32 bits es debil aunque sobre memoria", Recursos.debil_segun(true, 8 * GB))
 	_caso("2 GB de memoria es debil", Recursos.debil_segun(false, 2 * GB))
 	_caso("64 bits y 8 GB no es debil", not Recursos.debil_segun(false, 8 * GB))
 	_caso("memoria desconocida (0 o -1, lo que da el motor sin dato) no cuenta", not Recursos.debil_segun(false, 0) and not Recursos.debil_segun(false, -1))
+	_caso("Android lo marca de poca memoria: debil aunque la memoria no se sepa o sobre", Recursos.debil_segun(false, 0, true) and Recursos.debil_segun(false, 8 * GB, true))
+	_caso("MemTotal de /proc/meminfo en bytes (S50: 1978704 kB)", Recursos.memoria_de_meminfo("MemTotal:        1978704 kB\nMemFree:  208868 kB") == 1978704 * 1024)
+	_caso("un meminfo sin MemTotal, vacio o con basura da 0", Recursos.memoria_de_meminfo("MemFree: 5 kB") == 0 and Recursos.memoria_de_meminfo("") == 0 and Recursos.memoria_de_meminfo("MemTotal: x kB") == 0)
 	Ajustes.recursos = Recursos.BAJO
 	_caso("alto en un telefono debil avisa", Recursos.avisar(Recursos.ALTO, true))
 	_caso("bajo o auto en un telefono debil, o alto en uno fuerte, no avisan", not Recursos.avisar(Recursos.BAJO, true) and not Recursos.avisar(Recursos.AUTO, true) and not Recursos.avisar(Recursos.ALTO, false))

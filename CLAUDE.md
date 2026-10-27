@@ -96,7 +96,7 @@ PowerShell, desde la raíz del repo. `GODOT_PATH` es la ruta al ejecutable de co
 - Todo lo persistente tiene un ID de texto estable. El guardado es JSON con versión y detección de dañado.
 - Colisión con formas invisibles; el arte no colisiona.
 - La zona de pruebas y sus salas (`herramientas/salas/`) viajan en el paquete publicado; las pruebas de código
-  (`herramientas/pruebas/`), el validador, `generar_mapa`, `generar_sprites` y el puerto de depuración no. El núcleo carga lo de
+  (`herramientas/pruebas/`), el validador, `generar_mapa`, `generar_sprites`, `generar_trazo`, `generar_efectos` y el puerto de depuración no. El núcleo carga lo de
   `herramientas/` con `load()` solo si existe, nunca con `preload` ni autoload. Detalle en `docs/contrato.md`,
   «Paquete de publicación».
 - Pruebas solo donde la lógica puede romperse: guardado, cuentas (daño, amuletos), reglas y el validador de
@@ -104,9 +104,12 @@ PowerShell, desde la raíz del repo. `GODOT_PATH` es la ruta al ejecutable de co
 - Las pruebas, los guiones y el validador imprimen el resumen y los fallos, no cada caso que pasa.
 - `.gitattributes` con `eol=lf`: los hooks de `sh` y el CI corren en Linux. `LICENSE` solo MIT; el arte queda fuera.
 - CI: `ci.yml` con `chickensoft-games/setup-godot@v2`, sin plantillas; el check que exige el ruleset se llama `validar`.
-- Android: id `com.themike54.elpasofinal`, ARM de 32 (S50) y 64 bits. El preset «Publicacion» excluye
-  `*funciones.json`, `herramientas/pruebas/*`, `herramientas/validar.*`, `herramientas/generar_mapa.*`,
-  `herramientas/generar_sprites.*` y `herramientas/puerto_depuracion.*`; «Desarrollo» lleva todo y arranca con `--print-fps`.
+- Android: id `com.themike54.elpasofinal`, ARM de 32 (S50) y 64 bits. Los dos presets llevan los `.mp4` con
+  `include_filter` y dejan fuera los `.ogv` (Theora solo para la PC y los guiones). El preset «Publicacion» excluye
+  además `*funciones.json`, `herramientas/pruebas/*`, `herramientas/validar.*`, `herramientas/generar_mapa.*`,
+  `herramientas/generar_sprites.*`, `herramientas/generar_trazo.*`, `herramientas/generar_efectos.*` y
+  `herramientas/puerto_depuracion.*`;
+  «Desarrollo» lleva lo demás y arranca con `--print-fps`.
 
 ## Reglas de este proyecto
 - IMPORTANT: Claude nunca ejecuta `git commit`, `git push`, `git merge`, `git rebase`, `git tag`, `gh pr create` ni

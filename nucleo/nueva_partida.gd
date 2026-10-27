@@ -3,11 +3,14 @@ extends Control
 # Pantalla de partida nueva del menu: al tocar una ranura vacia se elige personaje (hombre o mujer) y se escribe un
 # nombre con el teclado del telefono antes de empezar. Lo elegido va a Partida y al guardado (personaje y nombre, que
 # ya existian vacios). Se arma en codigo como las ranuras. Atras y pausa vuelven a las ranuras (cerrado).
+# Mientras haya un solo personaje con arte, la eleccion queda oculta (ELEGIR_PERSONAJE) y se empieza con el primero.
 
 signal confirmada(personaje: String, nombre: String)
 signal cerrado()
 
 const PERSONAJES: PackedStringArray = ["hombre", "mujer"]
+## Con false la fila de personajes no se ve y la partida empieza con el primero: solo el hombre tiene arte (25-oct-2026).
+const ELEGIR_PERSONAJE: bool = false
 const LARGO_NOMBRE: int = 12
 ## Nombre si se deja vacio, segun el personaje.
 const NOMBRE_POR_OMISION: Dictionary[String, String] = {"hombre": "Alumno", "mujer": "Alumna"}
@@ -49,12 +52,13 @@ func _exit_tree() -> void:
 
 func abrir(ranura: int) -> void:
 	numero = ranura
-	personaje = ""
+	personaje = "" if ELEGIR_PERSONAJE else PERSONAJES[0]
 	campo.text = ""
 	_titulo.text = "Nueva partida %d" % ranura
 	_pintar()
 	visible = true
-	Tema.dar_foco(botones[PERSONAJES[0]])
+	# Sin eleccion, el foco va a Empezar y no al nombre: en el telefono el campo enfocado abriria el teclado.
+	Tema.dar_foco(botones[PERSONAJES[0]] if ELEGIR_PERSONAJE else empezar_boton)
 
 
 func atras() -> void:
@@ -142,6 +146,7 @@ func _armar() -> void:
 	var personajes: HBoxContainer = HBoxContainer.new()
 	personajes.name = "Personajes"
 	personajes.add_theme_constant_override(&"separation", int(Tema.SEPARACION))
+	personajes.visible = ELEGIR_PERSONAJE
 	filas.add_child(personajes)
 	for cual: String in PERSONAJES:
 		var boton: Button = Tema.boton(cual.capitalize(), Tema.CELDA)

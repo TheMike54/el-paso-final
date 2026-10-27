@@ -17,7 +17,8 @@ el contrato todavía no define se propone en un plan antes de programarlo.
   `ResourceLoader.exists`, nunca `preload`): las de `herramientas/`, en `docs/contrato.md`, «Paquete de
   publicación»; la sala carga `interfaz/interfaz.tscn` y `mapa/pantalla_mapa.tscn`; el `MenuEstaciones` lee
   `mapa/indice_salas.tres` con `get()`, sin nombrar `IndiceSalas` (sin él, la lista sola); y de `contenido/`, `Sala.ruta_de`
-  (salas), la `Mochila` (`preguntas_mochila.tres`) y `Estacion.tabla_de` (`estaciones.tres`). Una excepción nueva va
+  (salas), la `Mochila` (`preguntas_mochila.tres`), `Estacion.tabla_de` (`estaciones.tres`) y el menú, que nombra en
+  `menu.tscn` la escena de partida nueva y la sala inicial (`@export_file`, se cargan a demanda). Una excepción nueva va
   aquí y, si es de `herramientas/`, en el contrato.
 
 ## Cómo se comprueba

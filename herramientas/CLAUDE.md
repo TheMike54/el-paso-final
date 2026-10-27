@@ -34,6 +34,7 @@ Leer `funciones.json` de esta carpeta.
   | Un `DanoContacto` con `peligro` dentro de algo que se mueve falla: lo que se mueve solo golpea | Aquí | `validador-peligro-movil` |
   | Cada `BolsaPreguntas` sin fallos | Aquí | `validador-bolsa-mochila` |
   | Índice de salas del mapa al día | `mapa/CLAUDE.md` | `mapa-indice` (`mapa/funciones.json`) |
+  | Zonas encimadas: dos rectángulos del índice del mapa de zonas distintas no se cruzan; cada zona tiene su franja | `docs/contrato.md`, `posicion_mapa` | `validador-mapa-zonas` |
   | `GRUPOS` y `OCULTAS` de `herramientas/salas/zona_pruebas.gd` nombran escenas que existen; cada sala de `GRUPOS` tiene su línea en `SALAS`, y `SALAS` no nombra salas fuera de `GRUPOS` | Aquí | `validador-zona-pruebas`, `zona-pruebas-siete-categorias` |
   | Nada fuera de `herramientas/pruebas/` (ni `project.godot`) nombra algo de dentro por ruta o por uid: no viaja en el paquete de publicación | `docs/contrato.md`, «Paquete de publicación» | `validador-pruebas-aparte` |
 - Los `.ps1`, además de lo que dice el raíz: sin `$ErrorActionPreference = 'Stop'` alrededor de un ejecutable.

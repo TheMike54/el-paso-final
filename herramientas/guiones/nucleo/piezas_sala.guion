@@ -1,0 +1,4 @@
+# Casos de herramientas/pruebas/prueba_piezas_sala.gd: FondoTapado, oscuridad, LuzSala, Colgante, Niebla y
+# EmisorRafaga.
+escena res://herramientas/pruebas/sala_piezas_sala_cuentas.tscn
+fin 30

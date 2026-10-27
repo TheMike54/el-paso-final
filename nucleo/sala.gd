@@ -2,7 +2,8 @@ class_name Sala
 extends Node2D
 # Raiz de toda sala: al entrar crea al jugador (en la puerta por la que llega o en Entrada), le
 # pasa los limites para la camara y pone los controles tactiles, la pausa, el marco de menus con sus paginas, la vibracion, el fundido
-# a negro (empieza en negro y aclara), la interfaz y el mapa. Si el jugador muere, funde a negro y lo hace
+# a negro (empieza en negro y aclara), el contador de FPS (que tambien pone el limite de FPS), el panel de pruebas y ver
+# hitbox (solo con el modo desarrollador), la interfaz y el mapa. Si el jugador muere, funde a negro y lo hace
 # reaparecer en el ultimo banco (o en Entrada) con las vidas llenas.
 const ESCENA_JUGADOR: PackedScene = preload("res://nucleo/jugador.tscn")
 const ESCENA_CONTROLES: PackedScene = preload("res://nucleo/controles_tactiles.tscn")
@@ -49,6 +50,10 @@ const CARPETA_PRUEBAS: String = "res://herramientas/salas/zonas/"
 ## Esquina de la sala en el mapa del mundo, en px: el mapa la dibuja en posicion_mapa + limites. Las salas de una
 ## zona se acomodan como se recorren (la de la derecha empieza donde acaba la otra).
 @export var posicion_mapa: Vector2 = Vector2.ZERO
+## Oscuridad de la sala, de 0 (sin cambio) a 1 (negro): la aplica el Brillo de la sala, multiplicando, sin dibujar
+## nada encima (una capa oscura encima costaba 2,2 FPS en el S50). Las LuzSala la aclaran con su halo aditivo y, con
+## las luces 2D, con su PointLight2D.
+@export_range(0.0, 1.0, 0.01) var oscuridad: float = 0.0
 
 var _ticks_para_reaparecer: int = 0
 
@@ -127,7 +132,11 @@ func _ready() -> void:
 	add_child(vibracion)
 	var brillo: Brillo = Brillo.new()
 	brillo.name = &"Brillo"
+	brillo.oscuridad = oscuridad
 	add_child(brillo)
+	add_child(ContadorFps.new())
+	add_child(PanelPruebas.new())
+	add_child(VerHitbox.new())
 	for ruta: String in [INTERFAZ, MAPA]:
 		if ResourceLoader.exists(ruta):
 			var escena: PackedScene = load(ruta) as PackedScene

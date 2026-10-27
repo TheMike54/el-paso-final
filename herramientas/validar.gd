@@ -220,11 +220,12 @@ func _transformada_en(raiz: Node, nodo: Node) -> Transform2D:
 	return total
 
 
-# Presupuesto de una sala (seccion 8 del plan de cierre del nucleo, medido para el S50): a lo mas 3 emisores de
-# particulas con 60 particulas entre todos, 30 plantas, ninguna luz 2D y 2 capas translucidas grandes (cada capa
-# translucida se pinta encima de lo de atras: el costo es el area, gpu_optimization.rst).
-const MAXIMO_EMISORES: int = 3
-const MAXIMO_PARTICULAS: int = 60
+# Presupuesto de una sala, medido para el S50: a lo mas 16 emisores de particulas con 200 particulas entre todos
+# (la demo de La Celda, con 13 y ~100, costo menos de 1 FPS: el limite del S50 es el relleno, 25-oct-2026), 30
+# plantas, ninguna luz 2D en la escena (LuzSala la crea en codigo solo con su ajuste) y 2 capas translucidas grandes
+# (cada capa translucida se pinta encima de lo de atras: el costo es el area, gpu_optimization.rst).
+const MAXIMO_EMISORES: int = 16
+const MAXIMO_PARTICULAS: int = 200
 const MAXIMO_PLANTAS: int = 30
 const MAXIMO_CAPAS_TRANSLUCIDAS: int = 2
 ## Una capa es grande si cubre al menos un cuarto de la vista base (1280x720).
@@ -649,6 +650,18 @@ func _revisar_indice_mapa() -> void:
 	var coincide: bool = indice.call(&"iguales", nuevo, guardado)
 	if not coincide:
 		_fallos.append("res://mapa/indice_salas.tres (no coincide con las salas: correr herramientas/generar_mapa.tscn)")
+	# Todas las zonas comparten un plano: cada una va en su franja (docs/contrato.md, «Sala», posicion_mapa) y una sala
+	# encimada con la de otra zona se pintaria encima en la vista alejada del mapa.
+	var rectangulos: Dictionary = nuevo.get(&"rectangulos")
+	var ids: Array = rectangulos.keys()
+	for i: int in range(ids.size()):
+		for j: int in range(i + 1, ids.size()):
+			var a: String = ids[i]
+			var b: String = ids[j]
+			var rect_a: Rect2 = rectangulos[a]
+			var rect_b: Rect2 = rectangulos[b]
+			if Sala.zona_de(a) != Sala.zona_de(b) and rect_a.intersects(rect_b):
+				_fallos.append("res://mapa/indice_salas.tres (%s y %s son de zonas distintas y se enciman en el mapa: mover posicion_mapa)" % [a, b])
 
 
 # Una sala renombrada o borrada no puede quedar en las tablas de la zona de pruebas: dejaria de aparecer sin aviso.
