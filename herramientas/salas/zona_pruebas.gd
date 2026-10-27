@@ -15,7 +15,7 @@ const GRUPOS: Dictionary = {
 	"Mundo": ["sala_banco.tscn", "sala_puerta_a.tscn", "sala_camara.tscn", "sala_capas.tscn", "sala_secretos.tscn", "sala_pizarrones.tscn"],
 	"Partida": ["sala_dialogo.tscn", "sala_reto.tscn", "sala_lo_perdido.tscn", "sala_tienda.tscn"],
 	"Rendimiento": ["sala_recursos.tscn", "sala_arte.tscn"],
-	"Zonas": ["zonas/mapa/mapa_1.tscn", "zonas/mapa/mapa_2.tscn", "zonas/prueba/prueba_1.tscn", "zonas/prueba/prueba_2.tscn", "zonas/prueba/prueba_3.tscn", "zonas/prueba/prueba_4.tscn"],
+	"Zonas": ["la_celda.tscn", "zonas/mapa/mapa_1.tscn", "zonas/mapa/mapa_2.tscn", "zonas/prueba/prueba_1.tscn", "zonas/prueba/prueba_2.tscn", "zonas/prueba/prueba_3.tscn", "zonas/prueba/prueba_4.tscn"],
 }
 ## Nombre y para que sirve cada sala de GRUPOS, el detalle en una linea corta (cabe en CELDA con Tema.LETRA_DETALLE).
 ## validar.gd falla si una sala de GRUPOS no tiene su linea o si una linea nombra una sala que no esta en GRUPOS. Una
@@ -53,6 +53,7 @@ const SALAS: Dictionary = {
 	"sala_tienda.tscn": ["Tienda", "Comprar con PejeCoins"],
 	"sala_recursos.tscn": ["Recursos", "Bajo y alto"],
 	"sala_arte.tscn": ["Arte", "FPS con todo el arte"],
+	"la_celda.tscn": ["La Celda", "Cinemática y sala"],
 	"zonas/mapa/mapa_1.tscn": ["Mapa 1", "Mapa, pluma y brújula"],
 	"zonas/mapa/mapa_2.tscn": ["Mapa 2", "Sala alta en el mapa"],
 	"zonas/prueba/prueba_1.tscn": ["Prueba 1", "Banco y viaje rápido"],
@@ -83,6 +84,10 @@ var _botones_categoria: Dictionary[String, Button] = {}
 
 func _ready() -> void:
 	theme = Tema.crear()
+	# Es un menu: limite de 60 FPS aunque se llegue desde una sala a 120.
+	var contador: ContadorFps = ContadorFps.new()
+	contador.siempre_en_menu = true
+	add_child(contador)
 	_leer_salas()
 	var grupo: ButtonGroup = ButtonGroup.new()
 	for categoria: String in _salas:
@@ -188,7 +193,9 @@ func _leer_salas() -> void:
 
 func _mostrar(categoria: String) -> void:
 	_ultima = categoria
-	_botones_categoria[categoria].set_pressed_no_signal(true)
+	# set_pressed_no_signal no desmarca a las demas del grupo (class_basebutton.rst:466): con L1 / R1 quedaban varias.
+	for nombre: String in _botones_categoria:
+		_botones_categoria[nombre].set_pressed_no_signal(nombre == categoria)
 	for hijo: Node in _lista.get_children():
 		_lista.remove_child(hijo)
 		hijo.queue_free()

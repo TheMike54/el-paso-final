@@ -5,7 +5,7 @@ Es parte de `docs/contrato.md` (mismas reglas: se actualiza en el mismo cambio q
 largo. Los componentes que usa el contenido (`Golpeable`, `DanoContacto`, `Cortable`…) siguen en el contrato.
 
 `nucleo/jugador.tscn` (`class_name Jugador`, `CharacterBody2D`): camina y salta con toda su lógica en
-`_physics_process`. Reglas del salto, como en Hollow Knight; la caja gris (`sala_inicial`) no las lleva.
+`_physics_process`. Reglas del salto, como en Hollow Knight.
 Todos los valores son propiedades exportadas del jugador y se ajustan en la zona de pruebas; las cuatro de la cámara
 (`temblor_fraccion_x`, `suavizado_camara_x`, `adelanto_camara` y `tiempo_camara_y`) son del script de su nodo `Camara`
 (`nucleo/camara_jugador.gd`, `class_name CamaraJugador`):
@@ -180,8 +180,13 @@ El cuerpo es el nodo `Dibujo` (`AnimatedSprite2D`) de `nucleo/jugador.tscn`, con
 solo lee al jugador: la física, el control y las áreas no dependen de él.
 
 - `Dibujo` está en (0, −80), el centro del cuerpo, que es también el pivote del giro de la voltereta; `centered`
-  apagado y `offset` fijo (−158, −96), que pone el eje del cuerpo del lienzo común (316 × 180) sobre la x del
-  jugador y los pies en su y. Lleva `show_behind_parent`: lo que dibuja el `_draw` del jugador queda encima.
+  apagado y `offset` fijo (−158, −98), que pone el eje del cuerpo del lienzo común (316 × 182, pies en la fila 178)
+  sobre la x del jugador y los pies en su y. El lienzo lo mide el script que arma el atlas: si cambia, cambia el
+  `offset` (pasó de 180 a 182 el 24-oct-2026, al corregir la escala del ataque vertical). Lleva `show_behind_parent`: los hijos del jugador que no lo llevan (el trazo, el frente del aura de curar) quedan encima.
+- Cada golpe deja un trazo blanco (`Trazo`, un `TrazoAtaque` hijo del jugador, ver «Enemigos» en
+  `docs/contrato.md`): `_iniciar_ataque` lo dispara sobre el área de golpe ya colocada (de lado, `posicion_ataque_arriba`
+  o `posicion_pogo`), así sigue al área si esta cambia. Se ve desde el cuarto tick del golpe (guion
+  `nucleo/trazo_jugador`).
 - Al final de `_physics_process`, tras mover y tras la cámara, `_animar()` llena un `AnimacionJugador.Estado` y
   `AnimacionJugador.elegir()` (`nucleo/animacion_jugador.gd`, funciones puras) da la animación. Gana la primera fila
   que se cumple, en el orden de `HeroAnimationController.UpdateAnimation` de Hollow Knight:
@@ -218,12 +223,33 @@ solo lee al jugador: la física, el control y las áreas no dependen de él.
   la pared (decidido el 21-oct-2026). Como la mano y los pies de esa hoja sobresalen 90 px por detrás del eje, el
   `Dibujo` se aparta de la pared lo que sobra sobre medio ancho del jugador (`AnimacionJugador.separacion_pared`, de
   los márgenes de los `AtlasTexture`: 50 px), para que toquen su borde sin meterse. Invulnerable: el alfa del `modulate` baja a
-  `PARPADEO` (0,35) 4 ticks de cada 8, como el `InvulnerablePulse` de Hollow Knight. Curando: tinte `TINTE_CURANDO`.
-- Destello en blanco solo en el parry, mientras dura su congelado y `TICKS_DESTELLO_PARRY` ticks después (no muerto).
+  `PARPADEO` (0,35) 4 ticks de cada 8, como el `InvulnerablePulse` de Hollow Knight.
+- Destello en blanco solo en el parry: `TICKS_DESTELLO_PARRY` (6) ticks, 0,1 s, contados también durante el congelado
+  (no muerto; antes duraba todo el congelado y 8 ticks más: en la maqueta aprobada el 25-oct-2026 no tapa al personaje).
   El congelado de un golpe recibido o dado no aclara el cuerpo: el golpe recibido se lee por el parpadeo, como en
   Hollow Knight y Silksong, que no aclaran al héroe en el parry ni durante el congelado (decidido el 21-oct-2026). Es un
   `ShaderMaterial` con `nucleo/arte/destello.gdshader` (`mix` del color con blanco según el uniforme `cantidad`). Un
   `modulate` mayor que 1 no aclara: Compatibility satura el color en 1 (`tutorials/rendering/renderers.rst:352,377`).
   El valor se cambia solo cuando cambia.
-- `_draw` dibuja solo los efectos provisionales, encima del cuerpo: el rectángulo del ataque, la estocada y el
-  estallido del parry.
+- El golpe (normal, arriba, abajo y la estocada) se ve solo con su trazo blanco (`TrazoAtaque`); el área se ve con
+  «Ver hitbox» (decidido por la persona el 25-oct-2026). Desviar un disparo no aclara el cuerpo ni congela (contrato,
+  «Enemigos»).
+- Efectos (elegidos por la persona el 25-oct-2026 en maquetas animadas): hojas de cuadros que se reproducen con
+  `EfectoCuadros` (contrato, «Enemigos»), dibujadas una vez pixel por pixel por `herramientas/generar_efectos.gd` en
+  tres capas encajadas (azul, celeste, blanca), para que se vean de una sola pieza; en el juego son un sprite por
+  efecto. Sin luz: la oscuridad de la sala no los apaga.
+  - Parry: destello de luz (`efecto_parry.png`, 4 cuadros de 352x208, 0,2 s, aditivo) que corre durante el congelado,
+    hijo de la sala (queda fijo aunque el jugador salga empujado). De lado va en la punta de la espada del cuadro que
+    golpea (`PUNTA_ESPADA_LADO`, (122, −117) desde los pies, medida en el atlas); arriba y abajo, entre el área de golpe
+    y el ataque parado, porque la espada del dibujo no llega ahí. El parry llega en la preparación del golpe y el
+    congelado la sostendría con la espada atrás: el clip salta ya a su cuadro de golpe (`CUADRO_GOLPE`). La chispa de
+    un disparo desviado es el mismo destello a la mitad (`ESCALA_CHISPA`), sin correr en el congelado.
+  - Bola: bola de fuego en capas (`efecto_bola.png`, 6 cuadros de 224x160 en bucle; opacidad 80 % el centro, 65 % y
+    50 % las de fuera), espejada con `sentido`. La segunda fila no lleva las gotas sueltas: sale los primeros 3
+    cuadros, cuando asomarían sobre la cabeza del jugador. La forma de golpe (60x40) no cambió.
+  - Curar: el aura (`efecto_curar.png`, 6 cuadros de 320x420: picos filosos, 11, 10 y 9 por lado según la capa, y
+    gotas y chispas que nacen en el piso; opacidad 45, 35 y 25 %) detrás del cuerpo, sus rayas y chispas
+    (`efecto_curar_frente.png`) delante, y una luz falsa: el halo de `LuzSala` (aditivo, sin `Light2D`) de 660 px que
+    crece con lo curado (0,35 + t / 0,6, como el aura del HTML de diseño) y titila. Se ven solo mientras `curando`.
+    El aura va detrás con `show_behind_parent` y como primer hijo, no con `z_index` negativo, que la dejaba bajo el
+    fondo de la sala.

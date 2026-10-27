@@ -1,4 +1,4 @@
-ACTIVO
+CERRADO
 
 # Aviso de acción en los pizarrones
 
@@ -227,3 +227,7 @@ pega al tocarlo; curar pasado el caminante, con la nota; el aviso «Sentarse» s
 - Revisor (17-oct-2026): aprobado. Observó que el tramo «y el tick anterior» del filtro de diálogo no lo cubre ningún
   caso: hoy no hace falta, porque la caja de diálogo baja `hablando` al salir del árbol, después del tick. Se deja así.
 - Falta H10.
+
+## Cierre (24-oct-2026)
+
+H10 hecho en el QA del #6 (issue #8, Galaxy A55 5G con DUALSHOCK 4): con el dedo el aviso y su botón aparecen al llegar; con el control, los botones del DUALSHOCK 4; el aviso se va al hacer la acción; tocar el touchpad pasa al modo dedo y el stick devuelve los botones del control. Fusionado en `main` con el #6.

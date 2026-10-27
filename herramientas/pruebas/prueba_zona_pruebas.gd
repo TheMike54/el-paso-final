@@ -36,6 +36,8 @@ func _ready() -> void:
 	_caso("y su boton queda marcado en la fila", botones[1].button_pressed)
 	await _presionar(&"pagina_anterior")
 	_mostrando(zona, primera, "L1 vuelve a la primera")
+	var marcados: Array[int] = _marcados(botones)
+	_caso("y solo su boton queda marcado (docs/errores/2026-10-24-varias-categorias-marcadas.md)", marcados.size() == 1 and marcados[0] == 0)
 	await _presionar(&"pagina_anterior")
 	_mostrando(zona, nombres[nombres.size() - 1], "L1 desde la primera da la vuelta a la ultima")
 	await _presionar(&"pagina_siguiente")
@@ -71,6 +73,15 @@ func _ready() -> void:
 	await _usar(false)
 	_caso("tras un toque la barra no los muestra", _iconos_en(iconos, false))
 	_resumen()
+
+
+# Indices de los botones de la fila que estan marcados.
+func _marcados(botones: Array[Button]) -> Array[int]:
+	var marcados: Array[int] = []
+	for i: int in range(botones.size()):
+		if botones[i].button_pressed:
+			marcados.append(i)
+	return marcados
 
 
 func _mostrando(zona: Control, esperada: String, nombre: String) -> void:

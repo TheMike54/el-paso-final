@@ -1,4 +1,4 @@
-ACTIVO
+CERRADO
 
 # Tienda, pago de estación y viaje rápido como Hollow Knight y Silksong
 
@@ -107,3 +107,7 @@ y `pausa_foco`, sin cambiar su `.esperado`.
   Si no caben, el detalle va debajo de la lista. Se mide antes de decidir.
 - **El HUD encima del menú** puede chocar con la capa de la pausa o con el aviso de guardado: se revisa la tabla de
   capas.
+
+## Cierre (24-oct-2026)
+
+H5 hecho en el QA del #6 (issue #7, Galaxy Tab S9 FE, con el dedo y con control Xbox): precios, lo que no alcanza en gris, Sí / No, la compra se queda, el contador de PejeCoins, cerrar con B no cura y con A no salta; cobro de 50 PejeCoins con Sí / No, viaje entre estaciones desde el mapa y «No» sale sin cobrar ni viajar; pausa centrada con sus adornos. Fusionado en `main` con el #6.

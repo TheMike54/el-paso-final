@@ -1,4 +1,4 @@
-ACTIVO
+CERRADO
 
 # Menús en gis
 
@@ -161,3 +161,6 @@ No estaban en lo aprobado.
 
 **Falta:** H6, la prueba de la persona en el S50 y el S21.
 
+## Cierre (24-oct-2026)
+
+H6 hecho en el QA del #6 (issue #7) en una Galaxy Tab S9 FE con el dedo y con control Xbox, en lugar del S50 y el S21: nada cortado ni encimado y el gis se lee bien (fila «Menús en gis» de `docs/pruebas.md`). En el S50 y el S21 queda sin probar. Fusionado en `main` con el #6. El fallo de L1/R1 en la zona de pruebas sigue en `planes/activos/nucleo-arreglos-qa-6.md`.

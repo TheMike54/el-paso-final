@@ -70,13 +70,18 @@ func _ready() -> void:
 			and UltimaEntrada.clasificar(clic, true) == UltimaEntrada.SIN_CAMBIO)
 	_caso("clasificar no anota", UltimaEntrada.dispositivo == Mando.Dispositivo.TOQUE)
 
-	# Las dos reglas de que entrada cuenta (marca_teclado y es_de_juego) no son la misma: Atras y el volumen marcan el
-	# teclado pero no son del juego. W es saltar (Mando.por_omision arriba); Enter solo es ui_accept.
+	# Las dos reglas de que entrada cuenta (marca_teclado y es_de_juego) no son la misma: Atras marca el teclado pero no
+	# es del juego, y el volumen no es ninguna de las dos (desde el 24-oct-2026). W es saltar (Mando.por_omision arriba);
+	# Enter solo es ui_accept.
 	var volumen: InputEventKey = InputEventKey.new()
 	volumen.keycode = KEY_VOLUMEUP
 	volumen.physical_keycode = KEY_VOLUMEUP
 	volumen.pressed = true
-	_caso("el volumen marca el teclado pero no es de juego", UltimaEntrada.marca_teclado(volumen) and not UltimaEntrada.es_de_juego(volumen))
+	_caso("el volumen no marca el teclado ni es de juego", not UltimaEntrada.marca_teclado(volumen) and not UltimaEntrada.es_de_juego(volumen))
+	var bajar: InputEventKey = InputEventKey.new()
+	bajar.keycode = KEY_VOLUMEDOWN
+	bajar.pressed = true
+	_caso("bajar el volumen (la captura) no cambia nada en clasificar", UltimaEntrada.clasificar(bajar) == UltimaEntrada.SIN_CAMBIO)
 	var atras: InputEventKey = InputEventKey.new()
 	atras.keycode = KEY_BACK
 	atras.physical_keycode = KEY_BACK
