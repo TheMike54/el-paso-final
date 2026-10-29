@@ -1,4 +1,4 @@
-ACTIVO
+CERRADO (29-oct-2026, con el PR de `feature/contenido-celda`)
 
 # La Celda (`celda_1`): la primera sala con su arte — versión 2
 
@@ -12,7 +12,7 @@ ella.
 
 | Decisión v1 | v2 | Por qué |
 |---|---|---|
-| 1. Atlas propio con empaquetador | **Sin atlas por ahora**; piezas sueltas | En la demo los draw calls (~43-70) no eran el límite del S50: el límite es el relleno (px pintados). Un atlas no lo baja. Se mide de nuevo si una sala pasa de ~150 draw calls |
+| 1. Atlas propio con empaquetador | **Sin atlas por ahora**; piezas sueltas | En la copia de pruebas los draw calls (~43-70) no eran el límite del S50. Qué limita se mide A/B en el teléfono (27-oct-2026: las monedas redibujadas en vector y la capa lejana translúcida costaban más que el relleno de las capas opacas). Un atlas no baja ninguno de los dos. Se mide de nuevo si una sala pasa de ~150 draw calls |
 | 2. Luz: arte oscurecido + halos aditivos chicos | Se confirma, con la oscuridad como `CanvasModulate` (no una capa encima) y luces 2D opcionales en Recursos alto | Velo como capa: −2,2 FPS; halos chicos: dentro del ruido; luces 2D: 52 → 7-10 FPS en el S50, 60 en el S20 |
 | 3. Mipmaps con 8 px de separación | Mipmaps sí; la separación ya no aplica (sin atlas) | — |
 | 4. Columnas sin colisión | Se queda | — |
@@ -21,7 +21,7 @@ ella.
 
 ## Lo medido que manda (S50, Mali-T820, Compatibility)
 
-- El límite es el **relleno**: cada capa a pantalla completa se pinta entera. Partículas (13 emisores, ~100
+- Lo que limita se mide A/B, no se supone (corregido el 27-oct-2026: el relleno no era todo; las monedas vectoriales y la capa lejana translúcida costaban más). Cada capa a pantalla completa se pinta entera. Partículas (13 emisores, ~100
   partículas) y draw calls no pesan (< 1 FPS).
 - Las 9 optimizaciones juntas llevaron la sala de 19 a 52,6 FPS quieto; solas casi no se notan: se miden combinadas.
 - **Recorte de fondos al borde de la pared** (25-oct): +7 FPS donde se ve el fin de la pared, +2,6 en el recorrido.

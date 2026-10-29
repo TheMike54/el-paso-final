@@ -5,10 +5,8 @@ description: Reglas de física 2D y entrada de este proyecto (Godot 4.7.2). Usar
 
 # Física 2D y entrada en este proyecto
 
-Cada cita se abrió en la documentación de Godot 4.7 en la línea citada y cada ejemplo se buscó en este repo;
-«Cómo se comprueba aquí» dice cómo revisarlo en adelante, no que ya se haya corrido. Lo demás se busca con Grep en `$env:GODOT_DOCS`
-(rutas `tutorials/...`, las mismas que citan las tablas).
-Tocar el jugador, su física o su movimiento es punto crítico: el cambio lleva `revisor` antes del bloque de commit.
+Citas a `$env:GODOT_DOCS` como `archivo:línea`; «Cómo se comprueba aquí» dice cómo revisar la regla. Lo demás se
+busca con Grep ahí (rutas `tutorials/...`, las mismas que citan las tablas).
 
 Los valores (velocidades, ticks, gravedad, tamaños) no están aquí: viven en `docs/jugador.md` y en «Configuración
 del proyecto», «Entrada», «Componentes» y «Enemigos» de `docs/contrato.md`. Una regla de aquí nunca manda sobre
@@ -46,8 +44,8 @@ El arte no colisiona (decisión cerrada en `CLAUDE.md`): las formas son invisibl
 
 | Regla | Doc | Cómo se comprueba aquí |
 |---|---|---|
-| Capa y máscara de cada cuerpo y área con `Capas.poner(self, capa, mascara)` en su `_ready`, nunca en el `.tscn`; una pieza nueva usa una capa de la tabla de `docs/contrato.md`, «Capas de física», y una capa nueva va ahí, en `nucleo/capas.gd` y en `[layer_names]` de `project.godot` | `tutorials/physics/physics_introduction.rst:115` | Guion `capas_fisica`; Grep de `collision_layer` y `collision_mask` en los `.tscn`: sin resultados |
-| `Area2D` para detectar y para lo que golpea sin más física; `StaticBody2D` para el entorno (`docs/contrato.md`, «Sala») | `tutorials/physics/using_area_2d.rst:95`, `tutorials/physics/physics_introduction.rst:55` | `validar.ps1`; ejemplo `nucleo/coleccionable.gd` |
+| Capa y máscara de cada cuerpo y área con `Capas.poner(self, capa, mascara)` en su `_ready`, nunca en el `.tscn`; una pieza nueva usa una capa de la tabla de `docs/contrato.md`, «Capas de física», y una capa nueva va ahí, en `nucleo/capas.gd` y en `[layer_names]` de `project.godot` | `tutorials/physics/physics_introduction.rst:115` | Guion `capas_fisica`; Grep de `collision_layer` y `collision_mask` en los `.tscn`: sin resultados. Ejemplos: `nucleo/recogible.gd` (área), `nucleo/plataforma_delgada.gd` y `nucleo/suelo_fragil.gd` (cuerpo), `nucleo/vaiven.gd` (pone la capa al cuerpo que mueve) |
+| `Area2D` para detectar y para lo que golpea sin más física; `StaticBody2D` para el entorno (`docs/contrato.md`, «Sala») | `tutorials/physics/using_area_2d.rst:95`, `tutorials/physics/physics_introduction.rst:55` | `validar.ps1`; ejemplo `nucleo/recogible.gd` (base de `Coleccionable`, `MonedasSueltas`, `ObjetoHabilidad` y `ObjetoMapa`) |
 | `body_entered` si lo que llega es un cuerpo (el jugador), `area_entered` si es un área (un `Golpeable`) | `tutorials/physics/using_area_2d.rst:63` | Guiones `combate_chico`, `poder_bola`; ejemplo `nucleo/proyectil.gd` |
 | Apagar lo que no debe detectar o ser detectado con `monitoring` / `monitorable`. Convención del repo: dentro del tick, con `set_deferred(&"monitoring", ...)` (`nucleo/jugador.gd`, `nucleo/ataque_enemigo.gd`) | `tutorials/physics/using_area_2d.rst:37` | Guiones `jugador_ataque_y_vida`, `parry` |
 | Agregar nodos desde un callback de física con `add_child.call_deferred(...)` (así nace la bola en `nucleo/jugador.gd`) | `tutorials/performance/thread_safe_apis.rst:41` | Guiones `poder_bola`, `poder_bola_recarga` |
@@ -89,10 +87,8 @@ genera evento).
 
 ## Medir en el S50 antes de cambiar
 
-- Interpolación de física: apagada, decidido con medida (`docs/contrato.md`, «Configuración del proyecto»). Si
-  algún día se activa, revisar `reset_physics_interpolation()` al teletransportar
-  (`tutorials/physics/interpolation/using_physics_interpolation.rst:136`) y la cámara
-  (`tutorials/physics/interpolation/advanced_physics_interpolation.rst:48`).
+- Interpolación de física: apagada; si se reabre, ver «Medir en el S50 antes de decidir» en la skill
+  `rendimiento-gama-baja`.
 - Mezclar fuentes de tiempo (algo en `_process` junto a la cámara en física) puede temblar
   (`tutorials/rendering/jitter_stutter.rst:46`-`47`); `nucleo/niebla.gd` y `nucleo/planta.gd` van en `_process`.
   Lo nuevo que se mueve en el mundo va en el tick.
