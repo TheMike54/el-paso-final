@@ -2,8 +2,9 @@ class_name Estacion
 extends Interactuable
 # Estacion del viaje rapido, como las del Ciervo de Hollow Knight: se paga una vez (costo en PejeCoins, con el juego
 # detenido en su CobroEstacion) y queda abierta en Partida.estaciones; abierta, interactuar abre el menu de destinos
-# (MenuEstaciones) y elegir otra funde a negro y cambia a su sala, donde el jugador aparece en su llegada. No cura, no
-# guarda ni cambia el banco. Va como hija directa de una sala con id. Capa, cerca, disparador y caja: de Interactuable.
+# (MenuEstaciones) y elegir otra le pide al Fundido el cambio a su sala, donde el jugador aparece en su llegada. No
+# cura, no guarda ni cambia el banco. Va como hija directa de una sala con id. Capa, cerca, disparador y caja: de
+# Interactuable.
 
 const PREFIJO: String = "estacion_"
 # Caja gris de ANCHO x ALTO hasta que tenga arte (un CanvasItem hijo la apaga).
@@ -34,9 +35,6 @@ var cobro: CobroEstacion = null
 var menu: MenuEstaciones = null
 var destino: String = ""
 
-var _ticks_para_viajar: int = 0
-var _ruta_destino: String = ""
-
 
 func _ready() -> void:
 	super()
@@ -47,15 +45,12 @@ func _ready() -> void:
 ## existe (el nucleo no depende de contenido/ ni de herramientas/).
 static func tabla_de(id_sala: String) -> FichaEstaciones:
 	var ruta: String = TABLA_PRUEBAS if Sala.ruta_de(id_sala).begins_with(Sala.CARPETA_PRUEBAS) else TABLA_JUEGO
-	return load(ruta) as FichaEstaciones if ResourceLoader.exists(ruta) else null
+	return Cargar.si_existe(ruta) as FichaEstaciones
 
 
-# La cuenta del viaje va antes que todo lo de la base (vigilar la caja, cerca y el disparador).
+# Con un viaje en curso no corre nada de la base (vigilar la caja, cerca y el disparador): el Fundido cambia de sala.
 func _physics_process(delta: float) -> void:
-	if _ticks_para_viajar > 0:
-		_ticks_para_viajar -= 1
-		if _ticks_para_viajar == 0:
-			_cambiar_de_sala()
+	if not destino.is_empty():
 		return
 	super(delta)
 
@@ -111,26 +106,41 @@ func viajar(id_destino: String) -> bool:
 	var dato: DatoEstacion = tabla.buscar(id_destino) if tabla != null else null
 	if dato == null or id_destino == id or not Partida.estacion_abierta(id_destino) or not destino.is_empty():
 		return false
-	destino = id_destino
-	_ruta_destino = Sala.ruta_de(dato.sala)
+	var fundido: Fundido = Fundido.de(self)
+	if fundido == null:
+		push_error("Estacion %s: no esta en una sala con Fundido" % id)
+		return false
 	_jugador = Jugador.encima_de(self) if not is_instance_valid(_jugador) else _jugador
-	if is_instance_valid(_jugador):
-		_jugador.empezar_a_hablar()
-	_ticks_para_viajar = Fundido.TICKS_OSCURECER + Fundido.TICKS_EN_NEGRO_PUERTA
-	Eventos.fundido_pedido.emit(Fundido.TICKS_OSCURECER, Fundido.TICKS_EN_NEGRO_PUERTA, 0)
+	var jugador: Jugador = _jugador if is_instance_valid(_jugador) else null
+	if not fundido.cambiar_sala(Sala.ruta_de(dato.sala), Fundido.Llegada.ESTACION, id_destino,
+			Fundido.Perfil.ESTACION, 0, jugador):
+		return false
+	destino = id_destino
+	if jugador != null:
+		jugador.empezar_a_hablar()  # no hay conversacion: solo lo inmoviliza durante el viaje
+	fundido.en_negro.connect(_al_llegar_al_negro, CONNECT_ONE_SHOT)
 	return true
 
 
-func _cambiar_de_sala() -> void:
-	# Si murio mientras fundia a negro, manda la muerte: la sala lo hace reaparecer.
+# Ya en negro: si el jugador murio mientras oscurecia, manda la muerte (el Fundido no cambia de sala) y la estacion
+# vuelve a servir; si no, el viaje se hizo. El cambio va en diferido: si falla, el Fundido avisa despues con
+# cambio_fallido.
+func _al_llegar_al_negro() -> void:
 	if is_instance_valid(_jugador) and _jugador.muerto:
 		destino = ""
 		return
-	Sala.estacion_llegada = destino
-	Sala.cambio_pedido_ms = Time.get_ticks_msec()
+	var fundido: Fundido = Fundido.de(self)
+	if fundido != null and not fundido.cambio_fallido.is_connected(_al_fallar_viaje):
+		fundido.cambio_fallido.connect(_al_fallar_viaje, CONNECT_ONE_SHOT)
 	Eventos.viaje_hecho.emit(destino)
-	# Diferido: no se cambia de escena dentro de una llamada de la fisica.
-	get_tree().change_scene_to_file.call_deferred(_ruta_destino)
+
+
+# La sala no cambio: el jugador deja de estar quieto (no tiene tope como el de las puertas) y la estacion vuelve a
+# servir.
+func _al_fallar_viaje() -> void:
+	destino = ""
+	if is_instance_valid(_jugador):
+		_jugador.dejar_de_hablar()
 
 
 # Si en el cobro (ya cerrado, con el juego andando): cobra y dice en la caja de dialogo si se abrio o no alcanzo, como

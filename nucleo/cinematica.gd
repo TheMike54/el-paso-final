@@ -29,6 +29,8 @@ func _ready() -> void:
 		_poner_saltar()
 	# Sin el modo desarrollador nada salta la cinematica: no hace falta mirar acciones cada tick.
 	set_physics_process(Ajustes.modo_desarrollador)
+	# El video trae su propio audio: el tema del menu se va.
+	Arranque.musica.poner(Musica.SILENCIO, Musica.DB_NORMAL, Musica.FUNDIDO_CORTO)
 	_video.reproducir()
 
 
@@ -49,8 +51,13 @@ func ir_a_la_sala() -> void:
 		return
 	_saliendo = true
 	_video.detener()
-	Sala.puerta_llegada = &""
-	get_tree().change_scene_to_file.call_deferred(Sala.ruta_de(sala_destino))
+	_ir.call_deferred()
+
+
+# Sin fundido propio (el video ya termina en negro): cambia por la misma rutina que el Fundido, que escribe la llegada
+# (la Entrada) y avisa si el cambio falla. Diferido: el boton o el video pueden llamar dentro de un tick.
+func _ir() -> void:
+	Fundido.ir_a_sala(get_tree(), Sala.ruta_de(sala_destino), Fundido.Llegada.ENTRADA, "")
 
 
 # Abajo a la derecha, tenue y sin foco: no tapa el video ni lo toma el control.
