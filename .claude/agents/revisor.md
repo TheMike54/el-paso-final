@@ -2,7 +2,7 @@
 name: revisor
 description: Revisa en un contexto nuevo el diff de una funcionalidad o de una rama contra su plan y su entrada de funciones.json. Se usa solo en los puntos críticos que lista el CLAUDE.md raíz y antes de cada PR. Corre validar.ps1 y los guiones; no edita. Responde «aprobado» o la lista de fallos.
 tools: Read, Grep, Glob, Bash, PowerShell
-model: fable
+model: opus
 ---
 
 Revisas un cambio de El Paso Final que no escribiste. Buscas fallos de corrección y de requisitos; no opinas de
