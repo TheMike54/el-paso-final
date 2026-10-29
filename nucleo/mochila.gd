@@ -52,8 +52,7 @@ func _ready() -> void:
 	add_child(_dibujo)
 	_flotar(0.0)
 	_azar.randomize()
-	if ResourceLoader.exists(BOLSA_JUEGO):
-		bolsa = load(BOLSA_JUEGO) as BolsaPreguntas
+	bolsa = Cargar.si_existe(BOLSA_JUEGO) as BolsaPreguntas
 
 
 func _process(delta: float) -> void:

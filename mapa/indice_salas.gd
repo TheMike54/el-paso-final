@@ -17,11 +17,8 @@ const RUTA: String = "res://mapa/indice_salas.tres"
 
 ## El indice del juego, o uno vacio si todavia no existe.
 static func cargar() -> IndiceSalas:
-	if ResourceLoader.exists(RUTA):
-		var indice: IndiceSalas = load(RUTA) as IndiceSalas
-		if indice != null:
-			return indice
-	return IndiceSalas.new()
+	var indice: IndiceSalas = Cargar.si_existe(RUTA) as IndiceSalas
+	return indice if indice != null else IndiceSalas.new()
 
 
 ## Recorre las carpetas de salas (las del juego y las zonas de prueba, si existen) y arma el indice.

@@ -51,9 +51,16 @@ func _physics_process(delta: float) -> void:
 	var padre: Node2D = get_parent() as Node2D
 	var paso: float = _sentido * velocidad_retroceso * delta
 	var libre: float = _paso_libre(paso)
-	padre.global_position.x += libre
+	# Un cuerpo se mueve con la fisica (no entra en un solido que el rayo de _paso_libre no vio, como un saliente arriba o
+	# abajo); lo que no es un cuerpo (una palanca, un muro) se desplaza a mano.
+	var cuerpo: CharacterBody2D = padre as CharacterBody2D
+	var choco: bool = false
+	if cuerpo != null:
+		choco = cuerpo.move_and_collide(Vector2(libre, 0.0)) != null
+	else:
+		padre.global_position.x += libre
 	# Contra una pared o el borde de la sala el empuje se acaba ahi.
-	if libre != paso:
+	if libre != paso or choco:
 		_ticks_empujado = 0
 
 

@@ -256,7 +256,8 @@ func _hay_menu() -> bool:
 	return get_tree().paused
 
 
-# Un boton que deja de estar disponible con un dedo encima suelta su accion, como al levantar el dedo.
+# Un boton que deja de estar disponible (habilidad que falta, boton por ensenar o un dialogo en curso) con un dedo
+# encima suelta su accion, como al levantar el dedo.
 # Compara en el mismo arreglo: corre cada cuadro, tambien en pausa. La primera vez siempre cuenta como cambio.
 func _revisar_habilidades() -> void:
 	var cambio: bool = _disponibles.size() != ACCIONES.size()
@@ -344,8 +345,7 @@ func _etiqueta(i: int) -> String:
 
 
 func _sentado() -> bool:
-	var jugador: Jugador = get_tree().get_first_node_in_group(Jugador.GRUPO) as Jugador
-	return jugador != null and jugador.descansando
+	return Jugador.sentado(get_tree())
 
 
 func _mover_joystick(posicion: Vector2) -> void:
