@@ -64,7 +64,7 @@ var _ticks_espera_conteo: int = 0
 var _ticks_a_la_vista: int = 0
 # Nodo propio, como el icono: contar o desvanecer no redibuja corazones ni barra.
 var _monedas: Node2D = null
-# El icono es un nodo propio: girarlo cambia su rotation y no redibuja corazones, barra ni texto.
+# El icono es un nodo propio: redibujarlo para que "respire" no redibuja corazones, barra ni texto.
 var _icono: Node2D = null
 
 

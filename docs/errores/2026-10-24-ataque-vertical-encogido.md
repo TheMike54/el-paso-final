@@ -11,7 +11,7 @@
 - **Arreglo:** la escala de esa hoja sale solo de los cuadros 4 y 5, y los cuadros 0 a 3 se alinean por los pies.
   Las otras 12 hojas se revisaron con la misma cuenta y su escala sale bien. Con el atlas nuevo el lienzo común pasó
   de 316 × 180 a 316 × 182 (los pies en la fila 178) y el `offset` del `Dibujo` de (−158, −96) a (−158, −98). No
-  cuesta rendimiento: el mismo número de cuadros y de dibujos, y la página pasó de 1976 × 636 a 2036 × 656.
+  cuesta rendimiento: el mismo número de cuadros y de dibujos, y la página pasó de 1976 × 636 a 2020 × 668.
 - **Lo cubre:** el caso «ataque arriba: el cuerpo no se encoge» de `herramientas/pruebas/prueba_animacion_jugador.gd`
   (guion `herramientas/guiones/nucleo/animacion_jugador.guion`): el cuadro más alto del ataque arriba mide al menos
   lo que el de `quieto`. Con el atlas anterior falla (126 contra 163 px).

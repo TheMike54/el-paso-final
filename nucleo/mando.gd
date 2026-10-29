@@ -6,8 +6,8 @@ extends RefCounted
 # como Ajustes: el InputMap es uno solo para todo el juego. Tambien da el nombre de cada boton (BOTONES), el mismo
 # origen para Configuracion y para IconoBoton.
 
-## Lo ultimo que se uso (UltimaEntrada.dispositivo): el dedo o un clic, el teclado o la familia de un control
-## (familia), que decide como se dibujan sus botones en la interfaz (IconoBoton).
+## Lo ultimo que se uso (UltimaEntrada.dispositivo): no solo mandos, tambien el dedo o un clic y el teclado; para un
+## control, su familia (familia), que decide como se dibujan sus botones en la interfaz (IconoBoton).
 enum Dispositivo {TOQUE, TECLADO, XBOX, PLAYSTATION}
 
 const REASIGNABLES: Array[StringName] = [&"saltar", &"atacar", &"curar", &"mapa", &"mapa_rapido", &"inventario", &"pausa"]

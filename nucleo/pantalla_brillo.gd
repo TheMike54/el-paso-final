@@ -2,8 +2,8 @@ class_name PantallaBrillo
 extends Control
 # Pantalla de brillo de Configuracion, como la de Hollow Knight: detras, la escena tenue a pantalla completa; arriba,
 # Volver y el titulo; al centro, la misma escena en una ventana con el cuadro de calibracion en la esquina; abajo, el
-# texto y la barra. La escena es la foto de la sala (desde la pausa) o EscenaMuestra. Aparte de Configuracion (M6 de la
-# auditoria), que la crea con el nombre PanelBrillo y guarda los ajustes cuando avisa barra_movida o barra_soltada.
+# texto y la barra. La escena es la foto de la sala (desde la pausa) o EscenaMuestra. Aparte de Configuracion (M6 de
+# planes/cerrados/nucleo-auditoria-7-menus.md), que la crea con el nombre PanelBrillo y guarda los ajustes cuando avisa barra_movida o barra_soltada.
 
 ## Volver de la barra de arriba: Configuracion vuelve un nivel.
 signal volver_pedido()
