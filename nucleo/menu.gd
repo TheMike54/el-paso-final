@@ -1,8 +1,8 @@
 class_name MenuPrincipal
 extends Control
 # Menu principal: Jugar (abre las ranuras de partida, Ranuras; una vacia pide personaje y nombre, NuevaPartida), Configuracion (nucleo/configuracion.tscn) y, con el
-# modo desarrollador encendido, la zona de pruebas. De fondo, el video de ESCOM en bucle (ReproductorVideo), con un
-# velo para leer el gis, desenfocado y quieto detras de Configuracion. Usa el tema tactil de los menus (Tema). Al abrir pasa la partida
+# modo desarrollador encendido, la zona de pruebas. De fondo, el video de ESCOM en bucle (ReproductorVideo, sin audio), con un
+# velo para leer el gis, desenfocado y quieto detras de Configuracion, y el tema del menu (Musica). Usa el tema tactil de los menus (Tema). Al abrir pasa la partida
 # de antes de las ranuras a la ranura 1, y pide confirmacion antes de cerrar la app con Atras o con pausa. Atras y
 # pausa vuelven un nivel a la vez: del editor de botones a Configuracion, de Nueva partida a las ranuras, de las ranuras o de Configuracion al menu,
 # y ahi piden salir. Abajo, el aviso de pocos toques si el telefono lo necesita.
@@ -12,7 +12,7 @@ const ZONA_PRUEBAS: String = "res://herramientas/salas/zona_pruebas.tscn"
 const ESCENA_EDITOR: PackedScene = preload("res://nucleo/editor_controles.tscn")
 ## Video del fondo, sin extension (ver ReproductorVideo).
 const VIDEO_FONDO: String = "res://nucleo/video/menu"
-## Velo negro sobre el video: las letras de gis se leen encima (demo de La Celda, 24-oct-2026).
+## Velo negro sobre el video: las letras de gis se leen encima (elegido en el S50, 24-oct-2026).
 const ALFA_VELO: float = 0.35
 
 ## Lo pone la zona de pruebas al volver: el menu abre con el foco en su entrada, un nivel atras de la zona.
@@ -47,6 +47,7 @@ func _ready() -> void:
 	contador.siempre_en_menu = true
 	add_child(contador)
 	_poner_video()
+	Arranque.musica.poner(Musica.TEMA_MENU, Musica.DB_NORMAL, Musica.FUNDIDO_CORTO)
 	Tema.raya_abajo($Centro/Opciones/Titulo as Control)
 	_centro.offset_left = Tema.margen_columna(get_viewport_rect().size)
 	var error: Error = Guardado.migrar(Guardado.RUTA, Guardado.ruta_ranura(1))
@@ -275,4 +276,7 @@ func _cancelar_salida() -> void:
 
 func _ir(escena: String) -> void:
 	Sala.puerta_llegada = &""
+	# El tema del menu no entra al juego: una sala sin tema no toca la musica, asi que se calla aqui; la sala que pide
+	# un tema lo pone en el mismo tick (gana el ultimo pedido).
+	Arranque.musica.poner(Musica.SILENCIO, Musica.DB_NORMAL, Musica.FUNDIDO_CORTO)
 	get_tree().change_scene_to_file(escena)

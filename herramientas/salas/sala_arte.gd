@@ -159,8 +159,8 @@ func _frente() -> void:
 
 
 func _particulas() -> void:
-	var aditivo: CanvasItemMaterial = CanvasItemMaterial.new()
-	aditivo.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	# El aditivo comun del juego: un solo material para todo lo que suma luz.
+	var aditivo: CanvasItemMaterial = LuzSala.material_aditivo()
 	var tramos: int = 1 if _bajo else 4
 	for k: int in range(tramos):
 		var centro: float = (k + 0.5) * ANCHO / tramos

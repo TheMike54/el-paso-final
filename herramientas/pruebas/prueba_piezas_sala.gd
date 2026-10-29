@@ -1,8 +1,8 @@
 extends "res://herramientas/pruebas/prueba_base.gd"
 # Prueba de las piezas de sala reutilizables: el recorte de FondoTapado, la oscuridad del Brillo, el parpadeo, el
-# pulso y el destello de LuzSala con su luz 2D que aparece y se va al momento, el resorte de Colgante, la Niebla que
-# obedece su ajuste, la rafaga de EmisorRafaga, el panel de pruebas y ver hitbox. Deja casos y fallos para
-# piezas_sala.guion.
+# pulso y el destello de LuzSala con su luz 2D que aparece y se va al momento y su halo cortado arriba, el resorte de
+# Colgante, la Niebla que obedece su ajuste y su pieza sin costura, los materiales comunes, la rafaga de
+# EmisorRafaga, el panel de pruebas y ver hitbox. Deja casos y fallos para piezas_sala.guion.
 
 
 func _ready() -> void:
@@ -14,6 +14,8 @@ func _ready() -> void:
 	# FondoTapado: oculto mientras la vista no pasa del fin de la pared; sus hijos se dibujan donde estaban.
 	_caso("vista dentro de la pared: tapado", FondoTapado.tapado(Rect2(0.0, 0.0, 1280.0, 720.0), 2480.0))
 	_caso("vista que cruza el fin de la pared: se ve", not FondoTapado.tapado(Rect2(1500.0, 0.0, 1280.0, 720.0), 2480.0))
+	_caso("pared a la derecha: vista dentro de ella, tapado", FondoTapado.tapado(Rect2(3000.0, 0.0, 1280.0, 720.0), 2480.0, true))
+	_caso("pared a la derecha: vista que cruza su inicio, se ve", not FondoTapado.tapado(Rect2(2000.0, 0.0, 1280.0, 720.0), 2480.0, true))
 	var tapado: FondoTapado = FondoTapado.new()
 	tapado.fin_pared = 2480.0
 	var capa: Node2D = Node2D.new()
@@ -74,6 +76,28 @@ func _ready() -> void:
 	await get_tree().process_frame
 	_caso("al apagar las luces avanzadas la luz 2D se va", pulso.get_node_or_null(^"Luz") == null)
 
+	# corte_arriba: el halo se ve solo desde esa altura sobre la luz hasta su pie; halo_radio cambia su lado.
+	var tubo: LuzSala = LuzSala.new()
+	tubo.radio = 470.0
+	tubo.corte_arriba = 102.4
+	add_child(tubo)
+	var halo: Sprite2D = tubo.get_node(^"Halo") as Sprite2D
+	var lado: float = 2.0 * 470.0 * LuzSala.HALO_RADIO
+	var techo: float = (halo.offset.y - halo.region_rect.size.y / 2.0) * halo.scale.y
+	var pie: float = (halo.offset.y + halo.region_rect.size.y / 2.0) * halo.scale.y
+	_caso("con corte_arriba el halo va de esa altura sobre la luz a su pie", halo.region_enabled
+			and absf(techo + 102.4) < 0.01 and absf(pie - lado / 2.0) < 0.01)
+	_caso("el area del halo cortado es su ancho por lo que queda", absf(tubo.area_halo() - lado * (lado / 2.0 + 102.4)) < 1.0)
+	var chico: LuzSala = LuzSala.new()
+	chico.radio = 470.0
+	chico.halo_radio = 0.4
+	add_child(chico)
+	var halo_chico: Sprite2D = chico.get_node(^"Halo") as Sprite2D
+	_caso("sin corte el halo va entero y halo_radio fija su lado", not halo_chico.region_enabled
+			and absf(halo_chico.scale.x * LuzSala.LADO - 376.0) < 0.01 and absf(chico.area_halo() - 376.0 * 376.0) < 1.0)
+	tubo.queue_free()
+	chico.queue_free()
+
 	# Colgante: el empuje lo saca del reposo y el freno lo devuelve.
 	var colgante: Colgante = Colgante.new()
 	colgante.vaiven = 0.0
@@ -92,6 +116,31 @@ func _ready() -> void:
 	Ajustes.niebla = true
 	Eventos.ajuste_grafico_cambiado.emit(Ajustes.NIEBLA)
 	_caso("al encender la niebla se ve y avanza", niebla.visible and niebla.is_processing())
+	# La pieza nucleo/piezas/niebla.tscn: ruido horneado (nada que generar al cargar) y una vuelta sin costura: la
+	# banda mide lo que repite el Parallax2D y lo que avanza la Niebla antes de volver, y cubre 1760 px (22:9). Con
+	# repeat_times 1 el motor deja una sola copia a la derecha y la Deriva abre un hueco a la izquierda del tamano de su
+	# avance (docs/errores/2026-10-27-hueco-niebla.md): hacen falta 2.
+	Ajustes.niebla = false
+	var pieza: Parallax2D = (load("res://nucleo/piezas/niebla.tscn") as PackedScene).instantiate() as Parallax2D
+	add_child(pieza)
+	var deriva: Niebla = pieza.get_node(^"Deriva") as Niebla
+	var banda: Sprite2D = pieza.get_node(^"Deriva/Banda") as Sprite2D
+	var ancho_banda: float = banda.texture.get_width() * banda.scale.x
+	_caso("la pieza de niebla nace oculta, con el ruido horneado y sin costura", not deriva.visible
+		and not deriva.is_processing() and banda.texture is CompressedTexture2D
+		and is_equal_approx(pieza.repeat_size.x, ancho_banda) and is_equal_approx(deriva.recorrido, ancho_banda)
+		and ancho_banda >= 1760.0 and pieza.repeat_times >= 2)
+	pieza.free()
+	# Un solo material de cada tipo: el de las funciones es el .tres que nombran las escenas.
+	var aditivo: CanvasItemMaterial = LuzSala.material_aditivo()
+	var sin_luz: CanvasItemMaterial = EfectoCuadros.material_sin_luz()
+	_caso("los materiales comunes son los .tres de nucleo/arte", aditivo.resource_path == "res://nucleo/arte/aditivo.tres"
+		and aditivo.blend_mode == CanvasItemMaterial.BLEND_MODE_ADD
+		and aditivo.light_mode == CanvasItemMaterial.LIGHT_MODE_UNSHADED
+		and sin_luz.resource_path == "res://nucleo/arte/sin_luz.tres"
+		and sin_luz.blend_mode == CanvasItemMaterial.BLEND_MODE_MIX
+		and sin_luz.light_mode == CanvasItemMaterial.LIGHT_MODE_UNSHADED)
+	Ajustes.niebla = true
 
 	# EmisorRafaga: disparo unico, apagado hasta la rafaga; la rafaga enciende su destello.
 	var emisor: EmisorRafaga = EmisorRafaga.new()

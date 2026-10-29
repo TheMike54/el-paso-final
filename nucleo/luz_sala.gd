@@ -15,20 +15,32 @@ enum Tipo {
 const GRUPO: StringName = &"luces_sala"
 ## Lado de la textura del halo y de la luz: el radio se consigue con la escala.
 const LADO: int = 128
-## Halo sin luces 2D: radio (fraccion de radio) y alfa medidos en la demo (halos chicos, 25-oct-2026).
+## Halo sin luces 2D: radio por omision (fraccion de radio; cada pieza puede cambiarlo con halo_radio) y alfa medidos
+## en La Celda (halos chicos, 25-oct-2026).
 const HALO_RADIO: float = 0.55
 const HALO_ALFA: float = 0.42
 ## Con luces 2D el halo baja: la luz ya aclara alrededor.
 const HALO_ALFA_CON_LUZ: float = 0.22
-## Fuerza de la luz sobre la oscuridad de la sala (la demo: 0,92 de la oscuridad).
+## Fuerza de la luz sobre la oscuridad de la sala: 0,92 de la oscuridad (ajustada en La Celda, 25-oct-2026).
 const FUERZA_LUZ: float = 0.92
 ## Segundos que tarda en apagarse un destello.
 const DURACION_DESTELLO: float = 0.15
+# Material aditivo sin sombreado, uno para todo el juego (tambien EfectoCuadros, el jugador y las escenas). Privado:
+# desde el codigo se pide con material_aditivo(), para que haya una sola entrada.
+const _ADITIVO: CanvasItemMaterial = preload("res://nucleo/arte/aditivo.tres")
+
+static var _textura: GradientTexture2D = null
 
 ## Radio de la luz, en px.
 @export var radio: float = 100.0
 @export var tinte: Color = Color.WHITE
 @export var tipo: Tipo = Tipo.FIJA
+## Radio del halo como fraccion de radio. Un halo grande es una capa translucida grande (area_halo).
+@export_range(0.1, 1.0, 0.01) var halo_radio: float = HALO_RADIO
+## Px sobre la luz donde se corta el halo (el techo del que cuelga): asi no se ve luz en el piso de arriba ni en un
+## nicho tapado. Negativo, sin corte. Solo el halo: la PointLight2D de las luces avanzadas (apagadas por omision) no
+## se corta.
+@export var corte_arriba: float = -1.0
 ## Imagen de la pieza encendida (opcional): sigue a la luz (visible en el parpadeo, alfa en el pulso y el destello).
 @export var encendida: CanvasItem = null
 ## Pulso: fuerza media, cuanto sube y baja, y su velocidad en radianes por segundo.
@@ -50,9 +62,6 @@ var _azar: RandomNumberGenerator = RandomNumberGenerator.new()
 var _halo: Sprite2D = null
 var _luz: PointLight2D = null
 
-static var _textura: GradientTexture2D = null
-static var _aditivo: CanvasItemMaterial = null
-
 
 func _ready() -> void:
 	add_to_group(GRUPO)
@@ -68,6 +77,7 @@ func _ready() -> void:
 	_halo.material = material_aditivo()
 	_halo.modulate = tinte
 	add_child(_halo)
+	_recortar_halo()
 	_poner_luz_2d()
 	Eventos.ajuste_grafico_cambiado.connect(_al_cambiar_ajuste)
 	_pintar()
@@ -91,7 +101,7 @@ func avanzar(delta: float) -> void:
 		Tipo.PARPADEO:
 			_siguiente -= delta
 			if _siguiente <= 0.0:
-				# Un tren de 2 a 10 cambios rapidos y luego encendida de 3 a 10 s, como los tubos de la demo.
+				# Un tren de 2 a 10 cambios rapidos y luego encendida de 3 a 10 s: el parpadeo de un tubo fluorescente.
 				if _cambios == 0:
 					_cambios = _azar.randi_range(2, 10) * 2
 				_encendida_parpadeo = not _encendida_parpadeo
@@ -129,21 +139,34 @@ static func textura() -> GradientTexture2D:
 	return _textura
 
 
-## Un solo material aditivo para todos los halos y destellos (gpu_optimization.rst:85; tambien EfectoCuadros). Sin
-## sombreado: la oscuridad de la sala (CanvasModulate) no apaga el halo, como en la demo (medido: un sprite normal
-## queda en 0,30 y uno sin sombreado en 1).
+## Rectangulo que cubre el halo, relativo a la luz: un cuadrado de lado 2 * radio * halo_radio, cortado arriba en
+## -corte_arriba si corta. Estatico para que el validador lo calcule desde los exports sin correr _ready.
+static func caja_halo(radio_luz: float, fraccion: float, corte: float) -> Rect2:
+	var lado: float = 2.0 * radio_luz * fraccion
+	var caja: Rect2 = Rect2(-lado / 2.0, -lado / 2.0, lado, lado)
+	if corte >= 0.0 and corte < lado / 2.0:
+		caja.position.y = -corte
+		caja.size.y = lado / 2.0 + corte
+	return caja
+
+
+## Area en px del halo de esta luz (sin la escala de sus padres).
+func area_halo() -> float:
+	return caja_halo(radio, halo_radio, corte_arriba).get_area()
+
+
+## Un solo material aditivo para todos los halos y destellos (gpu_optimization.rst:85; tambien EfectoCuadros):
+## nucleo/arte/aditivo.tres, el mismo recurso que usan las escenas (resources.rst:30). Sin sombreado: la oscuridad de
+## la sala (CanvasModulate) no apaga el halo (medido en La Celda: un sprite normal queda en 0,30 y uno sin sombreado
+## en 1).
 static func material_aditivo() -> CanvasItemMaterial:
-	if _aditivo == null:
-		_aditivo = CanvasItemMaterial.new()
-		_aditivo.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
-		_aditivo.light_mode = CanvasItemMaterial.LIGHT_MODE_UNSHADED
-	return _aditivo
+	return _ADITIVO
 
 
 func _pintar() -> void:
 	var con_luz: bool = _luz != null
 	_halo.visible = fuerza > 0.01
-	_halo.scale = Vector2.ONE * (2.0 * radio * HALO_RADIO / LADO)
+	_halo.scale = Vector2.ONE * (2.0 * radio * halo_radio / LADO)
 	_halo.modulate.a = (HALO_ALFA_CON_LUZ if con_luz else HALO_ALFA) * fuerza * intensidad
 	if con_luz:
 		_luz.visible = fuerza > 0.01
@@ -153,6 +176,20 @@ func _pintar() -> void:
 			encendida.visible = _encendida_parpadeo
 		elif tipo != Tipo.FIJA:
 			encendida.modulate.a = fuerza
+
+
+# Con corte_arriba, el halo muestra solo las filas de su textura desde esa altura (region_rect,
+# classes/class_sprite2d.rst:287): la region va de ahi al pie y el offset, en px de textura, deja el centro de la luz
+# donde estaba. Mas barato que un clip_children o un LightOccluder2D, que no ocluye un sprite.
+func _recortar_halo() -> void:
+	var caja: Rect2 = caja_halo(radio, halo_radio, corte_arriba)
+	var px_por_fila: float = 2.0 * radio * halo_radio / LADO
+	var arriba: float = clampf(LADO / 2.0 + caja.position.y / px_por_fila, 0.0, LADO - 1.0)
+	if arriba <= 0.0:
+		return
+	_halo.region_enabled = true
+	_halo.region_rect = Rect2(0.0, arriba, LADO, LADO - arriba)
+	_halo.offset = Vector2(0.0, arriba / 2.0)
 
 
 # La PointLight2D existe solo con las luces 2D activas; se crea o se quita al momento, tambien desde la pausa.

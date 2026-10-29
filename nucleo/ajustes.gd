@@ -11,7 +11,7 @@ const RUTA: String = "user://ajustes.json"
 ## DisposicionControles.por_omision().
 const POR_OMISION: Dictionary[String, bool] = {
 	"vibracion": true, "temblor": true, "modo_desarrollador": false,
-	"luces_avanzadas": true, "niebla": false, "mostrar_fps": false, "panel_pruebas": false, "ver_hitbox": false,
+	"luces_avanzadas": false, "niebla": false, "mostrar_fps": false, "panel_pruebas": false, "ver_hitbox": false,
 }
 ## Ajustes graficos que se aplican al momento (Eventos.ajuste_grafico_cambiado con la clave): los escuchan LuzSala,
 ## Niebla, ContadorFps, PanelPruebas y VerHitbox. MODO_DESARROLLADOR tambien se avisa: muestra o quita el panel, ver
@@ -47,7 +47,8 @@ static var temblor: bool = POR_OMISION["temblor"]
 ## Muestra en Configuracion la entrada a la zona de pruebas (tambien en el paquete de publicacion), y en Avanzado
 ## el panel de pruebas y Ver hitbox.
 static var modo_desarrollador: bool = POR_OMISION["modo_desarrollador"]
-## Luces 2D (PointLight2D de LuzSala): solo valen con Recursos en alto (luces_avanzadas_activas).
+## Luces 2D (PointLight2D de LuzSala): solo valen con Recursos en alto (luces_avanzadas_activas). Apagadas por
+## omision (27-oct-2026): en alto, el S50 cae a 6-14 FPS con ellas en La Celda, y el halo aditivo ya da el efecto.
 static var luces_avanzadas: bool = POR_OMISION["luces_avanzadas"]
 ## Niebla de las salas: apagada por omision, cuesta 2 a 4 FPS en el S50 donde se ve.
 static var niebla: bool = POR_OMISION["niebla"]
@@ -180,10 +181,16 @@ static func fps_disponible(recursos_altos: bool, refresco: float) -> bool:
 	return recursos_altos and refresco >= REFRESCO_RAPIDO
 
 
+## Sin pantalla (guiones, validador y CI, que corren con --headless): nadie ve ni oye. Es la unica comprobacion de
+## esto en el juego; video, sonido, musica, pausa, Configuracion y arranque la usan.
+static func sin_ventana() -> bool:
+	return DisplayServer.get_name() == "headless"
+
+
 ## Pone el limite de FPS segun el ajuste, Recursos, la pantalla y si hay un menu abierto. Sin pantalla (guiones,
 ## CI) no lo toca: ahi los cuadros van tan rapido como se pueda. Lo llama ContadorFps al cambiar de menu a juego.
 static func aplicar_fps(en_menu: bool = false) -> void:
-	if DisplayServer.get_name() == "headless":
+	if sin_ventana():
 		return
 	Engine.max_fps = limite_fps(fps, not Recursos.bajos(), DisplayServer.screen_get_refresh_rate(), en_menu)
 

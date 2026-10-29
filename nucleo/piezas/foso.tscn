@@ -1,0 +1,30 @@
+[gd_scene format=3 uid="uid://cmgjowpy37sen"]
+
+[ext_resource type="Script" uid="uid://jy2tkfmforul" path="res://nucleo/dano_contacto.gd" id="1_dano"]
+
+[sub_resource type="RectangleShape2D" id="forma_peligro"]
+size = Vector2(140, 180)
+
+[sub_resource type="RectangleShape2D" id="forma_fondo"]
+size = Vector2(230, 80)
+
+[node name="Foso" type="Node2D"]
+
+[node name="Dibujo" type="Sprite2D" parent="."]
+z_index = -5
+z_as_relative = false
+centered = false
+
+[node name="Peligro" type="Area2D" parent="."]
+position = Vector2(6, 50)
+script = ExtResource("1_dano")
+peligro = true
+
+[node name="Forma" type="CollisionShape2D" parent="Peligro"]
+shape = SubResource("forma_peligro")
+
+[node name="Fondo" type="StaticBody2D" parent="."]
+position = Vector2(0, 180)
+
+[node name="Forma" type="CollisionShape2D" parent="Fondo"]
+shape = SubResource("forma_fondo")

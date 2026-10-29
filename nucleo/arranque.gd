@@ -1,6 +1,6 @@
 extends Node
-# Autoload de arranque del nucleo. Carga los ajustes, crea los efectos (Sonido, que asi no
-# muere al cambiar de escena) y UltimaEntrada (si se usa el dedo o un control) y, solo si el build es de depuracion y el
+# Autoload de arranque del nucleo. Carga los ajustes, crea los efectos (Sonido) y la musica (Musica), que asi no
+# mueren al cambiar de escena, y UltimaEntrada (si se usa el dedo o un control) y, solo si el build es de depuracion y el
 # archivo viajo en el paquete, el puerto de depuracion: la zona de pruebas viaja tambien en
 # publicacion (con el modo desarrollador), pero el puerto no (exclude_filter de «Publicacion») y nunca corre ahi.
 const RUTA_PUERTO: String = "res://herramientas/puerto_depuracion.gd"
@@ -10,6 +10,11 @@ const RUTA_PUERTO: String = "res://herramientas/puerto_depuracion.gd"
 @export var proporcion_minima: float = 4.0 / 3.0
 @export var proporcion_maxima: float = 22.0 / 9.0
 
+## Los servicios hermanos que crea en _ready, con su tipo: se llaman como Arranque.musica.poner(...), sin ruta de nodo
+## ni comprobar null (un autoload esta siempre cargado, tutorials/scripting/singletons_autoload.rst:30).
+var sonido: Sonido = null
+var musica: Musica = null
+
 
 func _ready() -> void:
 	# Lo que queda fuera de una sala (y la sala sin Fondo) se ve negro, como las barras, no gris.
@@ -18,7 +23,7 @@ func _ready() -> void:
 	get_viewport().disable_3d = true
 	Ajustes.cargar_una_vez()
 	# Sin pantalla (guiones y validador) la vista se queda como esta: los guiones dependen de ella.
-	if DisplayServer.get_name() != "headless":
+	if not Ajustes.sin_ventana():
 		get_window().size_changed.connect(_al_cambiar_tamano)
 		_ajustar_vista()
 	# Lo ultimo que se uso (dedo o control) decide si un menu dibuja su foco (Tema.dar_foco).
@@ -26,9 +31,13 @@ func _ready() -> void:
 	ultima.name = "UltimaEntrada"
 	add_child(ultima)
 	# Tambien sin pantalla: los guiones leen sus cuentas; ahi no toca nada.
-	var sonido: Sonido = Sonido.new()
+	sonido = Sonido.new()
 	sonido.name = "Sonido"
 	add_child(sonido)
+	# La musica de fondo, igual fuera de las salas: sigue sonando al cruzar una puerta o al pasar del menu a una sala.
+	musica = Musica.new()
+	musica.name = "Musica"
+	add_child(musica)
 	var depuracion: bool = OS.is_debug_build()
 	var existe: bool = ResourceLoader.exists(RUTA_PUERTO)
 	print("ARRANQUE depuracion=%s puerto=%s" % [depuracion, existe])

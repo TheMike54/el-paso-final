@@ -1,8 +1,12 @@
 extends SceneTree
 # Genera las hojas de cuadros de los efectos del jugador en nucleo/arte/: el destello del parry, la bola de fuego y
-# el aura de curar (detras y delante del jugador). Cada cuadro se calcula pixel por pixel como una sola mancha de luz
-# y se difumina, para que las partes no se vean armadas por separado. Se corre una vez y despues se reimporta:
-# & $env:GODOT_PATH --headless --path . --script res://herramientas/generar_efectos.gd
+# el aura de curar (detras y delante del jugador); ademas, el ruido de la niebla y el monton de PejeCoins sueltas. Cada
+# cuadro se calcula pixel por pixel como una sola mancha de luz y se difumina, para que las partes no se vean armadas
+# por separado. Se corre una vez y despues se reimporta; con --solo=<nombre> (bola, parry, curar, niebla o monedas)
+# escribe solo esa imagen:
+# & $env:GODOT_PATH --headless --path . --script res://herramientas/generar_efectos.gd -- --solo=monedas
+
+enum Modo { LUZ, FUEGO, AURA }
 
 const SALIDA: String = "res://nucleo/arte/efecto_"
 const CUADROS_BOLA: int = 6
@@ -21,17 +25,228 @@ const PARRY_ALTO: int = 208
 const PARRY_TAMANO: float = 0.4
 const PUNTAS: int = 14
 
-enum Modo { LUZ, FUEGO, AURA }
+# Bola: lenguas de fuego, [angulo en la bola (grados, 180 = atras), largo, grueso (por radio), onda, hacia donde va
+# (0 = al centro, 1 = derecho, mas de 1 = hacia fuera)]. Las llamitas salen del frente y se doblan hacia atras pegadas
+# a la orilla.
+const LENGUAS: Array = [[125.0, 60.0, 0.42, 6.0, 0.35], [150.0, 105.0, 0.5, 9.0, 0.35], [180.0, 135.0, 0.55, 10.0, 0.35],
+	[210.0, 100.0, 0.5, 9.0, 0.35], [235.0, 65.0, 0.42, 6.0, 0.35],
+	[40.0, 28.0, 0.3, 2.0, 1.3], [75.0, 34.0, 0.3, 3.0, 1.2], [100.0, 44.0, 0.34, 4.0, 1.15],
+	[320.0, 26.0, 0.3, 2.0, 1.3], [285.0, 32.0, 0.3, 3.0, 1.2], [260.0, 46.0, 0.34, 4.0, 1.15]]
+# Capas de fuera hacia dentro: [escala, brillo]. Las usan la bola y el aura.
+const CAPAS: Array = [[1.0, 0.42], [0.74, 0.68], [0.5, 1.0]]
+# Bola: altura de cada gota suelta respecto al centro.
+const GOTAS: Array = [-24.0, 6.0, 22.0]
+
+# Aura de curar: cuadro de 320x420, pies del jugador y alto del aura.
+const AURA_ANCHO: int = 320
+const AURA_ALTO: int = 420
+const AURA_PIES: Vector2 = Vector2(160.0, 395.0)
+const AURA_ALTURA: float = 300.0
+# Picos por lado en cada capa, de fuera hacia dentro: distintos para que las capas no repitan los mismos picos.
+const AURA_TRAMOS: Array[int] = [11, 10, 9]
+const RAYAS_AURA: int = 10
+const CHISPAS_AURA: Array = [-70.0, -20.0, 35.0, 80.0]
+# Gotas por fuera de la orilla, como las de la bola: [lado, cuanto se abren al subir, desfase del ciclo].
+const GOTAS_AURA: Array = [[-1.0, 0.3, 0.0], [1.0, 0.45, 0.17], [-1.0, 0.6, 0.33], [1.0, 0.25, 0.5],
+	[-1.0, 0.8, 0.67], [1.0, 0.7, 0.83]]
+
+# Niebla (nucleo/piezas/niebla.tscn): el ruido de la banda, horneado para no generarlo en cada carga. Mismos
+# parametros que el NoiseTexture2D que reemplaza (semilla 7, frecuencia 0,012, 160 de alto), pero 592 de ancho: a la
+# escala 3 de la pieza mide 1776 px, lo que recorre antes de dar la vuelta.
+const NIEBLA_RUTA: String = "res://nucleo/arte/niebla_ruido.png"
+const NIEBLA_ANCHO: int = 592
+const NIEBLA_ALTO: int = 160
+const NIEBLA_SEMILLA: int = 7
+const NIEBLA_FRECUENCIA: float = 0.012
+
+# PejeCoins sueltas (nucleo/monedas_sueltas.tscn): el monton de tres monedas de FigurasVector, horneado una vez para
+# no redibujarlo en vector cada cuadro. Diametro de una moneda en el mundo (26 px) y escala del horneado: a 2x se ve
+# nitida en una pantalla densa y los mipmaps la bajan.
+const MONEDAS_RUTA: String = "res://nucleo/arte/monedas_sueltas.png"
+const MONEDAS_DIAMETRO: float = 26.0
+const MONEDAS_ESCALA: float = 2.0
+const MONEDAS_CUANTAS: int = 3
+# Separacion entre centros (por diametro) y cuanto sube la de en medio.
+const MONEDAS_SEPARACION: float = 0.8
+const MONEDAS_SUBE: float = 0.35
+# Lo que el contorno claro sale del centro de la moneda, por diametro (radio 50 + ancho claro 3, sobre 100), y el
+# margen transparente en px de la imagen.
+const MONEDAS_ORILLA: float = 0.53
+const MONEDAS_MARGEN: int = 2
+# Muestras por lado de cada pixel: la orilla suavizada sale del promedio.
+const MONEDAS_MUESTRAS: int = 4
+# Tramos de cada curva del contorno de la P.
+const TRAMOS_CURVA: int = 8
+
+var _solo: String = ""
 
 
 func _initialize() -> void:
+	for argumento: String in OS.get_cmdline_user_args():
+		if argumento.begins_with("--solo="):
+			_solo = argumento.trim_prefix("--solo=")
 	# La bola lleva dos filas: con gotas sueltas (en vuelo) y sin ellas (al salir, cuando asomarian sobre la cabeza).
-	_guardar("bola", BOLA_ANCHO, BOLA_ALTO, [_cuadro_bola.bind(true), _cuadro_bola.bind(false)], 1, CUADROS_BOLA,
-		Modo.FUEGO)
-	_guardar("parry", PARRY_ANCHO, PARRY_ALTO, [_cuadro_parry], 2, CUADROS_PARRY, Modo.LUZ)
-	_guardar("curar", AURA_ANCHO, AURA_ALTO, [_cuadro_curar], 1, CUADROS_CURAR, Modo.AURA)
-	_guardar("curar_frente", AURA_ANCHO, AURA_ALTO, [_cuadro_curar_frente], 0, CUADROS_CURAR, Modo.AURA)
+	if _toca("bola"):
+		_guardar("bola", BOLA_ANCHO, BOLA_ALTO, [_cuadro_bola.bind(true), _cuadro_bola.bind(false)], 1, CUADROS_BOLA,
+			Modo.FUEGO)
+	if _toca("parry"):
+		_guardar("parry", PARRY_ANCHO, PARRY_ALTO, [_cuadro_parry], 2, CUADROS_PARRY, Modo.LUZ)
+	if _toca("curar"):
+		_guardar("curar", AURA_ANCHO, AURA_ALTO, [_cuadro_curar], 1, CUADROS_CURAR, Modo.AURA)
+		_guardar("curar_frente", AURA_ANCHO, AURA_ALTO, [_cuadro_curar_frente], 0, CUADROS_CURAR, Modo.AURA)
+	if _toca("niebla"):
+		print("EFECTO %s error=%d" % [NIEBLA_RUTA, hornear_niebla(NIEBLA_RUTA)])
+	if _toca("monedas"):
+		print("EFECTO %s error=%d" % [MONEDAS_RUTA, hornear_monedas(MONEDAS_RUTA)])
 	quit()
+
+
+# El ruido de la niebla: sin costura, con el borde de mezcla 0,1 y normalizado, los valores por omision de
+# NoiseTexture2D (classes/class_noise.rst:159), y blanco con el alfa del ruido, como su rampa de blanco transparente a
+# blanco opaco. Estatica para poder hornearla sola a otra ruta y compararla.
+static func hornear_niebla(ruta: String) -> Error:
+	var ruido: FastNoiseLite = FastNoiseLite.new()
+	ruido.seed = NIEBLA_SEMILLA
+	ruido.frequency = NIEBLA_FRECUENCIA
+	var gris: Image = ruido.get_seamless_image(NIEBLA_ANCHO, NIEBLA_ALTO, false, false, 0.1, true)
+	var banda: Image = Image.create_empty(NIEBLA_ANCHO, NIEBLA_ALTO, false, Image.FORMAT_RGBA8)
+	for y: int in range(NIEBLA_ALTO):
+		for x: int in range(NIEBLA_ANCHO):
+			banda.set_pixel(x, y, Color(1.0, 1.0, 1.0, gris.get_pixel(x, y).r))
+	return banda.save_png(ruta)
+
+
+## El monton de PejeCoins sueltas: tres monedas de FigurasVector con su P, como las dibujaba el HUD, en una sola imagen.
+## El punto (0, 0) del monton (la base de las monedas de los lados, al centro) queda en (ancho / 2, alto - margen -
+## lo que baja la orilla): el Sprite2D de la escena se coloca con ese dato, que se imprime. Estatica para poder
+## hornearla sola a otra ruta y compararla.
+static func hornear_monedas(ruta: String) -> Error:
+	var d: float = MONEDAS_DIAMETRO * MONEDAS_ESCALA
+	var lado: float = (MONEDAS_CUANTAS - 1) / 2.0 * d * MONEDAS_SEPARACION + MONEDAS_ORILLA * d
+	var arriba: float = d / 2.0 + MONEDAS_SUBE * d + MONEDAS_ORILLA * d
+	var abajo: int = ceili(maxf(MONEDAS_ORILLA * d - d / 2.0, 0.0))
+	var ancho: int = 2 * (ceili(lado) + MONEDAS_MARGEN)
+	var alto: int = ceili(arriba) + abajo + 2 * MONEDAS_MARGEN
+	var origen: Vector2 = Vector2(ancho / 2.0, float(alto - MONEDAS_MARGEN - abajo))
+	var piezas: Array = FigurasVector.piezas(FigurasVector.MONEDA)
+	var fuente: Font = ThemeDB.fallback_font
+	var tamano: int = maxi(1, roundi(FigurasVector.ALTO_P * d / 100.0 / FigurasVector.MAYUSCULA))
+	var ancho_p: float = fuente.get_string_size("P", HORIZONTAL_ALIGNMENT_LEFT, -1, tamano).x
+	var letra: Array[PackedVector2Array] = _contornos_glifo(fuente, tamano, "P")
+	var centros: Array[Vector2] = []
+	for i: int in range(MONEDAS_CUANTAS):
+		var centro: Vector2 = Vector2((i - (MONEDAS_CUANTAS - 1) / 2.0) * d * MONEDAS_SEPARACION, -d / 2.0)
+		if i % 2 == 1:
+			centro.y -= d * MONEDAS_SUBE
+		centros.append(centro)
+	var imagen: Image = Image.create_empty(ancho, alto, false, Image.FORMAT_RGBA8)
+	var n: int = MONEDAS_MUESTRAS
+	for y: int in range(alto):
+		for x: int in range(ancho):
+			var suma: Color = Color(0.0, 0.0, 0.0, 0.0)
+			var tocadas: int = 0
+			for sy: int in range(n):
+				for sx: int in range(n):
+					var punto: Vector2 = Vector2(x + (sx + 0.5) / n, y + (sy + 0.5) / n) - origen
+					var color: Color = Color(0.0, 0.0, 0.0, 0.0)
+					# La ultima moneda se dibuja encima: se busca de la ultima a la primera y gana la primera que toca.
+					for i: int in range(MONEDAS_CUANTAS - 1, -1, -1):
+						color = _color_moneda(punto - centros[i], d, piezas, letra, tamano, ancho_p)
+						if color.a > 0.0:
+							break
+					if color.a > 0.0:
+						suma += Color(color.r, color.g, color.b, 1.0)
+						tocadas += 1
+			if tocadas > 0:
+				imagen.set_pixel(x, y, Color(suma.r / tocadas, suma.g / tocadas, suma.b / tocadas,
+					float(tocadas) / (n * n)))
+	print("MONEDAS %dx%d origen=(%d, %d) escala=%.2f" % [ancho, alto, roundi(origen.x), roundi(origen.y),
+		1.0 / MONEDAS_ESCALA])
+	return imagen.save_png(ruta)
+
+
+# Color de una moneda en un punto relativo a su centro (alfa 0 fuera): la P encima y luego las piezas, de la ultima a
+# la primera, como las pinta FigurasVector.dibujar_moneda.
+static func _color_moneda(punto: Vector2, d: float, piezas: Array, letra: Array[PackedVector2Array], tamano: int,
+		ancho_p: float) -> Color:
+	if punto.length() > MONEDAS_ORILLA * d + 1.0:
+		return Color(0.0, 0.0, 0.0, 0.0)
+	var base: Vector2 = Vector2(-ancho_p / 2.0, tamano * FigurasVector.MAYUSCULA / 2.0)
+	var dentro: int = 0
+	for contorno: PackedVector2Array in letra:
+		if Geometry2D.is_point_in_polygon(punto - base, contorno):
+			dentro += 1
+	# Par e impar: el hueco de la P es un contorno dentro del otro.
+	if dentro % 2 == 1:
+		return FigurasVector.COLOR_P
+	var en_figura: Vector2 = punto * 100.0 / d
+	for i: int in range(piezas.size() - 1, -1, -1):
+		var pieza: Array = piezas[i] as Array
+		if Geometry2D.is_point_in_polygon(en_figura, pieza[0] as PackedVector2Array):
+			return pieza[1] as Color
+	return Color(0.0, 0.0, 0.0, 0.0)
+
+
+# Contornos de una letra de la fuente, en px desde su punto de la linea base, con las curvas hechas tramos rectos
+# (classes/class_textserver.rst:2007-2029: puntos con su etiqueta; dos conicas seguidas llevan un punto implicito en
+# medio).
+static func _contornos_glifo(fuente: Font, tamano: int, letra: String) -> Array[PackedVector2Array]:
+	var servidor: TextServer = TextServerManager.get_primary_interface()
+	var rid: RID = fuente.get_rids()[0]
+	var glifo: int = servidor.font_get_glyph_index(rid, tamano, letra.unicode_at(0), 0)
+	var datos: Dictionary = servidor.font_get_glyph_contours(rid, tamano, glifo)
+	var puntos: PackedVector3Array = datos["points"] as PackedVector3Array
+	var finales: PackedInt32Array = datos["contours"] as PackedInt32Array
+	var contornos: Array[PackedVector2Array] = []
+	var inicio: int = 0
+	for fin: int in finales:
+		contornos.append(_aplanar_contorno(puntos.slice(inicio, fin + 1)))
+		inicio = fin + 1
+	return contornos
+
+
+# Un contorno de la letra como poligono: rectas entre puntos sobre la curva, y cada curva conica o cubica en tramos.
+static func _aplanar_contorno(crudos: PackedVector3Array) -> PackedVector2Array:
+	# Primero se agregan los puntos implicitos entre dos conicas seguidas.
+	var puntos: Array[Vector2] = []
+	var etiquetas: Array[int] = []
+	var cuantos: int = crudos.size()
+	for i: int in range(cuantos):
+		var actual: Vector3 = crudos[i]
+		var siguiente: Vector3 = crudos[(i + 1) % cuantos]
+		puntos.append(Vector2(actual.x, actual.y))
+		etiquetas.append(roundi(actual.z))
+		if (roundi(actual.z) == TextServer.CONTOUR_CURVE_TAG_OFF_CONIC
+				and roundi(siguiente.z) == TextServer.CONTOUR_CURVE_TAG_OFF_CONIC):
+			puntos.append((Vector2(actual.x, actual.y) + Vector2(siguiente.x, siguiente.y)) / 2.0)
+			etiquetas.append(TextServer.CONTOUR_CURVE_TAG_ON)
+	# Se empieza en un punto sobre la curva.
+	var primero: int = etiquetas.find(TextServer.CONTOUR_CURVE_TAG_ON)
+	var total: int = puntos.size()
+	var salida: PackedVector2Array = []
+	var i: int = 0
+	while i < total:
+		var p0: Vector2 = puntos[(primero + i) % total]
+		var b: int = (primero + i + 1) % total
+		if etiquetas[b] == TextServer.CONTOUR_CURVE_TAG_ON:
+			salida.append(p0)
+			i += 1
+		elif etiquetas[b] == TextServer.CONTOUR_CURVE_TAG_OFF_CONIC:
+			var control: Vector2 = puntos[b]
+			var p2: Vector2 = puntos[(primero + i + 2) % total]
+			for t: int in range(TRAMOS_CURVA):
+				var u: float = float(t) / TRAMOS_CURVA
+				salida.append(p0.lerp(control, u).lerp(control.lerp(p2, u), u))
+			i += 2
+		else:
+			var c1: Vector2 = puntos[b]
+			var c2: Vector2 = puntos[(primero + i + 2) % total]
+			var p3: Vector2 = puntos[(primero + i + 3) % total]
+			for t: int in range(TRAMOS_CURVA):
+				var u: float = float(t) / TRAMOS_CURVA
+				salida.append(p0.bezier_interpolate(c1, c2, p3, u))
+			i += 3
+	return salida
 
 
 # Arma la hoja: los cuadros uno junto a otro y una fila por cada funcion de cuadro. El parry es luz (va con mezcla
@@ -58,21 +273,15 @@ func _guardar(nombre: String, ancho: int, alto: int, filas: Array, difuminado: i
 	print("EFECTO %s error=%d" % [ruta, error])
 
 
+# Sin --solo se escriben todas las imagenes; con --solo=<nombre>, solo esa.
+func _toca(nombre: String) -> bool:
+	return _solo.is_empty() or _solo == nombre
+
+
 # --- Bola de fuego, como se dibuja en 2D: una sola silueta (la bola con llamitas en toda su orilla, lenguas largas
 # hacia atras y gotas de fuego sueltas) repetida en tres capas encajadas, cada una mas chica y corrida hacia el
 # frente: azul por fuera, celeste en medio y blanca en el centro. Asi bola y llamas son la misma forma. Las llamitas
 # corren hacia atras, las lenguas ondean y las gotas se alejan; el ultimo cuadro empalma con el primero ---
-# Lenguas: [angulo en la bola (grados, 180 = atras), largo, grueso (por radio), onda, hacia donde va (0 = al centro,
-# 1 = derecho, mas de 1 = hacia fuera)]. Las llamitas salen del frente y se doblan hacia atras pegadas a la orilla.
-const LENGUAS: Array = [[125.0, 60.0, 0.42, 6.0, 0.35], [150.0, 105.0, 0.5, 9.0, 0.35], [180.0, 135.0, 0.55, 10.0, 0.35],
-	[210.0, 100.0, 0.5, 9.0, 0.35], [235.0, 65.0, 0.42, 6.0, 0.35],
-	[40.0, 28.0, 0.3, 2.0, 1.3], [75.0, 34.0, 0.3, 3.0, 1.2], [100.0, 44.0, 0.34, 4.0, 1.15],
-	[320.0, 26.0, 0.3, 2.0, 1.3], [285.0, 32.0, 0.3, 3.0, 1.2], [260.0, 46.0, 0.34, 4.0, 1.15]]
-# Capas de fuera hacia dentro: [escala, brillo]. Las usan la bola y el aura.
-const CAPAS: Array = [[1.0, 0.42], [0.74, 0.68], [0.5, 1.0]]
-const GOTAS: Array = [-24.0, 6.0, 22.0]
-
-
 func _cuadro_bola(f: int, cuadros: int, con_gotas: bool) -> PackedFloat32Array:
 	var fase: float = float(f) / float(cuadros)
 	var centro: Vector2 = Vector2(float(BOLA_ANCHO) - 70.0, float(BOLA_ALTO) / 2.0)
@@ -140,19 +349,6 @@ func _lengua(p: Vector2, centro: Vector2, datos: Array, fase: float, n: float) -
 # filosos que apuntan hacia arriba y hacia fuera. Tres capas encajadas que se encogen hacia los pies (azul, celeste,
 # blanca), gotas, rayas y chispas que nacen en el piso, mas transparente que la bola. Los picos cambian en cada
 # cuadro. La hoja curar_frente lleva solo las rayas y las chispas, para dibujarla delante del jugador ---
-const AURA_ANCHO: int = 320
-const AURA_ALTO: int = 420
-const AURA_PIES: Vector2 = Vector2(160.0, 395.0)
-const AURA_ALTURA: float = 300.0
-# Picos por lado en cada capa, de fuera hacia dentro: distintos para que las capas no repitan los mismos picos.
-const AURA_TRAMOS: Array[int] = [11, 10, 9]
-const RAYAS_AURA: int = 10
-const CHISPAS_AURA: Array = [-70.0, -20.0, 35.0, 80.0]
-# Gotas por fuera de la orilla, como las de la bola: [lado, cuanto se abren al subir, desfase del ciclo].
-const GOTAS_AURA: Array = [[-1.0, 0.3, 0.0], [1.0, 0.45, 0.17], [-1.0, 0.6, 0.33], [1.0, 0.25, 0.5],
-	[-1.0, 0.8, 0.67], [1.0, 0.7, 0.83]]
-
-
 func _cuadro_curar(f: int, cuadros: int) -> PackedFloat32Array:
 	var fase: float = float(f) / float(cuadros)
 	var contornos: Array[PackedVector2Array] = []

@@ -1,18 +1,17 @@
 class_name PanelAudio
 extends VBoxContainer
 # Panel de audio de Configuracion (el nodo PanelAudio de configuracion.tscn): tres filas de volumen (general, musica y
-# efectos) con su barra ancha, su porcentaje y un altavoz que silencia, el boton de probar un efecto y la musica de
-# prueba, que suena mientras el panel esta abierto. Aparte de Configuracion para que esta no cargue con todo (M6 de la
-# auditoria); guardar los ajustes sigue siendo de Configuracion, a la que avisa con barra_movida y barra_soltada.
+# efectos) con su barra ancha, su porcentaje y un altavoz que silencia, y el boton de probar un efecto; mientras el panel
+# esta abierto le pide a Musica un tema para probar si no se oye ninguno. Aparte de Configuracion para que esta no cargue con todo (M6 de
+# planes/cerrados/nucleo-auditoria-7-menus.md); guardar los ajustes sigue siendo de Configuracion, a la que avisa con barra_movida y barra_soltada.
 
 ## Una barra cambio de valor (aplicado ya en Ajustes): Configuracion lo anota como sin guardar.
 signal barra_movida()
 ## Una barra se solto o un altavoz la cambio: Configuracion guarda lo que quedo sin guardar.
 signal barra_soltada()
 
-## Lo que se oye en el panel: la musica en su bus mientras esta abierto y un efecto al pedirlo.
-const MUSICA_PRUEBA: AudioStream = preload("res://nucleo/sonidos/musica_prueba.ogg")
-const EFECTO_PRUEBA: AudioStream = preload("res://nucleo/sonidos/efecto_golpe.wav")
+## El efecto que toca «Probar efecto», en el bus de efectos.
+const EFECTO_PRUEBA: AudioStream = preload("res://nucleo/sonidos/jugador/golpe.wav")
 
 # Por el nombre de su fila (General, Musica, Efectos): la barra, el porcentaje, el altavoz y el valor antes de
 # silenciar (para volver a el).
@@ -20,14 +19,13 @@ var _barras: Dictionary[String, HSlider] = {}
 var _porcentajes: Dictionary[String, Label] = {}
 var _altavoces: Dictionary[String, Button] = {}
 var _antes_de_silenciar: Dictionary[String, float] = {}
-var _musica: AudioStreamPlayer = null
 var _efecto: AudioStreamPlayer = null
 
 @onready var _filas: VBoxContainer = $Desplazable/Centro/Filas as VBoxContainer
 @onready var _desplazable: ScrollContainer = $Desplazable as ScrollContainer
 
 
-# Las tres filas de volumen (nombre, barra, porcentaje y altavoz), el boton de probar y los reproductores.
+# Las tres filas de volumen (nombre, barra, porcentaje y altavoz), el boton de probar y su reproductor.
 func _ready() -> void:
 	var nombres: PackedStringArray = ["General", "Musica", "Efectos"]
 	var textos: PackedStringArray = ["General", "Música", "Efectos"]
@@ -39,17 +37,11 @@ func _ready() -> void:
 	probar.custom_minimum_size = Tema.CELDA
 	probar.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	_filas.add_child(probar)
-	_musica = AudioStreamPlayer.new()
-	_musica.stream = MUSICA_PRUEBA
-	_musica.bus = Ajustes.BUS_MUSICA
-	add_child(_musica)
 	_efecto = AudioStreamPlayer.new()
 	_efecto.stream = EFECTO_PRUEBA
 	_efecto.bus = Ajustes.BUS_EFECTOS
 	add_child(_efecto)
 	probar.pressed.connect(_efecto.play)
-	# La musica de prueba vuelve a empezar al terminar, mientras el panel siga abierto.
-	_musica.finished.connect(_musica.play)
 
 
 ## Pone cada barra en su volumen de Ajustes. Emite barra_movida: Configuracion lo descarta al abrir.
@@ -69,14 +61,10 @@ func desplazar_arriba() -> void:
 	_desplazable.set_deferred(&"scroll_vertical", 0)
 
 
-## Toca la musica de prueba con el panel a la vista y la para al ocultarlo.
+## Con el panel a la vista, Musica pone un tema para probar la barra si no se oye ninguno; al ocultarlo devuelve lo
+## que habia (Musica.probar). La musica tiene un solo dueno: el panel no la toca directo.
 func musica_de_prueba(sonar: bool) -> void:
-	# Sin pantalla no se toca: nadie la oye y, con el audio de mentira, a veces deja la reproduccion viva al salir
-	# («2 resources still in use at exit», 1 de cada 6 corridas del guion el 13-oct-2026).
-	if sonar and not _musica.playing and DisplayServer.get_name() != "headless":
-		_musica.play()
-	elif not sonar:
-		_musica.stop()
+	Arranque.musica.probar(sonar)
 
 
 func _fila_volumen(nombre: String, texto: String) -> void:

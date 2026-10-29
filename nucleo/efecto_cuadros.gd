@@ -7,9 +7,9 @@ extends Sprite2D
 
 ## 20 cuadros/s, la velocidad a la que se dibujaron las hojas.
 const TICKS_POR_CUADRO: int = 3
-
-# Material sin luz con mezcla normal, uno para todos (gpu_optimization.rst:85).
-static var _sin_luz: CanvasItemMaterial = null
+# Material sin luz con mezcla normal, uno para todo el juego (gpu_optimization.rst:85): el mismo recurso que usan
+# las escenas (resources.rst:30). Privado: desde el codigo se pide con material_sin_luz(), una sola entrada.
+const _SIN_LUZ: CanvasItemMaterial = preload("res://nucleo/arte/sin_luz.tres")
 
 ## Fila de la hoja que se muestra (la bola usa la segunda al salir).
 var fila: int = 0
@@ -37,10 +37,7 @@ static func crear(textura: Texture2D, cuadros: int, filas: int, aditivo: bool, u
 
 ## Material sin luz con mezcla normal, compartido (tambien el de TrazoAtaque).
 static func material_sin_luz() -> CanvasItemMaterial:
-	if _sin_luz == null:
-		_sin_luz = CanvasItemMaterial.new()
-		_sin_luz.light_mode = CanvasItemMaterial.LIGHT_MODE_UNSHADED
-	return _sin_luz
+	return _SIN_LUZ
 
 
 func _ready() -> void:

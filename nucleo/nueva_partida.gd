@@ -15,6 +15,8 @@ const LARGO_NOMBRE: int = 12
 ## Nombre si se deja vacio, segun el personaje.
 const NOMBRE_POR_OMISION: Dictionary[String, String] = {"hombre": "Alumno", "mujer": "Alumna"}
 
+static var _no_permitido: RegEx = null
+
 ## Ranura que se esta empezando.
 var numero: int = 0
 ## Personaje elegido; vacio hasta tocar uno. Publico para la prueba.
@@ -29,8 +31,6 @@ var reservado_abajo: float = 0.0:
 var botones: Dictionary[String, Button] = {}
 var campo: LineEdit = null
 var empezar_boton: Button = null
-
-static var _no_permitido: RegEx = null
 
 var _marco: VBoxContainer = null
 var _titulo: Label = null

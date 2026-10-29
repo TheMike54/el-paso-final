@@ -175,7 +175,7 @@
   },
   {
     "id": "vibracion-al-aterrizar",
-    "que": "El aterrizaje duro y el aterrizaje de la picada emiten Eventos.jugador_aterrizo y el telefono vibra 80 ms con fuerza 0,9; con el ajuste vibracion apagado no vibra",
+    "que": "Eventos.jugador_aterrizo(velocidad, duro, picada) sale una vez en cada aterrizaje con caida (aparecer en una sala no cuenta); el telefono vibra 80 ms con fuerza 0,9 solo en el duro y en el de la picada; con el ajuste vibracion apagado no vibra",
     "comprobacion": "herramientas/guiones/nucleo/vibracion_aterrizaje.guion",
     "pasa": true
   },
@@ -361,13 +361,13 @@
   },
   {
     "id": "audio-y-brillo",
-    "que": "Configuracion tiene Audio, un panel con el volumen general, de musica y de efectos (cada uno en su bus: Master, Musica y Efectos), cada uno con barra ancha y altavoz, que se guardan; mientras esta abierto suena la musica de prueba y Probar efecto toca uno; y Brillo, en su pantalla, de 50 a 150 %, que oscurece o aclara el mundo (no el HUD ni los menus) y se guarda",
-    "comprobacion": "herramientas/guiones/nucleo/menu_configuracion.guion;herramientas/guiones/nucleo/guardado.guion",
+    "que": "Configuracion tiene Audio, un panel con el volumen general, de musica y de efectos (cada uno en su bus: Master, Musica y Efectos), cada uno con barra ancha y altavoz, que se guardan; mientras esta abierto, si no se oye musica, Musica pone el tema del menu para probar la barra y al cerrarlo devuelve lo que habia, y Probar efecto toca uno; y Brillo, en su pantalla, de 50 a 150 %, que oscurece o aclara el mundo (no el HUD ni los menus) y se guarda",
+    "comprobacion": "herramientas/guiones/nucleo/menu_configuracion.guion;herramientas/guiones/nucleo/guardado.guion;herramientas/guiones/nucleo/musica.guion",
     "pasa": true
   },
   {
     "id": "audio-y-brillo-telefono",
-    "que": "En el telefono la musica de prueba y el efecto se oyen, cada barra cambia solo su parte y el brillo se ve bien en sus extremos sin tapar los toques",
+    "que": "En el telefono la musica y el efecto se oyen, cada barra cambia solo su parte y el brillo se ve bien en sus extremos sin tapar los toques",
     "comprobacion": "manual: en el S50 o el S20 con el APK de desarrollo: Configuracion, Audio: suena la musica; bajar Musica a 0 la calla y Probar efecto sigue sonando; bajar Efectos a 0 calla el efecto; General a 0 calla todo; Brillo en 50 y en 150: el mundo se oscurece o aclara, el HUD y los botones no cambian y siguen respondiendo",
     "pasa": true
   },
@@ -421,7 +421,7 @@
   },
   {
     "id": "sonidos-eventos",
-    "que": "Los eventos del juego suenan: salto (senal nueva jugador_salto), golpe dado, dano, parry, curar y banco, en el bus Efectos, desde Sonido en Arranque (no se corta al cambiar de sala), con la ficha de prueba, pocas voces y sin repetir el mismo evento en ticks seguidos salvo dano y parry",
+    "que": "Los eventos del juego suenan en el bus Efectos desde Sonido en Arranque (no se corta al cambiar de sala) con la ficha del juego (sonidos_jugador.tres; salto y parry vacios a proposito), sin repetir el mismo evento en ticks seguidos salvo dano y parry",
     "comprobacion": "herramientas/guiones/nucleo/sonido.guion;herramientas/guiones/nucleo/bus_eventos.guion",
     "pasa": true
   },
@@ -745,7 +745,7 @@
   },
   {
     "id": "sonidos-muro-y-porton",
-    "que": "FichaSonidos tiene un campo de efecto para romper un muro (muro_roto) y abrir un porton (porton), vacios mientras no haya archivo. Sonido.EVENTOS lista cada evento que Sonido toca y cada uno es campo de la ficha; tocar() avisa con push_warning si le llega uno que no lo es",
+    "que": "FichaSonidos tiene un campo de efecto para romper un muro (muro_roto) y abrir un porton (porton), con su WAV en la ficha del juego. Cada senal que Sonido escucha toca su evento (lo comprueba la prueba emitiendo cada una); tocar() avisa con push_warning si le llega un evento que no es campo de la ficha",
     "comprobacion": "herramientas/guiones/nucleo/sonido.guion",
     "pasa": true
   },
@@ -841,7 +841,7 @@
   },
   {
     "id": "configuracion-partida",
-    "que": "Configuracion partida en piezas (paso 7 de la auditoria, pieza 10: M6 y M7): el panel de audio es PanelAudio (nucleo/panel_audio.gd, script del nodo PanelAudio de configuracion.tscn: filas de volumen, altavoces, probar efecto y musica de prueba) y la pantalla de brillo es PantallaBrillo (nucleo/pantalla_brillo.gd, creada en codigo con el nombre PanelBrillo: escena tenue, ventana con foto o EscenaMuestra, cuadro de calibracion, shader de la foto y barra); avisan a Configuracion con barra_movida y barra_soltada, y guardar sigue siendo de Configuracion. El panel a la vista es un solo valor (enum Seccion) en lugar de cinco visible, y atras() vuelve a la lista con el foco en el boton que abrio el subpanel. Las rutas de nodo y la API que usan otros archivos no cambian (las constantes que solo usaban el audio o el brillo pasan a PanelAudio y PantallaBrillo); nada cambia a la vista ni en el comportamiento: capturas a 1280x720 de configuracion, mando, audio, creditos, brillo, ranuras, nueva partida, zona, pausa y las tres paginas del marco identicas pixel por pixel a las de antes",
+    "que": "Configuracion partida en piezas (paso 7 de la auditoria, pieza 10: M6 y M7): el panel de audio es PanelAudio (nucleo/panel_audio.gd, script del nodo PanelAudio de configuracion.tscn: filas de volumen, altavoces, probar efecto y la musica de prueba, que hoy pide a Musica) y la pantalla de brillo es PantallaBrillo (nucleo/pantalla_brillo.gd, creada en codigo con el nombre PanelBrillo: escena tenue, ventana con foto o EscenaMuestra, cuadro de calibracion, shader de la foto y barra); avisan a Configuracion con barra_movida y barra_soltada, y guardar sigue siendo de Configuracion. El panel a la vista es un solo valor (enum Seccion) en lugar de cinco visible, y atras() vuelve a la lista con el foco en el boton que abrio el subpanel. Las rutas de nodo y la API que usan otros archivos no cambian (las constantes que solo usaban el audio o el brillo pasan a PanelAudio y PantallaBrillo); nada cambia a la vista ni en el comportamiento: capturas a 1280x720 de configuracion, mando, audio, creditos, brillo, ranuras, nueva partida, zona, pausa y las tres paginas del marco identicas pixel por pixel a las de antes",
     "comprobacion": "herramientas/guiones/nucleo/menu_configuracion.guion;herramientas/pruebas/prueba_menu_configuracion.gd;herramientas/guiones/nucleo/marco.guion;nucleo/panel_audio.gd;nucleo/pantalla_brillo.gd",
     "pasa": true
   },
@@ -883,7 +883,7 @@
   },
   {
     "id": "animacion-cuerpo-jugador",
-    "que": "El cuerpo del jugador se dibuja con un AnimatedSprite2D (nodo Dibujo de nucleo/jugador.tscn) y el SpriteFrames nucleo/arte/jugador_hombre/jugador_hombre.tres, hecho de AtlasTexture sobre atlas_0.png con un lienzo comun (todos los cuadros miden lo mismo). AnimacionJugador.elegir, pura, elige la animacion con la tabla de prioridades de Hollow Knight (muerte, fundido de peligro, dormir, dano, aterrizaje duro, picada, curar, bola, estocada, ataque abajo, arriba o al lado, voltereta, impulso, pared, aire, carrera, correr, quieto); el giro en carrera es una capa aparte, solo en el suelo. Los clips con tiempo propio toman el cuadro de los contadores de ticks; los bucles los corre el sprite, quieto en el congelado. Volteo con Dibujo.scale.x, parpadeo de invulnerable con modulate, destello en blanco con un shader de un uniforme. El dibujo solo lee: la traza por tick de 36 guiones del jugador sale identica",
+    "que": "El cuerpo del jugador se dibuja con un AnimatedSprite2D (nodo Dibujo de nucleo/jugador.tscn) y el SpriteFrames nucleo/arte/jugador_hombre/jugador_hombre.tres, hecho de AtlasTexture sobre atlas_0.png con un lienzo comun (todos los cuadros miden lo mismo). AnimacionJugador.elegir, pura, elige la animacion con la tabla de prioridades de Hollow Knight (muerte, salir por una PUERTA con entrar_puerta y llegar por ella con salir_puerta, fundido de peligro, dormir, dano, aterrizaje duro, picada, curar, bola, estocada, ataque abajo, arriba o al lado, voltereta, impulso, pared, aire, carrera, correr, quieto); el giro en carrera es una capa aparte, solo en el suelo. Los clips con tiempo propio toman el cuadro de los contadores de ticks; los bucles los corre el sprite, quieto en el congelado. Volteo con Dibujo.scale.x, parpadeo de invulnerable con modulate, destello en blanco con un shader de un uniforme. El dibujo solo lee: la traza por tick de 36 guiones del jugador sale identica",
     "comprobacion": "herramientas/guiones/nucleo/animacion_jugador.guion;herramientas/pruebas/prueba_animacion_jugador.gd;herramientas/guiones/nucleo/animacion_bucles.guion;herramientas/guiones/nucleo/animacion_reaparicion.guion",
     "pasa": true
   },
@@ -907,7 +907,7 @@
   },
   {
     "id": "ajustes-avanzados",
-    "que": "Configuracion tiene Avanzado (tambien desde la pausa): Recursos, FPS, Luces 2D (bloqueadas en bajo; en alto, encendidas por omision), Niebla (apagada por omision) y Mostrar FPS; con el modo desarrollador, Pruebas y Ver hitbox; cada cambio se guarda y avisa al bus",
+    "que": "Configuracion tiene Avanzado (tambien desde la pausa): Recursos, FPS, Luces 2D (bloqueadas en bajo; apagadas por omision), Niebla (apagada por omision) y Mostrar FPS; con el modo desarrollador, Pruebas y Ver hitbox; cada cambio se guarda y avisa al bus",
     "comprobacion": "herramientas/guiones/nucleo/menu_configuracion.guion;herramientas/guiones/nucleo/guardado.guion",
     "pasa": true
   },
@@ -946,5 +946,107 @@
     "que": "En el telefono, el parry muestra su destello en la punta de la espada, la bola se ve como bola de fuego en capas y curar muestra el aura con su luz, sin bajar los FPS de la sala curando ni con la bola en pantalla",
     "comprobacion": "manual: docs/pruebas.md, fila Efectos del jugador (S50)",
     "pasa": true
+  },
+  {
+    "id": "recogibles",
+    "que": "Coleccionable, MonedasSueltas, ObjetoHabilidad y ObjetoMapa heredan de Recogible: un jugador muerto no los toma, se toman una sola vez y lo que se recuerda por id no vuelve al recargar la sala ni al cargar la partida; las PejeCoins sueltas suman su cantidad una vez",
+    "comprobacion": "herramientas/guiones/nucleo/monedas_sueltas.guion;herramientas/guiones/nucleo/estado_sala.guion;herramientas/guiones/contenido/zona_prueba_vitrina.guion",
+    "pasa": true
+  },
+  {
+    "id": "recogibles-telefono",
+    "que": "En el telefono, el coleccionable (la credencial con su halo que late) y el monton de PejeCoins se leen como premio en una sala oscura, sin bandas en el halo, y una sala con monedas sueltas no baja de 60 FPS en el S50 en bajo",
+    "comprobacion": "manual: docs/pruebas.md, «La Celda, salas 2 a 5» (coleccionables de las salas 3 y 5; PejeCoins sueltas de las salas 2, 4 y 5)",
+    "pasa": true
+  },
+  {
+    "id": "plataformas-moviles",
+    "que": "Vaiven y Giro cuentan en ticks (espera al empezar y en cada extremo, desfase); la plataforma que es ella misma el AnimatableBody2D con Vaiven lleva al jugador; el punto seguro no se toma sobre lo que se mueve (ni en su pausa) y al usarlo se comprueba el suelo (suelo fragil roto: vuelve a la llegada, y la mochila igual); un elevador solido que baja sobre el jugador no lo dana ni lo atrapa; saltar de una plataforma que baja sube lo mismo que del suelo (platform_on_leave ADD_UPWARD_VELOCITY)",
+    "comprobacion": "herramientas/guiones/nucleo/plataformas.guion",
+    "pasa": true
+  },
+  {
+    "id": "plataforma-delgada",
+    "que": "PlataformaDelgada (nucleo/piezas/plataforma_delgada.tscn) es la unica una via: se cruza caminando a cualquier altura sobre el suelo, el salto desde abajo la atraviesa y se queda encima, ni la caida ni la picada la atraviesan y cuenta como punto seguro",
+    "comprobacion": "herramientas/guiones/nucleo/plataformas.guion",
+    "pasa": true
+  },
+  {
+    "id": "plataformas-telefono",
+    "que": "En el telefono, en la sala Plataformas: subirse y bajarse de la plataforma y del elevador se siente bien, saltar del elevador mientras baja no se siente corto, quedarse debajo del elevador no se ve mal, y la lampara se cruza caminando y se sube de un salto",
+    "comprobacion": "manual: S50, APK de desarrollo, zona de pruebas, Mundo, Plataformas",
+    "pasa": false
+  },
+  {
+    "id": "puertas-tipo",
+    "que": "Puerta extiende Interactuable y tiene tipo (LADO, PUERTA, ARRIBA, ABAJO): LADO, ARRIBA y ABAJO se cruzan al entrar en su area; PUERTA solo con interactuar estando enfrente, con su aviso, y el jugador se pone en su x, se voltea y sale de espaldas por la otra",
+    "comprobacion": "herramientas/guiones/nucleo/cambio_de_sala.guion; herramientas/guiones/nucleo/puerta_accion.guion; herramientas/guiones/contenido/celda_2_subir.guion; herramientas/guiones/contenido/celda_5_bajar.guion; herramientas/guiones/contenido/celda_4_tiro.guion",
+    "pasa": true
+  },
+  {
+    "id": "fundido-cambio-sala",
+    "que": "El Fundido es el unico que cambia de sala (puerta, estacion, muerte; la cinematica usa Fundido.ir_a_sala): un cambio a la vez, perfiles de tiempos PUERTA, ESTACION y MUERTE, emite en_negro, no cambia si el jugador murio mientras oscurecia y avisa con un error si change_scene_to_packed falla",
+    "comprobacion": "herramientas/guiones/nucleo/transicion.guion; herramientas/guiones/nucleo/fundido_puerta.guion; herramientas/guiones/nucleo/estaciones.guion; herramientas/guiones/nucleo/jugador_reaparecer.guion",
+    "pasa": true
+  },
+  {
+    "id": "transicion-jugador",
+    "que": "Mientras cruza una puerta (Jugador.Transicion) el jugador no lee los controles, no recibe dano ni peligros y no interactua; se mueve con move_and_slide, entra caminando por LADO y de espaldas por PUERTA, y el punto_seguro de la puerta va antes que la llegada en ultimo_punto_seguro",
+    "comprobacion": "herramientas/guiones/nucleo/transicion.guion; herramientas/guiones/nucleo/cambio_de_sala.guion",
+    "pasa": true
+  },
+  {
+    "id": "puertas-telefono",
+    "que": "En el telefono, en la sala Puerta C: pasar por enfrente de una PUERTA, aun corriendo con el joystick algo inclinado hacia arriba, no la cruza, atacar hacia arriba enfrente no la cruza, inclinar el joystick hacia arriba enfrente si, y el cruce (voltearse, fundido, salir de espaldas) se ve bien y no responde a toques",
+    "comprobacion": "manual: S50, APK de desarrollo, zona de pruebas, Mundo, Puerta C",
+    "pasa": false
+  },
+  {
+    "id": "zona-camara",
+    "que": "ZonaCamara: mientras el jugador esta en su forma, la camara no muestra nada fuera de sus limites (Rect2 en coordenadas de la sala, tambien con y negativas), recortados con los de la sala; con zonas encimadas manda la ultima en que entro y al salir vuelve la anterior y despues la sala; recien llegada la sala la camara entra al instante y despues la alcanza con el seguimiento lento",
+    "comprobacion": "herramientas/guiones/nucleo/zona_camara.guion",
+    "pasa": true
+  },
+  {
+    "id": "muro-descubre-y-luz-corte",
+    "que": "MuroRompible.tapas y descubre son nodos exportados: lo que descubre esta oculto hasta romperse, aparece al romperse y, marcado, al volver a la sala; lo escondido detras queda encerrado por el solido (caminando contra el muro entero no se toman las monedas del cuarto). LuzSala.corte_arriba recorta el halo a esa altura sobre la luz y halo_radio fija su lado por pieza",
+    "comprobacion": "herramientas/guiones/nucleo/muro_rompible.guion;herramientas/guiones/nucleo/piezas_sala.guion",
+    "pasa": true
+  },
+  {
+    "id": "aviso-accion-modo",
+    "que": "AvisoAccion.modo: UNA_VEZ (con id, hecha no vuelve en la partida), POR_VISITA (sin id, vuelve en cada visita aunque haya marca) y SIEMPRE (sale cada vez que el jugador entra aunque este hecha y el boton deja de latir al hacerla); con el jugador sentado, hablando o muerto no sale, y al pararse vuelve",
+    "comprobacion": "herramientas/guiones/nucleo/aviso_accion.guion",
+    "pasa": false
+  },
+  {
+    "id": "npc-animado",
+    "que": "Npc con AnimatedSprite2D opcional: quieto, hablar con la caja abierta y entregar al terminar contando una etapa, que vuelve a quieto; se voltea hacia el jugador reflejando el dibujo sobre los pies, con zona muerta, y sin dibujo sigue la forma provisional",
+    "comprobacion": "herramientas/guiones/nucleo/npc.guion;herramientas/guiones/nucleo/dialogo.guion",
+    "pasa": true
+  },
+  {
+    "id": "clave-de-piezas",
+    "que": "Sala.clave_de sube hasta la primera Sala: un objeto que se recuerda dentro de una pieza instanciada (su owner es la raiz de la pieza) se guarda en su sala",
+    "comprobacion": "herramientas/guiones/nucleo/estado_sala.guion",
+    "pasa": true
+  },
+  {
+    "id": "sonidos-jugador",
+    "que": "Pasos (jugador_paso, en los cuadros de pasos del SpriteFrames del personaje, en el suelo y fuera de un cruce de puerta), aterrizaje (si es duro o cae a velocidad_aterrizaje_min o mas: bajar un escalon no suena), picada (por el argumento picada de jugador_aterrizo) e impulso (jugador_impulso) suenan con los WAV elegidos de nucleo/sonidos/jugador/; paso, aterrizaje y golpe varian el tono con un AudioStreamRandomizer. En el CI (sin pantalla Sonido esta mudo) los guiones comprueban cada senal a su evento, el umbral del aterrizaje y los pasos y aterrizajes en una sala. Solo con ventana (comando de la fila de sonido.guion en docs/pruebas.md) se comprueba el sonido real del unico AudioStreamPlayer con AudioStreamPolyphonic: un efecto nuevo no corta a uno que suena y, con las voces llenas, se descarta el nuevo",
+    "comprobacion": "herramientas/guiones/nucleo/sonido.guion;herramientas/guiones/nucleo/habilidad_impulso.guion;herramientas/guiones/nucleo/vibracion_aterrizaje.guion",
+    "pasa": false
+  },
+  {
+    "id": "musica-por-sala",
+    "que": "Musica (hija de Arranque, Arranque.musica) toca un tema a la vez en el bus Musica: cada pedido (tema, volumen de region y segundos) se aplica en el tick siguiente y gana el ultimo; un tema que ya suena, o que se esta yendo, no se reasigna ni vuelve a empezar; tema vacio no toca la musica y Musica.SILENCIO la calla. Cada Sala pide su tema_musica y volumen_musica_db al entrar (el mismo recurso en las salas de una zona, en su base; La Celda, SILENCIO), RegionMusica cambia tema o volumen dentro de una sala, el menu pone su tema, la cinematica y la zona de pruebas callan, y el panel de audio, si al abrirlo no se oye nada, pide a Musica el tema del menu y al cerrarlo devuelve lo que habia. Reaparecer o cargar en el banco dentro de una region no reinicia el tema",
+    "comprobacion": "herramientas/guiones/nucleo/musica.guion",
+    "pasa": false
+  },
+  {
+    "id": "musica-telefono",
+    "que": "En el telefono el tema del menu suena sin cortes en el bucle, la cinematica lo calla, La Celda queda callada, la region de la sala de prueba Musica lo sube y lo baja sin reiniciarlo, reaparecer o cargar en su banco no lo empieza de nuevo ni lo baja un instante, al volver de esa sala a la lista de la zona el tema callado no vuelve a oirse, y en la pausa lejos de un tema Configuracion, Audio pone el tema y al cerrarla se calla",
+    "comprobacion": "manual: docs/pruebas.md, «Musica»",
+    "pasa": false
   }
 ]

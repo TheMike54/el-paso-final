@@ -186,13 +186,13 @@ func _ready() -> void:
 	_caso("luces 2D: solo con el ajuste encendido y Recursos en alto", Ajustes.luces_avanzadas_activas(true, false) and not Ajustes.luces_avanzadas_activas(true, true) and not Ajustes.luces_avanzadas_activas(false, false))
 	_escribir(ruta_ajustes, '{"version": 1, "ajustes": {"vibracion": false}}')
 	Ajustes.cargar(ruta_ajustes)
-	_caso("un archivo de antes de Avanzado deja luces encendidas, niebla y FPS en pantalla apagados", Ajustes.luces_avanzadas and not Ajustes.niebla and not Ajustes.mostrar_fps)
-	Ajustes.luces_avanzadas = false
+	_caso("un archivo de antes de Avanzado deja luces, niebla y FPS en pantalla apagados", not Ajustes.luces_avanzadas and not Ajustes.niebla and not Ajustes.mostrar_fps)
+	Ajustes.luces_avanzadas = true
 	Ajustes.niebla = true
 	Ajustes.mostrar_fps = true
 	Ajustes.guardar(ruta_ajustes)
 	Ajustes.cargar(ruta_ajustes)
-	_caso("luces, niebla y FPS en pantalla vuelven como se guardaron", not Ajustes.luces_avanzadas and Ajustes.niebla and Ajustes.mostrar_fps)
+	_caso("luces, niebla y FPS en pantalla vuelven como se guardaron", Ajustes.luces_avanzadas and Ajustes.niebla and Ajustes.mostrar_fps)
 	_escribir(ruta_ajustes, '{"version": 1, "ajustes": {"niebla": "si", "mostrar_fps": 1}}')
 	Ajustes.cargar(ruta_ajustes)
 	_caso("una niebla o un mostrar FPS que no es si o no deja el valor por omision", not Ajustes.niebla and not Ajustes.mostrar_fps)

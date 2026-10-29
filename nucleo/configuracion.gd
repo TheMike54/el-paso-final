@@ -1,8 +1,8 @@
 class_name Configuracion
 extends Control
 # Configuracion del menu principal y de la pausa, en orden de uso: audio (panel con el volumen general, de musica y de
-# efectos, cada uno con su barra ancha y un altavoz que silencia; mientras esta abierto toca la musica de prueba y
-# tiene un boton para oir un efecto), brillo (su pantalla, con la escena de la sala o una de muestra), vibracion,
+# efectos, cada uno con su barra ancha y un altavoz que silencia; si no se oye musica, mientras esta abierto suena un tema
+# de prueba, y tiene un boton para oir un efecto), brillo (su pantalla, con la escena de la sala o una de muestra), vibracion,
 # temblor, botones tactiles (abre el editor), botones del control (con aviso si no hay uno conectado), Avanzado y
 # creditos. Avanzado (maqueta aprobada el 25-oct-2026) agrupa Rendimiento: recursos (con aviso si se elige alto en un
 # telefono debil), FPS, luces 2D (bloqueadas en Recursos bajo), niebla y mostrar FPS; y Desarrollo: modo
@@ -66,6 +66,14 @@ var _recursos_bloqueado_tocado: bool = false
 var _luces_bloqueadas_tocadas: bool = false
 # El panel a la vista (_mostrar).
 var _actual: Seccion = Seccion.LISTA
+var _botones_mando: Dictionary[StringName, Button] = {}
+# Al pie de la lista y de Avanzado (debajo del aviso de recursos), del alto de reservado_abajo.
+var _huecos_abajo: Array[Control] = []
+# Pantalla de brillo (se arma en codigo, PantallaBrillo).
+var _panel_brillo: PantallaBrillo = null
+# El panel de cada Seccion, en el orden del enum, y el boton de la lista que abre cada subpanel (el foco al volver).
+var _paneles: Array[Control] = []
+var _boton_de: Dictionary[Seccion, Button] = {}
 
 @onready var _lista: Control = $Lista as Control
 @onready var _opciones: GridContainer = $Lista/Desplazable/Centro/Opciones as GridContainer
@@ -103,15 +111,6 @@ var _actual: Seccion = Seccion.LISTA
 @onready var _volver_mando: Button = $PanelMando/Arriba/Volver as Button
 @onready var _panel_creditos: Control = $PanelCreditos as Control
 @onready var _volver_creditos: Button = $PanelCreditos/Arriba/Volver as Button
-
-var _botones_mando: Dictionary[StringName, Button] = {}
-# Al pie de la lista y de Avanzado (debajo del aviso de recursos), del alto de reservado_abajo.
-var _huecos_abajo: Array[Control] = []
-# Pantalla de brillo (se arma en codigo, PantallaBrillo).
-var _panel_brillo: PantallaBrillo = null
-# El panel de cada Seccion, en el orden del enum, y el boton de la lista que abre cada subpanel (el foco al volver).
-var _paneles: Array[Control] = []
-var _boton_de: Dictionary[Seccion, Button] = {}
 
 
 func _ready() -> void:
@@ -183,7 +182,7 @@ func abrir() -> void:
 	_recursos.bloqueado = en_partida
 	_recursos_bloqueado_tocado = false
 	_luces_bloqueadas_tocadas = false
-	if DisplayServer.get_name() != "headless":
+	if not Ajustes.sin_ventana():
 		refresco = DisplayServer.screen_get_refresh_rate()
 	_poner_valores()
 	_mostrar_aviso_recursos()
@@ -271,7 +270,7 @@ func volver_del_editor() -> void:
 	Tema.dar_foco(_controles)
 
 
-# Un solo panel a la vista: el de la seccion; la musica de prueba suena solo con el de audio.
+# Un solo panel a la vista: el de la seccion; el tema de prueba suena solo con el de audio.
 func _mostrar(seccion: Seccion) -> void:
 	_guardar_barras()
 	_actual = seccion

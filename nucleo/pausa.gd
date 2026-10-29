@@ -89,7 +89,7 @@ func alternar() -> void:
 
 func abrir() -> void:
 	# Lo ultimo dibujado es todavia la sala: el panel sale en el cuadro siguiente. En headless no hay imagen.
-	if DisplayServer.get_name() != "headless":
+	if not Ajustes.sin_ventana():
 		_foto = get_viewport().get_texture().get_image()
 		_foto_brillo = Ajustes.brillo
 	abierta = true

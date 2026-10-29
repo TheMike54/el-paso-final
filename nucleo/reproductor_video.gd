@@ -72,11 +72,6 @@ static func usa_h264() -> bool:
 	return OS.get_name() == "Android" and Engine.has_singleton("AndroidRuntime")
 
 
-## Sin ventana (guiones y validador): no se decodifica nada.
-static func sin_ventana() -> bool:
-	return DisplayServer.get_name() == "headless"
-
-
 ## Volumen lineal del video H.264: Master por Musica, 0 si alguno esta silenciado. MediaPlayer suena fuera de los
 ## buses de Godot; Theora no lo necesita: va por el bus Musica, que ya lo aplica.
 static func volumen() -> float:
@@ -93,7 +88,7 @@ static func volumen() -> float:
 
 func _ready() -> void:
 	set_process(false)
-	if sin_ventana():
+	if Ajustes.sin_ventana():
 		return
 	if usa_h264():
 		_armar_lienzo()
@@ -106,7 +101,7 @@ func reproducir() -> void:
 	_terminado = false
 	_generacion += 1
 	var generacion: int = _generacion
-	if sin_ventana():
+	if Ajustes.sin_ventana():
 		if not _bucle:
 			get_tree().create_timer(DURACION_SIN_VENTANA).timeout.connect(_terminar_si_sigue.bind(generacion))
 		return
@@ -161,13 +156,13 @@ func pausar(si: bool) -> void:
 ## El fondo desenfocado de Configuracion, congelado: el video se dibuja una vez a media pantalla (una sola lectura de
 ## la textura del decodificador por px: leerla varias veces costaba hasta 26 FPS en el S50), se reduce a 1/8 y se
 ## desenfoca en una pasada, y se estira con filtro lineal; el video se pausa mientras tanto. En el S50: menu 52,7 FPS,
-## con Configuracion y el desenfoque 55,1 (demo de La Celda, 25-oct-2026). Falso lo quita y sigue el video.
+## con Configuracion y el desenfoque 55,1 (25-oct-2026). Falso lo quita y sigue el video.
 func desenfocar(si: bool) -> void:
 	if _borroso != null:
 		_borroso.queue_free()
 		_borroso = null
 	# Sin video ni imagen (el respaldo sin .jpg) no hay nada que desenfocar.
-	if not si or sin_ventana() or (_lienzo == null and _theora == null and _respaldo == null):
+	if not si or Ajustes.sin_ventana() or (_lienzo == null and _theora == null and _respaldo == null):
 		_mostrar(true)
 		pausar(false)
 		return

@@ -4,18 +4,18 @@ extends RefCounted
 # que solo reconocen 2 (el S50, medido el 12-oct-2026): el juego no cambia por eso, pero el menu y Configuracion lo
 # avisan con una linea discreta. Fuera de Android, o si la pregunta falla, no avisa; las pruebas usan forzar().
 
-const FUNCION_MUCHOS_TOQUES: String = "android.hardware.touchscreen.multitouch.jazzhand"
-const TEXTO_AVISO: String = "Tu celular reconoce pocos toques a la vez: algunas combinaciones de botones pueden no responder."
-const COLOR_AVISO: Color = Color(1.0, 1.0, 1.0, 0.55)
-const TAMANO_LETRA: int = 20
-const MARGEN_ABAJO: float = 24.0
-
 enum Respuesta {
 	SIN_PREGUNTAR,
 	MUCHOS,
 	POCOS,
 	NO_SE_SABE,
 }
+
+const FUNCION_MUCHOS_TOQUES: String = "android.hardware.touchscreen.multitouch.jazzhand"
+const TEXTO_AVISO: String = "Tu celular reconoce pocos toques a la vez: algunas combinaciones de botones pueden no responder."
+const COLOR_AVISO: Color = Color(1.0, 1.0, 1.0, 0.55)
+const TAMANO_LETRA: int = 20
+const MARGEN_ABAJO: float = 24.0
 
 static var _respuesta: Respuesta = Respuesta.SIN_PREGUNTAR
 

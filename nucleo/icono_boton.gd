@@ -15,6 +15,9 @@ const LETRA_BOTON: int = 24
 const SEPARACION_TEXTO: float = 12.0
 const RELLENO_PASTILLA: float = 12.0
 
+# Huecos transparentes por tamano, compartidos: el icono del Button que reserva el lugar.
+static var _huecos: Dictionary[Vector2i, ImageTexture] = {}
+
 ## Accion del InputMap cuyo boton se dibuja.
 @export var accion: StringName = &"":
 	set(valor):
@@ -36,9 +39,6 @@ const RELLENO_PASTILLA: float = 12.0
 var dibujo_actual: Dictionary:
 	get:
 		return _dibujo.duplicate()
-
-# Huecos transparentes por tamano, compartidos: el icono del Button que reserva el lugar.
-static var _huecos: Dictionary[Vector2i, ImageTexture] = {}
 
 # Lo que se dibuja ahora (dibujo()).
 var _dibujo: Dictionary = {}
