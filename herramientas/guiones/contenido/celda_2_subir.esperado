@@ -1,0 +1,10 @@
+# En el elevador abajo (cara en y=514) y despues arriba, en su pausa (y=264); el salto cruza el hueco y lleva a celda_5:
+# aparece en la llegada de la puerta del hueco del piso (x=1350), en el suelo. Sin dano.
+en 1740 y 514 2
+en 1925 y 264 2
+escena res://contenido/salas/celda/celda_5.tscn
+x 1350 40
+y 554 2
+en_suelo true
+valor Jugador transicion 0
+senal /root/Eventos jugador_danado 0

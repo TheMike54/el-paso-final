@@ -1,0 +1,10 @@
+# Sobre la columna rota antes de correr; a mitad del salto, cerca de su cima (y 300, unos 224 px sobre la columna); el
+# salto largo desde la orilla no pasa los cables: un golpe de peligro y reaparece en la columna (cara en y=524), en el suelo.
+en 897 x 2929 8
+en 897 y 524 2
+en 1172 y 300 25
+escena res://contenido/salas/celda/celda_2.tscn
+x 2929 30
+y 524 2
+en_suelo true
+senal /root/Eventos jugador_danado 1

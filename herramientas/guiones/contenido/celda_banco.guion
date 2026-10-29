@@ -1,4 +1,5 @@
 # La Celda: el jugador salta las varillas, se detiene en el banco y descansa: guarda en Partida la sala por su id.
+# Junto al banco esta dentro de la region que pone el tema del menu (MusicaBanco).
 escena res://contenido/salas/celda/celda_1.tscn
 2 mover_derecha press
 208 saltar press

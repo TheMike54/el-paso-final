@@ -1,0 +1,12 @@
+# Sobre la caja (cara en y=1029), el estante (846) y la lampara baja (660); el ultimo salto ya cruza el hueco y queda
+# en el ducto (440); dentro del nicho, en su piso (y=386) junto al coleccionable, recogido una vez. Sin dano.
+en 430 y 1029 2
+en 520 y 846 2
+en 620 y 660 2
+en 900 y 440 2
+escena res://contenido/salas/celda/celda_3.tscn
+x 2018 12
+y 386 2
+en_suelo true
+senal /root/Eventos coleccionable_obtenido 1
+senal /root/Eventos jugador_danado 0

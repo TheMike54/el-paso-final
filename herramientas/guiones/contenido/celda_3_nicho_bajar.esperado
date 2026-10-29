@@ -1,0 +1,10 @@
+# En el nicho (y=386), luego en la lampara baja (660) y en el piso a la derecha del estante, antes de la puerta
+# derecha (x=2980), sin dano.
+en 1000 y 386 2
+en 1100 y 660 2
+escena res://contenido/salas/celda/celda_3.tscn
+x 2840 60
+y 1080 2
+en_suelo true
+senal /root/Eventos coleccionable_obtenido 1
+senal /root/Eventos jugador_danado 0
