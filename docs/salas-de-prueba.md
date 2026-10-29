@@ -8,7 +8,7 @@ fila aquí en el mismo cambio. Inventario del 15-oct-2026; siete categorías des
 
 ## Cómo se entra
 
-- Menú principal → «Zona de pruebas» (aparece con Configuración → Desarrollador en «Sí») → categoría → sala.
+- Menú principal → «Zona de pruebas» (aparece con Configuración → Avanzado → Desarrollador en «Sí») → categoría → sala.
 - Cada sala lleva su nombre y, debajo, para qué sirve (`SALAS` de `zona_pruebas.gd`); una de «Otras» lleva el
   nombre del archivo sin `sala_`. Puerta B no se lista: se llega por la puerta de Puerta A.
 - Al entrar se reinicia la partida (`Partida.reiniciar()`) y se guarda en el archivo de pruebas. Las habilidades de
@@ -28,9 +28,9 @@ propósito: Peligro (el foso de pinchos) e Impulso (los bloques altos). Igualado
 | Movimiento | 2400×720: suelo largo y una plataforma de 640×80 | pluma | Caminar, salto corto y largo, coyote, salto en cola |
 | Caída | 1600×1280: repisa arriba a la izquierda, suelo 1180 px abajo, medidor de cámara | pluma | Caída larga, aterrizaje duro, cámara al caer, vibración |
 | Salida abajo | 1600×720: suelo solo en la mitad izquierda | pluma | Salir de la sala por abajo y el fundido |
-| Doble salto | 1600×720: plataforma alta (900, 340) y un objeto | objeto: `doble_salto` | Doble salto |
-| Impulso | 2400×940: dos bloques altos con un foso de pinchos entre ellos y un objeto | objeto: `impulso` | Cruzar el foso con impulso |
-| Pared | 1280×1520: torre entre dos paredes, pinchos abajo, banco `banco_pared` y un objeto | objeto: `salto_en_pared` | Salto en pared y escalar entre dos paredes |
+| Doble salto | 1600×720: plataforma alta (900, 340) y un objeto | pluma; objeto: `doble_salto` | Doble salto |
+| Impulso | 2400×940: dos bloques altos con un foso de pinchos entre ellos y un objeto | pluma; objeto: `impulso` | Cruzar el foso con impulso |
+| Pared | 1280×1520: torre entre dos paredes, pinchos abajo, banco `banco_pared` y un objeto | pluma; objeto: `salto_en_pared` | Salto en pared y escalar entre dos paredes |
 | Carrera | 4000×720: pasillo largo con franjas cada 200 px y un muñeco que no se mueve al golpearlo | pluma, `impulso` | Carrera: giro, voltereta, ataque en carrera, rebote en pared |
 
 ## Combate
@@ -41,10 +41,10 @@ propósito: Peligro (el foso de pinchos) e Impulso (los bloques altos). Igualado
 | Combate chico | 2400×720: cinco cortables, un muñeco alto, objeto pluma | objeto: `pluma` | Recoger el arma, cortar, golpear arriba |
 | Golpe | 1600×720: muñeco que sí sale empujado al golpearlo, bloque que daña y pared | pluma | Congelado al recibir daño, empuje del enemigo golpeado, golpe contra la pared |
 | Parry | 2000×720: muñeco que ataca (`muneco_que_ataca.tres`, vida 99) | pluma | Parry |
-| Pogo | 2400×720: muñeco y 800 px de pinchos; objetos de impulso y doble salto | objetos: `impulso`, `doble_salto` | Rebote al golpear hacia abajo sobre los pinchos |
-| Picada | 1600×1280: plataformas altas, suelo frágil, muñeco, enemigo débil abajo, objeto | objeto: `caida_en_picada` | Caída en picada, romper el suelo frágil, temblor |
-| Bola | 1600×720: muñeco cerca, lejos y detrás de una plataforma; objeto; un pasto en el camino de la bola y otro detrás de la plataforma, los dos flotando a la altura de la bola | objeto: `proyectil` | Poder de bola: alcance, recarga y que corte el pasto sin pararse |
-| Curar | 1600×720: muñeco (para cargar Inspiración), bloque que daña (para perder vida), objeto | objeto: `impulso` | Curar, soltar a medias, curar tras un golpe |
+| Pogo | 2400×720: muñeco y 800 px de pinchos; objetos de impulso y doble salto | pluma; objetos: `impulso`, `doble_salto` | Rebote al golpear hacia abajo sobre los pinchos |
+| Picada | 1600×1280: plataformas altas, suelo frágil, muñeco, enemigo débil abajo, objeto | pluma; objeto: `caida_en_picada` | Caída en picada, romper el suelo frágil, temblor |
+| Bola | 1600×720: muñeco cerca, lejos y detrás de una plataforma; objeto; un pasto en el camino de la bola y otro detrás de la plataforma, los dos flotando a la altura de la bola | pluma; objeto: `proyectil` | Poder de bola: alcance, recarga y que corte el pasto sin pararse |
+| Curar | 1600×720: muñeco (para cargar Inspiración), bloque que daña (para perder vida), objeto | pluma; objeto: `impulso` | Curar, soltar a medias, curar tras un golpe |
 
 ## Enemigos
 
@@ -63,10 +63,13 @@ propósito: Peligro (el foso de pinchos) e Impulso (los bloques altos). Igualado
 | Banco | 1600×720: banco `banco_prueba`, bloque que daña y pared | pluma | Sentarse, guardar, el aviso de guardado |
 | Puerta A | 2400×720: puerta derecha a «Puerta B» | pluma | Cambio de sala, fundido, saltar junto a la puerta |
 | Puerta B | No se lista (`OCULTAS`): se llega por la puerta de Puerta A. 1280×720: puerta izquierda a «Puerta A» | pluma | Lo mismo desde el otro lado |
+| Puerta C | 2400×720: dos puertas de tipo `PUERTA` (en x 800 y x 1800) que llevan una a la otra en la misma sala | pluma | Cruzar con `interactuar` (aviso, voltearse de espaldas, salir de espaldas), que pasar por enfrente no cruce, el toque en el teléfono |
 | Cámara | 3200×1440: escalera de seis escalones | pluma | Seguimiento de cámara, límites, adelanto de cámara |
 | Capas | La de Cámara con tres capas `Parallax2D` de franjas | pluma | Paralaje |
-| Secretos | 3200×1200: muro de 4 golpes que destapa un cuarto con premio, muro que solo se rompe desde la derecha, techo rompible con premio arriba, palanca que abre un portón con premio detrás | pluma, `proyectil` | Muros rompibles, tapas, golpe por lado, bola contra el muro, palanca y portón; volver a entrar y que siga roto y abierto |
+| Secretos | 3200×1200: muro de 4 golpes que destapa un cuarto con premio y 10 PejeCoins encerradas (al romperse aparece la orilla del hueco, `descubre`), muro que solo se rompe desde la derecha, techo rompible con premio arriba, palanca que abre un portón con premio detrás | pluma, `proyectil` | Muros rompibles, tapas, lo que descubre el muro y que las monedas no se tomen antes de romperlo, golpe por lado, bola contra el muro, palanca y portón; volver a entrar y que siga roto y abierto |
 | Pizarrones | 3600×720, en el orden de King's Pass, y se entra con una vida menos (`vida_menos_prueba.gd`) para poder curar aunque el caminante no pegue, y sin los botones de saltar, atacar ni curar, que aparecen al llegar a su pizarrón: saltar en x 1000 ante un bloque (x 1300); atacar en x 1600, dentro de un corral que cierra otro bloque en x 2500, con un caminante que va y viene y pega al tocarlo; curar en x 2850, con la nota «Golpea enemigos para ganar Inspiración»; «Sentarse» sobre el banco `banco_pizarrones` (x 3300), sin pizarrón | pluma | Que cada aviso salga poco después de entrar, con su botón y su palabra (con el control, el del control en uso; tras un toque, el de la pantalla, que late); que se vaya al hacer la acción y no vuelva al regresar a la sala en la misma partida; que cada botón de la pantalla aparezca al llegar a su pizarrón; y que el caminante deje con ganas de curarse |
+| Plataformas | 2400×720: lámpara de una vía (`PlataformaDelgada`, cara a 180 px del suelo) a la izquierda, barra que gira (`Giro`, golpe) arriba y a su derecha (centro en x=650, y=230; barre x 550-750), 800 px de pinchos con una plataforma que va y viene encima (`Vaiven` en el `AnimatableBody2D`, con espera en cada extremo), y un elevador que sube del suelo a una cornisa a la derecha; suelo de 120 px de grueso (regla del contrato bajo una pieza sólida que baja) | pluma | Que la plataforma y el elevador lleven al jugador; caer a los pinchos desde la plataforma y volver al suelo fijo, no al aire; quedarse debajo del elevador cuando baja (no daña, lo deja encima); saltar del elevador mientras baja (sube como desde el suelo); cruzar la lámpara caminando y subirse de un salto |
+| Música | 2000×720: sala callada (`tema_musica` = `Musica.SILENCIO`) con una `RegionMusica` del tema del menú de 700×400 sobre el banco `banco_musica` (a la derecha; una franja morada en el suelo marca la región) y la `Entrada` fuera de ella, a la izquierda | ninguna | Que el tema suba al acercarse al banco (3 s) y se apague al alejarse (6 s) sin volver a empezar; sentarse, morir o salir y continuar, y que al reaparecer en el banco el tema siga donde iba; en la pausa, lejos del banco, abrir Configuración → Audio: suena el tema del menú y se calla al cerrarlo |
 
 ## Partida
 
@@ -82,16 +85,17 @@ propósito: Peligro (el foso de pinchos) e Impulso (los bloques altos). Igualado
 | Botón | Qué hay | Habilidades | Para probar |
 |---|---|---|---|
 | Recursos | 2560×720: 30 plantas, 2 nieblas, 3 emisores, 6 cortables | pluma | Qué se apaga en Recursos «bajo» y su costo |
-| Arte | 6400×1080: capas de arte generado con IA, adornos, animaciones y partículas; botones Part, Frente, Niebla y Anim para apagar cada grupo | pluma | FPS en el teléfono (fila «Sala de arte» de `docs/pruebas.md`) |
+| Arte | 6400×1080: capas de arte generado con IA, adornos, animaciones y partículas; botones Frente y Anim para apagar cada grupo (partículas y niebla, con el panel de pruebas; los FPS, con «Mostrar FPS») | pluma | FPS en el teléfono (fila «Sala de arte» de `docs/pruebas.md`) |
 
 ## Zonas
 
-Salas con id, unidas por puertas, como en el juego real. Todas dan `pluma`.
+Salas con id, unidas por puertas, como en el juego real. Todas dan `pluma`, salvo La Celda, que es del juego.
 
 | Botón | Qué hay | Para probar |
 |---|---|---|
+| La Celda | Va primero. La cinemática (`contenido/cinematicas/cinematica_celda.tscn`, heredada en `herramientas/salas/la_celda.tscn`) y después la sala `celda_1` del juego (`contenido/salas/celda/`): foso de varillas (1571-1757), banco `banco_celda_1` (x ≈ 2966), grieta con raíces como foso (3685-3875), un pizarrón sobre el foso de varillas que enseña el salto largo y, antes de la puerta, un pizarrón con patas que enseña «Entrar»; con su arte, luces, cables, partículas y niebla. Por la puerta del salón (x 4300, con acción) sigue `celda_2`: dos fosos de varillas (1407-1593 y 3474-3660), cables pelados (3038-3388) que solo se cruzan por arriba (escombros, columna rota, lámpara de una vía, plataforma que va y viene y elevador), hueco del techo (3760-4126) a `celda_5` y la puerta SALIDA (x 4250, caminando), que sigue a `celda_3` (el Eterno, que entrega la pluma, y el coleccionable `coleccionable_nicho`) y, por su boquete de raíces, a `celda_4` (tiro, raíz móvil y cornisa con `monedas_cornisa`). `celda_5`, el pasillo de arriba: foso, aspas, coleccionable `coleccionable_pasillo` (x 130) y el hueco del piso (1469-1707) que baja al elevador | Cinemática (con el modo desarrollador se salta), la sala con su arte, FPS en el teléfono, panel de pruebas con grupos reales |
 | Mapa 1 | Mapa de la zona, mapa de «prueba», pluma del mapa, banco `banco_mapa_1`, brújula; puertas a «Prueba 4» y «Mapa 2» | Mapas, pluma del mapa, brújula, pantalla del mapa |
-| Mapa 2 | Sala alta, puerta a «Mapa 1»; pinchos en x 1300 | Sala de dos pantallas de alto en el mapa; morir con monedas y ver el rombo de la mochila en el mapa |
+| Mapa 2 | Sala alta, puerta a «Mapa 1»; pinchos en x 1300 | Sala de dos pantallas de alto en el mapa; morir con monedas y ver la mochila en el mapa |
 | Prueba 1 | Banco `banco_prueba_1`, estación gratis `estacion_prueba_1` (x 1100), puerta a «Prueba 2» | Puertas por id, banco de zona y viaje rápido |
 | Prueba 2 | Un coleccionable, puertas a 1 y 3 | Coleccionable recordado |
 | Prueba 3 | Dos coleccionables, puertas a 2 y 4 | Juntar coleccionables |

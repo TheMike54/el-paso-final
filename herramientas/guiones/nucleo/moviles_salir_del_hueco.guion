@@ -1,0 +1,13 @@
+# En la sala Enemigos Moviles, el jugador sube al escalon bajo, cae del otro lado al hueco entre el escalon y el pilar
+# y vuelve a subir al escalon: contra su cara derecha no tiene el escalon alto encima. Con el escalon alto en x 1760 el
+# salto chocaba con el y el hueco no tenia salida (docs/errores/2026-10-25-hueco-sin-salida-moviles.md).
+escena res://herramientas/salas/sala_enemigos_moviles.tscn
+2 mover_derecha press
+5 saltar press
+30 saltar release
+60 mover_derecha release
+100 mover_izquierda press
+160 saltar press
+185 saltar release
+200 mover_izquierda release
+fin 260

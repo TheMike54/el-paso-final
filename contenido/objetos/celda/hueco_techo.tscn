@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://t0hl58kau0ro"]
+
+[ext_resource type="PackedScene" uid="uid://cantrdqq1cwy8" path="res://nucleo/puerta.tscn" id="1_puerta"]
+
+[sub_resource type="RectangleShape2D" id="forma_hueco"]
+size = Vector2(366, 50)
+
+[node name="HuecoTecho" instance=ExtResource("1_puerta")]
+tipo = 2
+
+[node name="Forma" parent="." index="0"]
+position = Vector2(0, -25)
+shape = SubResource("forma_hueco")
+
+[node name="Boca" type="Marker2D" parent="."]

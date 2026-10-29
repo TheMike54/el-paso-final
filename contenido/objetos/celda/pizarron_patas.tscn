@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://b6ipm876vu3mg"]
+
+[ext_resource type="Script" uid="uid://dglahbp5ygo3w" path="res://nucleo/aviso_accion.gd" id="1_aviso"]
+[ext_resource type="Texture2D" uid="uid://bdlirph6805x" path="res://contenido/salas/celda/arte/pizarron_patas.png" id="2_arte"]
+
+[node name="PizarronPatas" type="Area2D"]
+script = ExtResource("1_aviso")
+acciones = Array[StringName]([&"interactuar"])
+modo = 2
+texto = "Entrar"
+punto = Vector2(0, -166)
+
+[node name="Arte" type="Sprite2D" parent="."]
+z_index = -19
+z_as_relative = false
+position = Vector2(-160, -246)
+texture = ExtResource("2_arte")
+centered = false

@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://co2iv42lb28mi"]
+
+[ext_resource type="Script" uid="uid://b2d80kj4a3usn" path="res://herramientas/pruebas/prueba_musica.gd" id="1_prueba"]
+
+[node name="SalaMusicaCuentas" type="Node"]
+script = ExtResource("1_prueba")

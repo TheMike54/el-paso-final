@@ -135,10 +135,16 @@ func _probar_menu() -> void:
 	_caso("la ficha sin nombre se titula Partida N", _titulo(ranuras, 2) == "Partida 2")
 	var nueva: NuevaPartida = menu.nueva_partida
 	_ficha(ranuras, 1, "Principal").pressed.emit()
-	_caso("tocar una vacia abre Nueva partida con el foco en Hombre", nueva.visible and not ranuras.visible and nueva.botones["hombre"].has_focus())
-	_caso("sin personaje Empezar no responde", nueva.empezar_boton.disabled)
-	nueva.botones["mujer"].pressed.emit()
-	_caso("elegir uno lo enciende y habilita Empezar", nueva.personaje == "mujer" and nueva.botones["mujer"].button_pressed and not nueva.botones["hombre"].button_pressed and not nueva.empezar_boton.disabled)
+	# Con la eleccion oculta (NuevaPartida.ELEGIR_PERSONAJE) se revisa que no se vea y que ya haya personaje.
+	if NuevaPartida.ELEGIR_PERSONAJE:
+		_caso("tocar una vacia abre Nueva partida con el foco en Hombre", nueva.visible and not ranuras.visible and nueva.botones["hombre"].has_focus())
+		_caso("sin personaje Empezar no responde", nueva.empezar_boton.disabled)
+		nueva.botones["mujer"].pressed.emit()
+		_caso("elegir uno lo enciende y habilita Empezar", nueva.personaje == "mujer" and nueva.botones["mujer"].button_pressed and not nueva.botones["hombre"].button_pressed and not nueva.empezar_boton.disabled)
+	else:
+		_caso("tocar una vacia abre Nueva partida con el foco en Empezar", nueva.visible and not ranuras.visible and nueva.empezar_boton.has_focus())
+		_caso("sin la fila de personajes", not nueva.botones["hombre"].is_visible_in_tree() and not nueva.botones["mujer"].is_visible_in_tree())
+		_caso("ya con el primer personaje: Empezar responde y el nombre vacio sera Alumno", nueva.personaje == NuevaPartida.PERSONAJES[0] and not nueva.empezar_boton.disabled and nueva.campo.placeholder_text == "Alumno")
 	menu.notification(NOTIFICATION_WM_GO_BACK_REQUEST)
 	_caso("Atras vuelve a las ranuras con el foco en la elegida", not nueva.visible and ranuras.visible and _ficha(ranuras, 1, "Principal").has_focus())
 	_caso("el nombre se limpia: sin simbolos, orillas ni espacios repetidos", NuevaPartida.limpiar_nombre("  Ana   María!! ", "mujer") == "Ana María" and NuevaPartida.limpiar_nombre("Ñandú_123", "hombre") == "Ñandú123")
@@ -147,17 +153,17 @@ func _probar_menu() -> void:
 	menu.notification(NOTIFICATION_WM_GO_BACK_REQUEST)
 
 	# Entrar a una ranura (sin cambiar de escena).
-	_caso("una vacia empieza en la sala inicial", menu.preparar_ranura(1) == menu.sala_inicial)
-	_caso("y fija el autoguardado en su ranura, ya escrita", Partida.ruta_guardado == FORMATO % 1 and Guardado.cargar(FORMATO % 1).estado == Guardado.Estado.VALIDA)
-	Guardado.borrar(FORMATO % 1)
+	_caso("una vacia empieza en la cinematica", menu.preparar_ranura(1) == menu.inicio_partida_nueva and menu.inicio_partida_nueva != menu.sala_inicial)
+	_caso("y fija el autoguardado en su ranura sin escribirla: cerrar ahi la deja vacia", Partida.ruta_guardado == FORMATO % 1 and Guardado.cargar(FORMATO % 1).estado == Guardado.Estado.VACIA)
 	menu.preparar_ranura(1, "mujer", "Ana")
+	Partida.autoguardar()
 	var escrita: Dictionary = Guardado.cargar(FORMATO % 1).partida
-	_caso("una nueva guarda personaje y nombre", Partida.personaje == "mujer" and Partida.nombre == "Ana" and str(escrita.get("personaje")) == "mujer" and str(escrita.get("nombre")) == "Ana")
+	_caso("su primer guardado lleva personaje y nombre", Partida.personaje == "mujer" and Partida.nombre == "Ana" and str(escrita.get("personaje")) == "mujer" and str(escrita.get("nombre")) == "Ana")
 	ranuras.leer()
 	_caso("y su ficha se titula con el nombre", _titulo(ranuras, 1) == "Ana")
 	Guardado.borrar(FORMATO % 2)
 	Guardado.guardar(PARTIDA, FORMATO % 2)
-	_caso("una ocupada sin banco continua en la sala inicial", menu.preparar_ranura(2) == menu.sala_inicial)
+	_caso("una ocupada sin banco continua en la sala inicial, sin cinematica", menu.preparar_ranura(2) == menu.sala_inicial)
 	_caso("con su partida, su ruta y su copia", Partida.vidas_maximas == 5 and Partida.ruta_guardado == FORMATO % 2 and Guardado.tiene_respaldo(FORMATO % 2))
 	var con_banco: Dictionary = PARTIDA.duplicate(true)
 	con_banco["banco"] = {"sala": "prueba_1", "id": "banco_prueba"}

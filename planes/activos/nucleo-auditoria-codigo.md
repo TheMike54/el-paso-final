@@ -474,7 +474,7 @@ Guardado sin fallo real: JSON.new().parse, temporal + renombrar, int desde float
 - P6 guardado.gd:123: subir VERSION deja todo INCOMPATIBLE, sin gancho de conversión -> _convertir(partida, desde) antes de la primera subida.
 - P7 .bak solo al entrar a la ranura (menu.gd:142): un archivo dañado pierde la sesión entera -> respaldar también en el banco.
 - P8 archivo.gd: rename atómico en Android (POSIX); Windows no garantizado; sin fsync (límite del motor) -> documentar. Inferido.
-- P9 menu.tscn:14 sala_inicial = caja_gris.tscn, que no es Sala: sin HUD, pausa, tiempo, autoguardado. Ya anotado como pendiente en ESTADO; anotarlo provisional en el contrato.
+- P9 menu.tscn:14 sala_inicial = caja_gris.tscn, que no es Sala: sin HUD, pausa, tiempo, autoguardado. Ya anotado como pendiente en ESTADO; anotarlo provisional en el contrato. **Resuelto el 25-oct-2026:** la caja gris se quitó; la partida nueva va a la cinemática y a La Celda.
 - P10 sala.gd:97 habilidades.append directo salta obtener_habilidad (a propósito) -> Partida.dar_de_prueba().
 - P11 enemigo.gd:89 Partida.vencer directo vs jefe por bus: dos idiomas.
 
@@ -538,7 +538,7 @@ Sin código muerto a nivel de archivo: cada sala y script tiene uso; los 150 .gu
 - H20 pruebas que leen internos con _ (prueba_aterrizaje 21 accesos, menu_configuracion, recursos, combate_chico, guardado, mapa, muros) -> se rompen con cualquier refactor; métodos públicos de prueba o guiones.
 - H21 rutas de nodo largas en pruebas -> %Nombre único donde se toque.
 - H22 prueba_control y prueba_vista reimplementan la base -> heredar.
-- H23 export_presets.cfg solo tiene «Publicacion»; «Desarrollo» vive en chore/android-export (CLAUDE.md lo describe).
+- H23 export_presets.cfg solo tiene «Publicacion»; «Desarrollo» vive en chore/android-export (CLAUDE.md lo describe). Resuelto el 25-oct-2026 en `feature/contenido-celda`: los dos presets se pusieron a mano (decisión 1b de la persona).
 - H24 paquete-publicacion pasa:false: puerto en release sin comprobar.
 - H25 con all_resources, prueba_*.gd, validar, generar_mapa y 12 PNG de herramientas viajan al APK de publicación (peso no medido) -> exclude_filter; es decisión cerrada, preguntar.
 

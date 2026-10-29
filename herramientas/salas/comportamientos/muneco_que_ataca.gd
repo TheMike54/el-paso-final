@@ -1,7 +1,8 @@
 extends ComportamientoEnemigo
 # Muneco de pruebas que ataca, para probar el parry: a mitad de cada ciclo avisa (se aclara AVISO ticks) y da un
 # golpe al frente que dura GOLPE ticks; al final del ciclo dispara hacia el mismo lado. Los golpes alternan: el de los
-# ciclos impares se puede parar (rastro blanco) y el de los pares no (rojo). El disparo siempre se puede parar.
+# ciclos impares se puede parar (trazo blanco) y el de los pares no (sin trazo; se ve con «Ver hitbox»). El disparo
+# siempre se puede desviar (desaparece con una chispa, sin el congelado del parry).
 
 const CICLO: int = 120
 const AVISO: int = 30

@@ -38,8 +38,10 @@ Los comandos son de PowerShell.
    & $env:GODOT_PATH --headless --path . --import
    ```
 
-4. Revisar el entorno. El script comprueba Godot, `GODOT_PATH` y la identidad de git, activa el hook de git del
-   repositorio (`core.hooksPath` no viaja al clonar) y debe terminar con `ENTORNO OK`:
+4. Revisar el entorno. El script comprueba Godot, `GODOT_PATH`, la identidad de git y que los archivos locales
+   estén ignorados, activa el hook de git del repositorio (`core.hooksPath` no viaja al clonar), avisa sin fallar
+   si falta `GODOT_DOCS` (paso 6) o `adb` (solo hace falta para probar en el teléfono) y debe terminar con
+   `ENTORNO OK`:
 
    ```powershell
    .\herramientas\verificar-entorno.ps1

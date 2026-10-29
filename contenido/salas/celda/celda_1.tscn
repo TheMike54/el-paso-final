@@ -1,0 +1,762 @@
+[gd_scene format=3 uid="uid://dwhfqi0suqfsi"]
+
+[ext_resource type="PackedScene" uid="uid://bl4kcwxb626lh" path="res://contenido/objetos/celda/colgante_frente.tscn" id="99_colgante_frente"]
+[ext_resource type="PackedScene" uid="uid://dkg1tgmycc1sr" path="res://contenido/zonas/celda/sala_celda.tscn" id="0_base"]
+[ext_resource type="Script" uid="uid://boq5hhggq873v" path="res://contenido/salas/celda/celda_1.gd" id="1_je37l"]
+[ext_resource type="Script" uid="uid://jy2tkfmforul" path="res://nucleo/dano_contacto.gd" id="2_dano"]
+[ext_resource type="Script" uid="uid://bo41itjgtinf1" path="res://nucleo/fondo_tapado.gd" id="2_scar3"]
+[ext_resource type="PackedScene" uid="uid://dljj3hd7ldowx" path="res://nucleo/banco.tscn" id="3_banco"]
+[ext_resource type="Texture2D" uid="uid://d2h1mgp7vioaa" path="res://contenido/salas/celda/arte/medio.png" id="6_fjrc1"]
+[ext_resource type="Script" uid="uid://dame28dbjeyu0" path="res://nucleo/colgante.gd" id="7_jxtwx"]
+[ext_resource type="Texture2D" uid="uid://bn4uwh0vpk00n" path="res://contenido/salas/celda/arte/m_cables.png" id="8_yxx7f"]
+[ext_resource type="Texture2D" uid="uid://cwhb630rvgco4" path="res://contenido/salas/celda/arte/m_cubeta.png" id="9_8we37"]
+[ext_resource type="Texture2D" uid="uid://dnmmrwij0aad8" path="res://contenido/salas/celda/arte/m_pupitre.png" id="10_4tc2q"]
+[ext_resource type="Texture2D" uid="uid://dsndbmdqgk1oy" path="res://contenido/salas/celda/arte/m_escalera.png" id="11_sha1c"]
+[ext_resource type="Texture2D" uid="uid://3dkqfh3tjqne" path="res://contenido/salas/celda/arte/m_caja_archivo.png" id="12_o242w"]
+[ext_resource type="Texture2D" uid="uid://cak80r1dl1n68" path="res://contenido/salas/celda/arte/pared.png" id="13_jemxb"]
+[ext_resource type="Texture2D" uid="uid://cmac1tt8x8oik" path="res://contenido/salas/celda/arte/techo.png" id="14_bdrfc"]
+[ext_resource type="Texture2D" uid="uid://dh3rgbh4pqdd1" path="res://contenido/salas/celda/arte/columna.png" id="15_h11uv"]
+[ext_resource type="Texture2D" uid="uid://dpijf6j4w2hw6" path="res://contenido/salas/celda/arte/elevador.png" id="16_llkk1"]
+[ext_resource type="Texture2D" uid="uid://b2dpfdhhm50v3" path="res://contenido/salas/celda/arte/pizarron.png" id="18_rv2cr"]
+[ext_resource type="Texture2D" uid="uid://b4l73rkva1hok" path="res://contenido/salas/celda/arte/cubeta.png" id="19_pgfbb"]
+[ext_resource type="Texture2D" uid="uid://cmdggylm5oww3" path="res://contenido/salas/celda/arte/escombros.png" id="20_irks1"]
+[ext_resource type="Texture2D" uid="uid://c6prohgsaxoys" path="res://contenido/salas/celda/arte/grieta_alta.png" id="21_dm1dt"]
+[ext_resource type="Texture2D" uid="uid://cuostq4ik2hgc" path="res://contenido/salas/celda/arte/cables.png" id="22_0jcxu"]
+[ext_resource type="Texture2D" uid="uid://d564qrhw6vnt" path="res://contenido/salas/celda/arte/tablero.png" id="23_mm63g"]
+[ext_resource type="Texture2D" uid="uid://clt8syqsyvclb" path="res://contenido/salas/celda/arte/pila_examenes.png" id="24_yeiqu"]
+[ext_resource type="Texture2D" uid="uid://bfyy7mvwxo0b4" path="res://contenido/salas/celda/arte/pila_examenes_rota.png" id="25_mm4ae"]
+[ext_resource type="Texture2D" uid="uid://nyqsb3sj8afx" path="res://contenido/salas/celda/arte/banco.png" id="26_mv2b3"]
+[ext_resource type="Texture2D" uid="uid://coogq8hil3fdc" path="res://contenido/salas/celda/arte/caja_archivo.png" id="27_a7dtg"]
+[ext_resource type="Texture2D" uid="uid://b0yjh2ql4mlc0" path="res://contenido/salas/celda/arte/grieta_raices.png" id="29_yepct"]
+[ext_resource type="Texture2D" uid="uid://cmlxounfl8fna" path="res://contenido/salas/celda/arte/suelo.png" id="31_yhxox"]
+[ext_resource type="Texture2D" uid="uid://c04xej401kxml" path="res://contenido/salas/celda/arte/frente_cadena.png" id="39_21mvu"]
+[ext_resource type="Texture2D" uid="uid://dcacnthyug5wa" path="res://contenido/salas/celda/arte/frente_cable.png" id="40_g3rwe"]
+[ext_resource type="Script" uid="uid://cvwxpi8gv5l01" path="res://nucleo/emisor_rafaga.gd" id="42_ddx5o"]
+[ext_resource type="Texture2D" uid="uid://0u363yoclhou" path="res://contenido/salas/celda/arte/elevador_luz.png" id="45_6d2xg"]
+[ext_resource type="Texture2D" uid="uid://orts27pg05ms" path="res://contenido/salas/celda/arte/grieta_luz.png" id="47_0msbq"]
+[ext_resource type="Script" uid="uid://dctc7invor25u" path="res://nucleo/luz_sala.gd" id="48_hqf2w"]
+[ext_resource type="CanvasItemMaterial" uid="uid://cbonitpbsi8a6" path="res://nucleo/arte/sin_luz.tres" id="50_sin_luz"]
+[ext_resource type="CanvasItemMaterial" uid="uid://bi0s26tb0wqda" path="res://nucleo/arte/aditivo.tres" id="51_aditivo"]
+[ext_resource type="PackedScene" uid="uid://daady0ech8iml" path="res://contenido/objetos/celda/fondo_profundo.tscn" id="52_profundo"]
+[ext_resource type="PackedScene" uid="uid://dvajyptekcdbs" path="res://contenido/objetos/celda/fondo_lejana.tscn" id="53_lejana"]
+[ext_resource type="PackedScene" uid="uid://dne3ft4yp1k4e" path="res://contenido/objetos/celda/lejana_0.tscn" id="54_lejana_0"]
+[ext_resource type="PackedScene" uid="uid://diti135lfh6wx" path="res://contenido/objetos/celda/lejana_1.tscn" id="55_lejana_1"]
+[ext_resource type="PackedScene" uid="uid://bp20etvgldjan" path="res://contenido/objetos/celda/fondo_medio.tscn" id="56_medio"]
+[ext_resource type="PackedScene" uid="uid://c3v0dvamqoi4p" path="res://contenido/objetos/celda/luz_tubo.tscn" id="57_luz_tubo"]
+[ext_resource type="PackedScene" uid="uid://bnu7yribrlryu" path="res://contenido/objetos/celda/foso_varillas.tscn" id="58_foso"]
+[ext_resource type="PackedScene" uid="uid://bwy16c0wxrvhc" path="res://contenido/objetos/celda/puerta_salon.tscn" id="59_puerta_salon"]
+[ext_resource type="PackedScene" uid="uid://cuu5yv83nmowx" path="res://nucleo/piezas/niebla.tscn" id="60_niebla"]
+[ext_resource type="PackedScene" uid="uid://cq48dd3nywtn1" path="res://contenido/objetos/celda/polvo_tubo.tscn" id="62_polvo"]
+[ext_resource type="Script" uid="uid://ds0b75ense7qn" path="res://nucleo/region_musica.gd" id="63_region"]
+[ext_resource type="AudioStream" uid="uid://b24kxuyaqcquj" path="res://nucleo/sonidos/musica_menu.ogg" id="64_musica_menu"]
+[ext_resource type="Texture2D" uid="uid://rjd73ny2v3mt" path="res://contenido/salas/celda/arte/s_cubeta.png" id="65_s_cubeta"]
+[ext_resource type="Texture2D" uid="uid://b12v3sfvxtfyi" path="res://contenido/salas/celda/arte/s_caja_archivo.png" id="66_s_caja"]
+[ext_resource type="Texture2D" uid="uid://cblh06yhpyo7t" path="res://contenido/salas/celda/arte/s_escombros.png" id="67_s_escombros"]
+[ext_resource type="Texture2D" uid="uid://2l0paj1esf3y" path="res://contenido/salas/celda/arte/s_pila_examenes_rota.png" id="68_s_pila_rota"]
+[ext_resource type="Texture2D" uid="uid://dimfdmkm3npkp" path="res://contenido/salas/celda/arte/s_pupitre.png" id="69_s_pupitre"]
+[ext_resource type="Texture2D" uid="uid://cysji125oydwn" path="res://contenido/salas/celda/arte/frente_mesa.png" id="70_frente_mesa"]
+[ext_resource type="Script" uid="uid://dglahbp5ygo3w" path="res://nucleo/aviso_accion.gd" id="71_aviso"]
+[ext_resource type="PackedScene" uid="uid://b6ipm876vu3mg" path="res://contenido/objetos/celda/pizarron_patas.tscn" id="72_pizarron_patas"]
+
+[sub_resource type="RectangleShape2D" id="forma_suelo_a"]
+size = Vector2(1771, 80)
+
+[sub_resource type="RectangleShape2D" id="forma_suelo_b"]
+size = Vector2(1928, 80)
+
+[sub_resource type="RectangleShape2D" id="forma_suelo_c"]
+size = Vector2(925, 80)
+
+[sub_resource type="RectangleShape2D" id="forma_fondo_foso"]
+size = Vector2(230, 80)
+
+[sub_resource type="RectangleShape2D" id="forma_pared"]
+size = Vector2(80, 720)
+
+[sub_resource type="RectangleShape2D" id="forma_grieta"]
+size = Vector2(170, 80)
+
+[sub_resource type="Gradient" id="Gradient_f3h5a"]
+offsets = PackedFloat32Array(0, 1, 0.15, 0.7)
+colors = PackedColorArray(1, 0.89411765, 0.5882353, 0, 1, 0.89411765, 0.5882353, 0, 1, 0.89411765, 0.5882353, 1, 1, 0.89411765, 0.5882353, 1)
+
+[sub_resource type="Gradient" id="Gradient_ka4uq"]
+offsets = PackedFloat32Array(0, 1, 0.15, 0.7)
+colors = PackedColorArray(0.37254903, 0.8784314, 0.78431374, 0, 0.37254903, 0.8784314, 0.78431374, 0, 0.37254903, 0.8784314, 0.78431374, 1, 0.37254903, 0.8784314, 0.78431374, 1)
+
+[sub_resource type="Gradient" id="Gradient_1fpqt"]
+offsets = PackedFloat32Array(0, 1, 0.15, 0.7)
+colors = PackedColorArray(0.42, 0.42, 0.45, 0, 0.42, 0.42, 0.45, 0, 0.42, 0.42, 0.45, 1, 0.42, 0.42, 0.45, 1)
+
+[sub_resource type="Gradient" id="Gradient_q1u6o"]
+offsets = PackedFloat32Array(0, 1, 0.15, 0.7)
+colors = PackedColorArray(0.5882353, 0.57254905, 0.5411765, 0, 0.5882353, 0.57254905, 0.5411765, 0, 0.5882353, 0.57254905, 0.5411765, 0.55, 0.5882353, 0.57254905, 0.5411765, 0.55)
+
+[sub_resource type="Gradient" id="Gradient_2fqd8"]
+offsets = PackedFloat32Array(0, 1, 0.15, 0.7)
+colors = PackedColorArray(0.88, 0.86, 0.8, 0, 0.88, 0.86, 0.8, 0, 0.88, 0.86, 0.8, 1, 0.88, 0.86, 0.8, 1)
+
+[sub_resource type="RectangleShape2D" id="forma_musica_banco"]
+size = Vector2(1100, 400)
+
+[node name="Celda1" instance=ExtResource("0_base")]
+script = ExtResource("1_je37l")
+id = "celda_1"
+limites = Rect2(0, 0, 4482, 720)
+posicion_mapa = Vector2(0, 2374)
+
+[node name="FondosTapados" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+mouse_filter = 2
+script = ExtResource("2_scar3")
+fin_pared = 2480.0
+
+[node name="Profundo" parent="FondosTapados" instance=ExtResource("52_profundo")]
+
+[node name="Lejana" parent="FondosTapados" instance=ExtResource("53_lejana")]
+
+[node name="Lejana0" parent="FondosTapados/Lejana" instance=ExtResource("54_lejana_0")]
+
+[node name="Lejana1" parent="FondosTapados/Lejana" instance=ExtResource("55_lejana_1")]
+position = Vector2(1824, 0)
+
+[node name="Medio" parent="FondosTapados" instance=ExtResource("56_medio")]
+
+[node name="Medio" type="Sprite2D" parent="FondosTapados/Medio"]
+texture_repeat = 2
+position = Vector2(-400, 412)
+scale = Vector2(2, 2)
+texture = ExtResource("6_fjrc1")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 2410, 89)
+
+[node name="MCablesColgante" type="Node2D" parent="FondosTapados/Medio"]
+position = Vector2(103, 30)
+script = ExtResource("7_jxtwx")
+
+[node name="MCables" type="Sprite2D" parent="FondosTapados/Medio/MCablesColgante"]
+scale = Vector2(2, 2)
+texture = ExtResource("8_yxx7f")
+centered = false
+offset = Vector2(-11, 0)
+
+[node name="MCubeta" type="Sprite2D" parent="FondosTapados/Medio"]
+position = Vector2(578, 501)
+scale = Vector2(2, 2)
+texture = ExtResource("9_8we37")
+centered = false
+
+[node name="MPupitre" type="Sprite2D" parent="FondosTapados/Medio"]
+position = Vector2(920, 456)
+scale = Vector2(2, 2)
+texture = ExtResource("10_4tc2q")
+centered = false
+
+[node name="MEscalera" type="Sprite2D" parent="FondosTapados/Medio"]
+position = Vector2(1459, 411)
+scale = Vector2(2, 2)
+texture = ExtResource("11_sha1c")
+centered = false
+
+[node name="MCablesColgante2" type="Node2D" parent="FondosTapados/Medio"]
+position = Vector2(1762, 30)
+script = ExtResource("7_jxtwx")
+
+[node name="MCables" type="Sprite2D" parent="FondosTapados/Medio/MCablesColgante2"]
+scale = Vector2(2, 2)
+texture = ExtResource("8_yxx7f")
+centered = false
+offset = Vector2(-11, 0)
+
+[node name="MEscalera2" type="Sprite2D" parent="FondosTapados/Medio"]
+position = Vector2(2063, 411)
+scale = Vector2(2, 2)
+texture = ExtResource("11_sha1c")
+centered = false
+
+[node name="MCablesColgante3" type="Node2D" parent="FondosTapados/Medio"]
+position = Vector2(2488, 30)
+script = ExtResource("7_jxtwx")
+
+[node name="MCables" type="Sprite2D" parent="FondosTapados/Medio/MCablesColgante3"]
+scale = Vector2(2, 2)
+texture = ExtResource("8_yxx7f")
+centered = false
+offset = Vector2(-11, 0)
+flip_h = true
+
+[node name="MCajaArchivo" type="Sprite2D" parent="FondosTapados/Medio"]
+position = Vector2(2840, 501)
+scale = Vector2(2, 2)
+texture = ExtResource("12_o242w")
+centered = false
+flip_h = true
+
+[node name="MCubeta2" type="Sprite2D" parent="FondosTapados/Medio"]
+position = Vector2(3317, 501)
+scale = Vector2(2, 2)
+texture = ExtResource("9_8we37")
+centered = false
+
+[node name="MCajaArchivo2" type="Sprite2D" parent="FondosTapados/Medio"]
+position = Vector2(3633, 501)
+scale = Vector2(2, 2)
+texture = ExtResource("12_o242w")
+centered = false
+
+[node name="Pared" type="Sprite2D" parent="Juego"]
+texture_repeat = 2
+position = Vector2(0, 30)
+texture = ExtResource("13_jemxb")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 2480, 550)
+
+[node name="Techo" type="Sprite2D" parent="Juego"]
+texture_repeat = 2
+position = Vector2(-200, -14)
+texture = ExtResource("14_bdrfc")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 4882, 112)
+
+[node name="Columna" type="Sprite2D" parent="Juego"]
+position = Vector2(-30, 30)
+texture = ExtResource("15_h11uv")
+centered = false
+
+[node name="Columna2" type="Sprite2D" parent="Juego"]
+position = Vector2(1080, 30)
+texture = ExtResource("15_h11uv")
+centered = false
+
+[node name="Columna3" type="Sprite2D" parent="Juego"]
+position = Vector2(2400, 30)
+texture = ExtResource("15_h11uv")
+centered = false
+
+[node name="ColumnaPuerta" type="Sprite2D" parent="Juego"]
+z_index = 1
+position = Vector2(4060, 30)
+texture = ExtResource("15_h11uv")
+centered = false
+
+[node name="ColumnaPuerta2" type="Sprite2D" parent="Juego"]
+z_index = 1
+position = Vector2(4420, 30)
+texture = ExtResource("15_h11uv")
+centered = false
+
+[node name="Elevador" type="Sprite2D" parent="Juego"]
+position = Vector2(170, 176)
+texture = ExtResource("16_llkk1")
+centered = false
+
+[node name="Pizarron" type="Sprite2D" parent="Juego"]
+position = Vector2(1250, 250)
+texture = ExtResource("18_rv2cr")
+centered = false
+
+[node name="Cubeta" type="Sprite2D" parent="Juego"]
+position = Vector2(930, 509)
+texture = ExtResource("19_pgfbb")
+centered = false
+
+[node name="Escombros" type="Sprite2D" parent="Juego"]
+position = Vector2(1140, 512)
+texture = ExtResource("20_irks1")
+centered = false
+
+[node name="Escombros2" type="Sprite2D" parent="Juego"]
+z_index = 1
+position = Vector2(4045, 512)
+texture = ExtResource("20_irks1")
+centered = false
+flip_h = true
+
+[node name="GrietaAlta" type="Sprite2D" parent="Juego"]
+position = Vector2(2050, 120)
+texture = ExtResource("21_dm1dt")
+centered = false
+
+[node name="CablesColgante" type="Node2D" parent="Juego"]
+position = Vector2(1902.5, 20)
+script = ExtResource("7_jxtwx")
+empujable = true
+ancho_empuje = 45.0
+
+[node name="Cables" type="Sprite2D" parent="Juego/CablesColgante"]
+texture = ExtResource("22_0jcxu")
+centered = false
+offset = Vector2(-22.5, 0)
+
+[node name="Tablero" type="Sprite2D" parent="Juego"]
+position = Vector2(2250, 330)
+texture = ExtResource("23_mm63g")
+centered = false
+
+[node name="PilaExamenes" type="Sprite2D" parent="Juego"]
+position = Vector2(2560, 457)
+texture = ExtResource("24_yeiqu")
+centered = false
+
+[node name="PilaExamenesRota" type="Sprite2D" parent="Juego"]
+position = Vector2(2700, 522)
+texture = ExtResource("25_mm4ae")
+centered = false
+
+[node name="CajaArchivo" type="Sprite2D" parent="Juego"]
+position = Vector2(3230, 509)
+texture = ExtResource("27_a7dtg")
+centered = false
+
+[node name="Suelo" type="Sprite2D" parent="SueloPintado"]
+texture_repeat = 2
+position = Vector2(-200, 560)
+texture = ExtResource("31_yhxox")
+centered = false
+region_enabled = true
+region_rect = Rect2(1166, 0, 3552, 161)
+
+[node name="Suelo2" type="Sprite2D" parent="SueloPintado"]
+texture_repeat = 2
+position = Vector2(4201, 560)
+texture = ExtResource("31_yhxox")
+centered = false
+region_enabled = true
+region_rect = Rect2(5567, 0, 481, 161)
+
+[node name="GrietaRaices" type="Sprite2D" parent="SueloPintado"]
+position = Vector2(3350, 536)
+texture = ExtResource("29_yepct")
+centered = false
+
+[node name="SueloA" type="StaticBody2D" parent="Terreno"]
+position = Vector2(685.5, 600)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/SueloA"]
+shape = SubResource("forma_suelo_a")
+
+[node name="SueloB" type="StaticBody2D" parent="Terreno"]
+position = Vector2(2721, 600)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/SueloB"]
+shape = SubResource("forma_suelo_b")
+
+[node name="SueloC" type="StaticBody2D" parent="Terreno"]
+position = Vector2(4337.5, 600)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/SueloC"]
+shape = SubResource("forma_suelo_c")
+
+[node name="FondoGrieta" type="StaticBody2D" parent="Terreno"]
+position = Vector2(3780, 740)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/FondoGrieta"]
+shape = SubResource("forma_fondo_foso")
+
+[node name="ParedIzquierda" type="StaticBody2D" parent="Terreno"]
+position = Vector2(90, 300)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/ParedIzquierda"]
+shape = SubResource("forma_pared")
+
+[node name="ParedDerecha" type="StaticBody2D" parent="Terreno"]
+position = Vector2(4460, 300)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/ParedDerecha"]
+shape = SubResource("forma_pared")
+
+[node name="FosoVarillas" parent="Peligros" instance=ExtResource("58_foso")]
+position = Vector2(1664, 560)
+
+[node name="Grieta" type="Area2D" parent="Peligros"]
+position = Vector2(3780, 660)
+script = ExtResource("2_dano")
+peligro = true
+
+[node name="Forma" type="CollisionShape2D" parent="Peligros/Grieta"]
+shape = SubResource("forma_grieta")
+
+[node name="ElevadorLuz" type="Sprite2D" parent="Encima"]
+modulate = Color(1, 1, 1, 0.8)
+material = ExtResource("50_sin_luz")
+position = Vector2(374, 186)
+texture = ExtResource("45_6d2xg")
+centered = false
+
+[node name="PolvoTubo1" parent="Encima" instance=ExtResource("62_polvo")]
+position = Vector2(435, 96)
+
+[node name="PolvoTubo2" parent="Encima" instance=ExtResource("62_polvo")]
+position = Vector2(1705, 96)
+
+[node name="PolvoTubo3" parent="Encima" instance=ExtResource("62_polvo")]
+position = Vector2(2805, 96)
+
+[node name="PolvoTubo4" parent="Encima" instance=ExtResource("62_polvo")]
+position = Vector2(3905, 96)
+
+[node name="Chispas" type="CPUParticles2D" parent="Encima" node_paths=PackedStringArray("destello")]
+z_index = 1
+material = ExtResource("51_aditivo")
+position = Vector2(1902, 190)
+emitting = false
+lifetime = 0.6
+one_shot = true
+explosiveness = 1.0
+lifetime_randomness = 0.6
+direction = Vector2(0, 1)
+spread = 180.0
+gravity = Vector2(0, 1500)
+initial_velocity_min = 150.0
+initial_velocity_max = 420.0
+scale_amount_min = 2.0
+scale_amount_max = 4.0
+color = Color(1, 0.89411765, 0.5882353, 1)
+color_ramp = SubResource("Gradient_f3h5a")
+script = ExtResource("42_ddx5o")
+destello = NodePath("../../Luces/Destello")
+
+[node name="GrietaLuz" type="Sprite2D" parent="Encima"]
+material = ExtResource("50_sin_luz")
+position = Vector2(3609, 542)
+texture = ExtResource("47_0msbq")
+centered = false
+
+[node name="Esporas" type="CPUParticles2D" parent="Encima"]
+z_index = 1
+material = ExtResource("51_aditivo")
+position = Vector2(3776.5, 609.25)
+amount = 15
+lifetime = 5.5
+preprocess = 5.5
+lifetime_randomness = 0.27
+emission_shape = 3
+emission_rect_extents = Vector2(200, 10)
+direction = Vector2(0, -1)
+spread = 30.0
+gravity = Vector2(0, -8)
+initial_velocity_min = 8.0
+initial_velocity_max = 22.0
+scale_amount_min = 2.0
+scale_amount_max = 3.5
+color = Color(0.37254903, 0.8784314, 0.78431374, 1)
+color_ramp = SubResource("Gradient_ka4uq")
+
+[node name="LuzElevador" type="Node2D" parent="Luces"]
+position = Vector2(386, 198)
+script = ExtResource("48_hqf2w")
+radio = 120.0
+tinte = Color(0.92156863, 0.7254902, 0.37254903, 1)
+intensidad = 0.8
+
+[node name="LuzTubo1" parent="Luces" instance=ExtResource("57_luz_tubo")]
+position = Vector2(435, 88.4)
+
+[node name="LuzTubo2" parent="Luces" instance=ExtResource("57_luz_tubo")]
+position = Vector2(1705, 88.4)
+
+[node name="LuzTubo3" parent="Luces" instance=ExtResource("57_luz_tubo")]
+position = Vector2(2805, 88.4)
+
+[node name="LuzTubo4" parent="Luces" instance=ExtResource("57_luz_tubo")]
+position = Vector2(3905, 88.4)
+
+[node name="Destello" type="Node2D" parent="Luces"]
+position = Vector2(1902, 190)
+script = ExtResource("48_hqf2w")
+radio = 170.0
+tinte = Color(1, 0.89411765, 0.5882353, 1)
+tipo = 3
+
+[node name="LuzGrieta" type="Node2D" parent="Luces" node_paths=PackedStringArray("encendida")]
+position = Vector2(3776.5, 619.25)
+script = ExtResource("48_hqf2w")
+radio = 300.0
+tinte = Color(0.37254903, 0.8784314, 0.78431374, 1)
+tipo = 2
+encendida = NodePath("../../Encima/GrietaLuz")
+intensidad = 0.5
+
+[node name="FrenteCubeta" type="Sprite2D" parent="Frente"]
+use_parent_material = true
+position = Vector2(200, 583)
+scale = Vector2(1.78, 1.78)
+texture = ExtResource("65_s_cubeta")
+centered = false
+
+[node name="FrenteCajaArchivo" type="Sprite2D" parent="Frente"]
+use_parent_material = true
+position = Vector2(816, 579)
+scale = Vector2(1.83, 1.83)
+texture = ExtResource("66_s_caja")
+centered = false
+flip_h = true
+
+[node name="FrenteCajaArchivo2" type="Sprite2D" parent="Frente"]
+use_parent_material = true
+position = Vector2(1276, 602)
+scale = Vector2(1.57, 1.57)
+texture = ExtResource("66_s_caja")
+centered = false
+
+[node name="FrenteEscombros" type="Sprite2D" parent="Frente"]
+use_parent_material = true
+position = Vector2(1960, 610)
+scale = Vector2(1.48, 1.48)
+texture = ExtResource("67_s_escombros")
+centered = false
+flip_h = true
+
+[node name="FrentePilaExamenesRota" type="Sprite2D" parent="Frente"]
+use_parent_material = true
+position = Vector2(2592, 615)
+scale = Vector2(1.42, 1.42)
+texture = ExtResource("68_s_pila_rota")
+centered = false
+flip_h = true
+
+[node name="FrentePilaExamenesRota2" type="Sprite2D" parent="Frente"]
+use_parent_material = true
+position = Vector2(3122, 613)
+scale = Vector2(1.44, 1.44)
+texture = ExtResource("68_s_pila_rota")
+centered = false
+flip_h = true
+
+[node name="FrenteCubeta2" type="Sprite2D" parent="Frente"]
+use_parent_material = true
+position = Vector2(3690, 571)
+scale = Vector2(1.91, 1.91)
+texture = ExtResource("65_s_cubeta")
+centered = false
+
+[node name="FrenteMesa" type="Sprite2D" parent="Frente"]
+use_parent_material = true
+position = Vector2(4000, 530)
+scale = Vector2(2, 2)
+texture = ExtResource("70_frente_mesa")
+centered = false
+
+[node name="FrenteCubeta3" type="Sprite2D" parent="Frente"]
+use_parent_material = true
+position = Vector2(4528, 617)
+scale = Vector2(1.39, 1.39)
+texture = ExtResource("65_s_cubeta")
+centered = false
+flip_h = true
+
+[node name="FrentePupitre" type="Sprite2D" parent="Frente"]
+use_parent_material = true
+position = Vector2(5196, 643)
+scale = Vector2(1.11, 1.11)
+texture = ExtResource("69_s_pupitre")
+centered = false
+
+[node name="FrenteCadenaColgante" parent="Frente" instance=ExtResource("99_colgante_frente")]
+position = Vector2(925, -10)
+
+[node name="Dibujo" parent="Frente/FrenteCadenaColgante" index="0"]
+texture = ExtResource("39_21mvu")
+offset = Vector2(-12.5, 0)
+
+[node name="FrenteCableColgante" parent="Frente" instance=ExtResource("99_colgante_frente")]
+position = Vector2(2644, -10)
+
+[node name="Dibujo" parent="Frente/FrenteCableColgante" index="0"]
+texture = ExtResource("40_g3rwe")
+offset = Vector2(-47, 0)
+
+[node name="Banco" parent="." instance=ExtResource("3_banco")]
+position = Vector2(2966, 560)
+id = "banco_celda_1"
+mirando = 1
+
+[node name="Silla" type="Sprite2D" parent="Banco"]
+z_index = -20
+position = Vector2(-66, -78.72)
+texture = ExtResource("26_mv2b3")
+centered = false
+
+[node name="MusicaBanco" type="Area2D" parent="."]
+position = Vector2(2966, 560)
+script = ExtResource("63_region")
+tema = ExtResource("64_musica_menu")
+
+[node name="Forma" type="CollisionShape2D" parent="MusicaBanco"]
+position = Vector2(0, -200)
+shape = SubResource("forma_musica_banco")
+
+[node name="AvisoSaltoLargo" type="Area2D" parent="."]
+position = Vector2(1180, 560)
+script = ExtResource("71_aviso")
+acciones = Array[StringName]([&"saltar"])
+modo = 2
+id = "aviso_salto_largo"
+nota = "Mantén para llegar más lejos"
+punto = Vector2(190, -250)
+pizarron = false
+
+[node name="AvisoEntrar" parent="." instance=ExtResource("72_pizarron_patas")]
+position = Vector2(4020, 560)
+id = "aviso_entrar"
+
+[node name="PuertaDerecha" parent="." instance=ExtResource("59_puerta_salon")]
+position = Vector2(4300, 560)
+id = &"derecha"
+sala_destino = "celda_2"
+puerta_destino = &"izquierda"
+llegada = Vector2(0, 0)
+
+[node name="FrenteChispas" type="Parallax2D" parent="."]
+z_index = 21
+scroll_scale = Vector2(1.45, 1)
+
+[node name="ChispasFrente" type="CPUParticles2D" parent="FrenteChispas"]
+material = ExtResource("51_aditivo")
+position = Vector2(2644, 280)
+emitting = false
+lifetime = 0.6
+one_shot = true
+explosiveness = 1.0
+lifetime_randomness = 0.6
+direction = Vector2(0, 1)
+spread = 180.0
+gravity = Vector2(0, 1500)
+initial_velocity_min = 150.0
+initial_velocity_max = 420.0
+scale_amount_min = 2.0
+scale_amount_max = 4.0
+color = Color(1, 0.89411765, 0.5882353, 1)
+color_ramp = SubResource("Gradient_f3h5a")
+script = ExtResource("42_ddx5o")
+intervalo_min = 2.0
+intervalo_max = 6.0
+
+[node name="Niebla" parent="." instance=ExtResource("60_niebla")]
+scroll_offset = Vector2(0, 300)
+
+[node name="Particulas" type="Node2D" parent="."]
+z_index = 1
+
+[node name="Piedritas" type="CPUParticles2D" parent="Particulas"]
+z_index = -5
+position = Vector2(2074, 275)
+emitting = false
+amount = 3
+lifetime = 0.69
+one_shot = true
+explosiveness = 1.0
+emission_shape = 3
+emission_rect_extents = Vector2(12, 2)
+direction = Vector2(0, 1)
+spread = 20.0
+gravity = Vector2(0, 1200)
+initial_velocity_max = 30.0
+scale_amount_min = 3.0
+scale_amount_max = 5.0
+color = Color(0.42, 0.42, 0.45, 1)
+color_ramp = SubResource("Gradient_1fpqt")
+script = ExtResource("42_ddx5o")
+intervalo_min = 2.5
+intervalo_max = 6.0
+
+[node name="Rebote" type="CPUParticles2D" parent="Particulas"]
+z_index = -5
+position = Vector2(2074, 558)
+emitting = false
+amount = 3
+lifetime = 0.32
+one_shot = true
+explosiveness = 1.0
+direction = Vector2(0, -1)
+spread = 40.0
+gravity = Vector2(0, 1200)
+initial_velocity_min = 120.0
+initial_velocity_max = 200.0
+scale_amount_min = 2.5
+scale_amount_max = 4.0
+color = Color(0.42, 0.42, 0.45, 1)
+color_ramp = SubResource("Gradient_1fpqt")
+
+[node name="PolvoRastro" type="CPUParticles2D" parent="Particulas"]
+emitting = false
+amount = 5
+lifetime = 0.7
+direction = Vector2(0, -1)
+spread = 80.0
+gravity = Vector2(0, -10)
+initial_velocity_min = 40.0
+initial_velocity_max = 140.0
+damping_min = 120.0
+damping_max = 160.0
+scale_amount_min = 5.0
+scale_amount_max = 9.0
+color = Color(0.5882353, 0.57254905, 0.5411765, 0.55)
+color_ramp = SubResource("Gradient_q1u6o")
+
+[node name="PolvoAterrizaje" type="CPUParticles2D" parent="Particulas"]
+emitting = false
+lifetime = 0.6
+one_shot = true
+explosiveness = 1.0
+direction = Vector2(0, -1)
+spread = 80.0
+gravity = Vector2(0, -10)
+initial_velocity_min = 40.0
+initial_velocity_max = 140.0
+damping_min = 120.0
+damping_max = 160.0
+scale_amount_min = 5.0
+scale_amount_max = 9.0
+color = Color(0.5882353, 0.57254905, 0.5411765, 0.55)
+color_ramp = SubResource("Gradient_q1u6o")
+
+[node name="Papeles1" type="CPUParticles2D" parent="Particulas"]
+position = Vector2(2605, 530)
+emitting = false
+amount = 5
+lifetime = 1.6
+one_shot = true
+explosiveness = 0.9
+lifetime_randomness = 0.3
+direction = Vector2(0, -1)
+spread = 50.0
+gravity = Vector2(0, 320)
+initial_velocity_min = 180.0
+initial_velocity_max = 320.0
+angular_velocity_min = -300.0
+angular_velocity_max = 300.0
+damping_min = 40.0
+damping_max = 60.0
+angle_max = 360.0
+scale_amount_min = 5.0
+scale_amount_max = 8.0
+color = Color(0.88, 0.86, 0.8, 1)
+color_ramp = SubResource("Gradient_2fqd8")
+
+[node name="Papeles2" type="CPUParticles2D" parent="Particulas"]
+position = Vector2(2782, 530)
+emitting = false
+amount = 5
+lifetime = 1.6
+one_shot = true
+explosiveness = 0.9
+lifetime_randomness = 0.3
+direction = Vector2(0, -1)
+spread = 50.0
+gravity = Vector2(0, 320)
+initial_velocity_min = 180.0
+initial_velocity_max = 320.0
+angular_velocity_min = -300.0
+angular_velocity_max = 300.0
+damping_min = 40.0
+damping_max = 60.0
+angle_max = 360.0
+scale_amount_min = 5.0
+scale_amount_max = 8.0
+color = Color(0.88, 0.86, 0.8, 1)
+color_ramp = SubResource("Gradient_2fqd8")

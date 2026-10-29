@@ -1,4 +1,5 @@
-# La escena de prueba de los efectos corre sus casos al entrar: Sonido en Arranque, cada evento del bus, la espera
-# entre iguales y el salto del jugador. Deja la cuenta en sus propiedades.
+# La escena de prueba de los efectos corre sus casos al entrar: Sonido en Arranque con la ficha del juego, cada senal
+# del bus a su evento, la espera entre iguales y el salto, los pasos y el aterrizaje del jugador. Deja la cuenta en sus
+# propiedades.
 escena res://herramientas/pruebas/sala_sonido.tscn
-fin 90
+fin 360

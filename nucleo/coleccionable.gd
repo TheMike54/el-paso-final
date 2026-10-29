@@ -1,36 +1,42 @@
 class_name Coleccionable
-extends Area2D
-# Coleccionable repartido por las salas, como las larvas de Hollow Knight o las pulgas de Silksong: al
-# tocarlo se marca en el estado de su sala, se emite Eventos.coleccionable_obtenido (Partida autoguarda)
-# y desaparece; si ya esta marcado, no aparece. El total se cuenta con Partida.total_coleccionables().
-# Generico y gris: el arte y el tema se deciden despues.
-const TAMANO: Vector2 = Vector2(48.0, 48.0)
+extends Recogible
+# El coleccionable del juego, uno solo como las larvas de Hollow Knight o las pulgas de Silksong: cada instancia de
+# coleccionable.tscn lleva su id, y al tomarla se marca en su sala y se emite Eventos.coleccionable_obtenido (Partida
+# autoguarda). El total se cuenta con Partida.total_coleccionables(). La escena trae el arte sin sombreado y un halo
+# LuzSala que late; aqui solo flota el arte, sin _draw: no redibuja nada en cada cuadro.
+
+## Color de un coleccionable juntado en la vitrina (VitrinaColeccionables).
 const COLOR: Color = Color(0.95, 0.8, 0.3)
 
-## Id unico dentro de la sala; empieza con "coleccionable" (coleccionable, coleccionable_2...): asi se cuentan.
-@export var id: String = "coleccionable"
+## Aclarado del arte (self_modulate): 1 lo deja como es. Sin HDR 2D, un modulate «overbright» no tiene efecto visible
+## segun la documentacion (upgrading_to_godot_4.rst:70-71); que aclare algo en el telefono no esta comprobado.
+@export_range(1.0, 1.5, 0.05) var brillo: float = 1.0
+## Flotacion del arte y su halo: px hacia arriba y abajo y segundos de una vuelta.
+@export var flota_px: float = 6.0
+@export var flota_segundos: float = 2.0
+
+var _segundos: float = 0.0
+var _y_arte: float = 0.0
+
+@onready var _arte: Sprite2D = $Arte as Sprite2D
 
 
 func _ready() -> void:
-	Capas.poner(self, Capas.INTERACCION, Capas.JUGADOR)
-	if not id.begins_with(Partida.PREFIJO_COLECCIONABLE):
-		push_error("Coleccionable %s: el id debe empezar con '%s'" % [name, Partida.PREFIJO_COLECCIONABLE])
-	if Partida.estado_de(Sala.clave_de(self), id) != null:
-		queue_free()
+	super()
+	if is_queued_for_deletion():
 		return
-	body_entered.connect(_al_entrar)
+	_y_arte = _arte.position.y
+	_arte.self_modulate = Color(brillo, brillo, brillo)
+	set_process(flota_segundos > 0.0 and flota_px > 0.0)
 
 
-func _al_entrar(cuerpo: Node2D) -> void:
-	if not cuerpo is Jugador:
+func _process(delta: float) -> void:
+	# Tiempo propio, como Planta: quieto en la pausa y en el congelado.
+	if Congelado.activo():
 		return
-	var jugador: Jugador = cuerpo as Jugador
-	if jugador.muerto:
-		return
-	Partida.marcar(Sala.clave_de(self), id)
+	_segundos += delta
+	_arte.position.y = _y_arte + sin(_segundos * TAU / flota_segundos) * flota_px
+
+
+func _al_recoger(_jugador: Jugador) -> void:
 	Eventos.coleccionable_obtenido.emit(StringName(id))
-	queue_free()
-
-
-func _draw() -> void:
-	draw_circle(Vector2(0.0, -TAMANO.y / 2.0), TAMANO.x / 2.0, COLOR)

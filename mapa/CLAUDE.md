@@ -17,6 +17,9 @@ Leer `funciones.json` de esta carpeta y la sección «Mapa» de `docs/contrato.m
 - Al agregar o mover una sala, o al cambiar sus límites, su `posicion_mapa` o su dibujo, regenerar el índice:
   `& $env:GODOT_PATH --headless --path . --quit-after 600 res://herramientas/generar_mapa.tscn`. El validador
   falla si no está al día.
+- Encime: dos rectángulos del índice no se pueden cruzar, sean de zonas distintas o de la misma; cada zona tiene su
+  franja (`docs/contrato.md`, `posicion_mapa`). Lo revisa el validador (`validador-mapa-zonas`,
+  `validador-mapa-misma-zona`).
 - Nada del núcleo depende de esta carpeta: el marco encuentra la página por el grupo `pagina_marco`, no por su clase.
 
 ## Cómo se comprueba

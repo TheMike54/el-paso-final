@@ -1,0 +1,4 @@
+# Pasado el foso de la grieta (acaba en x=3875), en el suelo y sin daño: 678 cuadros a 6 px desde la Entrada (260).
+x 4328 2
+en_suelo true
+senal /root/Eventos jugador_danado 0

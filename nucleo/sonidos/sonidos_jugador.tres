@@ -1,0 +1,41 @@
+[gd_resource type="Resource" script_class="FichaSonidos" format=3 uid="uid://c0xq1ebb0yprj"]
+
+[ext_resource type="AudioStream" uid="uid://dbmjw3gigw838" path="res://nucleo/sonidos/jugador/aterrizaje.wav" id="1_76nj2"]
+[ext_resource type="AudioStream" uid="uid://b2ggqo462mclm" path="res://nucleo/sonidos/jugador/banco.wav" id="2_o335b"]
+[ext_resource type="AudioStream" uid="uid://btd8rfebjjw6i" path="res://nucleo/sonidos/jugador/curar.wav" id="3_vek3q"]
+[ext_resource type="AudioStream" uid="uid://cqfxxco2ft85x" path="res://nucleo/sonidos/jugador/dano.wav" id="4_v3nc0"]
+[ext_resource type="AudioStream" uid="uid://bua4wg0poyixt" path="res://nucleo/sonidos/jugador/golpe.wav" id="5_o0enb"]
+[ext_resource type="AudioStream" uid="uid://ch5y8qi6ovkip" path="res://nucleo/sonidos/jugador/impulso.wav" id="6_qyh60"]
+[ext_resource type="AudioStream" uid="uid://dglipkyhad12h" path="res://nucleo/sonidos/jugador/muro_roto.wav" id="7_2nppl"]
+[ext_resource type="AudioStream" uid="uid://co2k2jku2u0dm" path="res://nucleo/sonidos/jugador/paso.wav" id="8_tyahj"]
+[ext_resource type="AudioStream" uid="uid://k6ad7ts032so" path="res://nucleo/sonidos/jugador/picada.wav" id="9_4uyrt"]
+[ext_resource type="AudioStream" uid="uid://rinur1c33cuk" path="res://nucleo/sonidos/jugador/porton.wav" id="10_vjcxa"]
+[ext_resource type="Script" uid="uid://cjinauhjj4d03" path="res://nucleo/ficha_sonidos.gd" id="11_2nt0k"]
+
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_c880a"]
+random_pitch = 1.06
+streams_count = 1
+stream_0/stream = ExtResource("1_76nj2")
+
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_qvsnh"]
+random_pitch = 1.06
+streams_count = 1
+stream_0/stream = ExtResource("5_o0enb")
+
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_wwuan"]
+random_pitch = 1.06
+streams_count = 1
+stream_0/stream = ExtResource("8_tyahj")
+
+[resource]
+script = ExtResource("11_2nt0k")
+golpe = SubResource("AudioStreamRandomizer_qvsnh")
+dano = ExtResource("4_v3nc0")
+curar = ExtResource("3_vek3q")
+banco = ExtResource("2_o335b")
+muro_roto = ExtResource("7_2nppl")
+porton = ExtResource("10_vjcxa")
+paso = SubResource("AudioStreamRandomizer_wwuan")
+aterrizaje = SubResource("AudioStreamRandomizer_c880a")
+picada = ExtResource("9_4uyrt")
+impulso = ExtResource("6_qyh60")

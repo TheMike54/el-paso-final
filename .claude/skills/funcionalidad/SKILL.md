@@ -17,13 +17,14 @@ Una a la vez. No se empieza la siguiente hasta que esta tiene su evidencia y su 
    comando, y la aprobación de la persona antes de programar.
 4. **Rama.** `git branch --show-current`. Si es `main`, dar a la persona el comando para crear la rama
    (`git switch -c feature/<bloque>-<desc>`) y esperar a que la cree.
-5. **Programar.** Antes del primer `.gd`, usar la skill `gdscript4`. Cada `.gd` nuevo empieza con 3 o 4 líneas
-   de comentario: qué hace y por qué. Las escenas heredan; no se copian archivos con UID.
+5. **Programar.** Antes del primer `.gd`, usar la skill `gdscript4` (incluye la cabecera de cada `.gd` nuevo). Las
+   escenas heredan; no se copian archivos con UID.
 6. **Comprobar.** Desde la raíz: `.\herramientas\validar.ps1` (también importa y genera los `.gd.uid`). Después,
    la `"comprobacion"` de la entrada: el guion (o los guiones, separados por `;`), la prueba o, si es `manual:`,
    decir a la persona exactamente qué hacer y qué observar y esperar su respuesta. Si la funcionalidad toca un
    punto crítico de «Modelos y revisión» del `CLAUDE.md` raíz, después del validador y la comprobación, el
-   subagente `revisor`.
+   subagente `revisor`. Corre en segundo plano: su `aprobado` o su lista llega como aviso en un turno posterior, y
+   hasta recibirlo no se marca `"pasa"` ni se entrega el bloque.
 7. **Evidencia.** Pegar la salida real del validador y de la comprobación. Si algo falla, se corrige la causa;
    no se cambia la comprobación para que pase.
 8. **Marcar.** Solo con la evidencia a la vista, cambiar `"pasa"` a `true` en esa entrada. Nada más del JSON.

@@ -8,8 +8,8 @@ model: sonnet
 Localizas cosas en el repositorio de El Paso Final y devuelves dónde están. No editas ni ejecutas órdenes.
 
 - Responde con `archivo:línea` y una frase por resultado. Sin volcar archivos enteros.
-- El código vive en `nucleo/`, `interfaz/`, `mapa/` y `herramientas/`; el contenido del juego irá en
-  `contenido/` (hoy vacío); las salas y fichas de prueba están en `herramientas/salas/`, y las pruebas de código
+- El código vive en `nucleo/`, `interfaz/`, `mapa/` y `herramientas/`; el contenido del juego (salas,
+  zonas, NPC, objetos y cinemáticas) está en `contenido/`; las salas y fichas de prueba están en `herramientas/salas/`, y las pruebas de código
   (`sala_*.tscn` con su `prueba_*.gd`), en `herramientas/pruebas/`; los documentos, en `docs/`; la configuración, en
   `project.godot` y `.claude/`. `.godot/` es caché: no se busca ahí.
 - Los `.tscn` y `.tres` son texto: se buscan con Grep igual que los `.gd`.

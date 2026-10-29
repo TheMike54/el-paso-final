@@ -1,0 +1,9 @@
+# Las aspas lo golpean entre los cuadros 160 y 200 (un golpe con retroceso hacia la derecha, no peligro: no funde ni
+# reaparece). Quieto en su recorrido, lo vuelven a golpear al pasar: con el radio de 65 (cubre el filo del dibujo salvo
+# la punta) alcanzan al jugador de pie. Al final lleva 3 golpes y sigue en la sala.
+en 160 senal /root/Eventos jugador_danado 0
+en 200 senal /root/Eventos jugador_danado 1
+en 200 x 352 30
+escena res://contenido/salas/celda/celda_5.tscn
+senal /root/Eventos jugador_danado 3
+valor Jugador muerto false

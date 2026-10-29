@@ -2,8 +2,14 @@ class_name AvisoAccion
 extends Area2D
 # Pizarron que ensena una accion, como los avisos de King's Pass: con el jugador dentro de su zona, tras una espera,
 # se dibuja en gis el boton de cada accion con su palabra (IconoBoton con el control o la tecla; en tactil el boton de
-# la pantalla, que ademas late) y una nota opcional. Al hacer la accion se va y, con id, no vuelve en la partida
-# (Partida.marcar). El pizarron es arte de la sala: sin un CanvasItem hijo se dibuja una caja gris oscura.
+# la pantalla, que ademas late) y una nota opcional. Cuando vuelve lo dice su modo (una vez en la partida, en cada
+# visita o siempre). El pizarron es arte de la sala: sin un CanvasItem hijo se dibuja una caja gris oscura.
+
+## UNA_VEZ: hecha la accion se va y no vuelve en la partida (King's Pass; su id se marca con Partida.marcar).
+## POR_VISITA: hecha se va, y vuelve al entrar otra vez a la sala (sin id). SIEMPRE: el pizarron sale cada vez que el
+## jugador entra a su zona, aunque ya la haya hecho; el boton de la pantalla late solo hasta hacerla, y con id eso se
+## recuerda en la partida (los pizarrones de La Celda, decision del 26-oct-2026).
+enum Modo { UNA_VEZ, POR_VISITA, SIEMPRE }
 
 ## Ticks en que el dibujo aparece al entrar y se va al salir.
 const TICKS_APARECER: int = 12
@@ -30,8 +36,10 @@ const MAXIMO_ACCIONES: int = 2
 
 ## Acciones del InputMap que ensena, una o dos (abajo + atacar es el golpe hacia abajo).
 @export var acciones: Array[StringName] = []
-## Id unico entre los avisos de la sala: hecha la accion, se marca y no vuelve en la partida. Vacio: vuelve en cada
-## visita.
+## Cuando vuelve a salir (ver Modo).
+@export var modo: Modo = Modo.UNA_VEZ
+## Id unico entre los objetos que se recuerdan en la sala: con el se marca hecha. Lo exige UNA_VEZ; POR_VISITA no lo
+## lleva; en SIEMPRE es opcional (sin el, el boton vuelve a latir en cada visita).
 @export var id: String = ""
 ## Palabra junto al boton; vacia, la etiqueta del boton de la pantalla de la ultima accion.
 @export var texto: String = ""
@@ -62,7 +70,7 @@ var _hablaba: bool = false
 
 func _ready() -> void:
 	Capas.poner(self, Capas.INTERACCION, Capas.JUGADOR)
-	hecha = not id.is_empty() and Partida.estado_de(Sala.clave_de(self), id) != null
+	hecha = _recordada() and Partida.estado_de(Sala.clave_de(self), id) != null
 	var forma: CollisionShape2D = CollisionShape2D.new()
 	var caja: RectangleShape2D = RectangleShape2D.new()
 	caja.size = tamano
@@ -77,7 +85,7 @@ func _ready() -> void:
 	_iconos = HBoxContainer.new()
 	_iconos.scale = Vector2(ESCALA_ICONOS, ESCALA_ICONOS)
 	_iconos.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_iconos.add_theme_constant_override(&"separation", 12)
+	_iconos.add_theme_constant_override(&"separation", int(Tema.SEPARACION_FILAS))
 	_dibujo.add_child(_iconos)
 	for i: int in acciones.size():
 		var icono: IconoBoton = IconoBoton.new()
@@ -87,6 +95,7 @@ func _ready() -> void:
 		_iconos.add_child(icono)
 	_iconos.resized.connect(_centrar_iconos)
 	Eventos.jugador_curado.connect(_al_curar)
+	body_entered.connect(_al_entrar_cuerpo)
 
 
 func _exit_tree() -> void:
@@ -94,19 +103,22 @@ func _exit_tree() -> void:
 
 
 func _physics_process(_delta: float) -> void:
-	dentro = _jugador_dentro()
+	var jugador: Jugador = _jugador_dentro()
+	dentro = jugador != null
 	_ticks_dentro = _ticks_dentro + 1 if dentro else 0
 	var hablando: bool = ControlesTactiles.hablando or _hablaba
 	_hablaba = ControlesTactiles.hablando
 	if not hecha and not hablando and _accion_hecha():
 		hecha = true
-		if not id.is_empty():
+		if _recordada():
 			Partida.marcar(Sala.clave_de(self), id)
 		_ensenar_botones()
 	_curo = false
-	# Hecha con el dibujo a la vista, sigue hasta TICKS_MINIMO; hecha antes de aparecer, no sale.
-	var mostrar: bool = (dentro and _ticks_dentro > TICKS_ESPERA
-			and (not hecha or (alfa > 0.0 and _ticks_visible < TICKS_MINIMO)))
+	# Hecha con el dibujo a la vista, sigue hasta TICKS_MINIMO; hecha antes de aparecer, no sale (salvo en SIEMPRE).
+	# No sale si el jugador no puede atender: sentado, hablando o muerto. No con Jugador.puede_interactuar, que exige
+	# el suelo y apagaria el de saltar a medio salto.
+	var mostrar: bool = (dentro and _ticks_dentro > TICKS_ESPERA and _atiende(jugador)
+			and (modo == Modo.SIEMPRE or not hecha or (alfa > 0.0 and _ticks_visible < TICKS_MINIMO)))
 	if mostrar and alfa == 0.0:
 		_ensenar_botones()
 	alfa = clampf(alfa + (1.0 if mostrar else -1.0) / TICKS_APARECER, 0.0, 1.0)
@@ -124,6 +136,10 @@ func _physics_process(_delta: float) -> void:
 			_resalto = true
 	else:
 		_soltar_resalto()
+	# Hecha, invisible, sin el jugador dentro ni resalto que soltar: no queda nada que hacer hasta que alguien entre
+	# (body_entered). Dentro de la zona sigue, para que dentro se mantenga al dia.
+	if hecha and alfa == 0.0 and not dentro and not _resalto:
+		set_physics_process(false)
 
 
 ## La palabra que acompana al boton: texto o, vacio, la etiqueta del boton de la pantalla de la ultima accion.
@@ -174,11 +190,27 @@ func _al_curar(_vidas: int) -> void:
 	_curo = true
 
 
-func _jugador_dentro() -> bool:
+# Alguien entra a la zona: si el proceso se apago (hecha e invisible), vuelve a mirar.
+func _al_entrar_cuerpo(_cuerpo: Node2D) -> void:
+	set_physics_process(true)
+
+
+# El jugador dentro de la zona, o null: un solo recorrido por tick.
+func _jugador_dentro() -> Jugador:
 	for cuerpo: Node2D in get_overlapping_bodies():
-		if cuerpo is Jugador:
-			return true
-	return false
+		var jugador: Jugador = cuerpo as Jugador
+		if jugador != null:
+			return jugador
+	return null
+
+
+func _atiende(jugador: Jugador) -> bool:
+	return jugador != null and not (jugador.descansando or jugador.hablando or jugador.muerto)
+
+
+# Si hecha se recuerda en la partida: con id, salvo en POR_VISITA.
+func _recordada() -> bool:
+	return modo != Modo.POR_VISITA and not id.is_empty()
 
 
 func _soltar_resalto() -> void:

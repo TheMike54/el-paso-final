@@ -16,10 +16,6 @@ func _ready() -> void:
 	_caso("jugador: capa jugador, mira escenario", _tiene(jugador, Capas.JUGADOR, Capas.ESCENARIO))
 	_caso("ataque del jugador: mira golpeable y danino", _tiene(jugador.get_node("Ataque") as Area2D, Capas.ATAQUE_JUGADOR, Capas.GOLPEABLE | Capas.DANINO))
 	jugador.free()
-	var caja: Node = (load("res://nucleo/caja_gris.tscn") as PackedScene).instantiate()
-	add_child(caja)
-	_caso("caja gris: como el jugador", _tiene(caja.get_node("Caja") as CollisionObject2D, Capas.JUGADOR, Capas.ESCENARIO))
-	caja.free()
 	_revisar("golpeable", Golpeable.new(), Capas.GOLPEABLE, 0)
 	_revisar("cortable", Cortable.new(), Capas.GOLPEABLE, Capas.JUGADOR)
 	_revisar("dano por contacto", DanoContacto.new(), Capas.DANINO, Capas.JUGADOR)
@@ -31,10 +27,17 @@ func _ready() -> void:
 	enemigo.id = &"capas"
 	_revisar("cuerpo del enemigo", enemigo, Capas.CUERPO_ENEMIGO, Capas.ESCENARIO)
 	_revisar("muro rompible", MuroRompible.new(), Capas.ESCENARIO, 0)
+	_revisar("suelo fragil", SueloFragil.new(), Capas.ESCENARIO, 0)
 	_revisar("porton", Porton.new(), Capas.ESCENARIO, 0)
-	var coleccionable: Coleccionable = Coleccionable.new()
+	_revisar("plataforma delgada", PlataformaDelgada.new(), Capas.ESCENARIO, 0)
+	# La plataforma que lleva al jugador es un AnimatableBody2D con el script de Vaiven: el Vaiven la pone en escenario.
+	var plataforma: AnimatableBody2D = AnimatableBody2D.new()
+	plataforma.set_script(Vaiven)
+	_revisar("plataforma con vaiven", plataforma, Capas.ESCENARIO, 0)
+	# El coleccionable va con su escena: su script toma el arte de ella.
+	var coleccionable: Coleccionable = (load("res://nucleo/coleccionable.tscn") as PackedScene).instantiate() as Coleccionable
 	coleccionable.id = Partida.PREFIJO_COLECCIONABLE + "capas"
-	var interaccion: Array[Area2D] = [Puerta.new(), Banco.new(), coleccionable, ObjetoHabilidad.new(), ObjetoMapa.new(), Npc.new(), RetoPreguntas.new(), EntregaRecompensas.new(), Mochila.new(), Tienda.new(), Estacion.new(), AvisoAccion.new(), (load(INTERRUPTOR) as GDScript).new() as Area2D]
+	var interaccion: Array[Area2D] = [Puerta.new(), Banco.new(), coleccionable, (load("res://nucleo/monedas_sueltas.tscn") as PackedScene).instantiate() as Area2D, ObjetoHabilidad.new(), ObjetoMapa.new(), Npc.new(), RetoPreguntas.new(), EntregaRecompensas.new(), Mochila.new(), Tienda.new(), Estacion.new(), AvisoAccion.new(), ZonaCamara.new(), RegionMusica.new(), (load(INTERRUPTOR) as GDScript).new() as Area2D]
 	for area: Area2D in interaccion:
 		_revisar((area.get_script() as Script).resource_path.get_file().get_basename(), area, Capas.INTERACCION, Capas.JUGADOR)
 	_resumen()

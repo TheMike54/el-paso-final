@@ -12,10 +12,10 @@ const GRUPOS: Dictionary = {
 	"Movimiento": ["sala_movimiento.tscn", "sala_caida.tscn", "sala_salida_abajo.tscn", "sala_doble_salto.tscn", "sala_impulso.tscn", "sala_pared.tscn", "sala_carrera.tscn"],
 	"Combate": ["sala_combate.tscn", "sala_combate_chico.tscn", "sala_golpe.tscn", "sala_parry.tscn", "sala_pogo.tscn", "sala_picada.tscn", "sala_bola.tscn", "sala_curar.tscn"],
 	"Enemigos": ["sala_enemigos.tscn", "sala_enemigos_banco.tscn", "sala_peligro.tscn", "sala_peligro_movil.tscn", "sala_enemigos_moviles.tscn"],
-	"Mundo": ["sala_banco.tscn", "sala_puerta_a.tscn", "sala_camara.tscn", "sala_capas.tscn", "sala_secretos.tscn", "sala_pizarrones.tscn"],
+	"Mundo": ["sala_banco.tscn", "sala_puerta_a.tscn", "sala_puerta_c.tscn", "sala_camara.tscn", "sala_capas.tscn", "sala_secretos.tscn", "sala_pizarrones.tscn", "sala_plataformas.tscn", "sala_musica.tscn"],
 	"Partida": ["sala_dialogo.tscn", "sala_reto.tscn", "sala_lo_perdido.tscn", "sala_tienda.tscn"],
 	"Rendimiento": ["sala_recursos.tscn", "sala_arte.tscn"],
-	"Zonas": ["zonas/mapa/mapa_1.tscn", "zonas/mapa/mapa_2.tscn", "zonas/prueba/prueba_1.tscn", "zonas/prueba/prueba_2.tscn", "zonas/prueba/prueba_3.tscn", "zonas/prueba/prueba_4.tscn"],
+	"Zonas": ["la_celda.tscn", "zonas/mapa/mapa_1.tscn", "zonas/mapa/mapa_2.tscn", "zonas/prueba/prueba_1.tscn", "zonas/prueba/prueba_2.tscn", "zonas/prueba/prueba_3.tscn", "zonas/prueba/prueba_4.tscn"],
 }
 ## Nombre y para que sirve cada sala de GRUPOS, el detalle en una linea corta (cabe en CELDA con Tema.LETRA_DETALLE).
 ## validar.gd falla si una sala de GRUPOS no tiene su linea o si una linea nombra una sala que no esta en GRUPOS. Una
@@ -43,16 +43,20 @@ const SALAS: Dictionary = {
 	"sala_enemigos_moviles.tscn": ["Enemigos móviles", "Caminan, vuelan, lanzan"],
 	"sala_banco.tscn": ["Banco", "Sentarse y guardar"],
 	"sala_puerta_a.tscn": ["Puerta A", "Cambio de sala"],
+	"sala_puerta_c.tscn": ["Puerta C", "Puertas con interactuar"],
 	"sala_camara.tscn": ["Cámara", "Seguimiento y límites"],
 	"sala_capas.tscn": ["Capas", "Paralaje"],
 	"sala_secretos.tscn": ["Secretos", "Muros y palancas"],
 	"sala_pizarrones.tscn": ["Pizarrones", "Aprender cada acción"],
+	"sala_plataformas.tscn": ["Plataformas", "Llevan y no aplastan"],
+	"sala_musica.tscn": ["Música", "Tema de una región"],
 	"sala_dialogo.tscn": ["Diálogo", "Opciones y premios"],
 	"sala_reto.tscn": ["Reto", "Preguntas con premio"],
 	"sala_lo_perdido.tscn": ["Lo perdido", "Volver por la mochila"],
 	"sala_tienda.tscn": ["Tienda", "Comprar con PejeCoins"],
 	"sala_recursos.tscn": ["Recursos", "Bajo y alto"],
 	"sala_arte.tscn": ["Arte", "FPS con todo el arte"],
+	"la_celda.tscn": ["La Celda", "Cinemática y sala"],
 	"zonas/mapa/mapa_1.tscn": ["Mapa 1", "Mapa, pluma y brújula"],
 	"zonas/mapa/mapa_2.tscn": ["Mapa 2", "Sala alta en el mapa"],
 	"zonas/prueba/prueba_1.tscn": ["Prueba 1", "Banco y viaje rápido"],
@@ -83,6 +87,13 @@ var _botones_categoria: Dictionary[String, Button] = {}
 
 func _ready() -> void:
 	theme = Tema.crear()
+	# Es un menu: limite de 60 FPS aunque se llegue desde una sala a 120.
+	var contador: ContadorFps = ContadorFps.new()
+	contador.siempre_en_menu = true
+	add_child(contador)
+	# Las salas de prueba dejan su tema vacio (no tocan la musica): sin esto el tema del menu seguiria en todas. Se
+	# callan aqui, como estaba la zona antes de que existiera la musica; una sala que quiera tema lo pide ella.
+	Arranque.musica.poner(Musica.SILENCIO, Musica.DB_NORMAL, Musica.FUNDIDO_CORTO)
 	_leer_salas()
 	var grupo: ButtonGroup = ButtonGroup.new()
 	for categoria: String in _salas:
@@ -188,7 +199,9 @@ func _leer_salas() -> void:
 
 func _mostrar(categoria: String) -> void:
 	_ultima = categoria
-	_botones_categoria[categoria].set_pressed_no_signal(true)
+	# set_pressed_no_signal no desmarca a las demas del grupo (class_basebutton.rst:466): con L1 / R1 quedaban varias.
+	for nombre: String in _botones_categoria:
+		_botones_categoria[nombre].set_pressed_no_signal(nombre == categoria)
 	for hijo: Node in _lista.get_children():
 		_lista.remove_child(hijo)
 		hijo.queue_free()

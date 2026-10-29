@@ -1,0 +1,26 @@
+# La Celda, sala 2: la ruta de celda_2_cables hasta la columna rota; de ahi camina a la derecha y baja al piso de los
+# cables pelados (entre la columna y la forma de los cables quedan 86 px, el cuerpo mide 80 y sigue caminando): un
+# golpe de peligro y reaparece en la columna. Por el piso no se cruza: la ruta obligada es por arriba (lampara y
+# plataformas).
+escena res://contenido/salas/celda/celda_2.tscn
+2 mover_derecha press
+175 saltar press
+207 saltar release
+300 saltar press
+324 saltar release
+326 saltar press
+350 saltar release
+352 saltar press
+376 saltar release
+378 saltar press
+402 saltar release
+404 saltar press
+428 saltar release
+426 mover_derecha release
+540 mover_derecha press
+545 saltar press
+565 saltar release
+588 mover_derecha release
+898 mover_derecha press
+930 mover_derecha release
+fin 1100

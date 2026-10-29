@@ -1,0 +1,9 @@
+# Sobre la plataforma que va y viene (cara en y=504) justo antes de bajarse; tras los cables (un golpe de peligro)
+# reaparece en la lampara (cara en y=517), no en el aire donde estuvo la plataforma ni en la columna rota.
+en 1500 y 504 2
+en 1500 en_suelo true
+escena res://contenido/salas/celda/celda_2.tscn
+x 3181 8
+y 517 2
+en_suelo true
+senal /root/Eventos jugador_danado 1

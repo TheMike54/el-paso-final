@@ -124,9 +124,7 @@ func _armar() -> void:
 # si existe y get(): el nucleo no depende de mapa/ ni nombra la clase del indice, igual que la sala carga
 # mapa/pantalla_mapa.tscn. Vacio sin indice.
 func _rectangulos() -> Dictionary:
-	if ruta_indice.is_empty() or not ResourceLoader.exists(ruta_indice):
-		return {}
-	var indice: Resource = load(ruta_indice) as Resource
+	var indice: Resource = Cargar.si_existe(ruta_indice)
 	if indice == null:
 		return {}
 	var valor: Variant = indice.get(&"rectangulos")

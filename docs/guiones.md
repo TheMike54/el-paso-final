@@ -61,6 +61,10 @@ con 0 solo si `MALOS=0`. Un guion está bien con el criterio del CI: su salida t
   `InputMap` o si el estado no coincide.
 - Un guion comprueba lo que importa (llegó, está en el suelo, cambió de sala) con tolerancia; no todos los
   decimales.
+- Un guion que cruza una puerta sin ser la prueba de las puertas no fija la x ni el cuadro exactos de la llegada:
+  compara estados (`escena`, `transicion`, `en_suelo`) y posiciones con tolerancia amplia, así un cambio en los
+  tiempos del cruce (`Fundido`, perfil `PUERTA`) no rompe guiones ajenos. Los tiempos los fijan `fundido_puerta`,
+  `cambio_de_sala`, `puerta_accion` y `transicion`.
 - Lo que tiene muchos casos de lógica va en una escena de prueba de `herramientas/pruebas/` (una `sala_*.tscn` con
   su `prueba_<nombre>.gd`; no viajan en el paquete de publicación) que hereda por ruta
   `herramientas/pruebas/prueba_base.gd`: cuenta con `_caso(nombre, bien)`, imprime solo los fallos y

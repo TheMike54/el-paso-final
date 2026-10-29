@@ -9,6 +9,8 @@ extends Node
 
 ## Lo que devuelve clasificar con un evento que no cambia lo ultimo que se uso.
 const SIN_CAMBIO: int = -1
+## Teclas que no cambian lo ultimo que se uso: el volumen del telefono (marca_teclado).
+const TECLAS_DE_VOLUMEN: Array[Key] = [KEY_VOLUMEUP, KEY_VOLUMEDOWN, KEY_VOLUMEMUTE]
 
 ## Lo ultimo que se uso: TOQUE (dedo o clic), TECLADO, o la familia del control (Mando.familia). Al arrancar, la del
 ## primer control conectado, o TOQUE. Al cambiar de verdad emite Eventos.dispositivo_cambiado (IconoBoton la escucha).
@@ -99,11 +101,15 @@ static func clasificar(evento: InputEvent, android: bool = false) -> int:
 
 
 ## Regla 1 de las dos sobre que entrada cuenta: cualquier tecla pulsada marca TECLADO en clasificar, tambien las que
-## no son de ninguna accion (Atras y el volumen del telefono llegan como teclas), y asi un menu muestra el foco. Mira
-## solo el tipo de evento. No es la regla de es_de_juego, que ademas pide una accion del juego: unificarlas cambiaria
-## el juego.
+## no son de ninguna accion (Atras del telefono llega como tecla), y asi un menu muestra el foco. El volumen no: si
+## llega como tecla, subirlo o tomar una captura (encendido + bajar volumen) con el control en la mano pasaria los
+## iconos a las del teclado (decidido el 24-oct-2026). No es la regla de es_de_juego, que ademas pide una accion del
+## juego: unificarlas cambiaria el juego.
 static func marca_teclado(evento: InputEvent) -> bool:
-	return evento is InputEventKey and evento.is_pressed()
+	var tecla: InputEventKey = evento as InputEventKey
+	if tecla == null or not tecla.pressed:
+		return false
+	return not (TECLAS_DE_VOLUMEN.has(tecla.keycode) or TECLAS_DE_VOLUMEN.has(tecla.physical_keycode))
 
 
 ## Regla 2 de las dos sobre que entrada cuenta: una tecla, un boton o un eje del control pulsado que dispara una

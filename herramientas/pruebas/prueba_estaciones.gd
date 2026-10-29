@@ -156,7 +156,7 @@ func _viajar() -> void:
 	await get_tree().process_frame
 	estacion.menu.lista.elegir(1)
 	_caso("elegir otra cierra el menu y empieza el viaje", estacion.menu == null and estacion.destino == DE_PAGO and not get_tree().paused and jugador.hablando)
-	await _esperar(Fundido.TICKS_OSCURECER + Fundido.TICKS_EN_NEGRO_PUERTA + 10)
+	await _esperar(Fundido.ticks_hasta_cambio(Fundido.Perfil.ESTACION) + 10)
 	var llegada: Sala = get_tree().current_scene as Sala
 	var bien: bool = llegada != null and llegada.id == "prueba_4"
 	if bien:

@@ -5,7 +5,12 @@ Es parte de `docs/contrato.md` (mismas reglas: se actualiza en el mismo cambio q
 largo. Los componentes que usa el contenido (`Golpeable`, `DanoContacto`, `Cortable`…) siguen en el contrato.
 
 `nucleo/jugador.tscn` (`class_name Jugador`, `CharacterBody2D`): camina y salta con toda su lógica en
-`_physics_process`. Reglas del salto, como en Hollow Knight; la caja gris (`sala_inicial`) no las lleva.
+`_physics_process`. Reglas del salto, como en Hollow Knight.
+Sobre lo que se mueve (un `AnimatableBody2D` con `Vaiven`), `move_and_slide()` lo lleva. Al dejarlo,
+`platform_on_leave` es `ADD_UPWARD_VELOCITY` (en el inspector de `jugador.tscn`): conserva el impulso horizontal de la
+plataforma y no hereda su bajada, así el salto rinde igual en cualquier momento del ciclo
+(`classes/class_characterbody2d.rst:182-184`). Medido en headless (27-oct-2026): desde un elevador que baja a 2,7 px
+por tick sube 233,6 px, contra 238,9 desde el suelo; con el valor por omisión (`ADD_VELOCITY`), 170,2.
 Todos los valores son propiedades exportadas del jugador y se ajustan en la zona de pruebas; las cuatro de la cámara
 (`temblor_fraccion_x`, `suavizado_camara_x`, `adelanto_camara` y `tiempo_camara_y`) son del script de su nodo `Camara`
 (`nucleo/camara_jugador.gd`, `class_name CamaraJugador`):
@@ -57,7 +62,7 @@ Todos los valores son propiedades exportadas del jugador y se ajustan en la zona
 | `ticks_giro_carrera` | 8 | Giro en carrera: la velocidad pasa de un sentido al otro, por 0, sin apagarla |
 | `ticks_soltar_carrera` | 4 | Ticks sin dirección que la carrera aguanta a velocidad completa: cruzar el centro del joystick (zona muerta 0,2) al girar no es soltar. Valor nuestro, en el rango de 4 a 6 |
 | `velocidad_ataque_carrera` | 2000 px/s | Ataque en carrera: empuje hacia adelante mientras dura el ataque, por encima de `velocidad_impulso` (1200): la persona la pidió más larga cuatro veces tras probarla en el S50 (12-oct-2026). Provisional |
-| `ticks_entre_ataques_carrera` | 42 ticks | Desde un ataque en carrera hasta poder hacer otro sin dejar de correr; lo pedido antes se pierde. Provisional (Silksong: uno cada 0,65-0,85 s, video del 12-oct-2026) |
+| `ticks_entre_ataques_carrera` | 42 | Desde un ataque en carrera hasta poder hacer otro sin dejar de correr; lo pedido antes se pierde. Provisional (Silksong: uno cada 0,65-0,85 s, video del 12-oct-2026) |
 | `altura_voltereta`, `velocidad_voltereta` | 160 px, 480 px/s | Voltereta tras un ataque en carrera que golpea: altura del salto y velocidad hacia adelante (o hacia el joystick). Provisional |
 | `ticks_rebote_pared`, `velocidad_rebote_pared`, `altura_rebote_pared` | 8, 300 px/s, 30 px | Chocar corriendo con una pared: rebote hacia atrás y saltito. Provisional |
 | `velocidad_deslizar_pared` | 150 px/s | Caída máxima sostenido en una pared |
@@ -98,23 +103,52 @@ Combate:
   jugador, como un `DanoContacto`, para contar los ticks a la par del fundido. Mientras está quieto tras reaparecer, ningún peligro cuenta (el contacto de un `DanoContacto` se revisa con la lista del tick
   anterior). Anti-bucle (como Silksong): si otro peligro lo toca antes de `ticks_anti_bucle` ticks con control (30 =
   0,5 s), vuelve al punto por el que entró a la sala (puerta, banco o `Entrada`) sin perder vida; ese punto pasa a
-  ser su punto seguro y el siguiente peligro ya quita vida. El punto seguro es una posición con `ticks_suelo_firme` ticks seguidos en el suelo fuera de la
-  invulnerabilidad, tomada `ticks_atras_punto_seguro` posiciones atrás. `ultimo_punto_seguro()` lo da (la posición
-  si todavía no hay ninguno): ahí deja `Partida` la mochila al morir (`docs/contrato.md`, «Estado de la partida»).
+  ser su punto seguro y el siguiente peligro ya quita vida. El punto seguro es una posición con `ticks_suelo_firme` ticks seguidos en suelo fijo fuera de la
+  invulnerabilidad, tomada `ticks_atras_punto_seguro` posiciones atrás. Suelo fijo: un rayo hacia abajo en el centro de los
+  pies o a 1 px de una orilla del cuerpo (8 px arriba, 40 abajo, `Capas.rayo_a_escenario`) encuentra un sólido que no
+  se mueve según `Vaiven.movil_de`;
+  sobre una plataforma, un elevador (también en su pausa) o un portón no cuenta
+  (`docs/errores/2026-10-26-punto-seguro-sobre-plataforma.md`). Cada rayo mira solo su primer choque: si una pieza que
+  se mueve está en ese momento sobre un punto con suelo fijo (un elevador posado en el suelo), ese punto se descarta y
+  se usa uno más viejo o la llegada; así un punto sobre una plataforma que pasa cerca de los pinchos nunca cuenta.
+  Una `PlataformaDelgada` es fija y sí cuenta.
+  `ultimo_punto_seguro()` comprueba el suelo al usarlo, como Silksong: el punto más viejo que aún tiene suelo fijo
+  debajo; si ninguno (un suelo frágil roto), el punto seguro de la puerta por la que llegó (`Puerta.punto_seguro`), la
+  llegada a la sala, la `Entrada` o un banco con suelo
+  (`Sala.puntos_de_respaldo()`), y si tampoco, el suelo fijo bajo la llegada, atravesando lo que se mueve. Solo si
+  bajo la llegada no hay ningún sólido fijo dentro de la sala vuelve a la llegada tal cual. Lo usan volver de un
+  peligro y la mochila al morir (`docs/contrato.md`, «Estado de la partida»); el anti-bucle va a la llegada con la misma
+  comprobación.
 - Salir por abajo de `limites` (los pies a más de `margen_fuera_de_sala` del borde) es un peligro igual que un
   pincho: `recibir_dano(1, x, true)`. Solo por abajo; por los lados y por arriba una sala se cierra con paredes
   o puertas. Sin sala, los límites son enormes y no ocurre.
 - Muerto (`muerto = true`), el jugador hace la animación `muerte` (ver «Dibujo») y ya no responde a la entrada. 90 ticks (1,5 s) después, la
   sala llena las vidas (`Partida.llenar_vidas()`) y el jugador reaparece en el último banco donde descansó (cambia a
   `Partida.sala`); si no ha descansado, la sala recarga su escena y reaparece en su `Entrada`.
+- Cruzar una puerta (`transicion`, `Jugador.Transicion`, como `HeroTransitionState` de Hollow Knight): desde que la
+  puerta llama a `salir_de_sala` hasta que cambia la sala, y al llegar mientras entra caminando o sale de espaldas,
+  `en_transicion` es verdadero: no lee los controles, no recibe daño ni peligros (`invulnerable`) y
+  `puede_interactuar` es falso. Siempre se mueve con `move_and_slide` (la pared de detrás de una puerta `LADO` lo
+  para), con gravedad salvo al salir por `ARRIBA` o `ABAJO`. Si la sala no cambia en el tope que le da la puerta,
+  recupera el control con un `ERROR:`. Morir o reaparecer la cortan. Detalle de tipos y tiempos: «Cambio de sala» en
+  `docs/contrato.md`; prueba: guion `nucleo/transicion`.
 - Pogo: `atacar` con `mover_abajo` mantenida en el aire pone el área de ataque debajo del jugador (`posicion_pogo`).
-  Si toca un `Golpeable` (que recibe el golpe y da Inspiración) o un peligro, el jugador rebota hacia arriba
+  Si toca un `Golpeable` (que recibe el golpe y, si es enemigo, da Inspiración) o un peligro, el jugador rebota hacia arriba
   `altura_pogo` sin recibir daño, una vez por ataque, y recupera el doble salto y el impulso en el aire. Soltar
   `saltar` no corta el rebote, y no hay empuje horizontal. Cuenta en `rebotes_pogo`.
 - Aterrizaje duro: corta el ataque, el impulso y la curación a medias y deja al jugador quieto `ticks_aterrizaje_duro`
   ticks; la gravedad y los golpes siguen. Las pulsaciones de saltar, atacar y curar hechas durante él se pierden; lo
   mantenido (caminar) cuenta al terminar. Lo cortan un golpe, un peligro (siempre: vuelve al punto seguro), morir y
-  sentarse; el banco no sienta mientras dura. Emite `jugador_aterrizo`.
+  sentarse; el banco no sienta mientras dura. Emite `jugador_aterrizo` con `duro` en `true`.
+- Aterrizar: cada aterrizaje con caída emite una vez `jugador_aterrizo(velocidad, duro, picada)`: `velocidad` es la de
+  caída del último tick en el aire (px/s), `duro` si empezó un aterrizaje duro y `picada` si es el de la picada (que
+  sale en `_seguir_picada`, con `velocidad_picada`, antes de la onda). Aparecer en una sala no cuenta: sin velocidad de
+  caída no hay aviso. Quien escucha decide qué hacer con cada uno: `Sonido` no toca un aterrizaje común más lento que
+  su `velocidad_aterrizaje_min` (bajar un escalón) y `Vibracion` solo vibra con el duro o la picada.
+- Pasos: `jugador_paso` sale al entrar a uno de los cuadros de pasos del clip que se ve (metadato `pasos` del
+  `SpriteFrames` del personaje: hoy `correr` y `carrera`, cuadros 0 y 3), con `frame_changed` y `animation_changed`
+  del `AnimatedSprite2D`, en el suelo y fuera de un cruce de puerta. `jugador_impulso` sale al empezar cada impulso.
+  Los tres los oye `Sonido`.
 - Hablar: `empezar_a_hablar()` (lo llama un `Npc`) corta el impulso, la curación a medias y el retroceso, y deja al
   jugador quieto con gravedad (`hablando`) hasta `dejar_de_hablar()`. El tick siguiente también queda quieto: la
   pulsación que cerró la caja no salta ni ataca. Un golpe, un peligro o morir lo cortan. Mientras habla, el banco no
@@ -128,12 +162,17 @@ Combate:
 - Temblor pedido desde fuera: `temblar(ticks, px)` (lo llaman `MuroRompible` y `Palanca`) arranca un temblor con la
   misma forma que el del aterrizaje. Si ya hay uno que en ese tick es más fuerte que `px`, se queda el que hay; el
   aterrizaje y la picada usan el mismo camino. El jugador lo pasa a su `CamaraJugador`, que lleva el temblor en curso.
-- `vidas`, `muerto`, `toques_poder`, `rebotes_pogo`, `en_picada`, `golpes_onda`, `descansando`, `hablando`, `temblor_x`, `temblor_y`, `aterrizando`, `atacando`, `paradas`, `corriendo`, `atacando_en_carrera`, `volteando`, `girando`, `invulnerable` y `puede_interactuar` (`aterrizando`, `atacando`, `girando`, `invulnerable` y `puede_interactuar`, de solo
+- Zona de cámara: `camara()` da la `CamaraJugador` del jugador; una `ZonaCamara` le avisa al entrar y al salir
+  (`entrar_zona`, `salir_zona`) y la cámara recorta los `limites` de la sala con los de la zona que manda (la última en
+  que entró). Recién colocada la cámara (llegar a la sala, reaparecer; los primeros 30 ticks, `TICKS_AL_INSTANTE`) la
+  zona la coloca al instante; después la alcanza con un seguimiento lento de medio segundo (`TICKS_LENTO`, 30 ticks). El jugador no guarda nada de la zona: la pila vive en la cámara
+  (`docs/contrato.md`, «Componentes»; guion `nucleo/zona_camara`).
+- `vidas`, `muerto`, `toques_poder`, `rebotes_pogo`, `en_picada`, `golpes_onda`, `descansando`, `hablando`, `temblor_x`, `temblor_y`, `aterrizando`, `atacando`, `paradas`, `desviados`, `corriendo`, `atacando_en_carrera`, `volteando`, `girando`, `invulnerable` y `puede_interactuar` (`aterrizando`, `atacando`, `girando`, `invulnerable` y `puede_interactuar`, de solo
   lectura) son propiedades públicas: los guiones las leen con `valor Jugador vidas`. `temblor_x` y `temblor_y` también son de
   solo lectura: las calcula la `CamaraJugador` y el jugador las lee de ella. `puede_interactuar` es la regla
-  única del banco, el `Npc`, el reto y la entrega: en el suelo, vivo, de pie, sin aterrizaje duro ni conversación.
-  Los cuatro la consultan con `Jugador.encima_de(area)`, que da el jugador encima del área que cumple la regla, o
-  `null`.
+  única de todo `Interactuable` (banco, estación, tienda, `Npc`, reto, entrega, mochila y puerta): en el suelo, vivo, de
+  pie, sin aterrizaje duro, sin conversación y sin cruzar una puerta. Todos la consultan con `Jugador.encima_de(area)`,
+  que da el jugador encima del área que cumple la regla, o `null`.
 
 Curar y sensación del golpe:
 
@@ -152,7 +191,7 @@ Curar y sensación del golpe:
 - Congelado común (`nucleo/congelado.gd`, `class_name Congelado`, estático), como `FreezeMoment` de Hollow Knight:
   `Congelado.pedir(ticks)` detiene unos ticks al jugador, a los `Golpeable` empujados, a los proyectiles y a la
   planta y la niebla, que preguntan `Congelado.activo()` al empezar su tick o su cuadro (sin `Engine.time_scale`: los guiones cuentan ticks). Lo piden
-  el daño al jugador (`ticks_hit_stop`), un enemigo vencido (`Congelado.TICKS_AL_VENCER`, 4) y el parry. La sala lo reinicia
+  el daño al jugador (`ticks_hit_stop`), un enemigo vencido (`Congelado.TICKS_AL_VENCER`, 4), el parry y la `Palanca` al activarse (`ticks_congelado` suyo). La sala lo reinicia
   al entrar.
 
 Habilidades (solo si `Partida.tiene(<id>)`; los ids son las constantes de `nucleo/habilidades.gd`, `class_name Habilidades`):
@@ -170,8 +209,10 @@ Habilidades (solo si `Partida.tiene(<id>)`; los ids son las constantes de `nucle
 - `nucleo/objeto_habilidad.tscn` (`class_name ObjetoHabilidad`): al tocarlo, llama a `Partida.obtener_habilidad` con su
   `habilidad` (suma, emite `Eventos.habilidad_obtenida` y rechaza un id fuera de `Habilidades.TODAS`) y desaparece; si
   la partida ya la tiene, no aparece.
-- Prioridad del movimiento horizontal: retroceso del golpe recibido, impulso, despegue de la pared, rebote (al
-  golpear, al parar o contra la pared), voltereta, carrera y por último la entrada.
+- Prioridad del movimiento horizontal: antes que todo, el cruce de una puerta (`en_transicion`: sin control, camina
+  solo hacia el lado de la puerta al salir por `LADO` y al llegar por `LADO`, quieto en una `PUERTA` y sin avance en
+  `ARRIBA` y `ABAJO`); después, retroceso del golpe recibido, impulso, despegue de la pared, rebote (al golpear, al
+  parar o contra la pared), voltereta, carrera y por último la entrada.
 
 ## Dibujo
 
@@ -180,8 +221,13 @@ El cuerpo es el nodo `Dibujo` (`AnimatedSprite2D`) de `nucleo/jugador.tscn`, con
 solo lee al jugador: la física, el control y las áreas no dependen de él.
 
 - `Dibujo` está en (0, −80), el centro del cuerpo, que es también el pivote del giro de la voltereta; `centered`
-  apagado y `offset` fijo (−158, −96), que pone el eje del cuerpo del lienzo común (316 × 180) sobre la x del
-  jugador y los pies en su y. Lleva `show_behind_parent`: lo que dibuja el `_draw` del jugador queda encima.
+  apagado y `offset` fijo (−158, −98), que pone el eje del cuerpo del lienzo común (316 × 182, pies en la fila 178)
+  sobre la x del jugador y los pies en su y. El lienzo lo mide el script que arma el atlas: si cambia, cambia el
+  `offset` (pasó de 180 a 182 el 24-oct-2026, al corregir la escala del ataque vertical). Lleva `show_behind_parent`: los hijos del jugador que no lo llevan (el trazo, el frente del aura de curar) quedan encima.
+- Cada golpe deja un trazo blanco (`Trazo`, un `TrazoAtaque` hijo del jugador, ver «Enemigos» en
+  `docs/contrato.md`): `_iniciar_ataque` lo dispara sobre el área de golpe ya colocada (de lado, `posicion_ataque_arriba`
+  o `posicion_pogo`), así sigue al área si esta cambia. Se ve desde el cuarto tick del golpe (guion
+  `nucleo/trazo_jugador`).
 - Al final de `_physics_process`, tras mover y tras la cámara, `_animar()` llena un `AnimacionJugador.Estado` y
   `AnimacionJugador.elegir()` (`nucleo/animacion_jugador.gd`, funciones puras) da la animación. Gana la primera fila
   que se cumple, en el orden de `HeroAnimationController.UpdateAnimation` de Hollow Knight:
@@ -189,22 +235,24 @@ solo lee al jugador: la física, el control y las áreas no dependen de él.
   | # | Estado | Animación |
   |---|---|---|
   | 1 | `muerto` | `muerte`: dura `Sala.TICKS_PARA_REAPARECER` (90 ticks) y no se repite |
-  | 2 | Fundido de un peligro | `dano`, primer cuadro fijo |
-  | 3 | `descansando` | `sentarse` una vez y después `dormir` en bucle |
-  | 4 | Retroceso de un golpe | `dano`, repartido en `ticks_retroceso` |
-  | 5 | `aterrizando` | `aterrizaje_duro`, repartido en `ticks_aterrizaje_duro` |
-  | 6 | Carga de la picada / `en_picada` | `picada_carga` / `picada` |
-  | 7 | `curando` | `curar`: el inicio los primeros 10 ticks curados y después el sostenido |
-  | 8 | `curar` presionado que todavía puede ser un toque / recarga de la bola | `bola`: el primer cuadro / los otros dos, repartidos en `ticks_recarga_bola` |
-  | 9 | `atacando_en_carrera` | `estocada`, repartida en `ticks_ataque` |
-  | 10 | Ataque (el golpe y su cola hasta `ticks_entre_ataques`) | `ataque_abajo`, `ataque_arriba` o `ataque_lado`, repartidos en `ticks_entre_ataques`. La cola (después del golpe) se corta y no vuelve si la interrumpe una fila de más prioridad, hablar o la pausa tras un peligro (`AnimacionJugador.actualizar_cola_ataque`): `_ticks_hasta_ataque` solo baja mientras el jugador puede atacar. Pegado a una pared, `ataque_lado` hacia donde mira, que es donde sale el área (decidido el 21-oct-2026) |
-  | 11 | `volteando` | `voltereta`: dos cuadros y el sprite gira una vuelta cada `TICKS_VUELTA` ticks hacia donde mira |
-  | 12 | Impulso | `impulso`: arranque 2 ticks, dos cuadros alternados, final 2 ticks |
-  | 13 | Despegue de la pared / `en_pared` | `saltar_pared` / `pared` (bucle) |
-  | 14 | En el aire (en la pausa tras un peligro cuenta como en el suelo: lo pone ahí sin `move_and_slide` y `is_on_floor()` sigue con el valor de la caída) | `aire`: el despegue los primeros 4 ticks del salto y después el cuadro según `velocity.y` (sube, cima, empieza a caer, cae) |
-  | 15 | `corriendo` | `carrera`, bucle a 15 cuadros por segundo |
-  | 16 | En el suelo, moviéndose y sin rebote | `correr`, bucle a 12 |
-  | 17 | Lo demás | `quieto`: 1-2-3-2 a 400 ms por cuadro (`LOOP_PINGPONG`) |
+  | 2 | Sale por una `PUERTA` (`transicion` `SALE_POR_PUERTA`) | `entrar_puerta`: se voltea de espaldas (los `CUADROS_GIRO_PUERTA` primeros) y se mete, repartido en su largo (48 ticks) |
+  | 3 | Llega por una `PUERTA` (`LLEGA_POR_PUERTA`) | `salir_puerta`: los cuadros de la misma hoja al revés, repartidos en su largo (20 ticks) |
+  | 4 | Fundido de un peligro | `dano`, primer cuadro fijo |
+  | 5 | `descansando` | `sentarse` una vez y después `dormir` en bucle |
+  | 6 | Retroceso de un golpe | `dano`, repartido en `ticks_retroceso` |
+  | 7 | `aterrizando` | `aterrizaje_duro`, repartido en `ticks_aterrizaje_duro` |
+  | 8 | Carga de la picada / `en_picada` | `picada_carga` / `picada` |
+  | 9 | `curando` | `curar`: el inicio los primeros 10 ticks curados y después el sostenido |
+  | 10 | `curar` presionado que todavía puede ser un toque / recarga de la bola | `bola`: el primer cuadro / los otros dos, repartidos en `ticks_recarga_bola` |
+  | 11 | `atacando_en_carrera` | `estocada`, repartida en `ticks_ataque` |
+  | 12 | Ataque (el golpe y su cola hasta `ticks_entre_ataques`) | `ataque_abajo`, `ataque_arriba` o `ataque_lado`, repartidos en `ticks_entre_ataques`. La cola (después del golpe) se corta y no vuelve si la interrumpe una fila de más prioridad, hablar o la pausa tras un peligro (`AnimacionJugador.actualizar_cola_ataque`): `_ticks_hasta_ataque` solo baja mientras el jugador puede atacar. Pegado a una pared, `ataque_lado` hacia donde mira, que es donde sale el área (decidido el 21-oct-2026) |
+  | 13 | `volteando` | `voltereta`: dos cuadros y el sprite gira una vuelta cada `TICKS_VUELTA` ticks hacia donde mira |
+  | 14 | Impulso | `impulso`: arranque 2 ticks, dos cuadros alternados, final 2 ticks |
+  | 15 | Despegue de la pared / `en_pared` | `saltar_pared` / `pared` (bucle) |
+  | 16 | En el aire (en la pausa tras un peligro cuenta como en el suelo: lo pone ahí sin `move_and_slide` y `is_on_floor()` sigue con el valor de la caída) | `aire`: el despegue los primeros 4 ticks del salto y después el cuadro según `velocity.y` (sube, cima, empieza a caer, cae) |
+  | 17 | `corriendo` | `carrera`, bucle a 15 cuadros por segundo |
+  | 18 | En el suelo, moviéndose y sin rebote | `correr`, bucle a 12 |
+  | 19 | Lo demás | `quieto`: 1-2-3-2 a 400 ms por cuadro (`LOOP_PINGPONG`) |
 
   El giro en carrera no es una fila: `AnimacionJugador.con_giro()` lo pone después de elegir, solo en el suelo y
   solo sobre `carrera`, `correr` o `quieto` (como el `Turn` de Hollow Knight), repartido en `ticks_giro_carrera`.
@@ -218,12 +266,33 @@ solo lee al jugador: la física, el control y las áreas no dependen de él.
   la pared (decidido el 21-oct-2026). Como la mano y los pies de esa hoja sobresalen 90 px por detrás del eje, el
   `Dibujo` se aparta de la pared lo que sobra sobre medio ancho del jugador (`AnimacionJugador.separacion_pared`, de
   los márgenes de los `AtlasTexture`: 50 px), para que toquen su borde sin meterse. Invulnerable: el alfa del `modulate` baja a
-  `PARPADEO` (0,35) 4 ticks de cada 8, como el `InvulnerablePulse` de Hollow Knight. Curando: tinte `TINTE_CURANDO`.
-- Destello en blanco solo en el parry, mientras dura su congelado y `TICKS_DESTELLO_PARRY` ticks después (no muerto).
+  `PARPADEO` (0,35) 4 ticks de cada 8, como el `InvulnerablePulse` de Hollow Knight.
+- Destello en blanco solo en el parry: `TICKS_DESTELLO_PARRY` (6) ticks, 0,1 s, contados también durante el congelado
+  (no muerto; antes duraba todo el congelado y 8 ticks más: en la maqueta aprobada el 25-oct-2026 no tapa al personaje).
   El congelado de un golpe recibido o dado no aclara el cuerpo: el golpe recibido se lee por el parpadeo, como en
   Hollow Knight y Silksong, que no aclaran al héroe en el parry ni durante el congelado (decidido el 21-oct-2026). Es un
   `ShaderMaterial` con `nucleo/arte/destello.gdshader` (`mix` del color con blanco según el uniforme `cantidad`). Un
   `modulate` mayor que 1 no aclara: Compatibility satura el color en 1 (`tutorials/rendering/renderers.rst:352,377`).
   El valor se cambia solo cuando cambia.
-- `_draw` dibuja solo los efectos provisionales, encima del cuerpo: el rectángulo del ataque, la estocada y el
-  estallido del parry.
+- El golpe (normal, arriba, abajo y la estocada) se ve solo con su trazo blanco (`TrazoAtaque`); el área se ve con
+  «Ver hitbox» (decidido por la persona el 25-oct-2026). Desviar un disparo no aclara el cuerpo ni congela (contrato,
+  «Enemigos»).
+- Efectos (elegidos por la persona el 25-oct-2026 en maquetas animadas): hojas de cuadros que se reproducen con
+  `EfectoCuadros` (contrato, «Enemigos»), dibujadas una vez pixel por pixel por `herramientas/generar_efectos.gd` en
+  tres capas encajadas (azul, celeste, blanca), para que se vean de una sola pieza; en el juego son un sprite por
+  efecto. Sin luz: la oscuridad de la sala no los apaga.
+  - Parry: destello de luz (`efecto_parry.png`, 4 cuadros de 352x208, 0,2 s, aditivo) que corre durante el congelado,
+    hijo de la sala (queda fijo aunque el jugador salga empujado). De lado va en la punta de la espada del cuadro que
+    golpea (`PUNTA_ESPADA_LADO`, (122, −117) desde los pies, medida en el atlas); arriba y abajo, entre el área de golpe
+    y el ataque parado, porque la espada del dibujo no llega ahí. El parry llega en la preparación del golpe y el
+    congelado la sostendría con la espada atrás: el clip salta ya a su cuadro de golpe (`CUADRO_GOLPE`). La chispa de
+    un disparo desviado es el mismo destello a la mitad (`ESCALA_CHISPA`), sin correr en el congelado.
+  - Bola: bola de fuego en capas (`efecto_bola.png`, 6 cuadros de 224x160 en bucle; opacidad 80 % el centro, 65 % y
+    50 % las de fuera), espejada con `sentido`. La segunda fila no lleva las gotas sueltas: sale los primeros 3
+    cuadros, cuando asomarían sobre la cabeza del jugador. La forma de golpe (60x40) no cambió.
+  - Curar: el aura (`efecto_curar.png`, 6 cuadros de 320x420: picos filosos, 11, 10 y 9 por lado según la capa, y
+    gotas y chispas que nacen en el piso; opacidad 45, 35 y 25 %) detrás del cuerpo, sus rayas y chispas
+    (`efecto_curar_frente.png`) delante, y una luz falsa: el halo de `LuzSala` (aditivo, sin `Light2D`) de 660 px que
+    crece con lo curado (0,35 + t / 0,6, como el aura del HTML de diseño) y titila. Se ven solo mientras `curando`.
+    El aura va detrás con `show_behind_parent` y como primer hijo, no con `z_index` negativo, que la dejaba bajo el
+    fondo de la sala.

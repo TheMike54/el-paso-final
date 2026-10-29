@@ -28,7 +28,7 @@ ese mismo banco con las mismas vidas y las mismas habilidades.
 | Área | Entra |
 |---|---|
 | Inicio | Elegir personaje (mujer u hombre) y escribir su nombre; menú con cuatro ranuras de partida (nueva o continuar), con estados vacío, dañado y de otra versión |
-| Historia | Intro con imágenes fijas y escena de los sinodales |
+| Historia | Intro en video (la cinemática antes de La Celda, aprobada el 24-oct-2026) y escena de los sinodales |
 | Zonas | Las dos primeras, completas: tres enemigos, raíces con espinas, un mini jefe opcional y el jefe de la zona |
 | Progresión | La habilidad de impulso, el arma base y un amuleto |
 | Sistemas | Cuatro vidas, curación, bancos y guardado, lo perdido al morir (mochila), y un reto de preguntas para recuperar lo perdido al morir; una tienda de PejeCoins (decisión del 17-oct-2026) |
@@ -42,7 +42,7 @@ ese mismo banco con las mismas vidas y las mismas habilidades.
 Las zonas restantes y el final con los sinodales; las demás habilidades; el minijuego de apuestas;
 las mejoras del arma; el viaje rápido entre estaciones en las zonas (el núcleo lo deja programado; las zonas 1
 y 2 lo llevan solo si alcanza el tiempo de contenido, decisión del 17-oct-2026); los personajes secundarios restantes; la música
-completa; el fondo animado del menú. Fuera de la v1 (decisiones del 13-oct-2026): inventario de objetos, «sobrecarga»
+completa. Fuera de la v1 (decisiones del 13-oct-2026): inventario de objetos, «sobrecarga»
 de amuletos y logros; el dash hacia abajo se descartó (le quitaría su papel a la caída en picada).
 
 ## Cómo se construye

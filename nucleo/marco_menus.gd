@@ -211,5 +211,4 @@ func _indice_de(id: StringName) -> int:
 
 
 func _sentado() -> bool:
-	var jugador: Jugador = get_tree().get_first_node_in_group(Jugador.GRUPO) as Jugador
-	return jugador != null and jugador.descansando
+	return Jugador.sentado(get_tree())

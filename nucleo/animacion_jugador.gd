@@ -28,10 +28,16 @@ const CARRERA: StringName = &"carrera"
 const GIRO_CARRERA: StringName = &"giro_carrera"
 const CORRER: StringName = &"correr"
 const QUIETO: StringName = &"quieto"
+## Puerta (Puerta.Tipo.PUERTA): voltearse de espaldas y meterse al salir de la sala; salir de espaldas al llegar.
+const ENTRAR_PUERTA: StringName = &"entrar_puerta"
+const SALIR_PUERTA: StringName = &"salir_puerta"
 ## Todas, para la prueba que revisa que existan en el .tres.
-const TODAS: Array[StringName] = [MUERTE, DANO, SENTARSE, DORMIR, ATERRIZAJE_DURO, PICADA_CARGA, PICADA, CURAR, BOLA,
-		ESTOCADA, ATAQUE_ABAJO, ATAQUE_ARRIBA, ATAQUE_LADO, VOLTERETA, IMPULSO, SALTAR_PARED, PARED, AIRE, CARRERA,
-		GIRO_CARRERA, CORRER, QUIETO]
+const TODAS: Array[StringName] = [MUERTE, ENTRAR_PUERTA, SALIR_PUERTA, DANO, SENTARSE, DORMIR, ATERRIZAJE_DURO,
+		PICADA_CARGA, PICADA, CURAR, BOLA, ESTOCADA, ATAQUE_ABAJO, ATAQUE_ARRIBA, ATAQUE_LADO, VOLTERETA, IMPULSO,
+		SALTAR_PARED, PARED, AIRE, CARRERA, GIRO_CARRERA, CORRER, QUIETO]
+## Cuadros del principio de entrar_puerta en que el jugador se voltea de espaldas; el fundido empieza al acabarlos. Sus
+## ticks salen del SpriteFrames (ticks_de), no de una constante: retocar el arte no desincroniza la puerta.
+const CUADROS_GIRO_PUERTA: int = 3
 ## Ticks del cuadro de despegue del salto (60 ms) y del inicio de curar.
 const TICKS_DESPEGUE: int = 4
 const TICKS_INICIO_CURAR: int = 10
@@ -82,6 +88,10 @@ class Estado:
 	var ticks_rebote: int = 0
 	var hablando: bool = false
 	var ticks_congelado: int = 0
+	## Cruce de puerta en curso (Jugador.Transicion), los ticks que lleva y los que dura su clip (0 si no tiene).
+	var transicion: Jugador.Transicion = Jugador.Transicion.NINGUNA
+	var ticks_transicion: int = 0
+	var ticks_clip_transicion: int = 0
 	## Memoria del propio dibujo entre ticks (no del jugador): ver actualizar_cola_ataque.
 	var cola_ataque_cortada: bool = false
 
@@ -90,6 +100,10 @@ class Estado:
 static func elegir(e: Estado) -> StringName:
 	if e.muerto:
 		return MUERTE
+	if e.transicion == Jugador.Transicion.SALE_POR_PUERTA:
+		return ENTRAR_PUERTA
+	if e.transicion == Jugador.Transicion.LLEGA_POR_PUERTA:
+		return SALIR_PUERTA
 	if e.ticks_hasta_reaparecer > 0:
 		return DANO
 	if e.descansando:
@@ -145,8 +159,12 @@ static func actualizar_cola_ataque(e: Estado) -> void:
 	if e.hablando or e.ticks_congelado > 0:
 		e.cola_ataque_cortada = true
 		return
-	var nombre: StringName = elegir(e)
-	e.cola_ataque_cortada = nombre != ATAQUE_LADO and nombre != ATAQUE_ARRIBA and nombre != ATAQUE_ABAJO
+	e.cola_ataque_cortada = not es_ataque(elegir(e))
+
+
+## Si nombre es uno de los clips del golpe normal (a un lado, arriba o abajo; no la estocada).
+static func es_ataque(nombre: StringName) -> bool:
+	return nombre == ATAQUE_LADO or nombre == ATAQUE_ARRIBA or nombre == ATAQUE_ABAJO
 
 
 ## Capa del giro en carrera, como el Turn de Hollow Knight: solo en el suelo y solo sobre carrera, correr o quieto.
@@ -178,6 +196,8 @@ static func separacion_pared(cuadros: SpriteFrames, eje: float, medio_ancho: flo
 ## el SpriteFrames, para repartir los ticks del estado en la misma proporcion.
 static func cuadro(nombre: StringName, e: Estado, duraciones: PackedFloat32Array) -> int:
 	match nombre:
+		ENTRAR_PUERTA, SALIR_PUERTA:
+			return repartir(e.ticks_transicion, e.ticks_clip_transicion, duraciones)
 		DANO:
 			if e.ticks_hasta_reaparecer > 0:
 				return 0
@@ -220,6 +240,17 @@ static func cuadro(nombre: StringName, e: Estado, duraciones: PackedFloat32Array
 		SALTAR_PARED, PICADA_CARGA, PICADA:
 			return 0
 	return -1
+
+
+## Ticks de un clip (o de sus primeros hasta cuadros, si hasta >= 0) con la fisica a 60 ticks (decision cerrada): suma
+## de sus duraciones relativas entre los fps del clip (classes/class_spriteframes.rst:252-256), redondeada al tick.
+static func ticks_de(cuadros: SpriteFrames, nombre: StringName, hasta: int = -1) -> int:
+	var total: int = cuadros.get_frame_count(nombre) if hasta < 0 else mini(hasta, cuadros.get_frame_count(nombre))
+	var suma: float = 0.0
+	for i: int in range(total):
+		suma += cuadros.get_frame_duration(nombre, i)
+	var fps: float = cuadros.get_animation_speed(nombre)
+	return roundi(suma * 60.0 / fps) if fps > 0.0 else 0
 
 
 ## Giro del sprite en la voltereta, en radianes, mirando a la derecha: una vuelta cada ticks_vuelta. El cuadro 5 de

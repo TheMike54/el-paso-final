@@ -1,7 +1,7 @@
 extends ComportamientoEnemigo
 # Escupidor de pruebas: quieto en el suelo y mirando al jugador. Cuando lo ve, avisa AVISO ticks (se aclara, como el
 # muneco que ataca) y le lanza una bola en arco que cae donde estaba (la cuenta de Silksong: angulo fijo, rapidez
-# calculada). Espera ESPERA ticks antes del siguiente. La bola se puede parar.
+# calculada). Espera ESPERA ticks antes del siguiente. La bola se puede desviar con el ataque.
 
 const RADIO: float = 900.0
 const AVISO: int = 30

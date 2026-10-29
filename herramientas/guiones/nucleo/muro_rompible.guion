@@ -1,4 +1,5 @@
 # Muros rompibles, palanca y porton en la sala de secretos (herramientas/pruebas/prueba_muros.gd): golpes, lado,
-# ataque sin Inspiracion, bola, tapas, lo guardado al volver, retraso de la palanca y cerrar el porton.
+# ataque sin Inspiracion, bola, tapas, lo que descubre, las monedas encerradas tras el muro, lo guardado al volver,
+# retraso de la palanca y cerrar el porton.
 escena res://herramientas/pruebas/sala_muros.tscn
-fin 420
+fin 700

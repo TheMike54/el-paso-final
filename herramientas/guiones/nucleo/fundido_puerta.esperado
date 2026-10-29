@@ -1,4 +1,6 @@
-# En B desde el cuadro 72, en negro; 8 cuadros despues va a mitad de aclarar (1 - 8/15). Sin el fundido
-# de la sala, la opacidad seria 0.
+# B carga en el cuadro 87 (medido el 27-oct-2026). Fija el tiempo del cruce: el cuadro 90 solo admite unos 3 ticks de
+# diferencia; si cambia el perfil PUERTA, se vuelve a medir. Sin el fundido de la sala, la opacidad seria 0.
+en 90 escena res://herramientas/salas/sala_puerta_b.tscn
+en 90 valor Fundido opacidad 0.9 0.1
 escena res://herramientas/salas/sala_puerta_b.tscn
-valor Fundido opacidad 0.47 0.02
+valor Fundido opacidad 0 0.01

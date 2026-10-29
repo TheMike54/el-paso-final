@@ -76,8 +76,8 @@ antes de darlo por bueno; no se supone.
 
 ## Avisos y validador
 
-- Solo los cuatro avisos de `project.godot:26-29` son error. Cualquier otro sale como `WARNING` y `validar.ps1`
-  pasa igual (`herramientas/validar.ps1:24` solo atrapa `SCRIPT ERROR`, `ERROR:` y `FALLO`;
+- Solo los cuatro avisos de la sección `[debug]` de `project.godot` son error. Cualquier otro sale como `WARNING` y
+  `validar.ps1` pasa igual (su filtro de errores solo atrapa `SCRIPT ERROR`, `ERROR:` y `FALLO`;
   `tutorials/scripting/gdscript/warning_system.rst:47`). Los avisos no se desactivan.
 - Que algo compile no dice que corra: `=` de arrays, `%` con valores de menos y `as` que da `null` solo fallan al
   ejecutar. Para eso, un guion (`docs/guiones.md`).

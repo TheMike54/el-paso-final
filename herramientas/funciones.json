@@ -38,7 +38,7 @@
   {
     "id": "puerto-guion",
     "que": "El puerto de depuracion corre un guion de entradas, lo compara con su .esperado e imprime GUION OK o GUION FALLA; falla si falta el guion o la accion",
-    "comprobacion": "herramientas/guiones/nucleo/caja.guion",
+    "comprobacion": "herramientas/guiones/contenido/cinematica_celda.guion",
     "pasa": true
   },
   {
@@ -79,7 +79,7 @@
   },
   {
     "id": "validador-presupuesto",
-    "que": "Cada sala respeta el presupuesto de decoracion: a lo mas 3 emisores de particulas con 60 particulas entre todos, 30 plantas y ninguna luz 2D; si no, FALLO",
+    "que": "Cada sala respeta el presupuesto de decoracion: a lo mas 16 emisores de particulas con 200 particulas entre todos, 30 plantas y ninguna luz 2D en la escena (LuzSala la crea en codigo con el ajuste); si no, FALLO",
     "comprobacion": "manual: en una copia del proyecto, una planta 31 y un PointLight2D en sala_recursos.tscn dan cada uno su FALLO y salida 1; la sala tal cual pasa",
     "pasa": true
   },
@@ -193,8 +193,152 @@
   },
   {
     "id": "validador-prueba-en-memoria",
-    "que": "Una prueba automatica hereda de validar.gd sin correr su _ready y llama a sus reglas con entradas y nodos rotos armados en memoria (ningun .tscn roto en el repo): _fallo_de_entrada, _id_recordado, _revisar_peligros, _revisar_avisos, _revisar_tiendas, _revisar_rutas_de_secretos, _revisar_habilidades y _revisar_sala sin puertas; por regla, un caso roto da su FALLO por texto parcial y uno sano no da ninguno",
+    "que": "Una prueba automatica hereda de validar.gd sin correr su _ready y llama a sus reglas con entradas y nodos rotos armados en memoria (ningun .tscn roto en el repo): _fallo_de_entrada, _id_recordado, _revisar_peligros, _revisar_avisos, _revisar_tiendas, _revisar_muro, _revisar_habilidades y _revisar_sala sin puertas; por regla, un caso roto da su FALLO por texto parcial y uno sano no da ninguno",
     "comprobacion": "herramientas/guiones/herramientas/validador.guion",
+    "pasa": true
+  },
+  {
+    "id": "validador-mapa-zonas",
+    "que": "El validador falla si dos salas de zonas distintas se enciman en el indice del mapa: cada zona tiene su franja del plano (posicion_mapa)",
+    "comprobacion": "manual: en una copia del proyecto, poner la posicion_mapa de celda_1 sobre la de otra zona y regenerar el indice da FALLO «son de zonas distintas y se enciman en el mapa» y salida 1; el proyecto tal cual pasa",
+    "pasa": true
+  },
+  {
+    "id": "medicion-rendimiento",
+    "que": "herramientas/pruebas/medicion.tscn carga cada sala pedida como el juego, deja quieto al jugador, pone la camara en posiciones fijas y escribe una linea MEDICION_DATO por posicion y variante (Recursos, luces 2D, niebla) con FPS, peor cuadro, draw calls, objetos, primitivas, memoria y nodos, y una SALA <id> carga_ms por carga; termina en MEDICION FIN. Vive en herramientas/pruebas/: el preset Publicacion la excluye. Como se corre: docs/pruebas.md, Medicion de rendimiento",
+    "comprobacion": "manual: en la PC, la corrida de docs/pruebas.md con --salas=celda_1 --recursos=bajo,alto --luces=no,si --niebla=no,si escribe 8 variantes por posicion y MEDICION FIN, sin ERROR; en un telefono, el APK de medicion escribe las mismas lineas en logcat",
+    "pasa": false
+  },
+  {
+    "id": "validador-recogibles",
+    "que": "El validador exige id unico en la sala a todo Recogible que se recuerda por id (Coleccionable, MonedasSueltas), no se lo pide a ObjetoHabilidad ni a ObjetoMapa, y falla si un Coleccionable no empieza con el prefijo de coleccionable o si otro recogible usa un prefijo reservado",
+    "comprobacion": "herramientas/guiones/herramientas/validador.guion",
+    "pasa": true
+  },
+  {
+    "id": "validador-cuerpos-moviles",
+    "que": "El validador falla con un DanoContacto con peligro dentro de un Giro (la lista de lo que se mueve es Vaiven.movil_de, la misma del punto seguro) y con un cuerpo de fisica dentro de un Vaiven o un Giro que no sea el nodo mismo: la plataforma es ella misma el AnimatableBody2D",
+    "comprobacion": "herramientas/guiones/herramientas/validador.guion",
+    "pasa": true
+  },
+  {
+    "id": "generar-sprites-puerta",
+    "que": "El atlas del jugador lleva los clips entrar_puerta y salir_puerta, generados por generar_sprites desde el atlas del arte (no a mano), y entrar_puerta dura al menos el giro, el oscurecer y el negro de una PUERTA",
+    "comprobacion": "herramientas/guiones/nucleo/transicion.guion; herramientas/guiones/nucleo/animacion_jugador.guion",
+    "pasa": true
+  },
+  {
+    "id": "validador-llegada-puertas",
+    "que": "El validador falla si la llegada de una puerta queda fuera de los limites de su sala o si, en una puerta que no es PUERTA, el cuerpo del jugador recien llegado toca el area de la puerta",
+    "comprobacion": "herramientas/guiones/herramientas/validador.guion",
+    "pasa": true
+  },
+  {
+    "id": "validador-zona-camara",
+    "que": "El validador falla si una ZonaCamara no tiene una CollisionShape2D hija directa con forma y, en una sala, si sus limites no tienen area o salen de los limites de la sala",
+    "comprobacion": "herramientas/guiones/herramientas/validador.guion",
+    "pasa": true
+  },
+  {
+    "id": "validador-rutas-de-nodos",
+    "que": "El validador falla si una ruta de nodo que una escena guarda para una variable de script no resuelve al instanciarla (tapas, descubre, portones, encendida, destello y las que vengan), comparando el SceneState con lo instanciado; un export de nodo en null a proposito no falla",
+    "comprobacion": "herramientas/guiones/herramientas/validador.guion",
+    "pasa": true
+  },
+  {
+    "id": "validador-descubre",
+    "que": "El validador falla si una tapa o algo que descubre un MuroRompible esta dentro del muro, si un dibujo esta en tapas y en descubre a la vez o si lo que descubre tiene fisica (un CollisionObject2D o uno dentro): lo escondido se encierra, no se oculta",
+    "comprobacion": "herramientas/guiones/herramientas/validador.guion",
+    "pasa": true
+  },
+  {
+    "id": "validador-avisos-modo",
+    "que": "El validador falla con un AvisoAccion UNA_VEZ sin id o POR_VISITA con id",
+    "comprobacion": "herramientas/guiones/herramientas/validador.guion",
+    "pasa": true
+  },
+  {
+    "id": "validador-npc-entregar",
+    "que": "El validador falla si la animacion entregar del dibujo de un Npc va en bucle: no volveria a quieto",
+    "comprobacion": "herramientas/guiones/herramientas/validador.guion",
+    "pasa": true
+  },
+  {
+    "id": "validador-ids-en-piezas",
+    "que": "El validador busca los ids repetidos de lo que se recuerda tambien dentro de una pieza instanciada en la sala",
+    "comprobacion": "herramientas/guiones/herramientas/validador.guion",
+    "pasa": true
+  },
+  {
+    "id": "validador-uid-ext-resource",
+    "que": "En contenido/, nucleo/, mapa/ e interfaz/ el validador falla si un ext_resource de una escena o recurso no lleva el uid de su destino, lleva otro, o nombra un recurso de texto sin uid en su cabecera, y si un .tscn o .tres de esas carpetas no lleva uid en su propia cabecera",
+    "comprobacion": "herramientas/guiones/herramientas/validador.guion",
+    "pasa": true
+  },
+  {
+    "id": "generadores-con-uid",
+    "que": "generar_sprites y generar_mapa guardan con guardar_con_uids de validar.gd: el .tres sale con su uid de cabecera (el que ya tenia) y el uid de cada ext_resource, que ResourceSaver no escribe fuera del editor",
+    "comprobacion": "herramientas/guiones/herramientas/validador.guion",
+    "pasa": true
+  },
+  {
+    "id": "validador-una-via",
+    "que": "El validador falla con una forma de una via (CollisionShape2D o CollisionPolygon2D con one_way_collision) escrita en cualquier escena: la unica una via es PlataformaDelgada, que crea su forma al correr; y con una PlataformaDelgada dentro de algo que se mueve (Vaiven.movil_de)",
+    "comprobacion": "herramientas/guiones/herramientas/validador.guion",
+    "pasa": true
+  },
+  {
+    "id": "validador-limites-origen",
+    "que": "El validador falla si una sala con id no empieza sus limites en (0, 0): el mapa pondria la mochila corrida",
+    "comprobacion": "herramientas/guiones/herramientas/validador.guion",
+    "pasa": true
+  },
+  {
+    "id": "validador-mapa-misma-zona",
+    "que": "El validador falla si dos salas de la misma zona se enciman en el indice del mapa (tocarse por un borde no cuenta)",
+    "comprobacion": "herramientas/guiones/herramientas/validador.guion",
+    "pasa": true
+  },
+  {
+    "id": "validador-puerta-abajo",
+    "que": "Las puertas entre salas con id son de ida y vuelta salvo una puerta ABAJO, que es de ida sola: basta que la sala de destino tenga la puerta de llegada",
+    "comprobacion": "herramientas/guiones/herramientas/validador.guion",
+    "pasa": true
+  },
+  {
+    "id": "validador-fondo-tapado",
+    "que": "El validador falla si un FondoTapado acaba su pared en el borde derecho de la sala o despues: nunca se veria (salvo la costura)",
+    "comprobacion": "herramientas/guiones/herramientas/validador.guion",
+    "pasa": true
+  },
+  {
+    "id": "validador-musica",
+    "que": "El validador falla si una RegionMusica no tiene su CollisionShape2D hija con forma, o si el tema de una sala, de una region o el del menu no se repite (Ogg, MP3 o WAV); Musica.SILENCIO se salta y otro tipo de stream falla",
+    "comprobacion": "herramientas/guiones/herramientas/validador.guion",
+    "pasa": true
+  },
+  {
+    "id": "validador-canal-avisos",
+    "que": "El validador imprime avisos (AVISO, no fallan; validar.ps1 da su cuenta): imagen de contenido/ que nada nombra, queue_redraw() sin guarda en _process de nucleo/ o contenido/, nodo oculto, forma apagada o escala no uniforme en contenido/, y halos de LuzSala que con las capas translucidas pasan el maximo de la sala",
+    "comprobacion": "herramientas/guiones/herramientas/validador.guion",
+    "pasa": true
+  },
+  {
+    "id": "validador-enemigos",
+    "que": "El validador falla si un Enemigo no tiene ficha, si su ficha no tiene id o vida mayor que 0, si su comportamiento no hereda de ComportamientoEnemigo o si su id (StringName) se repite en la sala",
+    "comprobacion": "herramientas/guiones/herramientas/validador.guion",
+    "pasa": true
+  },
+  {
+    "id": "validador-guion-por-sala",
+    "que": "El validador avisa (AVISO, no falla todavia) de cada sala de contenido/ sin un guion en herramientas/guiones/ con una linea `escena <ruta de la sala>`; y avisa tambien de un queue_redraw() sin guarda en _physics_process",
+    "comprobacion": "herramientas/guiones/herramientas/validador.guion",
+    "pasa": true
+  },
+  {
+    "id": "arreglar-uids",
+    "que": "herramientas/arreglar-uids.ps1 -Rutas <res://...> pone el uid de cada ext_resource (y el de la cabecera si falta) en escenas y recursos escritos a mano, con con_uids de validar.gd",
+    "comprobacion": "manual: escribir un .tscn de prueba en el scratchpad copiado dentro del repo sin uids, correr el script y ver que validar.ps1 no avisa de uids",
     "pasa": true
   }
 ]

@@ -3,11 +3,18 @@ extends Interactuable
 # Lo perdido al morir (Partida.mochila), en el ultimo punto seguro de su sala: la crea la Sala al entrar si la
 # mochila es suya. Con el jugador encima, interactuar abre un reto con preguntas al azar de la bolsa: es una sola
 # oportunidad. Con la meta devuelve las PejeCoins; sin ella se pierden. En los dos casos desaparece. Sin bolsa basta
-# interactuar. Caja gris hasta que tenga arte: un CanvasItem hijo la deja de dibujar, como el Porton.
+# interactuar. Se dibuja con la mochila abierta aprobada (21-oct-2026), flotando como un objeto que se recoge.
 
+## Area para tocarla; el dibujo es mas chico (ALTO_DIBUJO).
 const ANCHO: float = 80.0
 const ALTO: float = 80.0
-const COLOR: Color = Color(0.55, 0.45, 0.3, 1.0)
+const TEXTURA: Texture2D = preload("res://nucleo/arte/mochila_perdida.png")
+## Alto del dibujo en px: la imagen va al doble (nitida a 2560x1440) y se escala a la mitad, con mipmaps.
+const ALTO_DIBUJO: float = 64.0
+## Vaivén: cuanto flota sobre el suelo, cuanto sube y baja y en cuantos segundos (a ajustar al verlo en el telefono).
+const FLOTA: float = 10.0
+const AMPLITUD: float = 4.0
+const PERIODO: float = 2.0
 const ALTURA_AVISO: float = 184.0
 ## La bolsa del juego; si no existe, sin reto. La sala de prueba Lo Perdido le pone la suya al crearla.
 const BOLSA_JUEGO: String = "res://contenido/preguntas_mochila.tres"
@@ -30,15 +37,27 @@ var recuperada: bool = false
 var perdida: bool = false
 
 var _ficha: FichaDialogo = null
+var _dibujo: Sprite2D = null
+var _tiempo: float = 0.0
 var _azar: RandomNumberGenerator = RandomNumberGenerator.new()
 
 
 func _ready() -> void:
 	super()
 	_crear_forma(ANCHO, ALTO)
+	_dibujo = Sprite2D.new()
+	_dibujo.name = &"Dibujo"
+	_dibujo.texture = TEXTURA
+	_dibujo.scale = Vector2.ONE * ALTO_DIBUJO / TEXTURA.get_height()
+	add_child(_dibujo)
+	_flotar(0.0)
 	_azar.randomize()
-	if ResourceLoader.exists(BOLSA_JUEGO):
-		bolsa = load(BOLSA_JUEGO) as BolsaPreguntas
+	bolsa = Cargar.si_existe(BOLSA_JUEGO) as BolsaPreguntas
+
+
+func _process(delta: float) -> void:
+	if not Congelado.activo():
+		_flotar(delta)
 
 
 func _puede_interactuar() -> bool:
@@ -128,6 +147,8 @@ func _al_elegir(linea: int, opcion: int) -> void:
 func _perder() -> void:
 	perdida = true
 	Partida.perder_mochila()
+	_dibujo.visible = false
+	set_process(false)
 	queue_redraw()
 
 
@@ -135,6 +156,8 @@ func _recuperar() -> void:
 	recuperada = true
 	cerca = false
 	Partida.recuperar_mochila()
+	_dibujo.visible = false
+	set_process(false)
 	queue_redraw()
 	if caja == null:
 		queue_free()
@@ -151,5 +174,10 @@ func _cerrar_caja() -> void:
 func _draw() -> void:
 	if recuperada or perdida:
 		return
-	dibujar_provisional(ANCHO, ALTO, COLOR)
 	dibujar_aviso(ALTURA_AVISO)
+
+
+# Sube y baja con un seno, del dibujo y no del area: el toque no se mueve.
+func _flotar(delta: float) -> void:
+	_tiempo = fmod(_tiempo + delta, PERIODO)
+	_dibujo.position.y = -ALTO_DIBUJO / 2.0 - FLOTA - AMPLITUD * sin(TAU * _tiempo / PERIODO)

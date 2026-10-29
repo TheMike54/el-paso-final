@@ -1,10 +1,15 @@
-[gd_resource type="Resource" script_class="IndiceSalas" format=3]
+[gd_resource type="Resource" script_class="IndiceSalas" format=3 uid="uid://c5ou5p04rkmug"]
 
-[ext_resource type="Script" path="res://mapa/indice_salas.gd" id="1_vteuf"]
+[ext_resource type="Script" uid="uid://dpkn2a4eswrx1" path="res://mapa/indice_salas.gd" id="1_vteuf"]
 
 [resource]
 script = ExtResource("1_vteuf")
 rectangulos = Dictionary[String, Rect2]({
+"celda_1": Rect2(0, 2374, 4482, 720),
+"celda_2": Rect2(4482, 2160, 4320, 934),
+"celda_3": Rect2(8802, 1854, 3040, 1240),
+"celda_4": Rect2(11842, 2374, 2720, 1440),
+"celda_5": Rect2(6832, 1440, 1970, 720),
 "mapa_1": Rect2(7200, 0, 2400, 720),
 "mapa_2": Rect2(9600, -720, 1600, 1440),
 "prueba_1": Rect2(0, 0, 1600, 720),
@@ -13,6 +18,11 @@ rectangulos = Dictionary[String, Rect2]({
 "prueba_4": Rect2(5600, 0, 1600, 720)
 })
 rutas = Dictionary[String, String]({
+"celda_1": "res://contenido/salas/celda/celda_1.tscn",
+"celda_2": "res://contenido/salas/celda/celda_2.tscn",
+"celda_3": "res://contenido/salas/celda/celda_3.tscn",
+"celda_4": "res://contenido/salas/celda/celda_4.tscn",
+"celda_5": "res://contenido/salas/celda/celda_5.tscn",
 "mapa_1": "res://herramientas/salas/zonas/mapa/mapa_1.tscn",
 "mapa_2": "res://herramientas/salas/zonas/mapa/mapa_2.tscn",
 "prueba_1": "res://herramientas/salas/zonas/prueba/prueba_1.tscn",

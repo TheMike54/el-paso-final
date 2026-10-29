@@ -1,1 +1,86 @@
-[]
+[
+  {
+    "id": "sala-celda-1",
+    "que": "La Celda (celda_1) es la primera sala del juego: suelo, foso de varillas y foso de la grieta que quitan una vida y devuelven al ultimo suelo firme, raices que no danan, y un banco que guarda celda_1; los dos fosos se cruzan saltando sin dano; cabe en el presupuesto del validador (13 emisores, ~101 particulas)",
+    "comprobacion": "herramientas/guiones/contenido/celda_salto.guion;herramientas/guiones/contenido/celda_hueco.guion;herramientas/guiones/contenido/celda_grieta.guion;herramientas/guiones/contenido/celda_banco.guion",
+    "pasa": true
+  },
+  {
+    "id": "sala-celda-1-telefono",
+    "que": "En el S50 (Recursos bajo) y el S20 (alto) La Celda se ve como el arte aprobado, los dos saltos se sienten bien y va a 60 FPS en el S50",
+    "comprobacion": "manual: docs/pruebas.md, «La Celda»",
+    "pasa": false
+  },
+  {
+    "id": "cinematica-celda",
+    "que": "La cinematica de La Celda se ve a todo lo ancho sobre negro y al terminar pasa a celda_1; solo con el modo desarrollador se salta; si el telefono no puede reproducirla, pasa directo a la sala",
+    "comprobacion": "herramientas/guiones/contenido/cinematica_celda.guion;herramientas/guiones/nucleo/video.guion",
+    "pasa": true
+  },
+  {
+    "id": "cinematica-celda-telefono",
+    "que": "En el telefono la cinematica se ve completa a 1080, con el audio junto a la imagen y el volumen de Musica",
+    "comprobacion": "manual: docs/pruebas.md, «Video del menu y cinematica»",
+    "pasa": true
+  },
+  {
+    "id": "sala-celda-1-ruta",
+    "que": "La sala 1 de La Celda se recorre de la entrada a la puerta 1<->2 (tipo PUERTA, pide interactuar) saltando los dos fosos sin dano; es una escena heredada de la base de la zona, sin avisos del validador",
+    "comprobacion": "herramientas/guiones/contenido/celda_1_puertas.guion",
+    "pasa": true
+  },
+  {
+    "id": "sala-celda-2-ruta",
+    "que": "La sala 2 de La Celda se cruza por arriba de los cables pelados (escombros, columna rota, lampara de una via, plataforma que va y viene y elevador) hasta el hueco del techo; los cables no se cruzan por el piso y la plataforma no cuenta como punto seguro (se reaparece en la lampara); se baja de la lampara por donde se subio; la puerta 1<->2 (PUERTA, misma pieza a los dos lados) y la puerta SALIDA (LADO, ida y vuelta con la puerta izquierda de celda_3) se cruzan",
+    "comprobacion": "herramientas/guiones/contenido/celda_2_puertas.guion;herramientas/guiones/contenido/celda_2_cables.guion;herramientas/guiones/contenido/celda_2_cables_suelo.guion;herramientas/guiones/contenido/celda_2_cables_salto.guion;herramientas/guiones/contenido/celda_2_lampara_bajar.guion;herramientas/guiones/contenido/celda_2_subir.guion;herramientas/guiones/contenido/celda_2_derecha.guion",
+    "pasa": true
+  },
+  {
+    "id": "sala-celda-5-ruta",
+    "que": "El pasillo de arriba de la sala 2 (celda_5) es una sala aparte: se llega por el hueco del techo (ARRIBA) y se vuelve cayendo por el hueco del piso (ABAJO) sobre el elevador de la sala 2; las aspas golpean con retroceso (no son peligro) y el foso de varillas se salta; sus dos premios se alcanzan: las PejeCoins de la repisa tras el hueco y, saltando el foso y las aspas, el coleccionable junto a la pared izquierda (id coleccionable_pasillo)",
+    "comprobacion": "herramientas/guiones/contenido/celda_5_bajar.guion;herramientas/guiones/contenido/celda_5_aspas.guion;herramientas/guiones/contenido/celda_2_subir.guion;herramientas/guiones/contenido/celda_5_ruta.guion",
+    "pasa": true
+  },
+  {
+    "id": "sala-celda-2-telefono",
+    "que": "En el telefono la sala 2 se ve como el arte aprobado (frente oscuro sin tapar los pies, cables que se leen como peligro), la lampara de una via se cruza por debajo y se sube de un salto, el elevador lleva a la sala 5 y la sala corre a 60 FPS en bajo en el S50",
+    "comprobacion": "manual: docs/pruebas.md, «La Celda, salas 2 a 5»",
+    "pasa": true
+  },
+  {
+    "id": "sala-celda-5-telefono",
+    "que": "En el telefono el pasillo de arriba (celda_5) se ve como el arte aprobado (aspas en su riel, cadenas desde la polea pegada al techo), el coleccionable y las PejeCoins se leen como premio y la sala corre a 60 FPS en bajo en el S50",
+    "comprobacion": "manual: docs/pruebas.md, «La Celda, salas 2 a 5»",
+    "pasa": true
+  },
+  {
+    "id": "sala-celda-3-ruta",
+    "que": "La sala 3 de La Celda se cruza de la puerta de SALIDA (LADO, hacia celda_2) al boquete de raices (LADO, ida y vuelta con la puerta izquierda de celda_4); con la Pluma se sube por la caja, el estante y la lampara baja (una via), el plafon se rompe solo desde abajo y por el ducto se entra al nicho escondido, con el unico coleccionable (id coleccionable_nicho); del nicho se baja por donde se subio",
+    "comprobacion": "herramientas/guiones/contenido/celda_3_puertas.guion;herramientas/guiones/contenido/celda_3_nicho.guion;herramientas/guiones/contenido/celda_3_nicho_bajar.guion",
+    "pasa": true
+  },
+  {
+    "id": "cinematica-eterno-pluma",
+    "que": "Al terminar la primera conversacion con el Eterno se recibe la habilidad pluma, se ve la entrega y la sala pasa a la cinematica de la Pluma, que vuelve a celda_3 junto al Eterno (la etapa queda guardada en la sala)",
+    "comprobacion": "herramientas/guiones/contenido/celda_3_pluma.guion",
+    "pasa": true
+  },
+  {
+    "id": "sala-celda-3-telefono",
+    "que": "En el telefono la sala 3 se ve como el arte aprobado (azulejo hasta el piso, nicho tapado hasta romper el plafon), la cinematica de la Pluma se ve completa y junto al banco de la sala 1 suena el tema del menu",
+    "comprobacion": "manual: docs/pruebas.md, «La Celda, salas 2 a 5»",
+    "pasa": false
+  },
+  {
+    "id": "sala-celda-4-ruta",
+    "que": "La sala 4 de La Celda se entra por el boquete de raices (LADO, ida y vuelta con el boquete derecho de celda_3), se baja por el tiro junto a la raiz movil (solida: aplasta sin dano y saca al jugador a un lado; subido en ella se llega de vuelta al pasillo o a la cornisa de las PejeCoins, y saltar pegado a las paredes del tiro bajo sus aleros no atora) y se sale cayendo por el boquete del piso (ABAJO, hacia Las Raices; mientras no exista, a celda_3 junto a su boquete derecho)",
+    "comprobacion": "herramientas/guiones/contenido/celda_4_puertas.guion;herramientas/guiones/contenido/celda_4_tiro.guion;herramientas/guiones/contenido/celda_4_raiz.guion;herramientas/guiones/contenido/celda_4_subir.guion;herramientas/guiones/contenido/celda_4_cornisa.guion",
+    "pasa": true
+  },
+  {
+    "id": "sala-celda-4-telefono",
+    "que": "En el telefono la sala 4 se ve como el arte aprobado (pared del tiro oscurecida detras de la raiz, raices sobre la junta del pasillo) y corre a 60 FPS en bajo en el S50",
+    "comprobacion": "manual: docs/pruebas.md, «La Celda, salas 2 a 5»",
+    "pasa": false
+  }
+]

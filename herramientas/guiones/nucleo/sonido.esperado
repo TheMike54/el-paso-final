@@ -1,4 +1,5 @@
-# Los casos de herramientas/pruebas/prueba_sonido.gd corrieron y ninguno fallo. Cada caso que falla imprime una linea
-# "FALLO sonido: <caso>".
-valor . casos 11
+# Los casos de herramientas/pruebas/prueba_sonido.gd corrieron y ninguno fallo (20 sin pantalla, como el CI; con
+# pantalla son 22: los de play_stream, el porton que sigue sonando y las voces llenas reemplazan al de sin pantalla).
+# Cada caso que falla imprime una linea "FALLO sonido: <caso>".
+valor . casos 20
 valor . fallos 0

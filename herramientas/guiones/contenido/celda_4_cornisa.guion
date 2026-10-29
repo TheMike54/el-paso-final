@@ -1,0 +1,22 @@
+# La Celda, sala 4, cornisa de las PejeCoins y pared derecha del tiro: cae al tiro, salta a la raiz movil en su espera
+# de abajo, sube con ella y salta a la derecha a la cornisa (y=560), donde recoge las monedas. Vuelve a la izquierda,
+# cae pegado a la pared derecha (cara en x=2275 hasta y=1000, x=2315 por debajo) hasta el piso junto al boquete del
+# piso, y salta pegado a la pared bajo el alero de 40 px: pega con la cabeza y vuelve al piso sin caer por el boquete.
+escena res://contenido/salas/celda/celda_4.tscn
+2 mover_derecha press
+262 mover_derecha release
+530 saltar press
+536 mover_derecha press
+560 saltar release
+562 mover_derecha release
+795 mover_derecha press
+810 saltar press
+840 saltar release
+880 mover_derecha release
+900 mover_izquierda press
+940 mover_izquierda release
+940 mover_derecha press
+1030 saltar press
+1060 saltar release
+1080 mover_derecha release
+fin 1100

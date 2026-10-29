@@ -4,7 +4,8 @@ extends Control
 # a la izquierda, y debajo el icono de guardado. Las PejeCoins van como en Silksong: aparecen al ganar, gastar o
 # descansar con un +N, cuentan hasta el valor nuevo y se desvanecen; el total esta en el inventario. Con una tienda
 # abierta se quedan fijas, como en los dos juegos, y el Hud corre con el arbol detenido solo mientras tanto. Se entera
-# de todo por el bus de eventos y lee Partida una sola vez al entrar a la sala. Todo en gris hasta tener arte.
+# de todo por el bus de eventos y lee Partida una sola vez al entrar a la sala. La moneda y el disquete son FigurasVector;
+# los corazones y la barra, gris (decidido por la persona el 21-oct-2026).
 
 ## Centro del grupo en la distribucion inicial del diseno: fraccion de una pantalla 16:9, anclado
 ## arriba a la izquierda y medido en el lado corto, como los botones tactiles.
@@ -16,8 +17,14 @@ const ALTO_BLOQUE: float = 0.022
 ## Ticks que se ve el icono de guardado: 2 s.
 const TICKS_AVISO: int = 120
 ## Lado del icono de guardado, en fraccion del lado corto. Va bajo las PejeCoins: abajo a la derecha lo tapaba
-## Saltar (prueba en el S50, 12-oct-2026). Provisional: el diseno del icono va despues.
+## Saltar (prueba en el S50, 12-oct-2026). Es el disquete aprobado el 21-oct-2026 (36 px a 1280x720).
 const LADO_ICONO: float = 0.05
+## Respiracion del disquete mientras se ve: un ciclo de 1,2 s, escala minima y maxima y blanco maximo encima.
+const TICKS_RESPIRAR: int = 72
+const ESCALA_RESPIRAR: Vector2 = Vector2(0.94, 1.06)
+const BRILLO_RESPIRAR: float = 0.18
+## Diametro de la PejeCoin en fracciones del tamano de letra del numero (26 px a 1280x720): a 20 px se perdia.
+const DIAMETRO_MONEDA: float = 1.04
 const COLOR_LLENO: Color = Color(0.85, 0.85, 0.9)
 const COLOR_VACIO: Color = Color(0.16, 0.16, 0.19, 0.9)
 ## PejeCoins como el contador de Silksong (CurrencyCounterBase), en ticks: aparecen en 0,1 s, esperan 1 s antes de
@@ -57,7 +64,7 @@ var _ticks_espera_conteo: int = 0
 var _ticks_a_la_vista: int = 0
 # Nodo propio, como el icono: contar o desvanecer no redibuja corazones ni barra.
 var _monedas: Node2D = null
-# El icono es un nodo propio: girarlo cambia su rotation y no redibuja corazones, barra ni texto.
+# El icono es un nodo propio: redibujarlo para que "respire" no redibuja corazones, barra ni texto.
 var _icono: Node2D = null
 
 
@@ -144,7 +151,7 @@ func _al_guardar() -> void:
 	_ticks_aviso = TICKS_AVISO
 	aviso_visible = true
 	_icono.visible = true
-	_icono.rotation = float(_ticks_aviso) * 0.1
+	_icono.queue_redraw()
 
 
 func _physics_process(_delta: float) -> void:
@@ -155,7 +162,7 @@ func _physics_process(_delta: float) -> void:
 	if _ticks_aviso == 0:
 		aviso_visible = false
 		_icono.visible = false
-	_icono.rotation = float(_ticks_aviso) * 0.1
+	_icono.queue_redraw()
 
 
 # Espera, cuenta hacia monedas (un paso por tick, unos PASOS_CONTEO en total), sigue a la vista y se desvanece; con
@@ -163,6 +170,8 @@ func _physics_process(_delta: float) -> void:
 func _avanzar_monedas() -> void:
 	if not _monedas_activas and _alfa_monedas == 0.0:
 		return
+	var numero_antes: int = monedas_mostradas
+	var alfa_antes: float = _alfa_monedas
 	if _ticks_espera_conteo > 0:
 		_ticks_espera_conteo -= 1
 	elif monedas_mostradas != monedas:
@@ -182,7 +191,9 @@ func _avanzar_monedas() -> void:
 		_alfa_monedas = maxf(0.0, _alfa_monedas - 1.0 / TICKS_DESVANECER)
 	monedas_visibles = _alfa_monedas > 0.0
 	_monedas.visible = monedas_visibles
-	_monedas.queue_redraw()
+	# Solo si cambio el numero o el alfa: quietas a la vista (o fijas en la tienda) no se redibujan.
+	if monedas_mostradas != numero_antes or _alfa_monedas != alfa_antes:
+		_monedas.queue_redraw()
 
 
 func _draw() -> void:
@@ -228,7 +239,7 @@ func _base_monedas(corto: float) -> float:
 	return y_barra + ALTO_BLOQUE * corto + maxi(14, roundi(0.035 * corto)) * 1.4
 
 
-# Icono provisional de guardado bajo las PejeCoins, alineado a la izquierda del grupo.
+# Icono de guardado bajo las PejeCoins, alineado a la izquierda del grupo.
 func _colocar_icono() -> void:
 	var corto: float = minf(size.x, size.y)
 	var r: float = LADO_ICONO * corto / 2.0
@@ -236,16 +247,17 @@ func _colocar_icono() -> void:
 	_icono.queue_redraw()
 
 
-# PejeCoins bajo la barra: un circulo gris del alto de la letra (el icono, hasta tener arte), el numero y el +N.
+# PejeCoins bajo la barra: la moneda (FigurasVector) casi del alto del numero, el numero y el +N.
 func _dibujar_monedas() -> void:
 	var corto: float = minf(size.x, size.y)
 	var tamano_letra: int = maxi(14, roundi(0.035 * corto))
 	var fuente: Font = ThemeDB.fallback_font
 	var color: Color = Color(COLOR_LLENO, _alfa_monedas)
 	var base: float = _base_monedas(corto)
-	var r: float = tamano_letra * 0.4
+	var r: float = tamano_letra * DIAMETRO_MONEDA / 2.0
 	var x: float = _izquierda(corto)
-	_monedas.draw_circle(Vector2(x + r, base - tamano_letra * 0.35), r, color)
+	FigurasVector.dibujar_moneda(_monedas, Vector2(x + r, base - tamano_letra * 0.35), 2.0 * r, fuente,
+			Color(1.0, 1.0, 1.0, _alfa_monedas))
 	x += 2.0 * r + SEPARACION * corto
 	var numero: String = str(monedas_mostradas)
 	_monedas.draw_string(fuente, Vector2(x, base), numero, HORIZONTAL_ALIGNMENT_LEFT, -1, tamano_letra, color)
@@ -256,13 +268,12 @@ func _dibujar_monedas() -> void:
 				HORIZONTAL_ALIGNMENT_LEFT, -1, tamano_letra, color)
 
 
-# Un rombo centrado en el nodo: girarlo es cambiar su rotation.
+# El disquete centrado en el nodo, respirando: crece de 0,94 a 1,06 y se aclara con un blanco de hasta 0,18, con una
+# curva suave de TICKS_RESPIRAR ticks.
 func _dibujar_icono() -> void:
-	var r: float = LADO_ICONO * minf(size.x, size.y) / 2.0
-	var puntos: PackedVector2Array = []
-	for i: int in range(4):
-		puntos.append(Vector2(r, 0.0).rotated(i * PI / 2.0))
-	_icono.draw_colored_polygon(puntos, COLOR_LLENO)
+	var fase: float = 0.5 - 0.5 * cos(TAU * float(TICKS_AVISO - _ticks_aviso) / TICKS_RESPIRAR)
+	var lado: float = LADO_ICONO * minf(size.x, size.y) * lerpf(ESCALA_RESPIRAR.x, ESCALA_RESPIRAR.y, fase)
+	FigurasVector.dibujar(_icono, FigurasVector.DISQUETE, Vector2.ZERO, lado, Color.WHITE, BRILLO_RESPIRAR * fase)
 
 
 # Corazon gris: dos circulos y un triangulo. Vacio, oscuro.

@@ -1,0 +1,5 @@
+# La escena de prueba de la musica corre sus casos al entrar: Musica en Arranque, el pedido aplicado en el tick
+# siguiente (gana el ultimo), sin reiniciar el tema que ya suena, SILENCIO, el panel de audio y la sala Musica, donde
+# reaparecer en el banco dentro de su region no reinicia el tema. Deja la cuenta en sus propiedades.
+escena res://herramientas/pruebas/sala_musica_cuentas.tscn
+fin 240

@@ -28,6 +28,11 @@ La rama o el rango a revisar y contra qué: el plan (`planes/activos/<bloque>-<t
 - El cambio rompe el contrato (`docs/contrato.md`) o lo altera sin actualizarlo.
 - Una regla del `CLAUDE.md` raíz o del bloque queda incumplida: lógica fuera de `_physics_process`, tecla o toque
   leídos directamente, `preload` de `herramientas/`, declaración sin tipo, un `.ps1` con caracteres fuera de ASCII.
+- Arte del mundo dibujado con `_draw` o `FigurasVector` cuando se repite, un `queue_redraw()` cada cuadro sin guarda,
+  o un material creado por nodo en vez de `sin_luz.tres` o `aditivo.tres` (si el diff trae arte, `_draw`,
+  partículas o materiales, leer `.claude/skills/rendimiento-gama-baja/SKILL.md`).
+- Un `ext_resource` sin `uid` en `contenido/`, `nucleo/`, `mapa/` o `interfaz/` (lo revisa `validar.ps1`), o una
+  pieza nueva que detecta o es detectada sin su caso en `herramientas/pruebas/prueba_capas_fisica.gd`.
 - Un documento afirma algo que el código no cumple.
 
 ## Respuesta

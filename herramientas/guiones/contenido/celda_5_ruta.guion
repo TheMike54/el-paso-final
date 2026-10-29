@@ -1,0 +1,19 @@
+# La Celda, ruta del pasillo de arriba (celda_5) hasta sus dos premios: desde la Entrada (x=1350), junto al hueco del
+# elevador, salta el hueco a la repisa de la derecha y toma las PejeCoins; vuelve saltando el hueco, espera a que las
+# aspas vayan a la izquierda, salta el foso de varillas y, con las aspas ya volviendo a la derecha, las salta y cae
+# junto a la pared izquierda sobre el coleccionable. El salto de las aspas pasa con unos 30 px de margen a cada lado.
+escena res://contenido/salas/celda/celda_5.tscn
+2 mover_derecha press
+14 saltar press
+40 saltar release
+70 mover_derecha release
+80 mover_izquierda press
+82 saltar press
+108 saltar release
+138 mover_izquierda release
+205 mover_izquierda press
+286 saltar press
+312 saltar release
+366 saltar press
+392 saltar release
+fin 460

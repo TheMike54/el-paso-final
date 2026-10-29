@@ -18,6 +18,12 @@ func _ready() -> void:
 	var corto: float = minf(c.size.x, c.size.y)
 	var radio_joystick: float = ControlesTactiles.RADIO_JOYSTICK * corto
 
+	# Los arreglos paralelos de los botones van por indice: uno de menos y el boton nuevo se indexa fuera de rango.
+	var n: int = ControlesTactiles.ACCIONES.size()
+	_caso("un dato por boton: etiquetas, centros, anclas y radios tan largos como las acciones",
+			ControlesTactiles.ETIQUETAS.size() == n and ControlesTactiles.CENTROS.size() == n
+			and ControlesTactiles.ANCLAS.size() == n and ControlesTactiles.RADIOS.size() == n)
+
 	_tocar(c, 0, c.centro(&"saltar"), true)
 	_caso("tocar Saltar presiona saltar", Input.is_action_pressed(&"saltar"))
 	_caso("tocar Saltar no presiona otra accion", not Input.is_action_pressed(&"atacar"))

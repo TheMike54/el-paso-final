@@ -45,7 +45,7 @@ func _ready() -> void:
 	_botones.grow_horizontal = Control.GROW_DIRECTION_BEGIN
 	_botones.grow_vertical = Control.GROW_DIRECTION_BEGIN
 	_botones.position = Vector2(-24.0, -24.0)
-	_botones.add_theme_constant_override(&"separation", 16)
+	_botones.add_theme_constant_override(&"separation", int(Tema.SEPARACION))
 	fondo.add_child(_botones)
 	# Raya corta (U+2013) y no el signo menos (U+2212): Cabin Sketch no tiene el menos y salia en otra fuente.
 	_menos = _boton("–", alejar)

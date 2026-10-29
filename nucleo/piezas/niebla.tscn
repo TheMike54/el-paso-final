@@ -1,0 +1,26 @@
+[gd_scene format=3 uid="uid://cuu5yv83nmowx"]
+
+[ext_resource type="Script" uid="uid://dd435oaujer63" path="res://nucleo/niebla.gd" id="1_niebla"]
+[ext_resource type="Shader" uid="uid://dmvt2364b57lf" path="res://nucleo/arte/niebla_banda.gdshader" id="2_banda"]
+[ext_resource type="Texture2D" uid="uid://dxpsik20kynnc" path="res://nucleo/arte/niebla_ruido.png" id="3_ruido"]
+
+[sub_resource type="ShaderMaterial" id="material_banda"]
+shader = ExtResource("2_banda")
+
+[node name="Niebla" type="Parallax2D"]
+modulate = Color(0.42058825, 0.45588237, 0.4911765, 0.22)
+z_index = 15
+scroll_scale = Vector2(1.1, 1)
+repeat_size = Vector2(1776, 0)
+repeat_times = 2
+
+[node name="Deriva" type="Node2D" parent="."]
+script = ExtResource("1_niebla")
+velocidad = 14.0
+recorrido = 1776.0
+
+[node name="Banda" type="Sprite2D" parent="Deriva"]
+material = SubResource("material_banda")
+scale = Vector2(3, 2)
+texture = ExtResource("3_ruido")
+centered = false

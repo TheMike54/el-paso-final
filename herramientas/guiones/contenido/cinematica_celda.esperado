@@ -1,0 +1,4 @@
+en 10 escena res://contenido/cinematicas/cinematica_celda.tscn
+escena res://contenido/salas/celda/celda_1.tscn
+valor . id celda_1
+valor /root/Partida vidas 4

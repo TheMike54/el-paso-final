@@ -1,0 +1,4 @@
+# Casos de herramientas/pruebas/prueba_monedas_sueltas.gd: las PejeCoins sueltas se toman una vez y no vuelven al
+# recargar la sala ni al cargar la partida; un jugador muerto no toma recogibles; un mapa tomado no vuelve.
+escena res://herramientas/pruebas/sala_monedas_sueltas.tscn
+fin 2

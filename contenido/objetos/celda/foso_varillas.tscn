@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://bnu7yribrlryu"]
+
+[ext_resource type="PackedScene" uid="uid://cmgjowpy37sen" path="res://nucleo/piezas/foso.tscn" id="1_foso"]
+[ext_resource type="Texture2D" uid="uid://cy3dvcghybm6h" path="res://contenido/salas/celda/arte/hueco_varillas.png" id="2_hueco"]
+
+[node name="FosoVarillas" instance=ExtResource("1_foso")]
+
+[node name="Dibujo" parent="." index="0"]
+position = Vector2(-422, -46.6)
+texture = ExtResource("2_hueco")

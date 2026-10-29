@@ -4,7 +4,8 @@
     "deny": [
       "Bash(git commit *)", "Bash(git push *)",
       "PowerShell(git commit *)", "PowerShell(git push *)",
-      "Read(**/*.keystore)", "Read(**/*.jks)", "Read(**/.env*)"
+      "Read(**/*.keystore)", "Read(**/*.jks)", "Read(**/.env*)", "Read(**/*.pem)", "Read(**/*.key)",
+      "mcp__godot__create_scene", "mcp__godot__add_node", "mcp__godot__save_scene", "mcp__godot__load_sprite"
     ]
   },
   "hooks": {

@@ -17,8 +17,8 @@ const LARGO: float = 70.0
 
 ## Id unico dentro de la sala; lo exige el validador en las salas con id.
 @export var id: String = ""
-## Portones que abre (rutas a nodos Porton de la misma sala).
-@export var portones: Array[NodePath] = []
+## Portones que abre, de la misma sala (nodos exportados, resueltos por el editor).
+@export var portones: Array[Porton] = []
 ## Ticks entre el golpe y la apertura (Hollow Knight: 0,75 s).
 @export var ticks_retraso: int = 45
 ## Congelado al activarla y temblor de camara: ticks y px.
@@ -64,9 +64,8 @@ func _physics_process(_delta: float) -> void:
 		return
 	_ticks_para_abrir = -1
 	abrio = true
-	for ruta: NodePath in portones:
-		var porton: Porton = get_node_or_null(ruta) as Porton
-		if porton != null:
+	for porton: Porton in portones:
+		if is_instance_valid(porton):
 			porton.abrir()
 
 

@@ -127,6 +127,7 @@ func _disparos() -> void:
 	_poner_jugador(Vector2(1450.0, 1040.0))
 	await _presionar(&"mover_derecha")
 	await _esperar(10)
+	var desviados: int = _jugador.desviados
 	var paradas: int = _jugador.paradas
 	var vidas: int = _jugador.vidas
 	var parable: ProyectilEnemigo = ProyectilEnemigo.crear_arco(Vector2.ZERO, 100.0, 1, true)
@@ -134,7 +135,7 @@ func _disparos() -> void:
 	_sala.add_child(parable)
 	await _presionar(&"atacar")
 	await _esperar(30)
-	_caso("el ataque para el arco: desaparece sin quitar vida", _jugador.paradas == paradas + 1 and not is_instance_valid(parable) and _jugador.vidas == vidas)
+	_caso("el ataque desvia el arco: desaparece sin quitar vida ni contar como parry", _jugador.desviados == desviados + 1 and _jugador.paradas == paradas and not is_instance_valid(parable) and _jugador.vidas == vidas)
 	# Sin gravedad sigue recto, como los disparos de antes.
 	var recto: ProyectilEnemigo = ProyectilEnemigo.crear_disparo(Vector2.LEFT, 1, true)
 	recto.position = Vector2(2500.0, 400.0)

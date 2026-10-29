@@ -2,7 +2,7 @@ class_name PaginaInventario
 extends PaginaMarco
 # Pagina Inventario del marco de menus: lo que el jugador lleva, solo para leer. Muestra lo que ya existe en
 # Partida (vida, Inspiracion, PejeCoins, arma, habilidades, mapas y lo perdido al morir); no hay objetos todavia,
-# porque un inventario de objetos subiria el guardado a la version 4. La crea cada sala, como Amuletos.
+# porque guardar uno seria un campo nuevo en Guardado.NUEVOS. La crea cada sala, como Amuletos.
 
 ## El arma es la habilidad pluma: sin ella no se ataca.
 const ARMA: StringName = Habilidades.PLUMA

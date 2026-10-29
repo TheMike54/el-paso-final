@@ -1,6 +1,7 @@
 extends "res://herramientas/pruebas/prueba_base.gd"
 # Prueba de MuroRompible, Palanca y Porton en la sala de secretos: golpes que aguanta, lado, ataque real sin
-# Inspiracion, bola, pogo, tapas, lo guardado al volver a crear la sala, el retraso de la palanca y cerrar el porton.
+# Inspiracion, bola, pogo, tapas, lo que descubre, las monedas encerradas tras el muro, lo guardado al volver a crear
+# la sala, el retraso de la palanca y cerrar el porton.
 # Instancia la sala como hija y la vuelve a crear para ver lo guardado; su guion lee "valor . casos" y
 # "valor . fallos".
 const SALA: String = "res://herramientas/salas/sala_secretos.tscn"
@@ -23,15 +24,36 @@ func _ready() -> void:
 	# Muro A: aguanta 4 golpes, se marca y descubre el cuarto.
 	var muro: MuroRompible = sala.get_node(^"MuroA") as MuroRompible
 	var tapa: CanvasItem = sala.get_node(^"Tapa") as CanvasItem
+	var orilla: CanvasItem = sala.get_node(^"Orilla") as CanvasItem
+	var monedas: MonedasSueltas = sala.get_node(^"MonedasCuarto") as MonedasSueltas
+	_caso("las rutas de tapas y descubre llegan como nodos", muro.tapas == ([tapa] as Array[CanvasItem])
+			and muro.descubre == ([orilla] as Array[CanvasItem]))
+	_caso("entero, lo que descubre esta oculto y la tapa a la vista", not orilla.visible and tapa.visible)
+	# Lo escondido esta encerrado por el solido: caminando contra el muro no se toman las monedas de detras.
+	var monedas_antes: int = Partida.monedas
 	jugador.global_position = Vector2(780.0, 1160.0)
+	jugador.velocity = Vector2.ZERO
+	Input.action_press(&"mover_derecha")
+	await _esperar(40)
+	Input.action_release(&"mover_derecha")
+	_caso("entero, el muro encierra las monedas: caminando no se toman", is_instance_valid(monedas)
+			and Partida.monedas == monedas_antes and jugador.global_position.x < 870.0)
+	jugador.global_position = Vector2(780.0, 1160.0)
+	jugador.velocity = Vector2.ZERO
 	for i: int in range(3):
 		muro.golpeable.recibir_golpe(jugador, 1)
 	_caso("con 3 golpes el muro sigue: le queda 1", not muro.roto and muro.quedan == 1)
 	_caso("golpear el muro avisa objeto_golpeado y no enemigo_golpeado", _objetos_golpeados == 3 and _enemigos_golpeados == 0)
 	muro.golpeable.recibir_golpe(jugador, 1)
 	_caso("el cuarto golpe lo rompe, lo marca y avisa muro_roto", muro.roto and Partida.estado_de(clave, "muro_a") != null and _muros_rotos == 1)
+	_caso("al romperse, lo que descubre aparece", orilla.visible)
 	await _esperar(muro.ticks_desvanecer + 4)
 	_caso("la tapa se desvanece y el muro se va", not tapa.visible and not is_instance_valid(muro))
+	Input.action_press(&"mover_derecha")
+	await _esperar(70)
+	Input.action_release(&"mover_derecha")
+	_caso("roto, se entra caminando y se toman las monedas", not is_instance_valid(monedas)
+			and Partida.monedas == monedas_antes + 10)
 
 	# Muro que solo cuenta desde la derecha, con el ataque de verdad.
 	var derecha: MuroRompible = sala.get_node(^"MuroDerecha") as MuroRompible
@@ -109,6 +131,8 @@ func _ready() -> void:
 	sala = await _crear_sala()
 	_caso("al volver, el muro A ya no esta", sala.get_node_or_null(^"MuroA") == null)
 	_caso("al volver, la tapa del muro roto no se ve", not (sala.get_node(^"Tapa") as CanvasItem).visible)
+	_caso("al volver, lo que descubre el muro roto se ve", (sala.get_node(^"Orilla") as CanvasItem).visible)
+	_caso("al volver, las monedas tomadas no estan", sala.get_node_or_null(^"MonedasCuarto") == null)
 	var palanca_2: Palanca = sala.get_node(^"Palanca") as Palanca
 	var porton_2: Porton = sala.get_node(^"Porton") as Porton
 	_caso("al volver, la palanca sigue activada y el porton abierto", palanca_2.esta_activada and porton_2.esta_abierto and is_equal_approx(porton_2.position.y, cerrado_en.y - 300.0))

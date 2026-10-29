@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://ci825qm15peek"]
+
+[ext_resource type="Script" uid="uid://bbltbyogb62xi" path="res://herramientas/pruebas/medicion.gd" id="1_medicion"]
+
+[node name="Medicion" type="Node"]
+script = ExtResource("1_medicion")

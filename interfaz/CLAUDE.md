@@ -12,7 +12,7 @@ Leer `funciones.json` de esta carpeta.
   renombra, se cambia `Sala.INTERFAZ` en el mismo cambio.
 - Posiciones como en el diseño: centro en fracción de una pantalla 16:9, anclado a su esquina y medido en el lado
   corto, como los botones táctiles. Nada fuera de la pantalla en todo el rango de la vista, de 4:3 a 22:9.
-- Todo en gris hasta tener arte.
+- Corazones y barra en gris hasta tener su arte; la PejeCoin y el disquete se dibujan con `FigurasVector`.
 
 ## Cómo se comprueba
 - `.\herramientas\validar.ps1` y los guiones de `herramientas/guiones/interfaz/`, que leen lo que muestra el `Hud`

@@ -1,0 +1,7 @@
+# La Celda, sala 4, bajada por el tiro: desde la Entrada (x=260) camina a la derecha por el pasillo de arriba, cae al
+# tiro rozando la raiz que sube, aterriza en el piso de abajo y sigue hasta el boquete del piso, que es la puerta
+# ABAJO (hacia Las Raices; mientras no exista, a celda_3 junto a su boquete derecho).
+escena res://contenido/salas/celda/celda_4.tscn
+2 mover_derecha press
+330 mover_derecha release
+fin 420

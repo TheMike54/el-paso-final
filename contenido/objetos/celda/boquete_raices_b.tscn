@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://btvhjk85n5grs"]
+
+[ext_resource type="PackedScene" uid="uid://c4pxsj3lfcufn" path="res://contenido/objetos/celda/boquete_raices.tscn" id="1_boquete"]
+[ext_resource type="Texture2D" uid="uid://b8gw06yyg61s7" path="res://contenido/salas/celda/arte/boquete_raices_c.png" id="2_boquete"]
+
+[node name="BoqueteRaicesB" instance=ExtResource("1_boquete")]
+
+[node name="Boquete" parent="." index="1"]
+position = Vector2(-223, -276)
+texture = ExtResource("2_boquete")

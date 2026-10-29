@@ -1,0 +1,3 @@
+# Casos de herramientas/pruebas/prueba_video.gd: salidas de ReproductorVideo sin telefono (respaldo, error, detener).
+escena res://herramientas/pruebas/sala_video.tscn
+fin 240

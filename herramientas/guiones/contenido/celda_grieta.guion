@@ -1,0 +1,8 @@
+# La Celda: el jugador salta las varillas y sigue sin saltar hasta caer a la grieta (de x=3685 a 3875). Las raíces
+# son arte; el fondo de la grieta es un peligro: pierde una vida y vuelve al suelo firme antes de la orilla.
+escena res://contenido/salas/celda/celda_1.tscn
+2 mover_derecha press
+208 saltar press
+240 saltar release
+600 mover_derecha release
+fin 690

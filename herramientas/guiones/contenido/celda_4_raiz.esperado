@@ -1,0 +1,10 @@
+# Quieto bajo la raiz antes de que baje (x=1864, piso en y=1280); al final la raiz esta abajo (cara en y=1180) y el
+# jugador quedo junto a su orilla izquierda (x=1810), de pie en el piso y sin dano.
+en 400 x 1864 3
+en 400 y 1280 2
+valor Terreno/RaizMovil position:y 1180 1
+x 1810 3
+y 1280 2
+en_suelo true
+valor Jugador transicion 0
+senal /root/Eventos jugador_danado 0

@@ -1,0 +1,5 @@
+# Casos de herramientas/pruebas/prueba_plataformas.gd: ritmo de Vaiven y Giro en ticks, la plataforma que lleva al
+# jugador (y el cuerpo hijo de un Vaiven que no lo lleva), el punto seguro sobre lo que se mueve y sobre un suelo
+# fragil roto, el elevador que baja sobre el jugador, la plataforma delgada y platform_on_leave. Tarda unos 3610 ticks.
+escena res://herramientas/pruebas/sala_plataformas_cuentas.tscn
+fin 3800

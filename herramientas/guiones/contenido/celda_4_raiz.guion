@@ -1,0 +1,7 @@
+# La Celda, sala 4, aplastamiento bajo la raiz movil (AnimatableBody2D con Vaiven, solida): cae al piso de abajo del
+# tiro y se queda quieto bajo la orilla izquierda de la raiz, que baja hasta 100 px sobre el piso (el jugador mide
+# 160). La raiz lo empuja contra el piso, que mide 200 px de grueso, y lo saca a un lado, sin dano.
+escena res://contenido/salas/celda/celda_4.tscn
+2 mover_derecha press
+284 mover_derecha release
+fin 560

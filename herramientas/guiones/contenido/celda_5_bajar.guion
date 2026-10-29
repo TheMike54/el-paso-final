@@ -1,0 +1,7 @@
+# La Celda, pasillo de arriba (celda_5): desde la Entrada (x=1350) camina a la derecha y cae por el hueco del elevador
+# (puerta ABAJO), que funde a negro y lleva a la sala 2; ahi aparece sobre el elevador, arriba, sin volver a cruzar la
+# puerta del hueco del techo, y baja con el hasta su pausa de abajo.
+escena res://contenido/salas/celda/celda_5.tscn
+2 mover_derecha press
+40 mover_derecha release
+fin 345

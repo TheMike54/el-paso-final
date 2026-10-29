@@ -1,0 +1,4 @@
+# Los casos de herramientas/pruebas/prueba_npc.gd corrieron y ninguno fallo. Cada caso que falla imprime una linea
+# "FALLO npc: <caso>".
+valor . casos 10
+valor . fallos 0

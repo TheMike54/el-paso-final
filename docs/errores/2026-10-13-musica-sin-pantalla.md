@@ -8,5 +8,8 @@
 - **Arreglo:** `nucleo/configuracion.gd`, `_mostrar`: la música solo se toca si `DisplayServer.get_name()` no es
   `headless`. Sin pantalla nadie la oye; con pantalla (ventana y teléfono) suena igual que antes. Tras el arreglo,
   0 de 10 corridas.
-- **Lo cubre:** `herramientas/guiones/nucleo/menu_configuracion.guion` (la revisión de todos los guiones falla con
-  cualquier línea `ERROR`).
+- **Lo cubre:** `herramientas/guiones/nucleo/menu_configuracion.guion` y `herramientas/guiones/nucleo/musica.guion`
+  (la revisión de todos los guiones falla con cualquier línea `ERROR`). Desde el 27-oct-2026 el panel ya no tiene
+  reproductor ni `musica_prueba.ogg`: le pide el tema a `Musica` (`nucleo/musica.gd`), que es la única que reproduce
+  música, y la guarda vive ahí (`Musica.mudo`, con `Ajustes.sin_ventana()`): sin pantalla cuenta los pedidos pero no
+  llama a `play()`.

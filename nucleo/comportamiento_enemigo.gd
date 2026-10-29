@@ -27,7 +27,7 @@ func actuar() -> void:
 
 ## El jugador de la sala, o null.
 func jugador() -> Jugador:
-	return get_tree().get_first_node_in_group(Jugador.GRUPO) as Jugador
+	return Jugador.actual(get_tree())
 
 
 ## Suma la gravedad de la ficha a la velocidad, con su tope. Sin gravedad (vuela), no hace nada.
@@ -67,7 +67,7 @@ func ve_al_jugador(radio: float) -> bool:
 	if objetivo == null or objetivo.muerto:
 		return false
 	var desde: Vector2 = centro()
-	var hasta: Vector2 = objetivo.global_position + Vector2(0.0, -80.0)
+	var hasta: Vector2 = objetivo.centro()
 	return desde.distance_to(hasta) <= radio and not _choca(desde, hasta)
 
 

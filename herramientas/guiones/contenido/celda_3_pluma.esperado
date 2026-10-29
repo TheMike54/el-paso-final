@@ -1,0 +1,17 @@
+# Llega junto al Eterno; la conversacion termina contando (etapa 1) y da la pluma; durante la entrega sigue en la
+# sala, despues pasa por la cinematica (sin ventana el video dura medio segundo) y vuelve a celda_3, a la Entrada
+# (x=1340), en el piso. La etapa queda en el estado de la sala: al volver no se repite la entrega. Sin dano.
+# No se cuenta cambio_de_sala: la ida y vuelta pasa por Fundido a una Cinematica, no por una Puerta (como
+# cinematica_celda).
+en 30 x 1502 2
+en 70 valor Eterno etapa 1
+en 70 valor /root/Partida habilidades [&"pluma"]
+en 130 escena res://contenido/salas/celda/celda_3.tscn
+en 185 escena res://contenido/cinematicas/cinematica_eterno_pluma.tscn
+escena res://contenido/salas/celda/celda_3.tscn
+x 1340 2
+en_suelo true
+valor Eterno etapa 1
+valor /root/Partida habilidades [&"pluma"]
+valor Jugador transicion 0
+senal /root/Eventos jugador_danado 0

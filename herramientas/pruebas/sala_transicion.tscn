@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://cm2ywtq11cxh4"]
+
+[ext_resource type="Script" uid="uid://b3oca4lmq4bxh" path="res://herramientas/pruebas/prueba_transicion.gd" id="1_prueba"]
+
+[node name="SalaTransicion" type="Node"]
+script = ExtResource("1_prueba")

@@ -4,29 +4,48 @@ extends CharacterBody2D
 # con toda su logica en _physics_process y las reglas de docs/jugador.md. Las habilidades solo
 # funcionan si Partida las tiene. Cada valor se exporta para afinarlo en la zona de pruebas.
 # Avisa al resto del juego por el bus Eventos.
-## Grupo de lo que controla la persona: el Jugador y tambien la caja gris (nucleo/caja_gris.tscn), que no es un
-## Jugador. Lo pone cada escena en groups; quien lo busca usa get_first_node_in_group(GRUPO).
+## Cruce de una puerta, como el HeroTransitionState de Hollow Knight: un solo estado en lugar de un contador por caso.
+## Mientras no es NINGUNA el jugador no responde a los controles, no interactua y nada lo dana, ni los peligros
+## (HeroController.LeaveScene pone NO_DAMAGE). SALE_*: deja la sala (la puerta ya pidio el cambio al Fundido);
+## LLEGA_*: entra a la sala nueva. ARRIBA y ABAJO no tienen llegada propia: se entra con el control.
+enum Transicion { NINGUNA, SALE_CAMINANDO, SALE_POR_PUERTA, SALE_VERTICAL, LLEGA_CAMINANDO, LLEGA_POR_PUERTA }
+
+## Grupo del cuerpo que controla la persona. Lo pone cada escena en groups; quien lo busca usa
+## get_first_node_in_group(GRUPO).
 const GRUPO: StringName = &"jugador"
 const TAMANO: Vector2 = Vector2(80.0, 160.0)
 ## Cuerpo: el nodo Dibujo (AnimatedSprite2D) con nucleo/arte/jugador_hombre/jugador_hombre.tres; la animacion la
-## elige AnimacionJugador. Curando se tine; invulnerable parpadea (alfa PARPADEO cada TICKS_PARPADEO ticks, como el
-## InvulnerablePulse de Hollow Knight); congelado y unos ticks tras un parry se pone blanco con el shader
+## elige AnimacionJugador. Invulnerable parpadea (alfa PARPADEO cada TICKS_PARPADEO ticks, como el
+## InvulnerablePulse de Hollow Knight); unos ticks tras un parry se pone blanco con el shader
 ## nucleo/arte/destello.gdshader (Compatibility satura el color en 1: un modulate mayor no aclara).
-const TINTE_CURANDO: Color = Color(0.8, 1.0, 0.85)
 const PARPADEO: float = 0.35
 const TICKS_PARPADEO: int = 4
-## Efectos provisionales dibujados en _draw, encima del cuerpo, hasta tener los suyos (12-oct-2026): el rectangulo
-## del ataque, la estocada (una linea blanca larga al frente) y el estallido de rayos del parry en el punto del
-## choque (como Hollow Knight y Silksong).
-const COLOR_ATAQUE: Color = Color(1.0, 0.9, 0.5, 0.5)
-const COLOR_DESTELLO: Color = Color(1.0, 1.0, 1.0)
-const TICKS_DESTELLO_PARRY: int = 8
-const RAYOS_ESTALLIDO: int = 8
-const LARGO_RAYO: float = 110.0
-const HUECO_RAYO: float = 24.0
-const ANCHO_RAYO: float = 8.0
-const LARGO_ESTOCADA: float = 140.0
-const ANCHO_ESTOCADA: float = 6.0
+## El golpe se ve solo con su trazo blanco (TrazoAtaque; el area, con «Ver hitbox»: decidido por la persona el
+## 25-oct-2026). El parry deja un destello de luz (EfectoCuadros con nucleo/arte/efecto_parry.png, 0,2 s, que corre
+## durante el congelado) en la punta de la espada, como Hollow Knight y Silksong; el cuerpo queda en blanco
+## TICKS_DESTELLO_PARRY ticks (0,1 s, contados tambien congelado).
+const HOJA_PARRY: Texture2D = preload("res://nucleo/arte/efecto_parry.png")
+const CUADROS_PARRY: int = 4
+const TICKS_DESTELLO_PARRY: int = 6
+## Punta de la espada en el cuadro que golpea de lado, respecto de los pies y mirando a la derecha (medida en el atlas
+## del jugador). Arriba y abajo la espada del dibujo no llega al punto del golpe: ahi el destello va entre el area de
+## golpe y el ataque parado.
+const PUNTA_ESPADA_LADO: Vector2 = Vector2(122.0, -117.0)
+## Cuadro de los clips de ataque en que la espada golpea (el de PUNTA_ESPADA_LADO).
+const CUADRO_GOLPE: int = 1
+## Chispa de un disparo desviado: el mismo destello a la mitad, sin congelado ni cuerpo en blanco (como los disparos
+## de Silksong, que chocan con el aguijon en su version ligera, noClashFreeze).
+const ESCALA_CHISPA: float = 0.5
+## Curar: el aura en capas detras del jugador y sus rayas y chispas delante (nucleo/arte/efecto_curar*.png, 320x420,
+## los pies del cuadro 185 px bajo su centro), mas una luz falsa: un halo aditivo sin Light2D que crece con lo curado
+## (la fuerza del aura del HTML de diseno: 0,35 + t / 0,6) y titila.
+const HOJA_CURAR: Texture2D = preload("res://nucleo/arte/efecto_curar.png")
+const HOJA_CURAR_FRENTE: Texture2D = preload("res://nucleo/arte/efecto_curar_frente.png")
+const CUADROS_CURAR: int = 6
+const AURA_SOBRE_PIES: Vector2 = Vector2(0.0, -185.0)
+const LUZ_CURAR_SOBRE_PIES: Vector2 = Vector2(0.0, -110.0)
+const LUZ_CURAR_LADO: float = 660.0
+const LUZ_CURAR_TINTE: Color = Color(0.75, 0.85, 1.0, 0.0)
 ## Ticks de una vuelta completa de la voltereta (el sprite gira; ver AnimacionJugador.giro_voltereta).
 const TICKS_VUELTA: int = 24
 const NUNCA: int = 1000000
@@ -34,6 +53,16 @@ const NUNCA: int = 1000000
 const ACCIONES_LEVANTARSE: Array[StringName] = [&"mover_izquierda", &"mover_derecha", &"mover_abajo", &"saltar", &"atacar"]
 ## Cuanto mas alla del borde del cuerpo busca la pared el rayo de altura_agarre_pared, en px.
 const ALCANCE_AGARRE: float = 4.0
+# Rayo que comprueba el suelo bajo un punto seguro: empieza estos px sobre los pies (fuera del solido, que el rayo no
+# ve desde dentro) y baja estos px bajo ellos (classes/class_physicsrayqueryparameters2d.rst:160, hit_from_inside).
+const RAYO_SUELO_ARRIBA: float = 8.0
+const RAYO_SUELO_ABAJO: float = 40.0
+# Donde baja ese rayo, en x desde los pies: el centro y 1 px dentro de cada orilla del cuerpo (TAMANO).
+const RAYOS_SUELO_X: PackedFloat32Array = [0.0, -(TAMANO.x / 2.0 - 1.0), TAMANO.x / 2.0 - 1.0]
+# Cuantas piezas que se mueven atraviesa como mucho el rayo largo de _suelo_fijo_bajo antes de rendirse.
+const RAYO_SUELO_MOVILES_MAX: int = 8
+## Ticks que entra caminando solo al llegar por una puerta LADO: 20 = 0,33 s (Hollow Knight, EnterScene a RUN_SPEED).
+const TICKS_LLEGAR_CAMINANDO: int = 20
 const ESCENA_PROYECTIL: PackedScene = preload("res://nucleo/proyectil.tscn")
 
 @export_group("Movimiento")
@@ -230,8 +259,10 @@ var descansando: bool = false
 var hablando: bool = false
 ## Golpes que dio la onda de la caida en picada desde que entro a la sala.
 var golpes_onda: int = 0
-## Ataques enemigos parados desde que entro a la sala.
+## Ataques enemigos parados desde que entro a la sala (los golpes; un disparo se desvia).
 var paradas: int = 0
+## Disparos enemigos desviados con el ataque desde que entro a la sala.
+var desviados: int = 0
 ## En carrera (sprint), girando dentro de ella y si el ataque en curso es un ataque en carrera.
 var corriendo: bool = false
 var girando: bool:
@@ -263,12 +294,19 @@ var atacando: bool:
 ## y su carga) y justo despues.
 var invulnerable: bool:
 	get:
-		return _ticks_sin_dano > 0 or en_picada or _preparando_picada
-## Puede usar interactuar (banco, Npc, reto, entrega): en el suelo, vivo, de pie, sin aterrizaje duro ni conversacion.
-## Una sola regla para todos: la entrega olvidaba sentado y aterrizando (auditoria del 13-oct-2026).
+		return _ticks_sin_dano > 0 or en_picada or _preparando_picada or en_transicion
+## Puede usar interactuar (banco, Npc, reto, entrega, puerta): en el suelo, vivo, de pie, sin aterrizaje duro, sin
+## conversacion y sin cruzar una puerta. Una sola regla para todos: la entrega olvidaba sentado y aterrizando (auditoria
+## del 13-oct-2026).
 var puede_interactuar: bool:
 	get:
-		return is_on_floor() and not muerto and not descansando and not aterrizando and not hablando
+		return (is_on_floor() and not muerto and not descansando and not aterrizando and not hablando
+				and not en_transicion)
+## Cruce de puerta en curso (ver Transicion) y si hay uno.
+var transicion: Transicion = Transicion.NINGUNA
+var en_transicion: bool:
+	get:
+		return transicion != Transicion.NINGUNA
 
 var _ticks_sin_suelo: int = NUNCA
 var _ticks_desde_pulsar: int = NUNCA
@@ -288,8 +326,6 @@ var _sentido_retroceso: float = 0.0
 var _ticks_rebote: int = 0
 var _sentido_rebote: float = 0.0
 var _velocidad_rebote: float = 0.0
-# Punto del ultimo parry, en coordenadas de la sala: ahi se dibuja el estallido.
-var _punto_parry: Vector2 = Vector2.ZERO
 var _sentido_voltereta: float = 1.0
 var _ticks_voltereta: int = 0
 var _ticks_en_suelo: int = 0
@@ -322,6 +358,8 @@ var _ticks_poder: int = -1
 # Ataque hacia abajo (pogo) o hacia arriba en curso, y si ya reboto en este ataque.
 var _atacando_abajo: bool = false
 var _atacando_arriba: bool = false
+# Si este golpe ya hizo un parry: su clip salta al cuadro del golpe (_animar).
+var _golpe_parado: bool = false
 var _rebotado: bool = false
 # Centro del area de ataque de la escena, mirando a la derecha.
 var _posicion_ataque: Vector2 = Vector2.ZERO
@@ -342,8 +380,10 @@ var _ticks_carga: int = 0
 # Ticks desde que estuvo contra una pared por ultima vez, y la normal de esa pared.
 var _ticks_sin_pared: int = NUNCA
 var _normal_pared: float = 0.0
-# Aterrizaje: si estaba en el suelo el tick anterior (el temblor lo lleva la CamaraJugador).
+# Aterrizaje: si estaba en el suelo el tick anterior (el temblor lo lleva la CamaraJugador) y la velocidad de caida
+# del ultimo tick en el aire (move_and_slide la deja en 0 al tocar el suelo: se guarda antes).
 var _en_suelo_antes: bool = true
+var _velocidad_caida: float = 0.0
 # Ticks seguidos cayendo a velocidad_caida_max.
 var _ticks_a_tope: int = 0
 var _ticks_aterrizando: int = 0
@@ -353,11 +393,32 @@ var _limites: Rect2 = Rect2(-10000000.0, -10000000.0, 20000000.0, 20000000.0)
 # puesto en el material (se cambia solo si cambia).
 var _estado_dibujo: AnimacionJugador.Estado = AnimacionJugador.Estado.new()
 var _cantidad_destello: float = 0.0
+# Pasos: por animacion, los cuadros en que un pie toca el suelo (metadato pasos del SpriteFrames, dato del personaje),
+# y el ultimo clip y cuadro que dieron un paso, para no contar dos veces el mismo.
+var _cuadros_paso: Dictionary = {}
+var _clip_paso: StringName = &""
+var _cuadro_paso: int = -1
 # Duraciones relativas de cada clip y si se repite, leidas una vez del SpriteFrames en _ready (no cada tick).
 var _duraciones: Dictionary[StringName, PackedFloat32Array] = {}
 var _en_bucle: Dictionary[StringName, bool] = {}
 # Cuanto se aparta el cuerpo de la pared en la animacion pared para que la mano y los pies toquen su borde.
 var _separacion_pared: float = 0.0
+# Media luna blanca de cada golpe, hija del jugador: lo sigue sola (TrazoAtaque).
+var _trazo: TrazoAtaque = null
+# Aura de curar (detras y delante) y su luz, hijas del jugador: se ven solo curando.
+var _aura: EfectoCuadros = null
+var _aura_frente: EfectoCuadros = null
+var _luz_curar: Sprite2D = null
+# Cruce de puerta: ticks que lleva, hacia donde camina, cuanto dura (la llegada) o cuanto espera el cambio de sala antes
+# de rendirse (la salida), y los ticks de los clips de puerta leidos del SpriteFrames.
+var _ticks_transicion: int = 0
+var _lado_transicion: float = 0.0
+var _ticks_fin_transicion: int = 0
+var _ticks_giro_puerta: int = 0
+var _ticks_entrar_puerta: int = 0
+var _ticks_salir_puerta: int = 0
+# Punto seguro de la puerta por la que llego (Puerta.punto_seguro), en globales; INF si no tiene.
+var _punto_seguro_puerta: Vector2 = Vector2.INF
 
 @onready var _camara: CamaraJugador = $Camara as CamaraJugador
 @onready var _forma: CollisionShape2D = $Forma as CollisionShape2D
@@ -377,20 +438,20 @@ func _ready() -> void:
 	Ajustes.cargar_una_vez()
 	_ataque.monitoring = false
 	_posicion_ataque = _forma_ataque.position
+	_trazo = TrazoAtaque.new()
+	_trazo.name = &"Trazo"
+	add_child(_trazo)
+	_crear_aura()
 	_puntos_seguros = [global_position]
 	_punto_llegada = global_position
 	_leer_clips()
-
-
-func _process(_delta: float) -> void:
-	queue_redraw()
 
 
 func _physics_process(delta: float) -> void:
 	# Antes de _mover, igual que un DanoContacto (que se procesa antes que el jugador): asi el fundido de un
 	# peligro cuenta sus ticks a la par del Fundido y el jugador pasa al punto con la pantalla en negro.
 	_revisar_salida_por_abajo()
-	if _ticks_destello > 0 and not Congelado.activo():
+	if _ticks_destello > 0:
 		_ticks_destello -= 1
 	_mover(delta)
 	_saltar_del_menu = false
@@ -414,22 +475,6 @@ func _saltar_pulsado() -> bool:
 	return Input.is_action_just_pressed(&"saltar") and not _saltar_del_menu
 
 
-# Solo los efectos: el cuerpo es el nodo Dibujo, que lleva show_behind_parent para que esto quede encima.
-func _draw() -> void:
-	if _ticks_atacando > 0:
-		var forma: RectangleShape2D = _forma_ataque.shape as RectangleShape2D
-		if atacando_en_carrera:
-			# Estocada: una linea blanca larga al frente, a la altura del ataque.
-			var y: float = _forma_ataque.position.y
-			var desde: float = _mirando * TAMANO.x / 2.0
-			var hasta: float = _mirando * (absf(_forma_ataque.position.x) + forma.size.x / 2.0 + LARGO_ESTOCADA)
-			draw_line(Vector2(desde, y), Vector2(hasta, y), COLOR_DESTELLO, ANCHO_ESTOCADA)
-		else:
-			draw_rect(Rect2(_forma_ataque.position - forma.size / 2.0, forma.size), COLOR_ATAQUE)
-	if _ticks_destello > 0:
-		_dibujar_estallido()
-
-
 # Al final del tick, ya movido, y solo leyendo: llena la foto del estado, elige la animacion (AnimacionJugador) y
 # pone el cuadro. Los clips con tiempo propio toman el cuadro de los contadores de ticks (sin interpolacion de fisica,
 # el cuadro va a la par del tick); los bucles los corre el sprite, quieto durante el congelado comun.
@@ -442,6 +487,10 @@ func _animar() -> void:
 		if _dibujo.animation != AnimacionJugador.SENTARSE or _dibujo.is_playing():
 			nombre = AnimacionJugador.SENTARSE
 	var cuadro: int = AnimacionJugador.cuadro(nombre, e, _duraciones[nombre])
+	# El parry llega en la preparacion del golpe y el congelado la sostendria con la espada atras: se muestra ya el
+	# cuadro del golpe, con la espada sobre el destello.
+	if _golpe_parado and cuadro == 0 and AnimacionJugador.es_ataque(nombre):
+		cuadro = CUADRO_GOLPE
 	if cuadro < 0:
 		# Un bucle que no corre (el de la escena al aparecer, o tras un clip por ticks) arranca; muerte y sentarse no
 		# se repiten: al acabar se quedan en su ultimo cuadro.
@@ -458,9 +507,8 @@ func _animar() -> void:
 	_dibujo.scale.x = AnimacionJugador.volteo(nombre, _mirando)
 	_dibujo.position.x = _dibujo.scale.x * _separacion_pared if nombre == AnimacionJugador.PARED else 0.0
 	_dibujo.rotation = AnimacionJugador.giro_voltereta(e) * _mirando if nombre == AnimacionJugador.VOLTERETA else 0.0
+	_mostrar_curacion()
 	var color: Color = Color.WHITE
-	if curando:
-		color = TINTE_CURANDO
 	if _ticks_sin_dano > 0 and not muerto and posmod(Engine.get_physics_frames(), 2 * TICKS_PARPADEO) >= TICKS_PARPADEO:
 		color.a = PARPADEO
 	_dibujo.modulate = color
@@ -479,7 +527,28 @@ func _leer_clips() -> void:
 			duraciones.append(cuadros.get_frame_duration(nombre, i))
 		_duraciones[nombre] = duraciones
 		_en_bucle[nombre] = cuadros.get_animation_loop_mode(nombre) != SpriteFrames.LOOP_NONE
+	_ticks_giro_puerta = AnimacionJugador.ticks_de(cuadros, AnimacionJugador.ENTRAR_PUERTA,
+			AnimacionJugador.CUADROS_GIRO_PUERTA)
+	_ticks_entrar_puerta = AnimacionJugador.ticks_de(cuadros, AnimacionJugador.ENTRAR_PUERTA)
+	_ticks_salir_puerta = AnimacionJugador.ticks_de(cuadros, AnimacionJugador.SALIR_PUERTA)
 	_separacion_pared = AnimacionJugador.separacion_pared(cuadros, -_dibujo.offset.x, TAMANO.x / 2.0)
+	_cuadros_paso = cuadros.get_meta(&"pasos", {}) as Dictionary
+	# Los bucles de caminar y de la carrera los avanza el sprite, no el tick: el paso sale del cambio de cuadro
+	# (classes/class_animatedsprite2d.rst:100-102 y :138-140). Al empezar a caminar, play() puede dejar el mismo
+	# indice de cuadro y solo cambia la animacion: por eso tambien animation_changed.
+	_dibujo.frame_changed.connect(_al_cambiar_cuadro)
+	_dibujo.animation_changed.connect(_al_cambiar_cuadro)
+
+
+# Un paso al entrar a un cuadro de pasos del clip que se ve, en el suelo y sin cruzar una puerta (al salir por una
+# puerta camina sin suelo propio; Hollow Knight tampoco suena pasos en una transicion). Lo oye Sonido.
+func _al_cambiar_cuadro() -> void:
+	var cuadros: PackedInt32Array = _cuadros_paso.get(_dibujo.animation, PackedInt32Array()) as PackedInt32Array
+	var cuadro: int = _dibujo.frame if cuadros.has(_dibujo.frame) and is_on_floor() and not en_transicion else -1
+	if cuadro >= 0 and (cuadro != _cuadro_paso or _dibujo.animation != _clip_paso):
+		Eventos.jugador_paso.emit()
+	_cuadro_paso = cuadro
+	_clip_paso = _dibujo.animation
 
 
 # Lee el estado del jugador en la foto del dibujo. No cambia nada del jugador.
@@ -525,6 +594,13 @@ func _llenar_estado_dibujo() -> AnimacionJugador.Estado:
 	e.ticks_rebote = _ticks_rebote
 	e.hablando = hablando
 	e.ticks_congelado = _ticks_congelado
+	e.transicion = transicion
+	e.ticks_transicion = _ticks_transicion
+	e.ticks_clip_transicion = 0
+	if transicion == Transicion.SALE_POR_PUERTA:
+		e.ticks_clip_transicion = _ticks_entrar_puerta
+	elif transicion == Transicion.LLEGA_POR_PUERTA:
+		e.ticks_clip_transicion = _ticks_salir_puerta
 	return e
 
 
@@ -564,6 +640,9 @@ func _mover(delta: float) -> void:
 		return
 	_reapareciendo = false
 	_ticks_desde_peligro = _envejecer(_ticks_desde_peligro)
+	if en_transicion:
+		_seguir_transicion(en_suelo, delta)
+		return
 	_caer(en_suelo, delta)
 	if muerto:
 		velocity.x = 0.0
@@ -649,17 +728,25 @@ func _chocar_corriendo() -> void:
 func _aterrizar(en_suelo: bool) -> void:
 	# La picada no pasa por aqui: tiembla y avisa en _seguir_picada, solo al aterrizar de verdad (romper
 	# un suelo fragil tambien deja en_suelo un tick, y una picada puede tocar el suelo en su primer tick).
-	if en_suelo and not _en_suelo_antes and not en_picada and _ticks_a_tope >= ticks_caida_dura:
-		temblar(temblor_ticks, temblor_px)
-		# Un golpe o un banco del mismo tick se procesan antes que el jugador: si ya lo empujaron o lo
-		# sentaron, no hay bloqueo (si no, el retroceso esperaria 21 ticks o se levantaria sin control).
-		if not muerto and not descansando and _ticks_retrocediendo == 0:
-			_empezar_aterrizaje_duro()
-			Eventos.jugador_aterrizo.emit(velocidad_caida_max)
+	if en_suelo and not _en_suelo_antes and not en_picada:
+		var duro: bool = false
+		if _ticks_a_tope >= ticks_caida_dura:
+			temblar(temblor_ticks, temblor_px)
+			# Un golpe o un banco del mismo tick se procesan antes que el jugador: si ya lo empujaron o lo
+			# sentaron, no hay bloqueo (si no, el retroceso esperaria 21 ticks o se levantaria sin control).
+			if not muerto and not descansando and _ticks_retrocediendo == 0:
+				_empezar_aterrizaje_duro()
+				duro = true
+		# Un solo aviso por aterrizaje, suave o duro (el de la picada sale en _seguir_picada). Sin velocidad de caida
+		# no hubo caida: al aparecer en una sala is_on_floor() da false hasta el primer move_and_slide y eso no es
+		# aterrizar (sonaba un aterrizaje en cada sala).
+		if not muerto and (duro or _velocidad_caida > 0.0):
+			Eventos.jugador_aterrizo.emit(_velocidad_caida, duro, false)
 	if en_suelo or en_picada or velocity.y < velocidad_caida_max:
 		_ticks_a_tope = 0
 	else:
 		_ticks_a_tope += 1
+	_velocidad_caida = 0.0 if en_suelo else maxf(velocity.y, 0.0)
 	_en_suelo_antes = en_suelo
 	_camara.avanzar_temblor()
 
@@ -878,6 +965,7 @@ func _impulsar(eje: float) -> void:
 	velocity.y = 0.0
 	if not is_on_floor():
 		_impulso_en_el_aire = false
+	Eventos.jugador_impulso.emit()
 
 
 # Boton de poderes (curar), como en Hollow Knight: soltarlo antes de ticks_mantener_poder es un
@@ -988,7 +1076,11 @@ func _seguir_picada() -> void:
 		velocity = Vector2.ZERO
 		_ticks_sin_dano = maxi(_ticks_sin_dano, ticks_invulnerable_picada)
 		# Antes de la onda: si la onda golpea, la vibracion del aterrizaje (la fuerte) llega primero.
-		Eventos.jugador_aterrizo.emit(velocidad_picada)
+		Eventos.jugador_aterrizo.emit(velocidad_picada, false, true)
+		# Ya quedo en el suelo tras el move_and_slide de este tick: asi el _aterrizar del siguiente no lo cuenta
+		# como otro aterrizaje (es el mismo dato que _aterrizar guarda al final de cada tick).
+		_en_suelo_antes = true
+		_velocidad_caida = 0.0
 		_onda()
 
 
@@ -1124,6 +1216,7 @@ func _iniciar_ataque(abajo_en_el_aire: bool) -> void:
 	if atacando_en_carrera:
 		_ticks_hasta_ataque_carrera = ticks_entre_ataques_carrera
 	_rebotado = false
+	_golpe_parado = false
 	if _atacando_abajo:
 		_forma_ataque.position = posicion_pogo
 	elif _atacando_arriba:
@@ -1131,6 +1224,13 @@ func _iniciar_ataque(abajo_en_el_aire: bool) -> void:
 	else:
 		_forma_ataque.position = Vector2(absf(_posicion_ataque.x) * _mirando, _posicion_ataque.y)
 	_ataque.set_deferred(&"monitoring", true)
+	# El trazo sale del area de golpe ya colocada: si el area se mueve, el trazo la sigue.
+	var direccion: TrazoAtaque.Direccion = TrazoAtaque.Direccion.LADO
+	if _atacando_abajo:
+		direccion = TrazoAtaque.Direccion.ABAJO
+	elif _atacando_arriba:
+		direccion = TrazoAtaque.Direccion.ARRIBA
+	_trazo.mostrar(_forma_ataque.position, direccion, _mirando)
 
 
 # Lo que hace el ataque con un area que toca: cortar, parar, golpear una vez y empujar, o rebotar en un peligro.
@@ -1200,11 +1300,14 @@ func intentar_parar(ataque: AtaqueEnemigo) -> bool:
 
 
 # Parry, con el ataque normal en cualquier direccion: el ataque enemigo desaparece sin danar, el jugador queda
-# ticks_invulnerable_parry ticks sin dano de enemigos, todo se congela ticks_congelado_parry ticks con un estallido
-# en el punto del choque, despues el jugador sale empujado hacia atras y el enemigo recibe el golpe (con su
-# Inspiracion, como cualquier golpe; su Golpeable lo empuja). Un disparo no tiene cuerpo al que pegarle.
+# ticks_invulnerable_parry ticks sin dano de enemigos, todo se congela ticks_congelado_parry ticks con un destello
+# en la punta de la espada (_soltar_destello), despues el jugador sale empujado hacia atras y el enemigo recibe el golpe (con su
+# Inspiracion, como cualquier golpe; su Golpeable lo empuja). Un disparo no se para: se desvia (_desviar).
 func _parar(ataque: AtaqueEnemigo) -> void:
 	if ataque.parado:
+		return
+	if ataque is ProyectilEnemigo:
+		_desviar(ataque)
 		return
 	var centro_ataque: Vector2 = ataque.centro()
 	ataque.parar()
@@ -1212,7 +1315,11 @@ func _parar(ataque: AtaqueEnemigo) -> void:
 	_ticks_sin_dano = maxi(_ticks_sin_dano, ticks_invulnerable_parry)
 	Congelado.pedir(ticks_congelado_parry)
 	_ticks_destello = TICKS_DESTELLO_PARRY
-	_punto_parry = (_forma_ataque.global_position + centro_ataque) / 2.0
+	_golpe_parado = true
+	var punto: Vector2 = (_forma_ataque.global_position + centro_ataque) / 2.0
+	if not _atacando_abajo and not _atacando_arriba:
+		punto = global_position + Vector2(PUNTA_ESPADA_LADO.x * signf(_forma_ataque.position.x), PUNTA_ESPADA_LADO.y)
+	_soltar_destello(punto, 1.0, true)
 	# Despues del congelado, el jugador sale empujado lejos del ataque; parar corta la carrera y la voltereta.
 	var lado: float = signf(global_position.x - centro_ataque.x)
 	_dejar_de_correr()
@@ -1225,6 +1332,16 @@ func _parar(ataque: AtaqueEnemigo) -> void:
 		_golpeados.append(enemigo.golpeable)
 		enemigo.golpeable.recibir_golpe(self, dano_ataque)
 		Partida.ganar_inspiracion(inspiracion_por_golpe)
+
+
+# Disparo desviado con el ataque (decidido por la persona el 25-oct-2026, como la version ligera del choque de
+# Silksong, noClashFreeze): desaparece con una chispa chica, sin congelado, destello, retroceso, invulnerabilidad ni
+# Inspiracion (no hay enemigo al que pegarle). Suena y vibra como pegarle a un objeto.
+func _desviar(disparo: AtaqueEnemigo) -> void:
+	_soltar_destello(disparo.centro(), ESCALA_CHISPA, false)
+	disparo.parar()
+	desviados += 1
+	Eventos.objeto_golpeado.emit(disparo)
 
 
 # Pogo: el golpe hacia abajo a un Golpeable o a un peligro lanza al jugador hacia arriba (una vez por
@@ -1245,14 +1362,16 @@ func _rebotar_pogo() -> void:
 ## lleva al ultimo punto seguro, sin retroceso; si llega antes de ticks_anti_bucle de volver de otro
 ## peligro, lleva al punto de llegada a la sala sin quitar vida.
 func recibir_dano(dano: int, origen_x: float, peligro: bool = false) -> void:
-	# Mientras la pantalla funde a negro por un peligro, nada mas cuenta.
-	if muerto or _ticks_hasta_reaparecer > 0 or (peligro and _reapareciendo):
+	# Mientras la pantalla funde a negro por un peligro o se cruza una puerta (ya se pidio el cambio de sala), nada
+	# mas cuenta, ni un peligro.
+	if muerto or en_transicion or _ticks_hasta_reaparecer > 0 or (peligro and _reapareciendo):
 		return
 	if peligro and _ticks_desde_peligro < ticks_anti_bucle:
-		_reaparecer(_punto_llegada)
+		var llegada: Vector2 = _llegada_con_suelo()
+		_reaparecer(llegada)
 		# El punto seguro pasa a ser la llegada, y el siguiente peligro ya cuesta una vida: si la llegada
 		# tambien fuera peligrosa, el bucle termina en vez de seguir sin fin.
-		_puntos_seguros = [_punto_llegada]
+		_puntos_seguros = [llegada]
 		_ticks_desde_peligro = NUNCA
 		return
 	if invulnerable and not peligro:
@@ -1284,6 +1403,7 @@ func recibir_dano(dano: int, origen_x: float, peligro: bool = false) -> void:
 
 func _morir() -> void:
 	muerto = true
+	_terminar_transicion()
 	_ticks_aterrizando = 0
 	_ticks_atacando = 0
 	_ticks_sin_dano = 0
@@ -1294,31 +1414,93 @@ func _morir() -> void:
 	Eventos.jugador_muerto.emit()
 
 
-# Puntos seguros: posiciones con ticks_suelo_firme ticks seguidos en el suelo, fuera de la
+# Puntos seguros: posiciones con ticks_suelo_firme ticks seguidos en el suelo fijo, fuera de la
 # invulnerabilidad (asi no cuenta un suelo con pinchos que se piso sin recibir dano). Se vuelve a
-# la mas vieja de las ultimas ticks_atras_punto_seguro: un poco antes de la orilla, no en ella.
+# la mas vieja de las ultimas ticks_atras_punto_seguro: un poco antes de la orilla, no en ella. Sobre algo que se
+# mueve (plataforma, elevador, porton) no cuenta: al volver ya no estaria ahi (docs/errores). El suelo lo dice un
+# rayo bajo los pies y no los choques de move_and_slide, que no siempre registra uno estando quieto
+# (tutorials/physics/using_character_body_2d.rst:160).
 func _recordar_punto_seguro(en_suelo: bool) -> void:
-	_ticks_en_suelo = _ticks_en_suelo + 1 if en_suelo else 0
+	_ticks_en_suelo = _ticks_en_suelo + 1 if en_suelo and _hay_suelo_fijo(global_position) else 0
 	if _ticks_en_suelo >= ticks_suelo_firme and _ticks_sin_dano == 0:
 		_puntos_seguros.append(global_position)
 		if _puntos_seguros.size() > ticks_atras_punto_seguro:
 			_puntos_seguros.remove_at(0)
 
 
-## Donde volveria tras un peligro: nunca sobre pinchos ni en el aire. Ahi queda la mochila al morir.
+## Donde volveria tras un peligro: nunca sobre pinchos ni en el aire. Ahi queda la mochila al morir. Comprueba el suelo
+## al usarlo (como TryFindGroundPoint de Silksong): el mas viejo de los puntos seguros que aun tiene suelo fijo debajo;
+## si ninguno (un suelo fragil roto, un porton que se abrio), el punto seguro de la puerta por la que llego, la llegada
+## a la sala, y despues la Entrada y los bancos de la sala; si tampoco, el suelo que haya bajo la llegada. Solo dentro
+## del tick (lanza rayos).
 func ultimo_punto_seguro() -> Vector2:
-	return _puntos_seguros[0] if not _puntos_seguros.is_empty() else position
+	# Fuera del tick el espacio de fisica no se consulta (tutorials/physics/ray-casting.rst:42): sin comprobar.
+	if not Engine.is_in_physics_frame():
+		return _puntos_seguros[0] if not _puntos_seguros.is_empty() else _punto_llegada
+	for punto: Vector2 in _puntos_seguros:
+		if _hay_suelo_fijo(punto):
+			return punto
+	return _llegada_con_suelo()
+
+
+# El punto seguro de la puerta por la que llego, si tiene y con suelo fijo debajo; si no, la llegada a la sala si lo
+# tiene; si no, la Entrada o un banco de la sala que lo tenga; si tampoco, el suelo fijo que haya bajo la llegada,
+# atravesando lo que se mueve (un elevador bajo la llegada). Solo si bajo la llegada no hay ningun solido fijo dentro de
+# la sala devuelve la llegada tal cual. Destino del anti-bucle y respaldo de ultimo_punto_seguro.
+func _llegada_con_suelo() -> Vector2:
+	if _punto_seguro_puerta != Vector2.INF and _hay_suelo_fijo(_punto_seguro_puerta):
+		return _punto_seguro_puerta
+	if _hay_suelo_fijo(_punto_llegada):
+		return _punto_llegada
+	var sala: Sala = get_parent() as Sala
+	if sala != null:
+		for punto: Vector2 in sala.puntos_de_respaldo():
+			if _hay_suelo_fijo(punto):
+				return punto
+	var abajo: Dictionary = _suelo_fijo_bajo(
+		_punto_llegada - Vector2(0.0, RAYO_SUELO_ARRIBA), Vector2(_punto_llegada.x, _limites.end.y))
+	if not abajo.is_empty():
+		return abajo["position"] as Vector2
+	return _punto_llegada
+
+
+# El primer solido de ESCENARIO que no se mueve entre desde y hasta: repite el rayo excluyendo cada pieza que
+# Vaiven.movil_de da por movil (classes/class_physicsdirectspacestate2d.rst:164, el rid del choque). Vacio si no hay.
+func _suelo_fijo_bajo(desde: Vector2, hasta: Vector2) -> Dictionary:
+	var excluir: Array[RID] = []
+	for _intento: int in RAYO_SUELO_MOVILES_MAX:
+		var choque: Dictionary = Capas.rayo_a_escenario(self, desde, hasta, excluir)
+		if choque.is_empty() or Vaiven.movil_de(choque["collider"] as Node) == null:
+			return choque
+		excluir.append(choque["rid"] as RID)
+	return {}
 
 
 func _volver_al_punto_seguro() -> void:
-	_reaparecer(_puntos_seguros[0])
+	_reaparecer(ultimo_punto_seguro())
 	_ticks_desde_peligro = 0
+
+
+# Si bajo el punto (los pies) hay un solido de ESCENARIO a menos de RAYO_SUELO_ABAJO px que no se mueve. Un rayo en el
+# centro y uno en cada orilla del cuerpo: parado en una orilla con el centro sobre el vacio sigue en el suelo, como
+# para is_on_floor(). Solo cuenta el primer choque de cada rayo, sin atravesar lo que se mueve (a diferencia de
+# _suelo_fijo_bajo): una plataforma sobre los pinchos tiene suelo a menos de RAYO_SUELO_ABAJO px bajo ella, y ese
+# punto quedaria sobre los pinchos. A cambio, un punto con un elevador posado en el suelo se descarta y se usa otro.
+func _hay_suelo_fijo(punto: Vector2) -> bool:
+	for lado: float in RAYOS_SUELO_X:
+		var pie: Vector2 = punto + Vector2(lado, 0.0)
+		var choque: Dictionary = Capas.rayo_a_escenario(
+			self, pie - Vector2(0.0, RAYO_SUELO_ARRIBA), pie + Vector2(0.0, RAYO_SUELO_ABAJO))
+		if not choque.is_empty() and Vaiven.movil_de(choque["collider"] as Node) == null:
+			return true
+	return false
 
 
 # Tras un peligro (como Hollow Knight): quieto donde lo toco mientras la pantalla funde a negro
 # (Fundido.TICKS_OSCURECER); ya en negro, pasa al punto y espera Fundido.TICKS_EN_NEGRO_PELIGRO; la imagen
 # aclara mientras sigue quieto.
 func _reaparecer(punto: Vector2) -> void:
+	_terminar_transicion()
 	_reapareciendo = true
 	velocity = Vector2.ZERO
 	_cortar_empujes()
@@ -1369,30 +1551,50 @@ static func encima_de(area: Area2D) -> Jugador:
 	return null
 
 
-## Lo llama el banco al descansar: el jugador se acomoda sobre el (en su x) y se queda sentado.
-func sentarse(x: float) -> void:
+## El jugador de la sala (el primero del grupo GRUPO); null si no hay.
+static func actual(arbol: SceneTree) -> Jugador:
+	return arbol.get_first_node_in_group(GRUPO) as Jugador
+
+
+## Si hay jugador y esta sentado en un banco.
+static func sentado(arbol: SceneTree) -> bool:
+	var jugador: Jugador = actual(arbol)
+	return jugador != null and jugador.descansando
+
+
+## Centro de su cuerpo (el de su forma de colision), en coordenadas globales.
+func centro() -> Vector2:
+	return _forma.global_position
+
+
+# Lo que sentarse, hablar y cruzar una puerta cortan igual: nada a medias (empujes, ataque, curacion, pulsacion de poder,
+# retroceso, aterrizaje duro) sigue despues. No sirve al aterrizaje duro ni a la picada, que conservan lo suyo.
+func _quedar_quieto() -> void:
 	_cortar_empujes()
 	_cortar_ataque()
 	_cortar_curacion()
 	_ticks_poder = -1
-	# Ni la pausa tras un peligro ni el retroceso de un golpe justo antes siguen al levantarse.
 	_ticks_retrocediendo = 0
-	_ticks_congelado = 0
 	_ticks_aterrizando = 0
+
+
+## Lo llama el banco al descansar: el jugador se acomoda sobre el (en su x) y se queda sentado, mirando hacia lado
+## (1 o -1) si el banco lo dice; con 0, hacia donde miraba.
+func sentarse(x: float, lado: float = 0.0) -> void:
+	if lado != 0.0:
+		_mirando = lado
+	_quedar_quieto()
+	# Ni la pausa tras un peligro ni el retroceso de un golpe justo antes siguen al levantarse.
+	_ticks_congelado = 0
 	descansando = true
 	_recien_sentado = true
 	global_position.x = x
 	velocity = Vector2.ZERO
 
 
-## Lo llama el Npc al empezar una conversacion: como sentarse(), corta lo que empujaba al jugador y lo deja quieto.
+## Lo llama el Npc al empezar una conversacion (y la Estacion al viajar, solo para inmovilizarlo): como sentarse(), corta lo que empujaba al jugador y lo deja quieto.
 func empezar_a_hablar() -> void:
-	_cortar_empujes()
-	_cortar_ataque()
-	_cortar_curacion()
-	_ticks_poder = -1
-	_ticks_retrocediendo = 0
-	_ticks_aterrizando = 0
+	_quedar_quieto()
 	hablando = true
 	velocity.x = 0.0
 
@@ -1423,15 +1625,148 @@ func _seguir_descansando() -> void:
 		move_and_slide()
 
 
-# La sala le pasa sus limites: la camara sigue al jugador sin mostrar nada fuera de ellos.
+## La camara del jugador: la ZonaCamara le dice cuando entra y sale de ella.
+func camara() -> CamaraJugador:
+	return _camara
+
+
+## La sala le pasa sus limites: la camara sigue al jugador sin mostrar nada fuera de ellos.
 func fijar_limites(limites: Rect2) -> void:
 	_limites = limites
 	_camara.fijar_limites(limites, global_position, _mirando)
 
 
-# Estallido del parry: rayos blancos desde el punto del choque, fijo en la sala aunque el jugador salga empujado.
-func _dibujar_estallido() -> void:
-	var centro: Vector2 = to_local(_punto_parry)
-	for i: int in range(RAYOS_ESTALLIDO):
-		var direccion: Vector2 = Vector2.RIGHT.rotated(TAU * float(i) / float(RAYOS_ESTALLIDO) + TAU / 16.0)
-		draw_line(centro + direccion * HUECO_RAYO, centro + direccion * LARGO_RAYO, COLOR_DESTELLO, ANCHO_RAYO)
+## Ticks que tarda en voltearse de espaldas frente a una PUERTA (los primeros cuadros de entrar_puerta): la puerta pide
+## el fundido despues de ellos.
+func ticks_giro_puerta() -> int:
+	return _ticks_giro_puerta
+
+
+## Lo llama la Puerta al cruzarla (HeroController.LeaveScene): corta lo que hacia y deja de responder hasta que cambia
+## la sala. LADO: camina hacia lado con move_and_slide hasta la pared de detras, que lo para bajo el fundido; PUERTA: se
+## pone en la x de la puerta (como al sentarse en un banco), quieto, y el clip entrar_puerta lo voltea y lo mete; ARRIBA
+## y ABAJO: sigue con la velocidad vertical que llevaba, sin gravedad ni avance. Si en tope ticks no cambio la sala (el
+## cambio fallo), devuelve el control con un error en lugar de quedarse asi para siempre.
+func salir_de_sala(tipo: Puerta.Tipo, lado: float, x_puerta: float, tope: int) -> void:
+	_empezar_transicion()
+	_ticks_fin_transicion = tope
+	_lado_transicion = lado
+	match tipo:
+		Puerta.Tipo.PUERTA:
+			transicion = Transicion.SALE_POR_PUERTA
+			global_position.x = x_puerta
+			velocity = Vector2.ZERO
+		Puerta.Tipo.LADO:
+			transicion = Transicion.SALE_CAMINANDO
+			if lado != 0.0:
+				_mirando = lado
+		_:
+			transicion = Transicion.SALE_VERTICAL
+			velocity.x = 0.0
+
+
+## Lo llama la sala al llegar por una puerta (HeroController.EnterScene): LADO entra caminando hacia lado
+## TICKS_LLEGAR_CAMINANDO ticks; PUERTA sale de espaldas (salir_puerta) y queda mirando hacia lado; ARRIBA y ABAJO entran
+## con el control. punto_seguro: el de la puerta (Puerta.punto_seguro), en globales; INF si no tiene.
+func entrar_a_sala(tipo: Puerta.Tipo, lado: float, punto_seguro: Vector2 = Vector2.INF) -> void:
+	_punto_seguro_puerta = punto_seguro
+	if tipo == Puerta.Tipo.LADO and lado != 0.0:
+		_empezar_transicion()
+		transicion = Transicion.LLEGA_CAMINANDO
+		_lado_transicion = lado
+		_mirando = lado
+		_ticks_fin_transicion = TICKS_LLEGAR_CAMINANDO
+	elif tipo == Puerta.Tipo.PUERTA:
+		_empezar_transicion()
+		transicion = Transicion.LLEGA_POR_PUERTA
+		if lado != 0.0:
+			_mirando = lado
+		_ticks_fin_transicion = _ticks_salir_puerta
+
+
+# Como sentarse o hablar: nada a medias sigue durante el cruce ni despues.
+func _empezar_transicion() -> void:
+	_quedar_quieto()
+	descansando = false
+	hablando = false
+	_ticks_transicion = 0
+
+
+func _terminar_transicion() -> void:
+	transicion = Transicion.NINGUNA
+	_ticks_transicion = 0
+	_lado_transicion = 0.0
+
+
+# Un tick del cruce, sin leer los controles. Siempre con move_and_slide (la fisica es la unica que mueve al jugador):
+# la pared de detras de una puerta LADO lo para bajo el fundido (como stopWalkingOut de Hollow Knight).
+func _seguir_transicion(en_suelo: bool, delta: float) -> void:
+	_ticks_transicion += 1
+	match transicion:
+		Transicion.SALE_CAMINANDO, Transicion.LLEGA_CAMINANDO:
+			_caer(en_suelo, delta)
+			velocity.x = _lado_transicion * velocidad
+		Transicion.SALE_POR_PUERTA, Transicion.LLEGA_POR_PUERTA:
+			_caer(en_suelo, delta)
+			velocity.x = 0.0
+		Transicion.SALE_VERTICAL:
+			velocity.x = 0.0
+	move_and_slide()
+	if _ticks_transicion < _ticks_fin_transicion:
+		return
+	if _saliendo():
+		push_error("Jugador: la sala no cambio %d ticks despues de cruzar la puerta; vuelve el control" % _ticks_transicion)
+	_terminar_transicion()
+
+
+func _saliendo() -> bool:
+	return (transicion == Transicion.SALE_CAMINANDO or transicion == Transicion.SALE_POR_PUERTA
+			or transicion == Transicion.SALE_VERTICAL)
+
+
+# Destello del parry o chispa de un disparo desviado en un punto de la sala: hijo de la sala, queda fijo aunque el
+# jugador salga empujado, va encima de el y se libera solo al acabar.
+func _soltar_destello(punto: Vector2, escala: float, corre_congelado: bool) -> void:
+	var efecto: EfectoCuadros = EfectoCuadros.crear(HOJA_PARRY, CUADROS_PARRY, 1, true, true, corre_congelado)
+	efecto.scale = Vector2.ONE * escala
+	efecto.z_index = z_index + 1
+	get_parent().add_child(efecto)
+	efecto.global_position = punto
+
+
+# El aura de curar detras del cuerpo, sus rayas delante y la luz; ocultas hasta curar. Detras sin bajar z_index (con
+# z -1 quedaba bajo el fondo de la sala): como el Dibujo, show_behind_parent, y primera de los hijos, antes que el.
+func _crear_aura() -> void:
+	_aura = EfectoCuadros.crear(HOJA_CURAR, CUADROS_CURAR, 1, false, false, false)
+	_aura.name = &"Aura"
+	_aura.show_behind_parent = true
+	_aura_frente = EfectoCuadros.crear(HOJA_CURAR_FRENTE, CUADROS_CURAR, 1, false, false, false)
+	_aura_frente.name = &"AuraFrente"
+	_luz_curar = Sprite2D.new()
+	_luz_curar.name = &"LuzCurar"
+	_luz_curar.texture = LuzSala.textura()
+	_luz_curar.material = LuzSala.material_aditivo()
+	_luz_curar.scale = Vector2.ONE * (LUZ_CURAR_LADO / LuzSala.LADO)
+	_luz_curar.position = LUZ_CURAR_SOBRE_PIES
+	_luz_curar.modulate = LUZ_CURAR_TINTE
+	for nodo: Node2D in [_aura, _aura_frente]:
+		nodo.position = AURA_SOBRE_PIES
+	for nodo: Node2D in [_aura, _aura_frente, _luz_curar]:
+		nodo.visible = false
+		nodo.set_physics_process(false)
+		add_child(nodo)
+	move_child(_aura, 0)
+
+
+# Muestra el aura y su luz mientras cura (el aura empieza en su primer cuadro); la luz crece con lo curado y titila.
+func _mostrar_curacion() -> void:
+	if curando != _aura.visible:
+		for nodo: Node2D in [_aura, _aura_frente, _luz_curar]:
+			nodo.visible = curando
+		for efecto: EfectoCuadros in [_aura, _aura_frente]:
+			efecto.set_physics_process(curando)
+			efecto.reiniciar()
+	if curando:
+		# Segundos curados, a 60 ticks por segundo.
+		var t: float = float(ticks_curados) / 60.0
+		_luz_curar.modulate.a = minf(1.0, 0.35 + t / 0.6) * (0.32 + 0.04 * sin(t * 30.0))

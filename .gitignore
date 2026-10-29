@@ -12,6 +12,8 @@ build/*
 # Firma y credenciales
 *.keystore
 *.jks
+*.pem
+*.key
 export_credentials.cfg
 .env*
 

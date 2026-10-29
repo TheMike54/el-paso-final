@@ -40,7 +40,7 @@ controles táctiles, pensado para teléfonos de gama baja.
   documentos cambiados desde el último commit.
 - Sesión autónoma (varias funcionalidades sin la persona): modo `auto`, nunca `bypassPermissions` (en Windows no hay
   sandbox). Cada funcionalidad va en sus propios archivos y su bloque de commit se agrega, numerado, al final del
-  archivo que indique `CLAUDE.local.md`; si dos comparten archivo (`project.godot`), se anota y van juntas en un
+  archivo que indique `CLAUDE.local.md` (si no hay uno, en el chat); si dos comparten archivo (`project.godot`), se anota y van juntas en un
   commit. Ninguna espera a otra, ni la frena un commit pendiente ajeno (se anota como bloque aparte, a correr
   primero). Solo se para al arrancar en `main`, ante una descarga o instalación, o ante un cambio que rompa el contrato.
 
@@ -76,7 +76,8 @@ PowerShell, desde la raíz del repo. `GODOT_PATH` es la ruta al ejecutable de co
 - Las fichas `.tres` son de solo lectura en ejecución: un recurso cargado es la misma copia para todos.
 - `.godot/` es caché: no se edita ni se versiona. Cada `.gd` tiene su `.gd.uid` al lado: se versiona y se mueve
   con su script. No copiar `.tscn`, `.tres` ni `.gd` con `cp` (duplica el UID): heredar la escena.
-- `.tscn` y `.tres` los escribe el editor: al editarlos a mano, conservar `uid` e ids de `ext_resource`. No usar
+- `.tscn` y `.tres` los escribe el editor: al editarlos a mano, conservar `uid` e ids de `ext_resource`, y todo
+  `ext_resource` nuevo lleva el `uid` del archivo que nombra (regla y porqué: `docs/contrato.md`, «Sala», viñeta «uid»). No usar
   las herramientas `mcp__godot__*` para crear ni editar escenas.
 - Mover, renombrar o borrar una escena, un recurso o una imagen se hace en el panel FileSystem del editor: fuera de
   Godot, las rutas que la nombran se rompen (`tutorials/scripting/filesystem.rst`). Si ya se movió fuera: con
@@ -95,18 +96,17 @@ PowerShell, desde la raíz del repo. `GODOT_PATH` es la ruta al ejecutable de co
 - La lógica lee acciones con nombre, nunca el toque ni la tecla. Lógica en `_physics_process` a 60 ticks.
 - Todo lo persistente tiene un ID de texto estable. El guardado es JSON con versión y detección de dañado.
 - Colisión con formas invisibles; el arte no colisiona.
-- La zona de pruebas y sus salas (`herramientas/salas/`) viajan en el paquete publicado; las pruebas de código
-  (`herramientas/pruebas/`), el validador, `generar_mapa`, `generar_sprites` y el puerto de depuración no. El núcleo carga lo de
-  `herramientas/` con `load()` solo si existe, nunca con `preload` ni autoload. Detalle en `docs/contrato.md`,
-  «Paquete de publicación».
-- Pruebas solo donde la lógica puede romperse: guardado, cuentas (daño, amuletos), reglas y el validador de
-  contenido, más un guion corto por sala. No se prueba que una escena se dibuje ni que exista un nodo.
+- La zona de pruebas y sus salas (`herramientas/salas/`) viajan en el paquete publicado; el resto de `herramientas/`
+  (pruebas de código, validador, generadores, puerto de depuración) no. El núcleo carga lo de `herramientas/` con
+  `Cargar.si_existe()` (`load()` solo si existe), nunca con `preload` ni autoload. Filtros de cada preset: `docs/contrato.md`, «Paquete de
+  publicación».
+- Aquí las pruebas cubren guardado, cuentas (daño, amuletos), reglas, el validador y un guion corto por sala.
 - Las pruebas, los guiones y el validador imprimen el resumen y los fallos, no cada caso que pasa.
 - `.gitattributes` con `eol=lf`: los hooks de `sh` y el CI corren en Linux. `LICENSE` solo MIT; el arte queda fuera.
 - CI: `ci.yml` con `chickensoft-games/setup-godot@v2`, sin plantillas; el check que exige el ruleset se llama `validar`.
-- Android: id `com.themike54.elpasofinal`, ARM de 32 (S50) y 64 bits. El preset «Publicacion» excluye
-  `*funciones.json`, `herramientas/pruebas/*`, `herramientas/validar.*`, `herramientas/generar_mapa.*`,
-  `herramientas/generar_sprites.*` y `herramientas/puerto_depuracion.*`; «Desarrollo» lleva todo y arranca con `--print-fps`.
+- Android: id `com.themike54.elpasofinal`, ARM de 32 (S50) y 64 bits. Video `.mp4` en el teléfono; `.ogv` solo para
+  la PC y los guiones. «Publicacion» es el paquete sin herramientas; «Desarrollo» lleva lo demás y arranca con
+  `--print-fps`.
 
 ## Reglas de este proyecto
 - IMPORTANT: Claude nunca ejecuta `git commit`, `git push`, `git merge`, `git rebase`, `git tag`, `gh pr create` ni
@@ -115,13 +115,12 @@ PowerShell, desde la raíz del repo. `GODOT_PATH` es la ruta al ejecutable de co
 - Los commits los hace la persona que responde por el cambio, con su identidad de git; el bloque lo da Claude (skill
   `funcionalidad`, paso «Entregar»).
 - Puede leer: `git status`, `git diff`, `git log`, `git fetch`, `gh pr view`, `gh pr diff`.
-- El uso de asistentes de IA se declara: herramienta y parte, en la descripción de cada PR y, para imágenes y
-  sonidos, en `docs/uso-de-ia.md` (por herramienta, no por archivo).
+- Uso de IA: herramienta y parte, en el PR; para imágenes y sonidos, en `docs/uso-de-ia.md` (por herramienta, no por
+  archivo).
 - Nunca editar en `main`: una rama por PR (`feature/<bloque>-<desc>`, `fix/<desc>`, `docs/<desc>`, `chore/<desc>`),
   que no se reutiliza después de fusionarla.
 - Commits y PR en inglés (`feat: …`, `fix: …`). El título del PR es el mensaje que queda en `main` (Squash and
-  merge). El PR lleva What changed? · Why? · QA evidence · Risk / rollback y la etiqueta `qa-pending` hasta que
-  se aprueba. La documentación va en español.
+  merge). El cuerpo sigue `.github/pull_request_template.md`. La documentación va en español.
 - Nada de lo que se sube lleva texto dirigido a una persona, datos de una persona ni avisos de trabajo sin
   terminar, salvo `ESTADO.md`, `funciones.json` y los planes. Lo que no es de este repo (notas personales,
   reparto, credenciales) no se guarda dentro de él, ni en una carpeta ignorada.
@@ -148,7 +147,6 @@ PowerShell, desde la raíz del repo. `GODOT_PATH` es la ruta al ejecutable de co
 | Instalación desde clon limpio | `README.md` | Si falla el arranque |
 
 ## Al compactar
-El hook `al-compactar.ps1` ya reinyecta la rama, `ESTADO.md`, los nombres de `planes/activos/` (el plan se
-relee) y las primeras 25 líneas de `git status --short`. Conservar
-solo lo que vive en el chat: la última salida de `validar.ps1`, las pruebas manuales que faltan pedir, el número
-del último bloque de commit pendiente y las decisiones recién tomadas que aún no estén escritas.
+`al-compactar.ps1` reinyecta rama, `ESTADO.md`, planes activos (el plan se relee) y `git status`. Conservar del chat:
+la última salida de `validar.ps1`, las pruebas manuales por pedir, el número del último bloque de commit pendiente
+y las decisiones recién tomadas sin escribir.

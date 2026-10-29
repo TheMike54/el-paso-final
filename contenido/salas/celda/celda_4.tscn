@@ -1,0 +1,314 @@
+[gd_scene format=3 uid="uid://da0jeyk36aogc"]
+
+[ext_resource type="PackedScene" uid="uid://bl4kcwxb626lh" path="res://contenido/objetos/celda/colgante_frente.tscn" id="99_colgante_frente"]
+[ext_resource type="PackedScene" uid="uid://dkg1tgmycc1sr" path="res://contenido/zonas/celda/sala_celda.tscn" id="0_base"]
+[ext_resource type="Texture2D" uid="uid://deqcmqohvcaol" path="res://contenido/salas/celda/arte/pared_bajada_a.png" id="1_pared_a"]
+[ext_resource type="Texture2D" uid="uid://bs4buoi8x0md1" path="res://contenido/salas/celda/arte/pared_bajada_b.png" id="2_pared_b"]
+[ext_resource type="Texture2D" uid="uid://81j5fgn1ficv" path="res://contenido/salas/celda/arte/pared_bajada_c.png" id="3_pared_c"]
+[ext_resource type="Texture2D" uid="uid://dvm22ao00bc1u" path="res://contenido/salas/celda/arte/piso_bajada_izq.png" id="4_piso_izq"]
+[ext_resource type="Texture2D" uid="uid://0ycf6y23kmnd" path="res://contenido/salas/celda/arte/piso_bajada_der.png" id="5_piso_der"]
+[ext_resource type="Texture2D" uid="uid://3eco17iiex4w" path="res://contenido/salas/celda/arte/suelo_raices.png" id="6_suelo_raices"]
+[ext_resource type="Texture2D" uid="uid://7ic4s1sc4eno" path="res://contenido/salas/celda/arte/boquete_piso.png" id="7_boquete_piso"]
+[ext_resource type="Texture2D" uid="uid://c0mhgdwil72uv" path="res://contenido/salas/celda/arte/raiz_movil.png" id="8_raiz"]
+[ext_resource type="Script" uid="uid://c2i8bitphouxk" path="res://nucleo/vaiven.gd" id="9_vaiven"]
+[ext_resource type="Texture2D" uid="uid://cmac1tt8x8oik" path="res://contenido/salas/celda/arte/techo.png" id="10_techo"]
+[ext_resource type="Texture2D" uid="uid://dh3rgbh4pqdd1" path="res://contenido/salas/celda/arte/columna.png" id="11_columna"]
+[ext_resource type="PackedScene" uid="uid://c3v0dvamqoi4p" path="res://contenido/objetos/celda/luz_tubo.tscn" id="12_luz_tubo"]
+[ext_resource type="PackedScene" uid="uid://cq48dd3nywtn1" path="res://contenido/objetos/celda/polvo_tubo.tscn" id="13_polvo"]
+[ext_resource type="Script" uid="uid://dctc7invor25u" path="res://nucleo/luz_sala.gd" id="14_luz"]
+[ext_resource type="PackedScene" uid="uid://cuu5yv83nmowx" path="res://nucleo/piezas/niebla.tscn" id="15_niebla"]
+[ext_resource type="PackedScene" uid="uid://btvhjk85n5grs" path="res://contenido/objetos/celda/boquete_raices_b.tscn" id="16_boquete"]
+[ext_resource type="PackedScene" uid="uid://snbg7ufyq4g6" path="res://contenido/objetos/celda/hueco_piso.tscn" id="17_hueco_piso"]
+[ext_resource type="PackedScene" uid="uid://c1mh87shrjl0d" path="res://nucleo/monedas_sueltas.tscn" id="18_monedas"]
+[ext_resource type="Script" uid="uid://b2dqjcwt6yvnc" path="res://nucleo/zona_camara.gd" id="19_zona"]
+[ext_resource type="Texture2D" uid="uid://cmdggylm5oww3" path="res://contenido/salas/celda/arte/escombros.png" id="20_escombros"]
+[ext_resource type="Texture2D" uid="uid://bfyy7mvwxo0b4" path="res://contenido/salas/celda/arte/pila_examenes_rota.png" id="21_pila_rota"]
+[ext_resource type="Texture2D" uid="uid://cno3e88eqtcp6" path="res://contenido/salas/celda/arte/frente_raices.png" id="23_frente_raices"]
+[ext_resource type="Texture2D" uid="uid://csrmcv72ofiso" path="res://contenido/salas/celda/arte/frente_raices_b.png" id="24_frente_raices_b"]
+[ext_resource type="Texture2D" uid="uid://dcacnthyug5wa" path="res://contenido/salas/celda/arte/frente_cable.png" id="25_frente_cable"]
+[ext_resource type="Texture2D" uid="uid://cl414x8n46mof" path="res://contenido/salas/celda/arte/junta_tira.png" id="26_junta"]
+
+[sub_resource type="RectangleShape2D" id="forma_pared"]
+size = Vector2(80, 1440)
+
+[sub_resource type="RectangleShape2D" id="forma_masa_izquierda"]
+size = Vector2(1665, 920)
+
+[sub_resource type="RectangleShape2D" id="forma_saliente_izquierda"]
+size = Vector2(50, 410)
+
+[sub_resource type="RectangleShape2D" id="forma_piso_tiro_izquierda"]
+size = Vector2(262, 200)
+
+[sub_resource type="RectangleShape2D" id="forma_masa_derecha_arriba"]
+size = Vector2(445, 440)
+
+[sub_resource type="RectangleShape2D" id="forma_masa_derecha_abajo"]
+size = Vector2(405, 480)
+
+[sub_resource type="RectangleShape2D" id="forma_piso_tiro_derecha"]
+size = Vector2(203, 200)
+
+[sub_resource type="RectangleShape2D" id="forma_raiz"]
+size = Vector2(210, 20)
+
+[sub_resource type="RectangleShape2D" id="forma_zona_pasillo"]
+size = Vector2(1665, 560)
+
+[node name="Celda4" instance=ExtResource("0_base")]
+id = "celda_4"
+limites = Rect2(0, 0, 2720, 1440)
+posicion_mapa = Vector2(11842, 2374)
+
+[node name="Relleno" type="ColorRect" parent="Juego"]
+offset_left = 1890.0
+offset_top = 1300.0
+offset_right = 2150.0
+offset_bottom = 1440.0
+mouse_filter = 2
+color = Color(0.0314, 0.0353, 0.051, 1)
+
+[node name="ParedBajadaA" type="Sprite2D" parent="Juego"]
+position = Vector2(-16, 30)
+texture = ExtResource("1_pared_a")
+centered = false
+
+[node name="ParedBajadaB" type="Sprite2D" parent="Juego"]
+self_modulate = Color(0.55, 0.58, 0.68, 1)
+position = Vector2(1624, 30)
+texture = ExtResource("2_pared_b")
+centered = false
+
+[node name="ParedBajadaC" type="Sprite2D" parent="Juego"]
+position = Vector2(2384, 30)
+texture = ExtResource("3_pared_c")
+centered = false
+
+[node name="Techo" type="Sprite2D" parent="Juego"]
+texture_repeat = 2
+position = Vector2(-280, -14)
+texture = ExtResource("10_techo")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 3200, 112)
+
+[node name="Columna" type="Sprite2D" parent="Juego"]
+position = Vector2(-110, 30)
+texture = ExtResource("11_columna")
+centered = false
+
+[node name="Columna2" type="Sprite2D" parent="Juego"]
+position = Vector2(820, 30)
+texture = ExtResource("11_columna")
+centered = false
+
+[node name="SueloRaices" type="Sprite2D" parent="SueloPintado"]
+texture_repeat = 2
+position = Vector2(1620, 1280)
+texture = ExtResource("6_suelo_raices")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 162, 161)
+
+[node name="SueloRaices2" type="Sprite2D" parent="SueloPintado"]
+texture_repeat = 2
+position = Vector2(2229, 1280)
+texture = ExtResource("6_suelo_raices")
+centered = false
+region_enabled = true
+region_rect = Rect2(609, 0, 191, 161)
+
+[node name="BoquetePiso" type="Sprite2D" parent="SueloPintado"]
+position = Vector2(1702, 1280)
+texture = ExtResource("7_boquete_piso")
+centered = false
+
+[node name="PisoBajadaIzq" type="Sprite2D" parent="SueloPintado"]
+position = Vector2(-16, 551)
+texture = ExtResource("4_piso_izq")
+centered = false
+
+[node name="PisoBajadaDer" type="Sprite2D" parent="SueloPintado"]
+position = Vector2(2194, 555)
+texture = ExtResource("5_piso_der")
+centered = false
+
+[node name="JuntaIzquierda" type="Sprite2D" parent="SueloPintado"]
+self_modulate = Color(0.75, 0.75, 0.75, 1)
+texture_repeat = 2
+position = Vector2(0, 690)
+texture = ExtResource("26_junta")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 1665, 130)
+
+[node name="JuntaDerecha" type="Sprite2D" parent="SueloPintado"]
+self_modulate = Color(0.75, 0.75, 0.75, 1)
+texture_repeat = 2
+position = Vector2(2275, 690)
+texture = ExtResource("26_junta")
+centered = false
+region_enabled = true
+region_rect = Rect2(300, 0, 445, 130)
+
+[node name="MasaIzquierda" type="StaticBody2D" parent="Terreno"]
+
+[node name="Masa" type="CollisionShape2D" parent="Terreno/MasaIzquierda"]
+position = Vector2(832.5, 1020)
+shape = SubResource("forma_masa_izquierda")
+
+[node name="Saliente" type="CollisionShape2D" parent="Terreno/MasaIzquierda"]
+position = Vector2(1690, 805)
+shape = SubResource("forma_saliente_izquierda")
+
+[node name="PisoTiro" type="CollisionShape2D" parent="Terreno/MasaIzquierda"]
+position = Vector2(1796, 1380)
+shape = SubResource("forma_piso_tiro_izquierda")
+
+[node name="MasaDerecha" type="StaticBody2D" parent="Terreno"]
+
+[node name="Arriba" type="CollisionShape2D" parent="Terreno/MasaDerecha"]
+position = Vector2(2497.5, 780)
+shape = SubResource("forma_masa_derecha_arriba")
+
+[node name="Abajo" type="CollisionShape2D" parent="Terreno/MasaDerecha"]
+position = Vector2(2517.5, 1240)
+shape = SubResource("forma_masa_derecha_abajo")
+
+[node name="PisoTiro" type="CollisionShape2D" parent="Terreno/MasaDerecha"]
+position = Vector2(2213.5, 1380)
+shape = SubResource("forma_piso_tiro_derecha")
+
+[node name="ParedIzquierda" type="StaticBody2D" parent="Terreno"]
+position = Vector2(-40, 720)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/ParedIzquierda"]
+shape = SubResource("forma_pared")
+
+[node name="ParedDerecha" type="StaticBody2D" parent="Terreno"]
+position = Vector2(2760, 720)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/ParedDerecha"]
+shape = SubResource("forma_pared")
+
+[node name="RaizMovil" type="AnimatableBody2D" parent="Terreno"]
+z_index = -10
+position = Vector2(1850, 1180)
+script = ExtResource("9_vaiven")
+recorrido = Vector2(0, -520)
+ticks_ida = 200
+ticks_espera = 60
+
+[node name="Arte" type="Sprite2D" parent="Terreno/RaizMovil"]
+position = Vector2(0, -4)
+texture = ExtResource("8_raiz")
+centered = false
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/RaizMovil"]
+position = Vector2(105, 10)
+shape = SubResource("forma_raiz")
+
+[node name="PolvoTubo" parent="Encima" instance=ExtResource("13_polvo")]
+position = Vector2(475, 96)
+
+[node name="LuzTubo" parent="Luces" instance=ExtResource("12_luz_tubo")]
+position = Vector2(475, 88.4)
+
+[node name="LuzHongos" type="Node2D" parent="Luces"]
+position = Vector2(1932, 1302)
+script = ExtResource("14_luz")
+radio = 110.0
+tinte = Color(0.37254903, 0.8784314, 0.78431374, 1)
+tipo = 2
+
+[node name="LuzHongos2" type="Node2D" parent="Luces"]
+position = Vector2(2096, 1313)
+script = ExtResource("14_luz")
+radio = 110.0
+tinte = Color(0.37254903, 0.8784314, 0.78431374, 1)
+tipo = 2
+pulso_velocidad = 1.3
+
+[node name="Frente" parent="." index="7"]
+scroll_scale = Vector2(1.45, 1.45)
+
+[node name="FrenteEscombros" type="Sprite2D" parent="Frente"]
+use_parent_material = true
+position = Vector2(500, 630)
+scale = Vector2(2, 2)
+texture = ExtResource("20_escombros")
+centered = false
+flip_h = true
+
+[node name="FrentePilaExamenesRota" type="Sprite2D" parent="Frente"]
+use_parent_material = true
+position = Vector2(1500, 640)
+scale = Vector2(2, 2)
+texture = ExtResource("21_pila_rota")
+centered = false
+
+[node name="FrentePilaExamenesRota2" type="Sprite2D" parent="Frente"]
+use_parent_material = true
+position = Vector2(1700, 1684)
+scale = Vector2(2, 2)
+texture = ExtResource("21_pila_rota")
+centered = false
+flip_h = true
+
+[node name="FrenteEscombros2" type="Sprite2D" parent="Frente"]
+use_parent_material = true
+position = Vector2(2900, 1674)
+scale = Vector2(2, 2)
+texture = ExtResource("20_escombros")
+centered = false
+
+[node name="FrenteRaicesColgante" parent="Frente" instance=ExtResource("99_colgante_frente")]
+position = Vector2(820, -10)
+
+[node name="Dibujo" parent="Frente/FrenteRaicesColgante" index="0"]
+texture = ExtResource("23_frente_raices")
+offset = Vector2(-59.5, 0)
+
+[node name="FrenteCableColgante" parent="Frente" instance=ExtResource("99_colgante_frente")]
+position = Vector2(1720, -10)
+
+[node name="Dibujo" parent="Frente/FrenteCableColgante" index="0"]
+texture = ExtResource("25_frente_cable")
+offset = Vector2(-47, 0)
+
+[node name="FrenteRaicesBColgante" parent="Frente" instance=ExtResource("99_colgante_frente")]
+position = Vector2(2820, -10)
+
+[node name="Dibujo" parent="Frente/FrenteRaicesBColgante" index="0"]
+texture = ExtResource("24_frente_raices_b")
+offset = Vector2(-39, 0)
+
+[node name="MonedasCornisa" parent="." instance=ExtResource("18_monedas")]
+position = Vector2(2440, 560)
+id = "monedas_cornisa"
+
+[node name="ZonaCamaraPasillo" type="Area2D" parent="."]
+script = ExtResource("19_zona")
+limites = Rect2(0, 0, 2720, 720)
+
+[node name="Forma" type="CollisionShape2D" parent="ZonaCamaraPasillo"]
+position = Vector2(832.5, 280)
+shape = SubResource("forma_zona_pasillo")
+
+[node name="PuertaIzquierda" parent="." instance=ExtResource("16_boquete")]
+position = Vector2(70, 560)
+id = &"izquierda"
+sala_destino = "celda_3"
+puerta_destino = &"derecha"
+llegada = Vector2(64, 0)
+
+[node name="PuertaAbajo" parent="." instance=ExtResource("17_hueco_piso")]
+position = Vector2(2020, 1414)
+id = &"abajo"
+sala_destino = "celda_3"
+puerta_destino = &"derecha"
+llegada = Vector2(-150, -134)
+
+[node name="Niebla" parent="." instance=ExtResource("15_niebla")]
+scroll_scale = Vector2(1.1, 1.1)
+scroll_offset = Vector2(0, 300)

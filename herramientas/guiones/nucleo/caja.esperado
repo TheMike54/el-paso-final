@@ -1,5 +1,0 @@
-# Desde x=200: 6 cuadros a la izquierda y 60 a la derecha, a 300 px/s (5 px por cuadro), dan 200 - 30 + 300.
-# Si el salto no ocurre, la caja sigue en el suelo.
-x 470 1
-en_suelo false
-escena res://nucleo/caja_gris.tscn

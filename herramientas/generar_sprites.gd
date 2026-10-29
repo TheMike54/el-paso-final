@@ -1,11 +1,16 @@
 extends Node
 # Genera nucleo/arte/jugador_hombre/jugador_hombre.tres (SpriteFrames del cuerpo del jugador) desde el JSON que deja el
 # script que arma el atlas, fuera del repo: por cuadro, su region en la pagina, su margin.position en el lienzo comun
-# y su duracion. Con ResourceSaver, para que Godot escriba el formato; el .tres no lleva UID. Se corre tras reimportar el atlas:
+# y su duracion. Con ResourceSaver, para que Godot escriba el formato, mas el uid de la cabecera y el del atlas, que ese
+# guardado no escribe fuera del editor (guardar_con_uids de validar.gd). Se corre tras reimportar el atlas:
 # & $env:GODOT_PATH --headless --path . --quit-after 600 res://herramientas/generar_sprites.tscn -- --atlas=<json>
+# Los metadatos del .tres anterior (META_CONSERVADOS) pasan al nuevo: son datos del personaje que el atlas no trae.
 
 const CARPETA: String = "res://nucleo/arte/jugador_hombre/"
 const DESTINO: String = CARPETA + "jugador_hombre.tres"
+## Metadatos del SpriteFrames que no salen del atlas y se copian del .tres anterior. pasos: por animacion, los cuadros
+## en que un pie toca el suelo (Jugador emite jugador_paso al entrar a uno).
+const META_CONSERVADOS: Array[StringName] = [&"pasos"]
 const BUCLES: Dictionary[String, SpriteFrames.LoopMode] = {
 	"no": SpriteFrames.LOOP_NONE,
 	"lineal": SpriteFrames.LOOP_LINEAR,
@@ -57,7 +62,12 @@ func _ready() -> void:
 			trozo.filter_clip = true
 			cuadros.add_frame(nombre, trozo, d["duracion"] as float)
 			total += 1
-	var error: Error = ResourceSaver.save(cuadros, DESTINO)
+	var anterior: SpriteFrames = load(DESTINO) as SpriteFrames if ResourceLoader.exists(DESTINO) else null
+	if anterior != null:
+		for meta: StringName in META_CONSERVADOS:
+			if anterior.has_meta(meta):
+				cuadros.set_meta(meta, anterior.get_meta(meta))
+	var error: Error = preload("res://herramientas/validar.gd").guardar_con_uids(cuadros, DESTINO)
 	print("SPRITES animaciones=%d cuadros=%d lienzo=%dx%d error=%d" % [cuadros.get_animation_names().size(), total,
 			int(lienzo.x), int(lienzo.y), error])
 	get_tree().quit(0 if error == OK else 1)

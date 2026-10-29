@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://decagr4esfkgu"]
+
+[ext_resource type="Script" uid="uid://drcximsv57fr6" path="res://herramientas/pruebas/prueba_zona_camara.gd" id="1_prueba"]
+
+[node name="SalaZonaCamara" type="Node"]
+script = ExtResource("1_prueba")
