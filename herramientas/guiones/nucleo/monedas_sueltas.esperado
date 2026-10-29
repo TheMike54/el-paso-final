@@ -1,0 +1,4 @@
+# Los 12 casos de herramientas/pruebas/prueba_monedas_sueltas.gd corrieron y ninguno fallo. Cada caso que falla
+# imprime una linea "FALLO monedas_sueltas: <caso>".
+valor . casos 12
+valor . fallos 0

@@ -54,6 +54,15 @@ static func dibujar_moneda(lienzo: CanvasItem, centro: Vector2, diametro: float,
 	lienzo.draw_string(fuente, base, "P", HORIZONTAL_ALIGNMENT_LEFT, -1, tamano, COLOR_P * modulado)
 
 
+## Piezas de la figura en orden de dibujo, cada una [poligono, color], en la figura de 100 de alto: para hornearla a
+## una imagen con el mismo dibujo (las PejeCoins sueltas, herramientas/generar_efectos.gd).
+static func piezas(nombre: StringName) -> Array:
+	var lista: Array = []
+	for pieza: Array in _figura(nombre)[0] as Array:
+		lista.append([pieza[0], pieza[1]])
+	return lista
+
+
 static func _figura(nombre: StringName) -> Array:
 	if not _figuras.has(nombre):
 		var armado: _Armado = _Armado.new()
