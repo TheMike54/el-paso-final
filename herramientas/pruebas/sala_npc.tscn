@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://be3ekw6yjtnv3"]
+
+[ext_resource type="Script" uid="uid://5e2ddq7fusrs" path="res://herramientas/pruebas/prueba_npc.gd" id="1_prueba"]
+
+[node name="SalaNpc" type="Node"]
+script = ExtResource("1_prueba")

@@ -1,9 +1,10 @@
 class_name MuroRompible
 extends StaticBody2D
-# Pared, techo o suelo que se rompe a golpes, como los muros secretos de Hollow Knight y Silksong: aguanta golpes
+# Pared, techo o suelo que se rompe a golpes, como los muros secretos de Hollow Knight y Silksong: aguanta
 # golpes (uno por golpe, sea el ataque, la bola o la onda de la picada), se sacude y hace temblar la camara con cada
-# uno y, al romperse, suelta escombros, descubre lo que tapaba (tapas) y se queda roto: con id se marca en el estado
-# de su sala. Golpearlo no da Inspiracion (su Golpeable no es un enemigo). Va en la sala con su forma y su dibujo.
+# uno y, al romperse, suelta escombros, desvanece lo que tapaba (tapas), muestra lo que solo existe roto (descubre) y
+# se queda roto: con id se marca en el estado de su sala. Golpearlo no da Inspiracion (su Golpeable no es un enemigo).
+# Va en la sala con su forma y su dibujo. Lo escondido detras queda encerrado por el solido, no oculto.
 
 ## Al romperse.
 signal se_rompio()
@@ -22,8 +23,13 @@ const COLOR_ESCOMBROS: Color = Color(0.5, 0.47, 0.44)
 @export var golpes: int = 4
 ## Solo cuentan los golpes desde este lado (un atajo que se abre desde dentro). CUALQUIERA: todos.
 @export var solo_desde: Lado = Lado.CUALQUIERA
-## Dibujos que tapan lo de detras: se desvanecen al romperse y, ya roto, no aparecen.
-@export var tapas: Array[NodePath] = []
+## Dibujos que tapan lo de detras: se desvanecen al romperse y, ya roto, no aparecen. Nodos exportados, resueltos por
+## el editor (tutorials/scripting/gdscript/gdscript_exports.rst:321).
+@export var tapas: Array[CanvasItem] = []
+## Dibujos que solo existen roto (las orillas del hueco, lo que asoma por el): ocultos hasta romperse. Solo dibujos:
+## visible no apaga la fisica ni el proceso (classes/class_canvasitem.rst:803), asi que un objeto que se toma va
+## encerrado detras del muro y no aqui (lo exige el validador).
+@export var descubre: Array[CanvasItem] = []
 ## Ticks que tarda una tapa en desvanecerse.
 @export var ticks_desvanecer: int = 20
 ## Sacudida del dibujo con cada golpe, en px y ticks (Hollow Knight: 0,1 s).
@@ -49,7 +55,6 @@ var _posiciones: Array[Vector2] = []
 var _ticks_sacudiendo: int = 0
 var _sentido_sacudida: Vector2 = Vector2.ZERO
 var _desplazamiento: Vector2 = Vector2.ZERO
-var _tapas: Array[CanvasItem] = []
 var _ticks_desvaneciendo: int = 0
 
 
@@ -62,15 +67,12 @@ func _ready() -> void:
 		elif hijo is CanvasItem:
 			_dibujos.append(hijo as CanvasItem)
 			_posiciones.append(_posicion_de(hijo as CanvasItem))
-	for ruta: NodePath in tapas:
-		var tapa: CanvasItem = get_node_or_null(ruta) as CanvasItem
-		if tapa != null:
-			_tapas.append(tapa)
-	if not id.is_empty() and Partida.estado_de(Sala.clave_de(self), id) != null:
+	var ya_roto: bool = not id.is_empty() and Partida.estado_de(Sala.clave_de(self), id) != null
+	_mostrar_descubiertos(ya_roto)
+	if ya_roto:
 		roto = true
 		quedan = 0
-		for tapa: CanvasItem in _tapas:
-			tapa.visible = false
+		_ocultar_tapas()
 		queue_free()
 		return
 	_crear_golpeable()
@@ -92,13 +94,11 @@ func _physics_process(_delta: float) -> void:
 	if _ticks_desvaneciendo > 0:
 		_ticks_desvaneciendo -= 1
 		var alfa: float = float(_ticks_desvaneciendo) / float(maxi(ticks_desvanecer, 1))
-		for tapa: CanvasItem in _tapas:
+		for tapa: CanvasItem in tapas:
 			if is_instance_valid(tapa):
 				tapa.modulate.a = alfa
 		if _ticks_desvaneciendo == 0:
-			for tapa: CanvasItem in _tapas:
-				if is_instance_valid(tapa):
-					tapa.visible = false
+			_ocultar_tapas()
 			queue_free()
 
 
@@ -153,16 +153,28 @@ func _romper(jugador: Jugador) -> void:
 	for dibujo: CanvasItem in _dibujos:
 		dibujo.visible = false
 	queue_redraw()
+	_mostrar_descubiertos(true)
 	_soltar_escombros()
 	Eventos.muro_roto.emit(StringName(id))
 	se_rompio.emit()
 	# Las tapas se desvanecen y despues el muro se va; sin tapas, se va ya.
-	if _tapas.is_empty() or ticks_desvanecer <= 0:
-		for tapa: CanvasItem in _tapas:
-			tapa.visible = false
+	if tapas.is_empty() or ticks_desvanecer <= 0:
+		_ocultar_tapas()
 		queue_free()
 	else:
 		_ticks_desvaneciendo = ticks_desvanecer
+
+
+func _ocultar_tapas() -> void:
+	for tapa: CanvasItem in tapas:
+		if is_instance_valid(tapa):
+			tapa.visible = false
+
+
+func _mostrar_descubiertos(mostrar: bool) -> void:
+	for dibujo: CanvasItem in descubre:
+		if is_instance_valid(dibujo):
+			dibujo.visible = mostrar
 
 
 # Lado de quien golpea: a los lados si esta fuera del ancho del muro; si no, arriba o abajo.
@@ -202,7 +214,9 @@ func _mover_dibujo(desplazamiento: Vector2) -> void:
 			(dibujo as Node2D).position = _posiciones[i] + desplazamiento
 		elif dibujo is Control:
 			(dibujo as Control).position = _posiciones[i] + desplazamiento
-	queue_redraw()
+	# Con dibujo propio el _draw sale vacio: redibujar en cada tick de la sacudida no cambia nada.
+	if _dibujos.is_empty():
+		queue_redraw()
 
 
 func _posicion_de(dibujo: CanvasItem) -> Vector2:
@@ -238,4 +252,4 @@ func _soltar_escombros() -> void:
 
 
 func _jugador() -> Jugador:
-	return get_tree().get_first_node_in_group(&"jugador") as Jugador
+	return Jugador.actual(get_tree())

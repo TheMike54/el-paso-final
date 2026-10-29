@@ -1,4 +1,4 @@
 # Corre herramientas/pruebas/prueba_aviso_accion.gd: los pizarrones de la sala Pizarrones y el latido de los botones de
 # la pantalla. Sin entradas propias: la prueba mueve al jugador y anota el control o el toque.
 escena res://herramientas/pruebas/sala_aviso_accion.tscn
-fin 600
+fin 1000

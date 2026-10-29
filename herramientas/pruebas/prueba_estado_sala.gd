@@ -36,6 +36,12 @@ func _ready() -> void:
 	sala.add_child(sin_id)
 	sin_id.romper()
 	_caso("un suelo sin id no se recuerda", Partida.salas["prueba_3"].size() == 1)
+	# Dentro de una pieza instanciada el owner es la raiz de la pieza: clave_de sube hasta la Sala y lo recuerda en ella.
+	var anidado: SueloFragil = _suelo_en_pieza(sala, "suelo_pieza")
+	_caso("clave_de de un nodo dentro de una pieza es la de su sala", anidado.owner != sala
+			and Sala.clave_de(anidado) == "prueba_3")
+	anidado.romper()
+	_caso("un suelo dentro de una pieza se recuerda en su sala", _vale(Partida.estado_de("prueba_3", "suelo_pieza"), true))
 
 	# Coleccionable: tomarlo lo marca, autoguarda, y ya no aparece.
 	var jugador: Jugador = sala.get_node(^"Jugador") as Jugador
@@ -165,6 +171,22 @@ func _recompensa(cantidad: int, tipo: Recompensa.Tipo, monto: int, id: StringNam
 	recompensa.monto = monto
 	recompensa.id = id
 	return recompensa
+
+
+# Una pieza armada como escena (raiz Node2D con un suelo fragil cuyo owner es la raiz), instanciada dentro de la sala.
+func _suelo_en_pieza(sala: Sala, id: String) -> SueloFragil:
+	var raiz: Node2D = Node2D.new()
+	var suelo: SueloFragil = SueloFragil.new()
+	suelo.name = "Suelo"
+	suelo.id = id
+	raiz.add_child(suelo)
+	suelo.owner = raiz
+	var escena: PackedScene = PackedScene.new()
+	escena.pack(raiz)
+	raiz.free()
+	var pieza: Node2D = escena.instantiate() as Node2D
+	sala.add_child(pieza)
+	return pieza.get_node(^"Suelo") as SueloFragil
 
 
 func _borrar() -> void:

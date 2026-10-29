@@ -1,0 +1,4 @@
+# Corre herramientas/pruebas/prueba_npc.gd: el Npc con dibujo animado (quieto, hablar, entregar) que se voltea hacia
+# el jugador. Sin entradas propias: la prueba mueve al jugador y pulsa interactuar.
+escena res://herramientas/pruebas/sala_npc.tscn
+fin 300
