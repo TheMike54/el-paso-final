@@ -3,3 +3,5 @@
 x 680 1
 y 680 1
 senal /root/Eventos habilidad_obtenida 1
+# Solo el impulso con la habilidad avisa por el bus (lo oye Sonido).
+senal /root/Eventos jugador_impulso 1

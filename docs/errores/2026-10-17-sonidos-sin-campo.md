@@ -15,5 +15,6 @@
   - `Sonido.EVENTOS` lista cada evento que `Sonido` toca.
   - `tocar()` avisa con `push_warning` si le llega un evento que no es campo de la ficha. Es un `WARNING`, no un
     `ERROR:`: no hace fallar `validar.ps1` ni los guiones.
-- **Lo cubre:** `herramientas/guiones/nucleo/sonido.guion` (`prueba_sonido.gd`): cada evento de `Sonido.EVENTOS` es
-  campo de `FichaSonidos`, y los `tocar(&"...")` del código de `Sonido` son justo los de la lista.
+- **Lo cubre:** `herramientas/guiones/nucleo/sonido.guion` (`prueba_sonido.gd`). Desde el 27-oct-2026 ya no hay
+  `Sonido.EVENTOS` ni `campos_de_efecto()`: la prueba arma una ficha con todos los campos, emite cada señal que
+  `Sonido` escucha y exige que toque su evento, así una conexión a un evento mal escrito falla.

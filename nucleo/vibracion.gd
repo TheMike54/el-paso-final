@@ -62,8 +62,12 @@ func _al_descansar(_banco: StringName) -> void:
 	_vibrar(&"al_descansar", al_descansar)
 
 
-func _al_aterrizar(_velocidad: float) -> void:
-	_vibrar(&"al_aterrizar", al_aterrizar)
+# jugador_aterrizo sale en todo aterrizaje: solo vibran el duro y el de la picada (decidido el 07-oct-2026,
+# planes/cerrados/nucleo-auditoria-hollow-knight.md: un aterrizaje comun no vibra). Por el dato duro y no por un umbral
+# de velocidad: una caida que llega al tope pocos ticks cae tan rapido como una dura.
+func _al_aterrizar(_velocidad: float, duro: bool, picada: bool) -> void:
+	if duro or picada:
+		_vibrar(&"al_aterrizar", al_aterrizar)
 
 
 func _vibrar(cual: StringName, patron: Vector2) -> void:
