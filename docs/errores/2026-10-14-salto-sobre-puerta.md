@@ -3,8 +3,8 @@
 - **Síntoma:** en la prueba manual «Fundido a negro» (14-oct-2026, Galaxy Tab S9 FE, APK de `5d377b4`), al saltar
   justo antes de la puerta de la sala de puertas A o B, la pantalla fundía a negro pero la sala no cambiaba, en
   las dos direcciones. En la misma QA, en la sala A caminar a la izquierda parecía «atorarse con algo invisible».
-- **Causa:** el área de la puerta mide 160 px de alto (`nucleo/puerta.tscn`) y el salto sube 200 px
-  (`altura_salto`): un salto a tiempo pasa por encima del área sin tocarla. Detrás de la puerta no había nada
+- **Causa:** el área de la puerta mide 160 px de alto (`nucleo/puerta.tscn`) y el salto subía 200 px
+  entonces (`altura_salto`; hoy 230 px): un salto a tiempo pasa por encima del área sin tocarla. Detrás de la puerta no había nada
   sólido, así que el jugador salía por el borde, caía por debajo de los límites y eso cuenta como un peligro: quita
   una vida, funde a negro y lo devuelve al último suelo firme de la misma sala. La sala A tampoco tenía pared
   izquierda (caer por esa orilla era lo mismo); lo «invisible» no era un choque: la sala es negra, sin
