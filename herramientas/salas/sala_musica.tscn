@@ -1,0 +1,87 @@
+[gd_scene format=3 uid="uid://4w7rdb7k64ky"]
+
+[ext_resource type="Script" uid="uid://k7a08bqsbqd0" path="res://nucleo/sala.gd" id="1_sala"]
+[ext_resource type="PackedScene" uid="uid://dljj3hd7ldowx" path="res://nucleo/banco.tscn" id="2_banco"]
+[ext_resource type="Script" uid="uid://ds0b75ense7qn" path="res://nucleo/region_musica.gd" id="3_region"]
+[ext_resource type="AudioStream" uid="uid://cxnwd8q11ot44" path="res://nucleo/sonidos/silencio.tres" id="4_silencio"]
+[ext_resource type="AudioStream" uid="uid://b24kxuyaqcquj" path="res://nucleo/sonidos/musica_menu.ogg" id="5_tema"]
+
+[sub_resource type="RectangleShape2D" id="forma_suelo"]
+size = Vector2(2000, 80)
+
+[sub_resource type="RectangleShape2D" id="forma_pared"]
+size = Vector2(40, 720)
+
+[sub_resource type="RectangleShape2D" id="forma_region"]
+size = Vector2(700, 400)
+
+[node name="SalaMusica" type="Node2D"]
+script = ExtResource("1_sala")
+limites = Rect2(0, 0, 2000, 720)
+tema_musica = ExtResource("4_silencio")
+
+[node name="Entrada" type="Marker2D" parent="."]
+position = Vector2(300, 680)
+
+[node name="Suelo" type="StaticBody2D" parent="."]
+position = Vector2(1000, 720)
+
+[node name="Forma" type="CollisionShape2D" parent="Suelo"]
+shape = SubResource("forma_suelo")
+
+[node name="Dibujo" type="ColorRect" parent="Suelo"]
+offset_left = -1000.0
+offset_top = -40.0
+offset_right = 1000.0
+offset_bottom = 40.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="ParedIzquierda" type="StaticBody2D" parent="."]
+position = Vector2(20, 360)
+
+[node name="Forma" type="CollisionShape2D" parent="ParedIzquierda"]
+shape = SubResource("forma_pared")
+
+[node name="Dibujo" type="ColorRect" parent="ParedIzquierda"]
+offset_left = -20.0
+offset_top = -360.0
+offset_right = 20.0
+offset_bottom = 360.0
+mouse_filter = 2
+color = Color(0.15, 0.15, 0.18, 1)
+
+[node name="ParedDerecha" type="StaticBody2D" parent="."]
+position = Vector2(1980, 360)
+
+[node name="Forma" type="CollisionShape2D" parent="ParedDerecha"]
+shape = SubResource("forma_pared")
+
+[node name="Dibujo" type="ColorRect" parent="ParedDerecha"]
+offset_left = -20.0
+offset_top = -360.0
+offset_right = 20.0
+offset_bottom = 360.0
+mouse_filter = 2
+color = Color(0.15, 0.15, 0.18, 1)
+
+[node name="Region" type="Area2D" parent="."]
+position = Vector2(1400, 480)
+script = ExtResource("3_region")
+tema = ExtResource("5_tema")
+
+[node name="Forma" type="CollisionShape2D" parent="Region"]
+shape = SubResource("forma_region")
+
+[node name="Zona" type="ColorRect" parent="Region"]
+offset_left = -350.0
+offset_top = 188.0
+offset_right = 350.0
+offset_bottom = 200.0
+mouse_filter = 2
+color = Color(0.45, 0.38, 0.7, 1)
+
+[node name="Banco" parent="." instance=ExtResource("2_banco")]
+position = Vector2(1400, 680)
+id = "banco_musica"
+ruta_guardado = "user://prueba_banco.json"
