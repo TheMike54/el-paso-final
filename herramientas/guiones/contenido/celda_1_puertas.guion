@@ -1,0 +1,13 @@
+# La Celda, ruta de la sala 1: desde la Entrada (x=260) el jugador camina a la derecha, salta el foso de las varillas
+# (orilla en x=1571) y el de la grieta (orilla en x=3685) con el salto normal, se para frente a la puerta del salon
+# (x=4300, tipo PUERTA) y pulsa interactuar: se mete y sale de espaldas por la puerta izquierda de celda_2 (x=300).
+escena res://contenido/salas/celda/celda_1.tscn
+2 mover_derecha press
+208 saltar press
+240 saltar release
+562 saltar press
+594 saltar release
+676 mover_derecha release
+690 interactuar press
+692 interactuar release
+fin 830

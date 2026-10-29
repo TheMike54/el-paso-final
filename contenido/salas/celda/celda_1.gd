@@ -1,8 +1,8 @@
 extends Sala
-# La Celda: lo que solo tiene esta sala sobre las piezas comunes de celda_1.tscn (luces, cables, chispas, niebla y
-# fondos son nodos de nucleo/ sin codigo aqui). El polvo de los pies al correr y al caer, los papeles que vuelan al
-# pasar corriendo junto a una pila y el rebote en el suelo de las piedritas de la grieta alta. Lee al jugador en el
-# tick de fisica; en la pausa y el congelado no hace nada.
+# La Celda, sala 1: lo unico de esta sala sobre la base de la zona y sus piezas (luces de tubo, foso, puerta, fondos y
+# niebla son escenas sin codigo aqui). El polvo de los pies al correr y al caer, los papeles que vuelan al pasar
+# corriendo junto a una pila y el rebote en el suelo de las piedritas de la grieta alta. Lee al jugador en el tick de
+# fisica; en la pausa y el congelado no hace nada.
 
 ## Velocidad en x, en px/s, desde la que el jugador levanta polvo al correr y vuela los papeles.
 const CORRE_POLVO: float = 120.0
@@ -12,17 +12,17 @@ const CERCA_PILA: float = 70.0
 ## Ticks entre dos voladas de la misma pila (1,2 s).
 const ESPERA_PAPELES: int = 72
 
-@onready var _rastro: CPUParticles2D = $Particulas/PolvoRastro as CPUParticles2D
-@onready var _aterrizaje: CPUParticles2D = $Particulas/PolvoAterrizaje as CPUParticles2D
-@onready var _piedritas: EmisorRafaga = $Particulas/Piedritas as EmisorRafaga
-@onready var _rebote: CPUParticles2D = $Particulas/Rebote as CPUParticles2D
-
 var _papeles: Array[CPUParticles2D] = []
 var _espera_papeles: Array[int] = []
 var _jugador: Jugador = null
 var _en_suelo_antes: bool = true
 # Ticks que faltan para el rebote de las piedritas; -1 sin rebote pendiente.
 var _rebote_en: int = -1
+
+@onready var _rastro: CPUParticles2D = $Particulas/PolvoRastro as CPUParticles2D
+@onready var _aterrizaje: CPUParticles2D = $Particulas/PolvoAterrizaje as CPUParticles2D
+@onready var _piedritas: EmisorRafaga = $Particulas/Piedritas as EmisorRafaga
+@onready var _rebote: CPUParticles2D = $Particulas/Rebote as CPUParticles2D
 
 
 func _ready() -> void:
