@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://c3ooqhaj3mao0" path="res://nucleo/jugador.gd" id="1_jugador"]
 [ext_resource type="Script" uid="uid://cll06a0vvercv" path="res://nucleo/camara_jugador.gd" id="2_camara"]
-[ext_resource type="SpriteFrames" path="res://nucleo/arte/jugador_hombre/jugador_hombre.tres" id="3_cuadros"]
+[ext_resource type="SpriteFrames" uid="uid://d3pkeh7d51kjj" path="res://nucleo/arte/jugador_hombre/jugador_hombre.tres" id="3_cuadros"]
 [ext_resource type="Shader" uid="uid://uw0ho608bpyy" path="res://nucleo/arte/destello.gdshader" id="4_destello"]
 
 [sub_resource type="RectangleShape2D" id="forma_jugador"]
@@ -17,6 +17,7 @@ shader = ExtResource("4_destello")
 shader_parameter/cantidad = 0.0
 
 [node name="Jugador" type="CharacterBody2D" groups=["jugador"]]
+platform_on_leave = 1
 script = ExtResource("1_jugador")
 
 [node name="Dibujo" type="AnimatedSprite2D" parent="."]

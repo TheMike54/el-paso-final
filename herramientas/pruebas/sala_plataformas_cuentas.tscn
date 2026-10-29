@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://cew0jp3ms8wvj"]
+
+[ext_resource type="Script" uid="uid://bw02tfe2jerfi" path="res://herramientas/pruebas/prueba_plataformas.gd" id="1_prueba"]
+
+[node name="SalaPlataformasCuentas" type="Node"]
+script = ExtResource("1_prueba")

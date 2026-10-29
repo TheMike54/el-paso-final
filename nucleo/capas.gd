@@ -28,7 +28,9 @@ static func poner(objeto: CollisionObject2D, capa: int, mascara: int) -> void:
 
 ## Rayo de desde a hasta (globales) contra los solidos de ESCENARIO, sin areas: el Dictionary de intersect_ray,
 ## vacio si no choca. Solo dentro del tick (_physics_process o lo que este llama).
-static func rayo_a_escenario(quien: Node2D, desde: Vector2, hasta: Vector2) -> Dictionary:
+## excluir: los RID de los cuerpos que el rayo atraviesa (classes/class_physicsrayqueryparameters2d.rst:131).
+static func rayo_a_escenario(quien: Node2D, desde: Vector2, hasta: Vector2, excluir: Array[RID] = []) -> Dictionary:
 	var consulta: PhysicsRayQueryParameters2D = PhysicsRayQueryParameters2D.create(desde, hasta)
+	consulta.exclude = excluir
 	consulta.collision_mask = ESCENARIO
 	return quien.get_world_2d().direct_space_state.intersect_ray(consulta)

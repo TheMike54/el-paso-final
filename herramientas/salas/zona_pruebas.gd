@@ -12,7 +12,7 @@ const GRUPOS: Dictionary = {
 	"Movimiento": ["sala_movimiento.tscn", "sala_caida.tscn", "sala_salida_abajo.tscn", "sala_doble_salto.tscn", "sala_impulso.tscn", "sala_pared.tscn", "sala_carrera.tscn"],
 	"Combate": ["sala_combate.tscn", "sala_combate_chico.tscn", "sala_golpe.tscn", "sala_parry.tscn", "sala_pogo.tscn", "sala_picada.tscn", "sala_bola.tscn", "sala_curar.tscn"],
 	"Enemigos": ["sala_enemigos.tscn", "sala_enemigos_banco.tscn", "sala_peligro.tscn", "sala_peligro_movil.tscn", "sala_enemigos_moviles.tscn"],
-	"Mundo": ["sala_banco.tscn", "sala_puerta_a.tscn", "sala_camara.tscn", "sala_capas.tscn", "sala_secretos.tscn", "sala_pizarrones.tscn"],
+	"Mundo": ["sala_banco.tscn", "sala_puerta_a.tscn", "sala_puerta_c.tscn", "sala_camara.tscn", "sala_capas.tscn", "sala_secretos.tscn", "sala_pizarrones.tscn", "sala_plataformas.tscn", "sala_musica.tscn"],
 	"Partida": ["sala_dialogo.tscn", "sala_reto.tscn", "sala_lo_perdido.tscn", "sala_tienda.tscn"],
 	"Rendimiento": ["sala_recursos.tscn", "sala_arte.tscn"],
 	"Zonas": ["la_celda.tscn", "zonas/mapa/mapa_1.tscn", "zonas/mapa/mapa_2.tscn", "zonas/prueba/prueba_1.tscn", "zonas/prueba/prueba_2.tscn", "zonas/prueba/prueba_3.tscn", "zonas/prueba/prueba_4.tscn"],
@@ -43,10 +43,13 @@ const SALAS: Dictionary = {
 	"sala_enemigos_moviles.tscn": ["Enemigos móviles", "Caminan, vuelan, lanzan"],
 	"sala_banco.tscn": ["Banco", "Sentarse y guardar"],
 	"sala_puerta_a.tscn": ["Puerta A", "Cambio de sala"],
+	"sala_puerta_c.tscn": ["Puerta C", "Puertas con interactuar"],
 	"sala_camara.tscn": ["Cámara", "Seguimiento y límites"],
 	"sala_capas.tscn": ["Capas", "Paralaje"],
 	"sala_secretos.tscn": ["Secretos", "Muros y palancas"],
 	"sala_pizarrones.tscn": ["Pizarrones", "Aprender cada acción"],
+	"sala_plataformas.tscn": ["Plataformas", "Llevan y no aplastan"],
+	"sala_musica.tscn": ["Música", "Tema de una región"],
 	"sala_dialogo.tscn": ["Diálogo", "Opciones y premios"],
 	"sala_reto.tscn": ["Reto", "Preguntas con premio"],
 	"sala_lo_perdido.tscn": ["Lo perdido", "Volver por la mochila"],
@@ -88,6 +91,9 @@ func _ready() -> void:
 	var contador: ContadorFps = ContadorFps.new()
 	contador.siempre_en_menu = true
 	add_child(contador)
+	# Las salas de prueba dejan su tema vacio (no tocan la musica): sin esto el tema del menu seguiria en todas. Se
+	# callan aqui, como estaba la zona antes de que existiera la musica; una sala que quiera tema lo pide ella.
+	Arranque.musica.poner(Musica.SILENCIO, Musica.DB_NORMAL, Musica.FUNDIDO_CORTO)
 	_leer_salas()
 	var grupo: ButtonGroup = ButtonGroup.new()
 	for categoria: String in _salas:
