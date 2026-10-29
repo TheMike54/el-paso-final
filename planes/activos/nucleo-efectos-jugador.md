@@ -1,4 +1,4 @@
-ACTIVO (aprobado por la persona el 25-oct-2026)
+CERRADO (29-oct-2026, con el PR de `feature/contenido-celda`; aprobado por la persona el 25-oct-2026)
 
 # Efectos del jugador: parry, bola de fuego y curar
 
@@ -57,4 +57,5 @@ La lógica: el parry, el disparo desviado, la bola y curar golpean, cuestan y du
 | 7 | `validar.ps1` `archivos=288 fallos=0`; `correr-guiones.ps1` `RESUMEN total=165 OK=165 MALOS=0`, sin tocar ningún `.esperado` en este cambio (`parry.guion` y `parry.esperado` difieren de `main` por el disparo desviado, hecho antes en esta rama) |
 | 8 | Grep sin restos en código ni docs vivos. Queda el texto de la entrada `parry-visible` de `nucleo/funciones.json` («dibuja un estallido blanco»): Claude no reescribe entradas; propuesta para la persona en el reporte |
 
-Falta la persona: verlos en el teléfono (`efectos-jugador-telefono`).
+La persona los vio en el S50 el 25-oct-2026 y pasan (`docs/pruebas.md`, fila «Efectos del jugador»;
+`efectos-jugador-telefono`).

@@ -5,12 +5,11 @@ description: Reglas de interfaz táctil de este proyecto (Godot 4.7.2). Usar ant
 
 # Interfaz táctil en este proyecto
 
-Cada cita se abrió en la documentación de Godot 4.7 en la línea citada y cada ejemplo se buscó en este repo;
-«Cómo se comprueba» dice cómo revisarlo en adelante, no que ya se haya corrido. Lo demás se busca con Grep en `$env:GODOT_DOCS`
-(rutas `tutorials/...`) y se cita `archivo:línea`. Los números (alto de toque, letras, márgenes, capas) no se
+Citas a `$env:GODOT_DOCS` como `archivo:línea`; «Cómo se comprueba» dice cómo revisar la regla. Lo demás se busca
+con Grep ahí (rutas `tutorials/...`) y se cita igual. Los números (alto de toque, letras, márgenes, capas) no se
 repiten aquí: viven en `nucleo/tema.gd` y en `docs/contrato.md` («Menú», «Marco de menús», «Capas de dibujo»).
 
-`validar.ps1` revisa que todo compile y las reglas de las salas, pero no ejecuta `_ready`: así que el acomodo, el foco, las capas y el
+Como `validar.ps1` no ejecuta `_ready` (`CLAUDE.md` raíz, «Entorno y trampas»), el acomodo, el foco, las capas y el
 toque los comprueba un guion o una prueba manual en el teléfono.
 
 ## Tema y variaciones
@@ -23,7 +22,7 @@ toque los comprueba un guion o una prueba manual en el teléfono.
 | Se aplica con `control.theme_type_variation = Tema.NOMBRE` (vacía = solo el tipo base) | `tutorials/ui/gui_theme_type_variations.rst:66` | Grep de `theme_type_variation`; guion `menu_configuracion` |
 | `add_theme_*_override` solo para acomodo (separaciones, márgenes); el aspecto sale del tema | `tutorials/ui/gui_skinning.rst:172`, `tutorials/ui/gui_containers.rst:98` | Grep de `add_theme_` en el archivo cambiado: solo separaciones y márgenes |
 | Un `Control` propio bajo una raíz de menú lee fuente, tamaño y stylebox con `get_theme_*` (ejemplo: `nucleo/boton_valor.gd`, `_draw`) | `tutorials/ui/gui_skinning.rst:36` | Guion `menu_configuracion` |
-| El stylebox `focus` es la marca de gis (`EstiloGis`, `nucleo/estilo_gis.gd`, un `StyleBox` con `_draw`): flechita y subrayado, en las barras una caja; se dibuja encima de `normal` o `pressed`, que no tienen caja. Un `StyleBox` no conoce el texto del botón: el subrayado cruza el contenido, así que en una columna el botón mide lo que su texto (`size_flags_horizontal` = 0). El foco se da con `Tema.dar_foco(control)`, nunca con `grab_focus()` directo: se dibuja solo si lo último que se usó fue un control o el teclado (`UltimaEntrada.con_control()`); tras un toque se da oculto. Con el foco el texto pasa de `Tema.GASTADO` a `Tema.GIS`; lo elegido va subrayado y el valor que vale de un `BotonValor`, en un óvalo; lo lleno de las barras usa `Tema.ENCENDIDO`. Un botón con contenido propio (ficha, caja de diálogo) usa la variación `Tema.TARJETA`, o queda un hueco sin caja | `tutorials/ui/gui_skinning.rst:92` | Guiones `pausa_foco`, `menu_configuracion`; prueba manual con teclado o control |
+| El stylebox `focus` es la marca de gis (`EstiloGis`, `nucleo/estilo_gis.gd`, un `StyleBox` con `_draw`): flechita y subrayado, en las barras una caja; se dibuja encima de `normal` o `pressed`, que no tienen caja. Un `StyleBox` no conoce el texto del botón: el subrayado cruza el contenido, así que en una columna el botón mide lo que su texto (`size_flags_horizontal` = 0). El foco se da con `Tema.dar_foco(control)`, nunca con `grab_focus()` directo: se dibuja solo si lo último que se usó fue un control o el teclado (`UltimaEntrada.con_control()`); tras un toque se da oculto. Colores y marcas del foco: contrato, «Menú»; lo lleno de las barras usa `Tema.ENCENDIDO`. Un botón con contenido propio (ficha, caja de diálogo) usa la variación `Tema.TARJETA`, o queda un hueco sin caja | `tutorials/ui/gui_skinning.rst:92` | Guiones `pausa_foco`, `menu_configuracion`; prueba manual con teclado o control |
 | Un `Control` propio que puede tomar el foco muestra un indicador; el que no debe tomarlo lleva `focus_mode = Control.FOCUS_NONE` (`nucleo/caja_dialogo.gd`) | `tutorials/ui/custom_gui_controls.rst:41` | Guiones `pausa_foco`, `dialogo` |
 | El tamaño de letra va en el tema o en el nodo (`Tema.LETRA`, `Tema.LETRA_CHICA`, `Tema.LETRA_TITULO`), no en un recurso de fuente por tamaño. La fuente de los menús es Cabin Sketch (`Tema.RUTA_FUENTE`, gruesa en `Tema.TITULO`), cargada con `load()` al armar el tema: un `preload` hace fallar la primera importación de un clon limpio. Las medidas de `Tema` (`ALTO_LETRA`) son de esa fuente: al cambiarla se vuelven a medir con `get_height` | `tutorials/ui/gui_using_fonts.rst:20` | Prueba manual en el teléfono |
 
