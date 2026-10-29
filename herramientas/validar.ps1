@@ -26,6 +26,9 @@ $resumen = @($lineas | Where-Object { $_ -match '^VALIDACION archivos=\d+ fallos
 
 if ($errores.Count -eq 0 -and $codigo -eq 0 -and $resumen.Count -eq 1 -and $resumen[0] -match 'fallos=0$') {
     Write-Output ("OK  " + $resumen[0])
+    # Los avisos (AVISO ...) no fallan: solo se cuenta cuantos hay; el detalle queda en el log.
+    $avisos = @($lineas | Where-Object { $_ -match '^AVISOS total=\d+$' })
+    if ($avisos.Count -eq 1 -and $avisos[0] -notmatch 'total=0$') { Write-Output ($avisos[0] + '  detalle en ' + $log) }
     exit 0
 }
 $errores | Select-Object -First 20 | ForEach-Object { Write-Output $_ }

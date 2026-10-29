@@ -1,6 +1,6 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://c33mmtt4b1htf"]
 
-[ext_resource type="Script" path="res://mapa/objeto_mapa.gd" id="1_objeto"]
+[ext_resource type="Script" uid="uid://cax4u4kvb6aqx" path="res://mapa/objeto_mapa.gd" id="1_objeto"]
 
 [sub_resource type="RectangleShape2D" id="forma_objeto"]
 size = Vector2(60, 60)

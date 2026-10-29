@@ -1,6 +1,6 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://bf3bve6bjd8ns"]
 
-[ext_resource type="Script" path="res://nucleo/editor_controles.gd" id="1_editor"]
+[ext_resource type="Script" uid="uid://cwv4dtm6xpckq" path="res://nucleo/editor_controles.gd" id="1_editor"]
 
 [node name="EditorControles" type="CanvasLayer"]
 process_mode = 3
