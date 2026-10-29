@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://d1uybcrrtofk8"
-path="res://.godot/imported/borde_desnivel.png-bcf3b7358e777f8b1bd663ba258172d9.ctex"
+uid="uid://bdlirph6805x"
+path="res://.godot/imported/pizarron_patas.png-2418733f603c60ef02665e6a162cf146.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://contenido/salas/celda/arte/borde_desnivel.png"
-dest_files=["res://.godot/imported/borde_desnivel.png-bcf3b7358e777f8b1bd663ba258172d9.ctex"]
+source_file="res://contenido/salas/celda/arte/pizarron_patas.png"
+dest_files=["res://.godot/imported/pizarron_patas.png-2418733f603c60ef02665e6a162cf146.ctex"]
 
 [params]
 

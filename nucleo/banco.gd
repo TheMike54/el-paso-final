@@ -6,6 +6,9 @@ extends Interactuable
 # mapa dibujado) entra en el archivo. Va como hijo directo de la raiz de una sala, con su forma. La capa y el
 # disparador (sin congelado) son de la base Interactuable, sin aviso: el banco no lo dibuja.
 
+## Rectangulo provisional de un banco sin arte; el arte como hijo (la silla de la sala) lo apaga, sin abrir la escena.
+const COLOR_PROVISIONAL: Color = Color(0.5, 0.4, 0.25, 1.0)
+
 ## Id del banco, unico en todo el juego: es lo que se guarda.
 @export var id: String = ""
 ## Archivo donde se guarda al descansar. Con Guardado.RUTA (por omision) usa Partida.ruta_guardado, el de la
@@ -18,6 +21,10 @@ extends Interactuable
 
 func _init() -> void:
 	con_aviso = false
+
+
+func _draw() -> void:
+	dibujar_provisional(120.0, 40.0, COLOR_PROVISIONAL)
 
 
 func _al_interactuar(jugador: Jugador) -> void:

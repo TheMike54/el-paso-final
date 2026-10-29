@@ -1,0 +1,31 @@
+[gd_scene format=3 uid="uid://c3v0dvamqoi4p"]
+
+[ext_resource type="Script" uid="uid://dctc7invor25u" path="res://nucleo/luz_sala.gd" id="1_luz"]
+[ext_resource type="Texture2D" uid="uid://dy7ygasra5w8a" path="res://contenido/salas/celda/arte/tubo_apagado.png" id="2_apagado"]
+[ext_resource type="Texture2D" uid="uid://cg2h5m7bd8rpy" path="res://contenido/salas/celda/arte/tubo_encendido.png" id="3_encendido"]
+[ext_resource type="CanvasItemMaterial" uid="uid://cbonitpbsi8a6" path="res://nucleo/arte/sin_luz.tres" id="4_sin_luz"]
+
+[node name="LuzTubo" type="Node2D" node_paths=PackedStringArray("encendida")]
+z_index = 13
+z_as_relative = false
+script = ExtResource("1_luz")
+radio = 470.0
+tinte = Color(0.84313726, 0.9019608, 1, 1)
+tipo = 1
+corte_arriba = 102.4
+encendida = NodePath("TuboEncendido")
+
+[node name="TuboApagado" type="Sprite2D" parent="."]
+z_index = -20
+z_as_relative = false
+position = Vector2(-105, -68.4)
+texture = ExtResource("2_apagado")
+centered = false
+
+[node name="TuboEncendido" type="Sprite2D" parent="."]
+z_index = 11
+z_as_relative = false
+material = ExtResource("4_sin_luz")
+position = Vector2(-93, -7.4)
+texture = ExtResource("3_encendido")
+centered = false

@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://daady0ech8iml"]
+
+[ext_resource type="Texture2D" uid="uid://f164gnnoehdw" path="res://contenido/salas/celda/arte/profundo.png" id="1_profundo"]
+
+[node name="Profundo" type="Parallax2D"]
+z_index = -100
+scroll_scale = Vector2(0.05, 1)
+repeat_size = Vector2(2880, 0)
+
+[node name="Dibujo" type="Sprite2D" parent="."]
+scale = Vector2(8, 8)
+texture = ExtResource("1_profundo")
+centered = false
