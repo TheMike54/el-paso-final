@@ -1,4 +1,4 @@
-ACTIVO
+CERRADO (29-oct-2026, con el PR de `feature/contenido-celda`)
 
 # Trazo blanco del ataque
 

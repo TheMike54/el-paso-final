@@ -1,4 +1,4 @@
-ACTIVO
+CERRADO (29-oct-2026, con el PR de `feature/contenido-celda`; el APK de publicación espera el keystore: `paquete-publicacion` en `nucleo/funciones.json`)
 
 # Video del menú y cinemáticas por el decodificador del teléfono (H.264)
 
