@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://dnepqvpvrkdum"]
+
+[ext_resource type="PackedScene" uid="uid://b58veekclyq56" path="res://nucleo/npc.tscn" id="1_npc"]
+[ext_resource type="SpriteFrames" uid="uid://cn2fy3fmru6x1" path="res://contenido/npc/eterno/eterno_cuadros.tres" id="2_cuadros"]
+
+[node name="Eterno" node_paths=PackedStringArray("animacion") instance=ExtResource("1_npc")]
+animacion = NodePath("Dibujo")
+
+[node name="Dibujo" type="AnimatedSprite2D" parent="."]
+sprite_frames = ExtResource("2_cuadros")
+animation = &"quieto"
+centered = false
+offset = Vector2(-47, -194)

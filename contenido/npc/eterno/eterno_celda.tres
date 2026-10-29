@@ -1,0 +1,40 @@
+[gd_resource type="Resource" script_class="FichaDialogo" format=3 uid="uid://bys6mpxc0ddpq"]
+
+[ext_resource type="Script" uid="uid://dycfvji2i3yph" path="res://nucleo/ficha_dialogo.gd" id="1_ficha"]
+[ext_resource type="Script" uid="uid://cvgtxxidjsdxl" path="res://nucleo/linea_dialogo.gd" id="2_linea"]
+[ext_resource type="Script" uid="uid://cltshx6hm4a3b" path="res://nucleo/recompensa.gd" id="3_recompensa"]
+
+[sub_resource type="Resource" id="linea_1"]
+script = ExtResource("2_linea")
+quien = "El Eterno"
+texto = "¿Otro más? Los sinodales no se cansan."
+
+[sub_resource type="Resource" id="linea_2"]
+script = ExtResource("2_linea")
+quien = "El Eterno"
+texto = "Mi nombre ya no importa. Llegué en 2009 y aquí sigo."
+
+[sub_resource type="Resource" id="linea_3"]
+script = ExtResource("2_linea")
+quien = "El Eterno"
+texto = "Aquí abajo terminan todos a los que no quieren titular. Abajo, cada vez más abajo."
+
+[sub_resource type="Resource" id="linea_4"]
+script = ExtResource("2_linea")
+quien = "El Eterno"
+texto = "Si quieres salir, vas a tener que subir. Y pelear."
+
+[sub_resource type="Resource" id="linea_5"]
+script = ExtResource("2_linea")
+quien = "El Eterno"
+texto = "Te voy a dar la pluma con la que nunca pude firmar mi acta. Tal vez tú sí."
+
+[sub_resource type="Resource" id="recompensa_pluma"]
+script = ExtResource("3_recompensa")
+tipo = 3
+id = &"pluma"
+
+[resource]
+script = ExtResource("1_ficha")
+lineas = Array[ExtResource("2_linea")]([SubResource("linea_1"), SubResource("linea_2"), SubResource("linea_3"), SubResource("linea_4"), SubResource("linea_5")])
+recompensas = Array[ExtResource("3_recompensa")]([SubResource("recompensa_pluma")])
