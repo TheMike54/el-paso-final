@@ -79,7 +79,7 @@ func _ready() -> void:
 	add_child(_halo)
 	_recortar_halo()
 	_poner_luz_2d()
-	Eventos.ajuste_grafico_cambiado.connect(_al_cambiar_ajuste)
+	Eventos.ajuste_cambiado.connect(_al_cambiar_ajuste)
 	_pintar()
 	# La energia de la luz 2D depende de la oscuridad del Brillo, que la Sala crea en su _ready, despues que el de sus
 	# hijos: se pinta otra vez al final del cuadro. Sin esto una luz FIJA (sin _process) quedaba con energia 0.

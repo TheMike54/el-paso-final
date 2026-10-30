@@ -24,7 +24,7 @@ func _ready() -> void:
 	_quieta = Recursos.bajos()
 	_inicio = position
 	_aplicar()
-	Eventos.ajuste_grafico_cambiado.connect(_al_cambiar_ajuste)
+	Eventos.ajuste_cambiado.connect(_al_cambiar_ajuste)
 
 
 func _process(delta: float) -> void:

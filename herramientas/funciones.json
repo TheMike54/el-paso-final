@@ -340,5 +340,35 @@
     "que": "herramientas/arreglar-uids.ps1 -Rutas <res://...> pone el uid de cada ext_resource (y el de la cabecera si falta) en escenas y recursos escritos a mano, con con_uids de validar.gd",
     "comprobacion": "manual: escribir un .tscn de prueba en el scratchpad copiado dentro del repo sin uids, correr el script y ver que validar.ps1 no avisa de uids",
     "pasa": true
+  },
+  {
+    "id": "guion-habilidad",
+    "que": "Linea 'habilidad <id>' del .guion, antes de las entradas: el puerto da esa habilidad en silencio en cuanto hay jugador (como Sala.habilidades_de_prueba), la conserva al cambiar de sala y falla al cargar con un id que no esta en Habilidades.TODAS o con la linea despues de las entradas; sirve en guiones de contenido/",
+    "comprobacion": "herramientas/guiones/nucleo/habilidad_por_guion.guion",
+    "pasa": true
+  },
+  {
+    "id": "zona-pruebas-enemigos",
+    "que": "Una sala de prueba por comportamiento de enemigo en herramientas/salas/enemigos/ (caminante, volador, escupidor, muneco_que_ataca), cada una con su guion; la categoria Enemigos de la zona de pruebas las agrega sola al final, tambien en el paquete exportado (.remap), y el validador acepta su linea en SALAS solo si la escena existe",
+    "comprobacion": "herramientas/guiones/nucleo/zona_pruebas_categorias.guion;herramientas/guiones/nucleo/enemigo_caminante_sala.guion;herramientas/guiones/nucleo/enemigo_volador_sala.guion;herramientas/guiones/nucleo/enemigo_escupidor_sala.guion;herramientas/guiones/nucleo/enemigo_muneco_que_ataca_sala.guion",
+    "pasa": true
+  },
+  {
+    "id": "validador-equipo",
+    "que": "El validador falla si una recompensa de amuleto o de util (entrega, reto, tienda o ficha de dialogo) nombra un id que no esta en CatalogoEquipo, o, fuera de herramientas/, uno que solo esta en el catalogo de pruebas",
+    "comprobacion": "herramientas/guiones/herramientas/validador.guion",
+    "pasa": true
+  },
+  {
+    "id": "validador-arena-jefe",
+    "que": "El validador exige id_jefe, jefe y CollisionShape2D hija con forma y encendida en cada ArenaJefe; tambien revisa los ids de su recompensa",
+    "comprobacion": "herramientas/guiones/herramientas/validador.guion",
+    "pasa": false
+  },
+  {
+    "id": "validador-ficha-zona",
+    "que": "El validador falla una sala con id bajo contenido/ sin ficha_zona y dos salas de una misma zona con fichas de distinto resource_path; las salas de herramientas/ pueden no tener ficha",
+    "comprobacion": "herramientas/guiones/herramientas/validador.guion",
+    "pasa": true
   }
 ]

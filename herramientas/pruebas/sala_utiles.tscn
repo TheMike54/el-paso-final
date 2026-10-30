@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://yadvuctunmju"]
+
+[ext_resource type="Script" uid="uid://dqnxjnitmaaqv" path="res://herramientas/pruebas/prueba_utiles.gd" id="1_prueba"]
+
+[node name="SalaUtiles" type="Node"]
+script = ExtResource("1_prueba")

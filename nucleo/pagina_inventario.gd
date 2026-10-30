@@ -46,7 +46,7 @@ func mostrar_en_marco() -> void:
 func _llenar() -> void:
 	valores = {
 		"Vida": "%d de %d" % [Partida.vidas, Partida.vidas_maximas],
-		"Inspiración": "%d de %d" % [Partida.inspiracion, Partida.INSPIRACION_MAXIMA],
+		"Inspiración": "%d de %d" % [Partida.inspiracion, Partida.inspiracion_maxima],
 		"PejeCoins": str(Partida.monedas),
 		"Arma": PantallaAmuletos.nombre_de(ARMA) if Partida.tiene(ARMA) else "Sin arma",
 		"Habilidades": _lista(Partida.habilidades.filter(func(h: StringName) -> bool: return h != ARMA), "Ninguna"),

@@ -9,6 +9,8 @@ así que ante una diferencia manda el documento al que remite.
 | `como-trabajamos.md` | Antes de la primera rama: ciclo de una funcionalidad, plan, evidencia y PR |
 | `armar-una-sala.md` | Para agregar una sala o una zona nueva en `contenido/` |
 | `agregar-un-enemigo.md` | Para crear la ficha y el comportamiento de un enemigo |
+| `comportamiento-de-enemigo.md` | Para escribir la mecánica de un enemigo (escudo, trepar, embestir) con las piezas del núcleo |
+| `agregar-un-amuleto-o-un-util.md` | Para sumar un amuleto o un útil al catálogo y darlo en una sala |
 | `arte.md` | Para incorporar al juego una pieza de arte ya aprobada |
 | `sonido-y-musica.md` | Para agregar un sonido, un tema de sala o una región de música |
 | `medir-en-el-telefono.md` | Para exportar el APK de desarrollo y medir en el teléfono |
@@ -25,10 +27,11 @@ Piezas y términos que las guías nombran sin explicar:
 | `LuzSala` | Fuente de luz de una sala (tubo, hongo, chispa): un halo aditivo y, solo con las luces 2D encendidas, una `PointLight2D` (`nucleo/luz_sala.gd`) |
 | `ZonaCamara` | Área que, mientras el jugador está dentro, limita lo que muestra la cámara además de los límites de la sala (`nucleo/zona_camara.gd`) |
 | `Terreno`, `Peligros`, `Encima`, `Luces`, `Frente` | Nodos contenedores de la base de una zona, no grupos de Godot |
-| Ficha | Recurso `.tres` de solo lectura con datos (`FichaEnemigo`, `FichaDialogo`, `FichaSonidos`) |
+| Ficha | Recurso `.tres` de solo lectura con datos (`FichaEnemigo`, `FichaDialogo`, `FichaSonidos`, `FichaAmuleto`, `FichaUtil`) |
+| Carga, ranura | La carga es cuánto pueden costar juntos los amuletos puestos (3 al empezar, como las muescas de Hollow Knight); un útil ocupa una ranura y no gasta carga (`docs/contrato.md`, «Amuletos y útiles») |
 | Guion | Entradas por cuadro y estado esperado para correr el juego sin ventana (`docs/guiones.md`); no es un script de GDScript |
 
 Los fragmentos de código de las guías son copias de archivos reales del repo: ante una diferencia manda el archivo.
 
-Fuera de estas guías, la referencia está en `docs/contrato.md` (qué ofrece cada bloque), `docs/jugador.md`,
+Fuera de estas guías, la referencia está en `docs/contrato.md` (qué ofrece cada bloque; al inicio, la tabla de sus archivos por tema), `docs/jugador.md`,
 `docs/guiones.md`, `docs/pruebas.md` y `docs/errores/`.

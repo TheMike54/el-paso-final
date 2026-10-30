@@ -5,7 +5,7 @@ extends CanvasLayer
 # Vive en el nucleo: mapa/ la extiende (PantallaMapa) y el nucleo sigue sin nombrar clases de mapa/.
 
 ## Capa de las paginas: debajo de la barra del marco (MarcoMenus.CAPA).
-const CAPA: int = 20
+const CAPA: int = ModalPausa.CAPA
 
 ## A la vista dentro del marco. Publico para los guiones.
 var abierta: bool = false
@@ -19,7 +19,7 @@ func _ready() -> void:
 	visible = false
 
 
-## Id estable de la pagina (el de MarcoMenus.ORDEN). Cada pagina lo da.
+## Id estable de la pagina (el de MarcoMenus.PAGINAS). Cada pagina lo da.
 func id_pagina() -> StringName:
 	return &""
 

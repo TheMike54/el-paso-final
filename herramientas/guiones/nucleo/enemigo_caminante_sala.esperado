@@ -1,0 +1,13 @@
+escena res://herramientas/salas/enemigos/sala_caminante.tscn
+# A los 60 ya se alejo del punto inicial (900); a los 200 vuelve hacia la derecha.
+en 60 valor Enemigo position:x 730 35
+en 200 valor Enemigo position:x 710 50
+en 200 valor Enemigo mirando 1 0
+en 200 valor Enemigo/Comportamiento giros 1 0
+# Llega a la orilla derecha; al final giro dos veces, mira a la izquierda y sigue sobre la plataforma (y): giro en la
+# orilla sin caer. La pausa antes de cada giro no se comprueba aqui.
+en 350 valor Enemigo position:x 1050 30
+valor Enemigo position:x 870 65
+valor Enemigo position:y 460 5
+valor Enemigo mirando -1 0
+valor Enemigo/Comportamiento giros 2 0

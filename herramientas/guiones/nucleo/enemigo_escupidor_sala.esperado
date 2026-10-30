@@ -1,0 +1,7 @@
+escena res://herramientas/salas/enemigos/sala_escupidor.tscn
+# Un lanzamiento hacia el jugador (x=500): lanzados solo sube al crear el ProyectilEnemigo con lanzar_en_arco. El
+# escupidor permanece sobre su repisa. El aviso no se comprueba aqui.
+valor Enemigo/Comportamiento lanzados 1 0
+valor Enemigo/Comportamiento ultimo_objetivo:x 500 5
+valor Enemigo position:x 1200 5
+valor Enemigo position:y 560 5

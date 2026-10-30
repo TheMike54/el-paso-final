@@ -1,0 +1,47 @@
+[gd_resource type="Resource" script_class="CatalogoEquipo" format=3 uid="uid://bci77xapq5l0m"]
+
+[ext_resource type="Script" uid="uid://cfinu2td5srxh" path="res://nucleo/catalogo_equipo.gd" id="1_catalogo"]
+[ext_resource type="Script" uid="uid://c41xt1vprgy0k" path="res://nucleo/ficha_amuleto.gd" id="2_amuleto"]
+
+[sub_resource type="Resource" id="amuleto_prueba"]
+script = ExtResource("2_amuleto")
+id = &"amuleto_prueba"
+nombre = "Amuleto de prueba"
+descripcion = "Sin efecto: para probar la tienda, las entregas y la carga."
+costo = 1
+
+[sub_resource type="Resource" id="amuleto_velocidad"]
+script = ExtResource("2_amuleto")
+id = &"amuleto_velocidad"
+nombre = "Tenis de prueba"
+descripcion = "Caminas más rápido."
+costo = 1
+velocidad_factor = 1.25
+
+[sub_resource type="Resource" id="amuleto_escudo"]
+script = ExtResource("2_amuleto")
+id = &"amuleto_escudo"
+nombre = "Chamarra de prueba"
+descripcion = "Tras un golpe, más tiempo sin recibir daño."
+costo = 2
+invulnerable_extra = 30
+
+[sub_resource type="Resource" id="amuleto_inspiracion"]
+script = ExtResource("2_amuleto")
+id = &"amuleto_inspiracion"
+nombre = "Libreta de prueba"
+descripcion = "Cada golpe a un enemigo da más Inspiración."
+costo = 1
+inspiracion_extra = 5
+
+[sub_resource type="Resource" id="amuleto_botin"]
+script = ExtResource("2_amuleto")
+id = &"amuleto_botin"
+nombre = "Alcancía de prueba"
+descripcion = "Los enemigos sueltan más PejeCoins."
+costo = 2
+botin_factor = 1.5
+
+[resource]
+script = ExtResource("1_catalogo")
+amuletos = Array[ExtResource("2_amuleto")]([SubResource("amuleto_prueba"), SubResource("amuleto_velocidad"), SubResource("amuleto_escudo"), SubResource("amuleto_inspiracion"), SubResource("amuleto_botin")])

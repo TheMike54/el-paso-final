@@ -23,7 +23,9 @@ func _ready() -> void:
 	_probar_rutas_de_nodos()
 	_probar_npc_animado()
 	_probar_habilidades()
+	_probar_equipo()
 	_probar_sala()
+	_probar_fichas_zona()
 	_probar_llegada_puertas()
 	_probar_zonas_camara()
 	_probar_uids()
@@ -38,6 +40,7 @@ func _ready() -> void:
 	_probar_redibujo()
 	_probar_imagenes_sin_uso()
 	_probar_enemigos()
+	_probar_arenas_jefe()
 	_probar_salas_sin_guion()
 	_resumen()
 
@@ -58,11 +61,13 @@ func _correr(regla: Callable) -> PackedStringArray:
 	_fallos.clear()
 	_avisos.clear()
 	_salas.clear()
+	_fichas_zona.clear()
 	regla.call()
 	var anotados: PackedStringArray = _fallos.duplicate()
 	_fallos.clear()
 	_avisos.clear()
 	_salas.clear()
+	_fichas_zona.clear()
 	return anotados
 
 
@@ -429,6 +434,55 @@ func _probar_habilidades() -> void:
 	suelta.free()
 
 
+# Cada origen usa su recorrido real: ids desconocidos fallan con ruta e id, y los del catalogo pasan.
+func _probar_equipo() -> void:
+	for origen: String in ["entrega", "reto", "tienda", "dialogo"]:
+		var raiz: Node2D = Node2D.new()
+		var recompensa: Recompensa = Recompensa.new()
+		var regla: Callable = _revisar_habilidades.bind(RUTA, raiz)
+		match origen:
+			"entrega":
+				var entrega: EntregaRecompensas = _agregar(raiz, EntregaRecompensas.new(), "Entrega") as EntregaRecompensas
+				entrega.recompensas.append(recompensa)
+			"reto":
+				var reto: RetoPreguntas = _agregar(raiz, RetoPreguntas.new(), "Reto") as RetoPreguntas
+				reto.recompensa = recompensa
+			"tienda":
+				var tienda: Tienda = _agregar(raiz, Tienda.new(), "Tienda") as Tienda
+				var articulo: ArticuloTienda = ArticuloTienda.new()
+				articulo.recompensa = recompensa
+				tienda.articulos.append(articulo)
+			"dialogo":
+				var npc: Npc = _agregar(raiz, Npc.new(), "Npc") as Npc
+				var ficha: FichaDialogo = FichaDialogo.new()
+				var linea: LineaDialogo = LineaDialogo.new()
+				linea.texto = "Prueba"
+				ficha.lineas.append(linea)
+				ficha.recompensas.append(recompensa)
+				npc.conversaciones.append(ficha)
+				regla = _revisar_npcs.bind(RUTA, raiz)
+		for i: int in range(2):
+			recompensa.tipo = Recompensa.Tipo.AMULETO if i == 0 else Recompensa.Tipo.UTIL
+			var tipo: String = "amuleto" if i == 0 else "util"
+			recompensa.id = &"equipo_inexistente"
+			_da("%s: %s fuera del catalogo falla" % [origen, tipo], _correr(regla),
+					"%s ('equipo_inexistente' no es un %s de CatalogoEquipo)" % [RUTA, tipo])
+			if i == 0:
+				# Fuera de herramientas/ un amuleto que solo esta en el catalogo de pruebas falla: no viaja publicado.
+				recompensa.id = &"amuleto_prueba"
+				_da("%s: amuleto solo de pruebas falla fuera de herramientas" % origen, _correr(regla),
+						"%s ('amuleto_prueba' solo esta en el catalogo de pruebas)" % RUTA)
+			else:
+				recompensa.id = &"brujula"
+				_sin_fallos("%s: util del catalogo del juego pasa" % origen, _correr(regla))
+		raiz.free()
+	# En herramientas/ el catalogo de pruebas vale.
+	var de_prueba: Recompensa = Recompensa.new()
+	de_prueba.tipo = Recompensa.Tipo.AMULETO
+	de_prueba.id = &"amuleto_prueba"
+	_sin_fallos("amuleto solo de pruebas pasa en herramientas", _correr(_revisar_equipo.bind("res://herramientas/salas/x.tscn", de_prueba)))
+
+
 # Sala sana de la zona de prueba: id igual al archivo, limites con area y Entrada dentro. Los hijos llevan owner, como
 # los de una escena cargada; los de una pieza instanciada llevan el de la raiz de la pieza.
 func _sala_sana() -> Sala:
@@ -471,6 +525,9 @@ func _probar_sala() -> void:
 	sala.habilidades_de_prueba.append(Habilidades.IMPULSO)
 	_da("sala: habilidades_de_prueba en una sala del juego falla", _correr(_revisar_sala.bind("res://contenido/salas/prueba/prueba_90.tscn", sala)), "habilidades_de_prueba es solo para salas de prueba")
 	sala.habilidades_de_prueba.clear()
+	sala.inspiracion_maxima_de_prueba = 66
+	_da("sala: inspiracion_maxima_de_prueba en una sala del juego falla", _correr(_revisar_sala.bind("res://contenido/salas/prueba/prueba_90.tscn", sala)), "inspiracion_maxima_de_prueba es solo para salas de prueba")
+	sala.inspiracion_maxima_de_prueba = 0
 	_suelo(sala, "SueloSinId", "")
 	_da("sala: suelo fragil sin id falla", _correr(_revisar_sala.bind(RUTA_SALA, sala)), "SueloSinId se recuerda en la partida y necesita id")
 	sala.free()
@@ -507,6 +564,45 @@ func _probar_sala() -> void:
 	_hijo_de_sala(sala, ObjetoHabilidad.new(), "Objeto")
 	_sin_fallos("sala: monedas con ids distintos y un objeto de habilidad sin id no fallan", _correr(_revisar_sala.bind(RUTA_SALA, sala)))
 	sala.free()
+	# El botin de un enemigo se marca con botin_<id>: un objeto colocado con ese prefijo compartiria su marca.
+	sala = _sala_sana()
+	var con_prefijo: MonedasSueltas = MonedasSueltas.new()
+	con_prefijo.id = "botin_debil"
+	_hijo_de_sala(sala, con_prefijo, "MonedasBotin")
+	_da("sala: un id con el prefijo del botin falla", _correr(_revisar_sala.bind(RUTA_SALA, sala)), "reservado al botin")
+	sala.free()
+
+
+func _probar_fichas_zona() -> void:
+	var sala: Sala = _sala_sana()
+	var ruta: String = "res://contenido/salas/prueba/prueba_90.tscn"
+	_da("zona: sala de contenido sin ficha falla", _correr(_revisar_sala.bind(ruta, sala)), "sala de contenido sin ficha_zona")
+	_sin_fallos("zona: sala de herramientas sin ficha no falla", _correr(_revisar_sala.bind(RUTA_SALA, sala)))
+	var ficha: FichaZona = FichaZona.new()
+	# Rutas solo en memoria, sin guardar archivos ni modificar fichas cargadas (class_resource.rst:235).
+	ficha.resource_path = "user://prueba_validador_zona_a.tres"
+	sala.ficha_zona = ficha
+	_sin_fallos("zona: sala de contenido con ficha no falla", _correr(_revisar_sala.bind(ruta, sala)))
+	var otra: Sala = _sala_sana()
+	otra.id = "prueba_91"
+	otra.ficha_zona = ficha
+	var ruta_otra: String = "res://contenido/salas/prueba/prueba_91.tscn"
+	_sin_fallos("zona: dos salas comparten ficha", _correr(_revisar_par_de_zona.bind(ruta, sala, ruta_otra, otra)))
+	var distinta: FichaZona = FichaZona.new()
+	distinta.resource_path = "user://prueba_validador_zona_b.tres"
+	otra.ficha_zona = distinta
+	_da("zona: dos rutas de ficha en la misma zona fallan", _correr(_revisar_par_de_zona.bind(ruta, sala, ruta_otra, otra)), "zona prueba con fichas distintas")
+	otra.id = "otra_1"
+	ruta_otra = "res://contenido/salas/otra/otra_1.tscn"
+	_sin_fallos("zona: zonas distintas pueden tener fichas distintas", _correr(_revisar_par_de_zona.bind(ruta, sala, ruta_otra, otra)))
+	sala.free()
+	otra.free()
+
+
+# Las dos revisiones comparten el registro de fichas dentro de una sola corrida de _correr.
+func _revisar_par_de_zona(ruta: String, sala: Sala, ruta_otra: String, otra: Sala) -> void:
+	_revisar_sala(ruta, sala)
+	_revisar_sala(ruta_otra, otra)
 
 
 # Una puerta de la escena del nucleo (con su area) en una sala de 1280 x 720, al pie de la sala.
@@ -828,3 +924,27 @@ func _probar_salas_sin_guion() -> void:
 	_salas = {"celda_1": {"ruta": "res://contenido/salas/celda/celda_1.tscn", "puertas": {}}}
 	_sin_fallos("guion por sala: una sala con su guion no avisa", _correr_avisos(_avisar_salas_sin_guion))
 	_salas = antes
+
+
+func _probar_arenas_jefe() -> void:
+	var arena: ArenaJefe = ArenaJefe.new()
+	arena.name = "Arena"
+	var anotados: PackedStringArray = _correr(_revisar_arenas_jefe.bind(RUTA, arena))
+	_da("arena: sin id falla", anotados, "no tiene id_jefe")
+	_da("arena: sin jefe falla", anotados, "no tiene jefe")
+	_da("arena: sin forma falla", anotados, "no tiene una CollisionShape2D hija")
+	arena.id_jefe = &"jefe_prueba"
+	arena.jefe = _agregar(arena, Enemigo.new(), "Jefe") as Enemigo
+	var forma: CollisionShape2D = _agregar(arena, CollisionShape2D.new(), "Forma") as CollisionShape2D
+	_da("arena: forma sin shape falla", _correr(_revisar_arenas_jefe.bind(RUTA, arena)), "no tiene una CollisionShape2D hija")
+	forma.shape = RectangleShape2D.new()
+	arena.remove_child(forma)
+	arena.jefe.add_child(forma)
+	_da("arena: forma nieta falla", _correr(_revisar_arenas_jefe.bind(RUTA, arena)), "no tiene una CollisionShape2D hija")
+	arena.jefe.remove_child(forma)
+	arena.add_child(forma)
+	forma.disabled = true
+	_da("arena: forma apagada falla", _correr(_revisar_arenas_jefe.bind(RUTA, arena)), "no tiene una CollisionShape2D hija")
+	forma.disabled = false
+	_sin_fallos("arena: id, jefe y forma hija no fallan", _correr(_revisar_arenas_jefe.bind(RUTA, arena)))
+	arena.free()

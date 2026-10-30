@@ -6,6 +6,7 @@ extends CanvasLayer
 # Configuracion (la misma del menu, encima y con el juego detenido; de ahi sale el editor de botones tactiles) y
 # Salir al menu, como en Hollow Knight, centradas como en Silksong. Los amuletos y el mapa estan en el marco de
 # menus. La crea cada sala.
+# pausa.tscn conserva layer = 20, el valor de ModalPausa.CAPA (la escena no lee constantes).
 const ESCENA_EDITOR: PackedScene = preload("res://nucleo/editor_controles.tscn")
 const ESCENA_CONFIGURACION: PackedScene = preload("res://nucleo/configuracion.tscn")
 ## Configuracion abierta desde la pausa: encima de la pausa y del marco, debajo del editor de botones (23).

@@ -1,0 +1,7 @@
+# La sala no da habilidades_de_prueba. El primer ataque corta el pasto de al lado sin caminar
+# hasta la pluma recogible (x=700): la habilidad solo puede venir de esta instruccion.
+escena res://herramientas/salas/sala_combate_chico.tscn
+habilidad pluma
+1 atacar press
+2 atacar release
+fin 30

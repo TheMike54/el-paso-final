@@ -1,5 +1,5 @@
-ACTIVO (escrito el 28-oct-2026; aprobado por la persona el 28-oct-2026: la división entre este PR y los siguientes, y
-D5, D7 y D9 como los recomienda Claude. Las demás decisiones, al empezar su PR)
+REEMPLAZADO POR nucleo-cierre-auditoria.md (29-oct-2026: sus fases 3 y 4 pasan a ese plan; las fases 0 a 2 entraron en
+el PR de La Celda. Escrito el 28-oct-2026; aprobado por la persona el 28-oct-2026 con D5, D7 y D9)
 
 # Núcleo como base: arreglos y sistemas que dejó la auditoría de código
 
@@ -113,7 +113,7 @@ transición y efectos), F-100, F-101 (puertas y bancos por grupo), F-102, F-103,
   veces no cuesta nada medible), F-071 (extraer una base neutra cambia la base de las cinco salas sin un segundo
   consumidor que pruebe que es neutra: va con la segunda zona).
 - **F-012, cerrado el 28-oct-2026 por decisión de la persona:** el script del atlas usa las hojas originales, que no
-  entran al repo, así que no se mueve; `docs/contrato.md` («Recursos», atlas del jugador) dice que desde un clon no se
+  entran al repo, así que no se mueve; `docs/arte-y-rendimiento.md` («Recursos», atlas del jugador) dice que desde un clon no se
   rehace el atlas y que un cambio en las animaciones pasa por el responsable del arte.
 - **Pasó a la fase 3 o espera a la persona:**
   de los diez colgantes de F-068 quedan cuatro armados a mano (los tres `Medio` de `celda_1`, sin `use_parent_material` y uno con `flip_h`, y el de `Juego`, con otra
@@ -158,7 +158,7 @@ microsegundos incluyen el costo de la llamada (`call`), así que son un techo. L
 | F-050 táctil y mapa | `ControlesTactiles._process` 193-258 µs (1,2 % del cuadro), `PantallaMapa` 11-18 µs | Cerrado sin cambio. Es el mayor de los sondeos, por si algún día pesa |
 | F-051 sondeos | `ContadorFps` 15-30 µs, `Pausa` 9-11, `MarcoMenus` 11-16, `Hud` 9-17: ~60 µs en total | Cerrado sin cambio |
 | F-053 material del jugador | Con y sin el material: las mismas llamadas de dibujo en los dos teléfonos (37 / 30 / 31) y los mismos FPS | Cerrado sin cambio |
-| F-054 hojas de efectos | Sus medidas: 8,9 MB de RGBA sin comprimir; con mipmaps serían ~3 MB más. El teléfono no deja leer la memoria de gráficos (S50: `Graphics: 0`) | Sin cambio de importación; exención escrita en `docs/contrato.md` («Recursos») |
+| F-054 hojas de efectos | Sus medidas: 8,9 MB de RGBA sin comprimir; con mipmaps serían ~3 MB más. El teléfono no deja leer la memoria de gráficos (S50: `Graphics: 0`) | Sin cambio de importación; exención escrita en `docs/arte-y-rendimiento.md` («Recursos») |
 | F-055 `LuzSala` | 42-59 µs por luz: 7 luces de celda_1 = 0,30-0,33 ms; 4 luces = 0,17-0,21 ms | Cerrado sin cambio |
 | F-056 solapamientos | `Interactuable` 10-43 µs por nodo, `DanoContacto` 12-14, `AvisoAccion` 75-91 (en el banco de pruebas, que lo llama aunque duerma): total por sala ≤ 0,25 ms | Cerrado sin cambio |
 | F-059 rayos | Un rayo nuevo cuesta 55-79 µs y uno reutilizado 14-23 µs (S20: 11 y 2). La sala de enemigos móviles hace 2,8 rayos por tick con 4 enemigos: se ahorrarían ~0,11 ms por tick | Cerrado sin cambio |

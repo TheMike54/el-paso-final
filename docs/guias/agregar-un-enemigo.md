@@ -2,8 +2,7 @@
 
 **Para qué sirve:** crear un tipo de enemigo nuevo (ficha y comportamiento) y ponerlo en una sala, sin tocar `nucleo/`.
 
-**Antes de empezar:** haber hecho `docs/guias/empezar.md` y `docs/guias/como-trabajamos.md`; leer en
-`docs/contrato.md` la sección «Enemigos» (tabla de `FichaEnemigo`, `ComportamientoEnemigo`, parry, débil y fuerte) y
+**Antes de empezar:** haber hecho `docs/guias/empezar.md` y `docs/guias/como-trabajamos.md`; leer en `docs/enemigos.md` la sección «Enemigos» (tabla de `FichaEnemigo`, `ComportamientoEnemigo`, parry, débil y fuerte) y
 el `contenido/CLAUDE.md`. Antes de escribir el `.gd`, las skills `gdscript4` y `fisica-2d`.
 
 1. Elegir un id estable para el tipo (`StringName`): es el que emite `Eventos.enemigo_vencido`. Cada ejemplar en la
@@ -14,7 +13,8 @@ el `contenido/CLAUDE.md`. Antes de escribir el `.gd`, las skills `gdscript4` y `
 3. Escribir el comportamiento: un script que hereda de `ComportamientoEnemigo` (`nucleo/comportamiento_enemigo.gd`)
    y sobrescribe `actuar()`, que corre cada tick fuera del congelado. Para moverse y atacar usa las ayudas de la
    base (`caer`, `mover`, `pared_delante`, `orilla_delante`, `ve_al_jugador`, `atacar`, `disparar`, `lanzar_en_arco`;
-   lista y contrato en «Enemigos»). Sus valores fijos son `const`; lo que cambia por tipo va en la ficha. Modelos:
+   lista y contrato en `docs/enemigos.md`, «Enemigos»). Sus números de ajuste (radio, esperas) van como `@export` en un
+   `datos_<comportamiento>.gd` que el comportamiento lee de `datos` (`docs/guias/comportamiento-de-enemigo.md`). Modelos:
    `herramientas/salas/comportamientos/caminante.gd` (camina), `volador.gd`, `escupidor.gd`, `muneco_que_ataca.gd`.
    Empieza con 3 o 4 líneas de comentario: qué hace y por qué (`CLAUDE.md`, «Cómo se trabaja»). Mínimo, con las
    ayudas de `caminante.gd`:
@@ -63,25 +63,29 @@ el `contenido/CLAUDE.md`. Antes de escribir el `.gd`, las skills `gdscript4` y `
    ```
 7. Validar con `.\herramientas\validar.ps1`. No ejecuta `_ready`: un error que solo ocurre al correr lo atrapa un
    guion (`CLAUDE.md`, «Entorno y trampas»).
-8. Escribir un guion corto que lo venza y compruebe el estado. Vencer exige atacar y atacar exige la habilidad
-   `pluma`, y un guion de `contenido/` no puede dar habilidades (`contenido/CLAUDE.md`, «Cómo se comprueba»; ver
-   `armar-una-sala.md`, paso 12). Por eso hoy un enemigo se prueba en una sala de `herramientas/salas/` (que sí da
-   `pluma` con `habilidades_de_prueba`; `docs/salas-de-prueba.md`) con un guion de `herramientas/guiones/nucleo/`;
-   modelo `herramientas/guiones/nucleo/enemigo_base.guion` (formato: `docs/guiones.md`). Que un guion de `contenido/`
-   pueda dar habilidades es una decisión del PR de enemigos (`planes/activos/nucleo-base-auditoria-codigo.md`, D8). Se corre con `.\herramientas\correr-guiones.ps1 -Guiones <bloque>/<nombre>`
-   (ruta bajo `herramientas/guiones/`, sin extensión). Si se agrega una sala de prueba, su fila va en `docs/salas-de-prueba.md` en el mismo cambio.
+8. Escribir un guion corto que lo venza y compruebe el estado. Atacar exige `pluma`: añadir `habilidad pluma`
+   al `.guion`, antes de las entradas por cuadro. Funciona también en guiones de `contenido/`, sin modificar
+   la sala ni su `habilidades_de_prueba`: el puerto la da en silencio mediante `Partida`, antes de las entradas
+   en cuanto hay jugador, y se conserva al cambiar de sala. Para otras habilidades, una línea `habilidad <id>`
+   por cada una (formato: `docs/guiones.md`). Modelo de combate:
+   `herramientas/guiones/nucleo/enemigo_base.guion`; de entrega por guion:
+   `herramientas/guiones/nucleo/habilidad_por_guion.guion`. El `.esperado` comprueba la vida del enemigo o la
+   señal `/root/Eventos enemigo_vencido`. Se corre con
+   `.\herramientas\correr-guiones.ps1 -Guiones <bloque>/<nombre>` (ruta bajo `herramientas/guiones/`, sin
+   extensión). Si se agrega una sala de prueba, su fila va en `docs/salas-de-prueba.md` en el mismo cambio.
 9. Lo que se ve y se siente (sprites, golpe, FPS en el teléfono) se prueba a mano con una fila de `docs/pruebas.md`.
-   Arte nuevo: `docs/contrato.md`, «Arte de zona»; animación con `AnimatedSprite2D` (viñeta «Enemigos nuevos»).
+   Arte nuevo: `docs/arte-y-rendimiento.md`, «Arte de zona»; animación con `AnimatedSprite2D` (viñeta «Enemigos nuevos»).
 10. Entregar el bloque de commit como indica `docs/guias/como-trabajamos.md`.
 
 ## Lo que hoy no hace vencer a un enemigo
 
 Comprobado en `nucleo/enemigo.gd`: al llegar a vida 0, el enemigo solo anota su vencimiento si es fuerte
-(`Partida.vencer`), pide el congelado común, emite `Eventos.enemigo_vencido(ficha.id)` y desaparece. Ni `FichaEnemigo`
-ni `Enemigo` tienen un campo de botín o recompensa, y ningún script ni escena del repo escucha esa señal fuera de las
-pruebas. Por eso, hoy vencer a un enemigo no da botín por ficha ni abre portones. Un `Porton` lo abren una `Palanca`
+(`Partida.vencer`), pide el congelado común, emite `Eventos.enemigo_vencido(ficha.id)`, suelta las PejeCoins de
+`botin` si su ficha tiene (una vez por ejemplar; `docs/enemigos.md`, «Enemigos», viñeta «Botín») y desaparece.
+Ningún script ni escena del repo escucha esa señal fuera de las pruebas. Por eso, hoy vencer a un enemigo no abre
+portones. Un `Porton` lo abren una `Palanca`
 o código que llame `abrir()` (`nucleo/porton.gd`). Que una arena lo abra al vencer a un jefe es un diseño previsto
-que aún no existe: los jefes no tienen base común (`docs/contrato.md`, «Enemigos», viñeta «Jefes»). Dar botín o abrir un portón desde un enemigo es una funcionalidad
+que aún no existe: los jefes no tienen base común (`docs/enemigos.md`, «Enemigos», viñeta «Jefes»). Abrir un portón desde un enemigo es una funcionalidad
 nueva, con su plan (`docs/guias/como-trabajamos.md`).
 
 ## Si algo falla

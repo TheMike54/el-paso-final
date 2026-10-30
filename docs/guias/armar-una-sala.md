@@ -5,7 +5,7 @@ núcleo, y dejarla validada y probada con un guion.
 
 **Antes de empezar:** haber hecho `docs/guias/empezar.md` y `docs/guias/como-trabajamos.md`; leer el
 `contenido/CLAUDE.md` y su `funciones.json`, y en `docs/contrato.md` las secciones «Sala» (tabla, viñetas de ids y
-de uid, lista de lo que revisa el validador), «Cambio de sala» y «Arte de zona». Modelo real: las salas de
+de uid, lista de lo que revisa el validador, en `docs/validador.md`), «Cambio de sala» y, en `docs/arte-y-rendimiento.md`, «Arte de zona». Modelo real: las salas de
 `contenido/salas/celda/` y la base `contenido/zonas/celda/sala_celda.tscn`.
 
 1. Decidir el id y el archivo de la sala: forma, numeración y ruta en `docs/contrato.md`, «Sala», viñeta «Dónde
@@ -16,11 +16,11 @@ de uid, lista de lo que revisa el validador), «Cambio de sala» y «Arte de zon
 2. Zona nueva: crear antes su base en `contenido/zonas/<zona>/sala_<zona>.tscn`, como escena heredada de
    `contenido/zonas/celda/sala_celda.tscn` (no hay base común en el núcleo). Lleva los nodos contenedores de la
    sala (en esta guía `Entrada`, `Terreno` y `Peligros` son nodos del árbol, no grupos de Godot); cuáles son y qué
-   no va en la base: `docs/contrato.md`, «Arte de zona», viñeta «Base de la zona». Zona existente: se usa su base.
+   no va en la base: `docs/arte-y-rendimiento.md`, «Arte de zona», viñeta «Base de la zona». Zona existente: se usa su base.
    En el editor: Escena → Nueva escena heredada…, elegir la base y guardar en la carpeta de destino. Heredar de la de
    La Celda trae su oscuridad (`oscuridad = 0.58`), su tema de música (`silencio.tres`), el material `sin_luz.tres` del
    `Frente` y los contenedores `Juego`, `SueloPintado`, `Terreno`, `Peligros`, `Encima`, `Luces` y `Frente`: una zona
-   con otra luz o música cambia esos valores en su base (`docs/contrato.md`, «Arte de zona»). Cada PNG nuevo se
+   con otra luz o música cambia esos valores en su base (`docs/arte-y-rendimiento.md`, «Arte de zona»). Cada PNG nuevo se
    importa con mipmaps a mano (`project.godot` no tiene un preset de importación para `contenido/`).
 3. Crear la sala como escena heredada de la base (no copiar un `.tscn` con `cp`: duplica el UID; `CLAUDE.md`,
    «Entorno y trampas»). Modelo: `contenido/salas/celda/celda_1.tscn`. La raíz es la `Sala`: se le pone `id`.
@@ -46,16 +46,17 @@ de uid, lista de lo que revisa el validador), «Cambio de sala» y «Arte de zon
 5. Importar para que el proyecto registre la escena y sus recursos nuevos:
    `& $env:GODOT_PATH --headless --path . --import`.
 6. Fijar `limites` y `posicion_mapa`, a mano, con las reglas de las filas `limites` y `posicion_mapa` de la tabla de
-   «Sala» de `docs/contrato.md`. La `Entrada` queda dentro de `limites`. Franjas del mapa: la zona de pruebas ocupa y de
-   −720 a 720 y La Celda, de y 1440 a 3814 (su sala 4 está en y 2374 y mide 1440 de alto); una zona nueva toma la
-   siguiente franja libre hacia abajo, es decir desde y 3814 en adelante (se vuelve a calcular con los `posicion_mapa`
-   y `limites` de las salas existentes antes de fijar la propia). El validador falla si dos salas se enciman.
+   «Sala» de `docs/contrato.md`. La `Entrada` queda dentro de `limites`. Zona nueva: crear su `FichaZona` en
+   `contenido/zonas/<zona>/zona_<zona>.tres`, con nombre visible, color y `origen_mapa = Vector2(0, Y)`, donde Y es
+   `franja_libre_y` que imprime el generador del mapa (paso 14). Asignarla a `ficha_zona` en la base de la zona,
+   reemplazando la heredada. Cada sala cuenta `posicion_mapa` desde ese origen; mover la franja solo cambia la ficha.
+   El validador falla si dos salas se enciman o si una misma zona usa fichas con rutas distintas.
 7. Terreno: `StaticBody2D` sólidos con su `CollisionShape2D` como hijos del nodo `Terreno` (ejemplo: `Terreno` de
    `celda_2.tscn`). Colisión con formas invisibles; el arte no colisiona (`CLAUDE.md`, «Decisiones cerradas»).
    Una vía solo con `nucleo/piezas/plataforma_delgada.tscn` (`docs/contrato.md`, «Suelos y plataformas»).
 8. Peligros: un `Area2D` con el script `nucleo/dano_contacto.gd` y `peligro = true`, forma como `CollisionShape2D`
    hija, dentro de `Peligros` y nunca dentro de algo que se mueve (ejemplo: `contenido/objetos/celda/foso_varillas.tscn`;
-   regla: `docs/contrato.md`, «Sala» y «Componentes»). Coordenadas: la sala empieza en (0, 0) arriba a la izquierda y
+   regla: `docs/contrato.md`, «Sala», y `docs/componentes.md`, «Componentes»). Coordenadas: la sala empieza en (0, 0) arriba a la izquierda y
    la `position` de un `StaticBody2D` es el centro de su forma. Medidas de un foso real (`foso_varillas.tscn`): el
    `Area2D` del peligro mide 140 × 180, su `Fondo` (el suelo que lo cierra por debajo) 230 × 80 y el dibujo se
    acomoda con `position` negativa para centrarlo sobre ellos.
@@ -82,16 +83,17 @@ de uid, lista de lo que revisa el validador), «Cambio de sala» y «Arte de zon
     `banco_<id de la sala>` (ejemplo: nodo `Banco` de `celda_1.tscn`). El `id` es único en todo el juego.
 12. Muro que se rompe: `nucleo/muro_rompible.gd` en un `StaticBody2D` con `id` único en la sala, `golpes`, `tapas`
     y `descubre` (ejemplo: `Plafon` en `celda_3.tscn`). Romperlo exige atacar y atacar exige la habilidad `pluma`
-    (`docs/jugador.md`, tabla de habilidades). Un guion de `contenido/` no puede dar habilidades: el validador exige
-    `habilidades_de_prueba` vacío ahí. Se prueba repitiendo la ruta que consigue la habilidad
-    (`herramientas/guiones/contenido/celda_3_nicho.guion` repite la de `celda_3_pluma`) o en una sala de
-    `herramientas/salas/` (`docs/salas-de-prueba.md`).
+    (`docs/jugador.md`, tabla de habilidades). La sala no puede darla (el validador exige `habilidades_de_prueba`
+    vacío en `contenido/`), pero el guion sí: una línea `habilidad pluma` antes de las entradas (`docs/guiones.md`).
+    También se puede repetir la ruta que consigue la habilidad (`herramientas/guiones/contenido/celda_3_nicho.guion`
+    repite la de `celda_3_pluma`).
 13. Arte y luz: capas, color, frente y piezas de la zona siguen «Arte de zona»; los presupuestos, «Recursos».
 14. Regenerar el índice del mapa:
     `& $env:GODOT_PATH --headless --path . --quit-after 600 res://herramientas/generar_mapa.tscn`. Es lo que escribe
     `mapa/indice_salas.tres`; no se edita a mano y el validador falla si no está al día (`mapa/CLAUDE.md`, «Reglas»).
-    Al terminar imprime `MAPA salas=<N> error=0`, con N igual al número de salas con id (las del juego y las de la
-    zona de pruebas). Si sale un `error=` distinto de 0, o N no sube con la sala nueva, la escena no carga o no tiene
+    Al terminar imprime `MAPA salas=<N> error=0 franja_libre_y=<Y>`, con N igual al número de salas con id (las del
+    juego y las de la zona de pruebas) y Y, el borde inferior más bajo de sus rectángulos, redondeado hacia arriba
+    a píxeles enteros: la siguiente franja libre. Sin salas es 0. Si sale un `error=` distinto de 0, o N no sube con la sala nueva, la escena no carga o no tiene
     `id`: correr `validar.ps1` y leer su primer fallo.
 15. Validar con `.\herramientas\validar.ps1` (debe imprimir `fallos=0`). Los `AVISO` no fallan; uno dice si a la
     sala le falta su guion (paso 16).
@@ -124,9 +126,13 @@ de uid, lista de lo que revisa el validador), «Cambio de sala» y «Arte de zon
 
     Entregar el bloque de commit como indica `docs/guias/como-trabajamos.md`.
 
+La primera estación real y la bolsa de preguntas de la mochila se crean con su zona: la tabla en
+`contenido/estaciones.tres` y la bolsa en `contenido/preguntas_mochila.tres`, con un guion que cruce la estación.
+Sin bolsa, la mochila se recupera enseguida; las preguntas reales son contenido de la zona.
+
 ## Si algo falla
 
-- `validar.ps1` nombra la regla rota: buscarla en la lista de «Sala» de `docs/contrato.md` y su entrada
+- `validar.ps1` nombra la regla rota: buscarla en la lista de `docs/validador.md` y su entrada
   `validador-*` en `herramientas/funciones.json`.
 - Un guion con `ERROR:` al cruzar: la puerta de destino no existe en la sala destino (`docs/contrato.md`, «Cambio de
   sala»).

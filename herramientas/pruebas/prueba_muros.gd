@@ -127,6 +127,19 @@ func _ready() -> void:
 	await _esperar(porton.ticks_apertura + 4)
 	_caso("abierto, subio su alto", porton.esta_abierto and is_equal_approx(porton.position.y, cerrado_en.y - 300.0) and aperturas[0] == 1)
 
+	# Palanca con dibujo (sin id, no se marca): en reposo inclinada a la izquierda, el dibujo reflejado; golpeada desde
+	# la izquierda, se inclina a la derecha y el dibujo deja de estar reflejado.
+	var con_arte: Palanca = Palanca.new()
+	var dibujo: AnimatedSprite2D = AnimatedSprite2D.new()
+	con_arte.add_child(dibujo)
+	con_arte.animacion = dibujo
+	con_arte.position = Vector2(2700.0, 1160.0)
+	sala.add_child(con_arte)
+	_caso("con dibujo, en reposo se refleja hacia la izquierda", is_equal_approx(dibujo.scale.x, -1.0))
+	con_arte.golpeable.recibir_golpe(jugador, 1)
+	_caso("con dibujo, golpeada desde la izquierda se refleja hacia la derecha", con_arte.esta_activada and is_equal_approx(dibujo.scale.x, 1.0))
+	await _esperar(con_arte.ticks_congelado + 2)
+
 	# Volver a crear la sala: lo roto y lo abierto siguen asi.
 	sala = await _crear_sala()
 	_caso("al volver, el muro A ya no esta", sala.get_node_or_null(^"MuroA") == null)

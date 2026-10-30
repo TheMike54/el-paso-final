@@ -1,0 +1,3 @@
+escena res://herramientas/salas/enemigos/sala_volador.tscn
+# El jugador queda quieto a la vista: el volador acelera y se acerca por el aire.
+fin 75

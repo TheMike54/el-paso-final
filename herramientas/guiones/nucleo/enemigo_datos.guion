@@ -1,0 +1,4 @@
+# La escena de prueba pone tres voladores del mismo tipo: uno con datos propios, otro sin datos y otro con los de su
+# ficha, deja al jugador a la misma distancia y anota quien lo persigue.
+escena res://herramientas/pruebas/sala_enemigo_datos.tscn
+fin 30

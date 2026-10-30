@@ -7,7 +7,8 @@ extends Interactuable
 
 ## Como se cruza (GatePosition de Hollow Knight). LADO: caminando, y el jugador sale caminando hacia afuera hasta la
 ## pared de detras mientras funde; PUERTA: con interactuar, voltea de espaldas y se mete; ARRIBA y ABAJO: un hueco del
-## techo o del piso, se cruza al entrar y sigue con la velocidad que llevaba.
+## techo o del piso, se cruza al entrar en el area. En la sala destino el jugador entra sin velocidad propia
+## por ARRIBA o ABAJO; la sala le pasa el punto_seguro de la puerta como respaldo si no hay suelo.
 enum Tipo { LADO, PUERTA, ARRIBA, ABAJO }
 
 ## Altura de la punta del triangulo de aviso de una PUERTA sobre el piso: encima del marco.

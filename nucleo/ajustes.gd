@@ -13,7 +13,7 @@ const POR_OMISION: Dictionary[String, bool] = {
 	"vibracion": true, "temblor": true, "modo_desarrollador": false,
 	"luces_avanzadas": false, "niebla": false, "mostrar_fps": false, "panel_pruebas": false, "ver_hitbox": false,
 }
-## Ajustes graficos que se aplican al momento (Eventos.ajuste_grafico_cambiado con la clave): los escuchan LuzSala,
+## Ajustes que se aplican al momento (Eventos.ajuste_cambiado con la clave): los escuchan LuzSala,
 ## Niebla, ContadorFps, PanelPruebas y VerHitbox. MODO_DESARROLLADOR tambien se avisa: muestra o quita el panel, ver
 ## hitbox y el monitor.
 const MODO_DESARROLLADOR: StringName = &"modo_desarrollador"

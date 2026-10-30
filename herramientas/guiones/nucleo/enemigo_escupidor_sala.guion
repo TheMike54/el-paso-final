@@ -1,0 +1,3 @@
+escena res://herramientas/salas/enemigos/sala_escupidor.tscn
+# El jugador espera a distancia, visible desde la repisa, hasta el primer tiro en arco.
+fin 60

@@ -1,6 +1,6 @@
 class_name IconoArticulo
 extends Control
-# Icono de gis de un articulo de la tienda segun lo que entrega (vida, mapa, amuleto, habilidad, monedas), y la moneda
+# Icono de gis de un articulo de la tienda segun lo que entrega (vida, mapa, amuleto, habilidad, monedas, util), y la moneda
 # de su precio, como las filas de las tiendas de los dos juegos. Se dibuja en codigo con trazos de EstiloGis hasta que
 # haya arte (decision del plan nucleo-tienda-gis): un solo _draw por icono, que solo se repite al cambiar de tamano.
 
@@ -11,6 +11,9 @@ enum Forma {
 	AMULETO,
 	HABILIDAD,
 	MAPA,
+	UTIL,
+	INSPIRACION_MAXIMA,
+	CARGA,
 }
 
 var forma: Forma = Forma.NINGUNA
@@ -33,6 +36,12 @@ static func forma_de(articulo: ArticuloTienda) -> Forma:
 			return Forma.HABILIDAD
 		Recompensa.Tipo.MAPA:
 			return Forma.MAPA
+		Recompensa.Tipo.UTIL:
+			return Forma.UTIL
+		Recompensa.Tipo.INSPIRACION_MAXIMA:
+			return Forma.INSPIRACION_MAXIMA
+		Recompensa.Tipo.CARGA:
+			return Forma.CARGA
 	return Forma.NINGUNA
 
 
@@ -60,6 +69,35 @@ func _draw() -> void:
 	var c: Vector2 = size / 2.0
 	var r: float = minf(size.x, size.y) / 2.0 - 3.0
 	match forma:
+		Forma.INSPIRACION_MAXIMA:
+			# Modulo de RAM: placa, tres chips y contactos, con trazos de gis.
+			var placa: PackedVector2Array = [c + Vector2(-r, -r * 0.55), c + Vector2(r, -r * 0.55),
+					c + Vector2(r, r * 0.55), c + Vector2(-r, r * 0.55), c + Vector2(-r, -r * 0.55)]
+			for i: int in range(placa.size() - 1):
+				draw_polyline(EstiloGis.puntos(azar, placa[i], placa[i + 1], 0.8), color, 3.0, true)
+			for i: int in range(3):
+				var x: float = c.x + (i - 1) * r * 0.6
+				draw_polyline(EstiloGis.puntos(azar, Vector2(x, c.y - r * 0.25),
+						Vector2(x, c.y + r * 0.25), 0.8), color, 5.0, true)
+				draw_polyline(EstiloGis.puntos(azar, Vector2(x, c.y + r * 0.55),
+						Vector2(x, c.y + r * 0.85), 0.8), color, 3.0, true)
+		Forma.CARGA:
+			# Una muesca libre: aro con una abertura arriba y un apoyo abajo.
+			var puntos: PackedVector2Array = []
+			for i: int in range(21):
+				puntos.append(c + Vector2(r * 0.8, 0.0).rotated(-PI / 3.0 + i * PI / 12.0)
+						+ _temblor(azar, 0.7))
+			draw_polyline(puntos, color, 3.0, true)
+			draw_polyline(EstiloGis.puntos(azar, c + Vector2(-r * 0.45, r),
+					c + Vector2(r * 0.45, r), 0.8), color, 3.0, true)
+		Forma.UTIL:
+			# Brujula: aro y aguja inclinada, con el mismo temblor de gis que las otras formas.
+			_circulo(azar, c, r, color)
+			var aguja: PackedVector2Array = [c + Vector2(r * 0.4, -r * 0.75),
+					c + Vector2(r * 0.18, r * 0.18), c + Vector2(-r * 0.4, r * 0.75),
+					c - Vector2(r * 0.18, r * 0.18), c + Vector2(r * 0.4, -r * 0.75)]
+			for i: int in range(aguja.size() - 1):
+				draw_polyline(EstiloGis.puntos(azar, aguja[i], aguja[i + 1], 0.8), color, 3.0, true)
 		Forma.MONEDA:
 			_circulo(azar, c, r, color)
 			_circulo(azar, c, r * 0.55, Color(color, 0.7))

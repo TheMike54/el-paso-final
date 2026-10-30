@@ -156,9 +156,7 @@ static func ubicacion(partida: Dictionary) -> String:
 		sala = str(visitadas.back())
 	if sala.is_empty():
 		return "Inicio"
-	if sala.begins_with("res://"):
-		sala = sala.get_file().get_basename()
-	return sala.capitalize()
+	return Sala.nombre_de(sala)
 
 
 ## «12 min» o «1 h 05 min».

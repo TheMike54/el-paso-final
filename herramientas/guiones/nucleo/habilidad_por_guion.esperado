@@ -1,0 +1,8 @@
+# El pasto empieza entero; solo el ataque del primer cuadro puede cortarlo.
+en 1 valor CortableA esta_cortado false
+escena res://herramientas/salas/sala_combate_chico.tscn
+x 300
+valor CortableA esta_cortado true
+valor CortableB esta_cortado false
+senal /root/Eventos habilidad_obtenida 0
+valor /root/Partida autoguardados 0

@@ -1,0 +1,3 @@
+escena res://herramientas/salas/enemigos/sala_caminante.tscn
+# Camina hacia la pared, gira, cruza la plataforma y gira ante la orilla sin caer.
+fin 440

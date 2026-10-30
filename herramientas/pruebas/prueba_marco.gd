@@ -1,6 +1,6 @@
 extends "res://herramientas/pruebas/prueba_base.gd"
 # Prueba del marco de menus: en que pagina abre de pie y sentado, el ciclo con las acciones y con la barra, que cierre
-# con pausa, Atras, Volver y la misma accion sin abrir la pausa, que detenga el juego, dos paginas sin el bloque mapa,
+# con pausa, Atras, Volver y la misma accion sin abrir la pausa, que detenga el juego, tres paginas sin el bloque mapa,
 # que LB o mapa_rapido sostenidos al cerrar no muestren el mapa rapido, la pagina Inventario, la pausa con Configuracion
 # encima y los botones del control. Deja casos y fallos para marco.guion.
 
@@ -28,28 +28,35 @@ func _ready() -> void:
 	var amuletos: PantallaAmuletos = PantallaAmuletos.new()
 	amuletos.name = "Amuletos"
 	add_child(amuletos)
+	var utiles: PantallaUtiles = PantallaUtiles.new()
+	utiles.name = "Utiles"
+	add_child(utiles)
 	_caso("la pausa ya no tiene boton Amuletos", pausa.get_node_or_null(^"Panel/Opciones/Amuletos") == null)
 
 	# Sin el bloque mapa.
-	_caso("sin la pagina Mapa el ciclo es Inventario y Amuletos", marco.ids() == ([&"inventario", &"amuletos"] as Array[StringName]))
+	_caso("sin Mapa el ciclo es Inventario, Amuletos y Utiles", marco.ids() == ([&"inventario", &"amuletos", &"utiles"] as Array[StringName]))
 	await _presionar(&"mapa")
 	_caso("sin la pagina Mapa, mapa no abre el marco", not marco.abierta and not get_tree().paused)
 	var mapa: PantallaMapa = (load(MAPA) as PackedScene).instantiate() as PantallaMapa
 	add_child(mapa)
-	_caso("con el bloque mapa el ciclo es Inventario, Amuletos y Mapa", marco.ids() == ([&"inventario", &"amuletos", &"mapa"] as Array[StringName]))
+	_caso("con Mapa el ciclo es Inventario, Amuletos, Utiles y Mapa", marco.ids() == ([&"inventario", &"amuletos", &"utiles", &"mapa"] as Array[StringName]))
 
 	# De pie.
 	await _presionar(&"inventario")
 	_caso("de pie, inventario abre en Inventario y detiene el juego", marco.abierta and marco.pagina == &"inventario" and inventario.visible and get_tree().paused and not pausa.abierta)
 	await _presionar(&"pagina_siguiente")
 	_caso("pagina_siguiente pasa a Amuletos y oculta Inventario", marco.pagina == &"amuletos" and amuletos.visible and not inventario.visible)
+	await _presionar(&"pagina_siguiente")
+	_caso("pagina_siguiente pasa a Utiles y oculta Amuletos", marco.pagina == &"utiles" and utiles.visible and not amuletos.visible)
+	await _presionar(&"pagina_anterior")
+	_caso("pagina_anterior vuelve de Utiles a Amuletos", marco.pagina == &"amuletos" and amuletos.visible and not utiles.visible)
 	await _presionar(&"pagina_anterior")
 	await _presionar(&"pagina_anterior")
 	_caso("pagina_anterior da la vuelta del primero al ultimo", marco.pagina == &"mapa" and mapa.abierta and not amuletos.visible)
 	var titulo: Label = marco.get_node(^"Barra/Titulo") as Label
 	var anterior: Button = marco.get_node(^"Barra/Anterior") as Button
 	var siguiente: Button = marco.get_node(^"Barra/Siguiente") as Button
-	_caso("la barra nombra la pagina y sus vecinas", titulo.text == "Mapa" and anterior.text == "‹ Amuletos" and siguiente.text == "Inventario ›")
+	_caso("la barra nombra la pagina y sus vecinas", titulo.text == "Mapa" and anterior.text == "‹ Útiles" and siguiente.text == "Inventario ›")
 	siguiente.pressed.emit()
 	_caso("tocar la vecina de la barra cambia de pagina", marco.pagina == &"inventario" and not mapa.abierta)
 	await _presionar(&"inventario")
@@ -188,8 +195,8 @@ func _ready() -> void:
 	var continuar: Array[IconoBoton] = _iconos(pausa.get_node(^"Panel/Opciones/Continuar"))
 	await _usar(true)
 	_caso("con el control la barra muestra Volver, L1 y R1, y Continuar el de volver", iconos.size() == 3 and _iconos_en(iconos, true) and continuar.size() == 1 and _iconos_en(continuar, true))
-	# En Mapa las vecinas tienen los nombres mas largos («‹ Amuletos», «Inventario ›»).
-	marco.abrir(&"mapa")
+	# En Utiles las vecinas son Amuletos y Mapa; comprobar tambien el ancho con control.
+	marco.abrir(&"utiles")
 	await get_tree().process_frame
 	await get_tree().process_frame
 	var boton_siguiente: Control = marco.get_node(^"Barra/Siguiente") as Control
@@ -199,7 +206,7 @@ func _ready() -> void:
 	await _usar(false)
 	_caso("tras un toque no se muestran botones del control", _iconos_en(iconos, false) and _iconos_en(continuar, false))
 
-	for nodo: Node in [mapa, amuletos, inventario, marco, pausa, jugador]:
+	for nodo: Node in [mapa, utiles, amuletos, inventario, marco, pausa, jugador]:
 		nodo.free()
 	get_tree().paused = false
 	_restaurar_partida()

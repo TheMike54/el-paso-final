@@ -1,0 +1,6 @@
+escena res://herramientas/salas/enemigos/sala_volador.tscn
+# Dos posiciones distintas del origen (850, 500), antes del contacto con el jugador.
+en 30 valor Enemigo position:x 825 15
+valor Enemigo position:x 690 40
+valor Enemigo position:y 650 40
+valor Enemigo/Comportamiento persiguiendo true

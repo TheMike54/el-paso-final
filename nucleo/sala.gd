@@ -8,9 +8,10 @@ extends Node2D
 const ESCENA_JUGADOR: PackedScene = preload("res://nucleo/jugador.tscn")
 const ESCENA_CONTROLES: PackedScene = preload("res://nucleo/controles_tactiles.tscn")
 const ESCENA_PAUSA: PackedScene = preload("res://nucleo/pausa.tscn")
-## La interfaz y el mapa son de otros bloques: se cargan con load() solo si existen, asi el nucleo corre sin ellos.
+## La interfaz es de otro bloque: se carga solo si existe, asi el nucleo corre sin ella.
 const INTERFAZ: String = "res://interfaz/interfaz.tscn"
-const MAPA: String = "res://mapa/pantalla_mapa.tscn"
+## Nombres visibles de zona, sin depender de la clase del bloque mapa.
+const INDICE_MAPA: String = "res://mapa/indice_salas.tres"
 ## Ticks que el jugador muerto se queda en pantalla (oscuro) antes de reaparecer: 1,5 s.
 const TICKS_PARA_REAPARECER: int = 90
 ## Lo que el Fondo de la sala se extiende fuera de limites, en px. Cubre el rango de la vista (4:3 a
@@ -36,6 +37,9 @@ static var estacion_llegada: String = ""
 ## antes de pensar en cargar en segundo plano).
 static var cambio_pedido_ms: int = -1
 
+static var _indice_nombres: Resource = null
+static var _indice_nombres_cargado: bool = false
+
 ## Id de la sala, `<zona>_<numero>` (celda_1), igual al nombre de su archivo: es lo que guardan la partida y el
 ## mapa. Vacio en las salas de prueba sueltas, que se identifican por su ruta.
 @export var id: String = ""
@@ -44,12 +48,17 @@ static var cambio_pedido_ms: int = -1
 ## Solo salas de prueba: habilidades que la sala da en silencio al entrar (sin aviso ni autoguardado), para
 ## probar algo sin conseguirlo antes. Una sala del juego la deja vacia (lo revisa el validador).
 @export var habilidades_de_prueba: Array[StringName] = []
+## Solo salas de prueba: capacidad de Inspiracion con la que se prueba (0, la de la partida). Sube en silencio, como
+## habilidades_de_prueba; una sala del juego la deja en 0 (lo revisa el validador).
+@export var inspiracion_maxima_de_prueba: int = 0
 ## Botones de la pantalla que en esta sala no se ven hasta que un AvisoAccion los ensena (Partida.botones_ensenados):
 ## la sala Pizarrones empieza sin saltar, atacar ni curar. Solo tactil; el validador exige que un aviso de la sala ensene cada uno.
 @export var botones_por_ensenar: Array[StringName] = []
-## Esquina de la sala en el mapa del mundo, en px: el mapa la dibuja en posicion_mapa + limites. Las salas de una
-## zona se acomodan como se recorren (la de la derecha empieza donde acaba la otra).
+## Esquina de la sala en px desde ficha_zona.origen_mapa (sin ficha, desde (0, 0)). Las salas de una zona se
+## acomodan como se recorren (la de la derecha empieza donde acaba la otra); el indice suma tambien limites.position.
 @export var posicion_mapa: Vector2 = Vector2.ZERO
+## Datos del mapa compartidos por la zona: se pone una vez en su base y las salas lo heredan.
+@export var ficha_zona: FichaZona = null
 ## Oscuridad de la sala, de 0 (sin cambio) a 1 (negro): la aplica el Brillo de la sala, multiplicando, sin dibujar
 ## nada encima (una capa oscura encima costaba 2,2 FPS en el S50). Las LuzSala la aclaran con su halo aditivo y, con
 ## las luces 2D, con su PointLight2D.
@@ -58,6 +67,8 @@ static var cambio_pedido_ms: int = -1
 ## nuevo. Vacio no toca la musica (sigue la que suena); Musica.SILENCIO la calla. Las salas de una zona comparten el
 ## mismo recurso, puesto en la base de la zona.
 @export var tema_musica: AudioStream = null
+## Efectos propios de la sala o de su zona, puestos en la base de zona; un campo vacio usa el global.
+@export var sonidos: FichaSonidos = null
 ## Volumen de region al entrar, en dB; una RegionMusica lo cambia despues (Musica.DB_SILENCIO: callado hasta llegar a
 ## ella).
 @export var volumen_musica_db: float = Musica.DB_NORMAL
@@ -86,6 +97,23 @@ static func zona_de(id_o_ruta: String) -> String:
 	if id_o_ruta.begins_with("res://") or not id_o_ruta.contains("_"):
 		return ""
 	return id_o_ruta.get_slice("_", 0)
+
+
+## Nombre visible de la zona de un id; sin nombre, el id. Una ruta usa el nombre de su archivo.
+static func nombre_de(id_o_ruta: String) -> String:
+	if id_o_ruta.begins_with("res://"):
+		return id_o_ruta.get_file().get_basename().capitalize()
+	if not _indice_nombres_cargado:
+		_indice_nombres = Cargar.si_existe(INDICE_MAPA)
+		_indice_nombres_cargado = true
+	if _indice_nombres != null:
+		var valor: Variant = _indice_nombres.get(&"nombres_zona")
+		if valor is Dictionary:
+			var nombres: Dictionary = valor
+			var nombre: String = nombres.get(zona_de(id_o_ruta), "") as String
+			if not nombre.is_empty():
+				return nombre
+	return id_o_ruta.capitalize()
 
 
 ## Como se nombra esta sala en la partida y el mapa: su id o, en una sala de prueba suelta, su ruta.
@@ -122,12 +150,16 @@ func puntos_de_respaldo() -> PackedVector2Array:
 func _ready() -> void:
 	_extender_fondo()
 	Congelado.reiniciar()
+	if inspiracion_maxima_de_prueba > Partida.inspiracion_maxima:
+		Partida.inspiracion_maxima = inspiracion_maxima_de_prueba
 	for habilidad: StringName in habilidades_de_prueba:
 		if not Partida.tiene(habilidad):
 			Partida.habilidades.append(habilidad)
 	Partida.visitar(clave())
 	# Se aplica en el tick siguiente: si el jugador aparece dentro de una RegionMusica, su pedido llega despues y gana.
 	Arranque.musica.poner(tema_musica, volumen_musica_db)
+	if Arranque.sonido != null:
+		Arranque.sonido.ficha_sala = sonidos
 	var jugador: Jugador = ESCENA_JUGADOR.instantiate() as Jugador
 	# La puerta de llegada se busca una sola vez: da la posicion, el fundido y como entra el jugador.
 	var por_puerta: Puerta = null
@@ -148,16 +180,11 @@ func _ready() -> void:
 	_poner_mochila()
 	add_child(ESCENA_CONTROLES.instantiate())
 	add_child(ESCENA_PAUSA.instantiate())
-	# El marco de menus y sus paginas del nucleo; la pagina Mapa la agrega el bloque mapa si existe (abajo).
+	# El marco y las paginas por script van antes del fundido; las escenas opcionales, despues de la interfaz.
 	var marco: MarcoMenus = MarcoMenus.new()
 	marco.name = &"Marco"
 	add_child(marco)
-	var inventario: PaginaInventario = PaginaInventario.new()
-	inventario.name = &"Inventario"
-	add_child(inventario)
-	var amuletos: PantallaAmuletos = PantallaAmuletos.new()
-	amuletos.name = &"Amuletos"
-	add_child(amuletos)
+	_poner_paginas(false)
 	var fundido: Fundido = Fundido.new()
 	fundido.name = &"Fundido"
 	add_child(fundido)
@@ -173,10 +200,10 @@ func _ready() -> void:
 	add_child(ContadorFps.new())
 	add_child(PanelPruebas.new())
 	add_child(VerHitbox.new())
-	for ruta: String in [INTERFAZ, MAPA]:
-		var escena: PackedScene = Cargar.si_existe(ruta) as PackedScene
-		if escena != null:
-			add_child(escena.instantiate())
+	var interfaz: PackedScene = Cargar.si_existe(INTERFAZ) as PackedScene
+	if interfaz != null:
+		add_child(interfaz.instantiate())
+	_poner_paginas(true)
 	Eventos.jugador_muerto.connect(_al_morir_el_jugador)
 	if not puerta.is_empty():
 		Eventos.cambio_de_sala.emit(clave(), puerta)
@@ -199,6 +226,25 @@ func _extender_fondo() -> void:
 	extendido.size = area.size
 	add_child(extendido)
 	move_child(extendido, 0)
+
+
+# Un solo patron para el catalogo del marco, en los dos puntos originales de add_child.
+func _poner_paginas(desde_escena: bool) -> void:
+	for dato: Dictionary in MarcoMenus.PAGINAS:
+		if dato.has("escena") != desde_escena:
+			continue
+		var pagina: PaginaMarco = null
+		if desde_escena:
+			var ruta: String = dato["escena"]
+			var escena: PackedScene = Cargar.si_existe(ruta) as PackedScene
+			if escena != null:
+				pagina = escena.instantiate() as PaginaMarco
+		else:
+			var script: GDScript = dato["script"]
+			pagina = script.new() as PaginaMarco
+			pagina.name = dato["nombre"] as StringName
+		if pagina != null:
+			add_child(pagina)
 
 
 # Lo perdido al morir aparece en su sala, donde quedo (Partida.mochila).

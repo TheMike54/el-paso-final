@@ -1,0 +1,4 @@
+# Los 8 casos de herramientas/pruebas/prueba_enemigo_enganches.gd corrieron y ninguno fallo. Cada caso que falla
+# imprime una linea "FALLO enemigo_enganches: <caso>".
+valor . casos 8
+valor . fallos 0

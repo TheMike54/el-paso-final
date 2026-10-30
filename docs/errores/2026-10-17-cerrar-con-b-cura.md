@@ -13,8 +13,7 @@
     de `add_child`.
 - **Arreglo:** `MarcoMenus.PRIORIDAD_FISICA` (100) en el `_ready` de `MarcoMenus`, `Pausa`, `MenuTienda` y
   `MenuEstaciones`. El número más bajo corre primero (`classes/class_node.rst:1607`), así que los menús que quitan la
-  pausa corren siempre después del jugador (0), cuelguen donde cuelguen. La regla quedó en `docs/contrato.md`,
-  «Marco de menús».
+  pausa corren siempre después del jugador (0), cuelguen donde cuelguen. La regla quedó en `docs/interfaz.md`, «Marco de menús».
 - **Lo cubre:**
   - `herramientas/guiones/nucleo/tienda.guion` (`prueba_tienda.gd`): «con la tienda abierta, las pantallas encima y
     la Pausa van despues del jugador», y «B cierra ... sin contar un toque del boton de poderes» y «B mantenido al

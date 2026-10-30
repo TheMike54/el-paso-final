@@ -1,14 +1,11 @@
 class_name MenuTienda
-extends CanvasLayer
+extends ModalPausa
 # Menu de una Tienda como los de Hollow Knight y Silksong: el juego detenido y a la vista a la izquierda, y en la mitad
 # derecha del area util, sobre un velo, la lista y el detalle. Elegir pide confirmar con la Confirmacion compartida;
 # Volver, Circulo / B, pausa y Atras de Android cierran un nivel. Lo crea la Tienda al abrirlo y se libera al cerrarlo;
 # mientras existe, la pausa no se abre (grupo pantalla_encima). Las PejeCoins las muestra el HUD, avisado por el bus.
 
-signal cerrado
 
-## Encima del juego, la caja de dialogo y el fundido; nunca a la vez que la pausa o el marco de menus.
-const CAPA: int = 20
 ## Ancho de la columna de filas (icono, moneda y precio) y separacion entre ella y el detalle.
 const ANCHO_FILAS: float = 260.0
 const SEPARACION_DETALLE: float = 32.0
@@ -36,10 +33,7 @@ var _detalle: VBoxContainer = null
 
 
 func _ready() -> void:
-	layer = CAPA
-	process_mode = Node.PROCESS_MODE_ALWAYS
-	process_physics_priority = MarcoMenus.PRIORIDAD_FISICA
-	add_to_group(MarcoMenus.GRUPO)
+	super()
 	# Transparente y con mouse_filter STOP (el de fondo_menu): el juego se ve a la izquierda pero no se toca.
 	fondo = Tema.fondo_menu(0.0)
 	add_child(fondo)
@@ -61,21 +55,6 @@ func _ready() -> void:
 	rehacer(-1)
 	_acomodar()
 	Eventos.tienda_abierta.emit()
-
-
-func _physics_process(_delta: float) -> void:
-	if Input.is_action_just_pressed(&"volver") or Input.is_action_just_pressed(&"pausa"):
-		atras()
-
-
-func _notification(que: int) -> void:
-	if que == NOTIFICATION_WM_GO_BACK_REQUEST:
-		atras()
-
-
-## La pausa no se abre con la tienda a la vista (ni en el tick en que se cierra: el menu sigue en el arbol).
-func bloquea_pausa() -> bool:
-	return true
 
 
 ## Vuelve a leer lo que esta a la venta y lo que alcanza, con el foco en la fila foco (o la primera que se puede).
@@ -112,15 +91,6 @@ func atras() -> void:
 		confirmacion.cancelar()
 	else:
 		cerrar()
-
-
-func cerrar() -> void:
-	if is_queued_for_deletion():
-		return
-	get_tree().paused = false
-	Eventos.tienda_cerrada.emit()
-	cerrado.emit()
-	queue_free()
 
 
 ## Compra lo que se confirmo y rehace la lista. Publica para las pruebas; en el juego la llama Si (una vez por
@@ -235,11 +205,11 @@ func _acomodar() -> void:
 # (lo oscurece el velo del menu, que pasa a toda la pantalla), la pregunta con la letra de 36 que tenia la tienda, el
 # precio en su linea y Si y No centrados con flechitas de gis.
 func _armar_confirmacion(raiz: Control) -> void:
-	confirmacion = Confirmacion.new()
-	confirmacion.name = "Confirmacion"
-	confirmacion.alfa_velo = 0.0
-	confirmacion.variacion_pregunta = Tema.DESTACADA
-	confirmacion.variacion_boton = Tema.OPCION_CENTRADA
+	confirmacion = _crear_confirmacion()
 	confirmacion.confirmada.connect(confirmar)
 	confirmacion.cancelada.connect(_al_cancelar)
 	raiz.add_child(confirmacion)
+
+
+func _avisar_cierre() -> void:
+	Eventos.tienda_cerrada.emit()

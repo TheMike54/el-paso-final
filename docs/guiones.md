@@ -1,6 +1,6 @@
 # Guiones de entrada
 
-Formato y reglas de los guiones (`herramientas/guiones/`). Es parte de `docs/contrato.md` (mismas reglas: se
+Formato y reglas de los guiones (`herramientas/guiones/`). Es parte del contrato (`docs/contrato.md` y sus archivos por tema; mismas reglas: se
 actualiza en el mismo cambio que el puerto de depuración) y se separó por largo.
 
 Un guion reproduce entradas por cuadro de física y compara el estado con un archivo de valores esperados. Lo
@@ -23,6 +23,13 @@ con 0 solo si `MALOS=0`. Un guion está bien con el criterio del CI: su salida t
 - Línea opcional `escena <ruta res://>`: el puerto cambia a esa escena al empezar y el cuadro 1 es el primer
   cuadro de física con ella ya cargada. Sin la línea, el guion corre sobre la escena principal. Una ruta que no
   existe hace fallar el guion.
+- Línea opcional `habilidad <id>`, una por habilidad y antes de las entradas por cuadro (por ejemplo,
+  `habilidad pluma`): el id debe estar en `Habilidades.TODAS`; un id desconocido o una línea después de las
+  entradas hace fallar el guion al cargar. En cuanto hay jugador, antes de procesar las entradas de ese cuadro,
+  el puerto añade a `Partida.habilidades` las que falten, como `Sala.habilidades_de_prueba`, sin aviso,
+  señal `habilidad_obtenida` ni autoguardado. No duplica habilidades y las mantiene tras cambiar de sala;
+  también las repone si la partida se reinicia dentro del mismo guion. Sirve para guiones de cualquier bloque,
+  incluido `contenido/`, sin modificar la escena ni su `habilidades_de_prueba`.
 - Medido el 06-oct-2026: una acción que el jugador lee como sostenida (caminar) se nota en el estado del cuadro
   N+1; una que lee como recién presionada (`saltar`), en el del cuadro N+2. Los cuadros de un guion se miden con
   una corrida, no se calculan.

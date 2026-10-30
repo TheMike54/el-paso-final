@@ -1,0 +1,3 @@
+# Los 24 casos de herramientas/pruebas/prueba_utiles.gd; solo se imprimen los que fallan y el resumen.
+valor . casos 24
+valor . fallos 0

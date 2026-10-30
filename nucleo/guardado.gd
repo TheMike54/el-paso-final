@@ -12,7 +12,9 @@ enum Estado {
 	INCOMPATIBLE,
 }
 
-const VERSION: int = 3
+## 4 desde el 29-oct-2026: la brujula paso de amuletos a utiles. Hasta terminar el juego las partidas viejas no se
+## conservan (decision de la persona): una de otra version se da por incompatible, sin conversion.
+const VERSION: int = 4
 ## Partida de antes de las ranuras: se pasa una vez a la ranura 1 (migrar). Banco la usa como centinela.
 const RUTA: String = "user://partida.json"
 const RANURAS: int = 4
@@ -41,12 +43,18 @@ const ESQUEMA: Dictionary[String, int] = {
 }
 ## Campos agregados despues de la version 3, con su valor por omision como queda al leer el JSON (0.0 y no 0, Array
 ## sin tipo): una partida que no los tiene se rellena al cargar en vez de quedar danada. Cambiar la forma de un campo
-## que ya existe no va aqui: sube VERSION y lleva su funcion de conversion.
+## que ya existe no va aqui: sube VERSION (ver VERSION).
 const NUEVOS: Dictionary[String, Variant] = {
 	# Estaciones del viaje rapido abiertas (17-oct-2026).
 	"estaciones": [],
 	# Botones de la pantalla ya ensenados por los pizarrones (17-oct-2026).
 	"botones_ensenados": [],
+	# Carga para amuletos y utiles tenidos y puestos (29-oct-2026).
+	"carga_maxima": 3.0,
+	# Capacidad de Inspiracion: tres bloques si la partida no trae el campo.
+	"inspiracion_maxima": 33.0,
+	"utiles_tenidos": [],
+	"utiles_equipados": [],
 }
 
 
@@ -124,8 +132,8 @@ static func cargar(ruta: String = RUTA) -> Resultado:
 	if typeof(version) != TYPE_FLOAT:
 		return Resultado.new(Estado.DANADA)
 	var numero: float = version
-	# Mas nueva que el juego: no se sabe leer. Mas vieja: tambien, mientras no haya su funcion de conversion (hoy
-	# ninguna; la 3 es la primera que llego a la QA).
+	# Mas nueva que el juego: no se sabe leer. Mas vieja: tampoco; hasta terminar el juego no hay conversion (ver
+	# VERSION).
 	if numero != VERSION:
 		return Resultado.new(Estado.INCOMPATIBLE)
 	var contenido: Variant = sobre.get("partida")

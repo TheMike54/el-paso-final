@@ -28,6 +28,10 @@ extends Resource
 @export var picada: AudioStream = null
 ## Efecto al empezar un impulso.
 @export var impulso: AudioStream = null
+## Efecto al vencer a un enemigo.
+@export var vencido: AudioStream = null
+## Efecto de un ataque de enemigo; lo pide su comportamiento.
+@export var ataque: AudioStream = null
 
 # Nombres de los campos de efecto, iguales en toda ficha: de la clase y no de cada recurso.
 static var _campos: Array[StringName] = []

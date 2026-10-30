@@ -14,6 +14,10 @@ enum Reaparicion {
 @export var id: StringName = &""
 ## Vida al aparecer: cada golpe le resta su dano (ataque 1, bola 2).
 @export var vida: int = 2
+## Vidas a las que avanza de fase, de mayor a menor; vacio: solo fase 0.
+@export var umbrales_fase: Array[int] = []
+## Su arena recuerda la victoria para siempre en Partida.jefes, en vez de la reaparicion comun.
+@export var jefe: bool = false
 ## Vidas que le quita al jugador al tocarlo.
 @export var dano_contacto: int = 1
 ## Tamano de su cuerpo, en px, con los pies en el origen.
@@ -30,3 +34,10 @@ enum Reaparicion {
 @export var gravedad: float = 0.0
 ## Rapidez maxima al caer, en px/s.
 @export var caida_maxima: float = 1200.0
+## PejeCoins que suelta al vencerlo (saltan y caen al suelo, como el geo de Hollow Knight). Cada ejemplar las da una
+## sola vez: tomadas, quedan marcadas en su sala y ya no vuelve a soltarlas. 0: no suelta nada.
+@export var botin: int = 0
+## Efectos propios de este tipo de enemigo; un campo vacio usa el de la sala o el global.
+@export var sonidos: FichaSonidos = null
+## Numeros del comportamiento para este tipo (de la clase que pide su comportamiento). Vacio: los que trae esa clase.
+@export var datos: DatosComportamiento = null

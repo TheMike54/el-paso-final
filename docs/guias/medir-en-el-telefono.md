@@ -2,7 +2,7 @@
 
 **Para qué sirve:** instalar el APK de desarrollo en un teléfono por `adb`, ver los FPS y anotar el resultado.
 **Antes de empezar:** leer `CLAUDE.md` («Comandos» y «Decisiones cerradas», viñeta Android), `docs/pruebas.md`
-(«Medición de rendimiento» y «Casos manuales») y `docs/contrato.md` («Recursos» y «Paquete de publicación»). La skill
+(«Medición de rendimiento» y «Casos manuales») y `docs/arte-y-rendimiento.md` («Recursos») y `docs/contrato.md` («Paquete de publicación»). La skill
 `rendimiento-gama-baja` va antes de proponer una optimización.
 
 1. Tener el Android SDK con `platform-tools` y el teléfono conectado por USB. Revisar el entorno con
@@ -22,13 +22,12 @@
    otra máquina no se instala encima del que ya está, y desinstalar borra partidas y ajustes (`docs/pruebas.md`,
    «Casos manuales», encabezado).
 5. Ver los FPS de dos formas: `& $adb logcat -s godot` (por `--print-fps`) o el contador en pantalla, en
-   Configuración > Avanzado > Mostrar FPS (`docs/contrato.md`, «Menú»; ajuste `mostrar_fps` en «Ajustes y
-   vibración»). Recursos y FPS en ese mismo panel cambian el modo de la prueba: anotar con cuál se midió.
+   Configuración > Avanzado > Mostrar FPS (`docs/interfaz.md`, «Menú»; ajuste `mostrar_fps` en `docs/ajustes-y-entrada.md`, «Ajustes»). Recursos y FPS en ese mismo panel cambian el modo de la prueba: anotar con cuál se midió.
 6. Elegir el caso en `docs/pruebas.md`, «Casos manuales» (filas «Rendimiento en el teléfono», «FPS en el teléfono»,
    «La Celda», «Sala de arte (rendimiento)»), que dice qué sala recorrer y qué observar. Memoria del juego:
    `& $adb shell dumpsys meminfo com.themike54.elpasofinal`.
 7. Para comparar una pieza sospechosa, medir A/B con y sin ella en la misma sala y el mismo teléfono; no se supone
-   qué limita los FPS (`docs/contrato.md`, «Recursos», «Receta del arte de una sala»). La herramienta de A/B y su
+   qué limita los FPS (`docs/arte-y-rendimiento.md`, «Recursos», «Receta del arte de una sala»). La herramienta de A/B y su
    APK aparte, armado en una copia fuera del repo: `docs/pruebas.md`, «Medición de rendimiento».
 8. Observar y anotar: FPS medios y el peor cuadro, memoria (PSS), tirones al cruzar puertas, y el equipo, la versión
    de Android y los ajustes usados. El teléfono frío y la misma duración en cada corrida.

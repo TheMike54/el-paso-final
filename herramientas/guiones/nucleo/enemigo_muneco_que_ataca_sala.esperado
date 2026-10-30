@@ -1,0 +1,6 @@
+escena res://herramientas/salas/enemigos/sala_muneco_que_ataca.tscn
+# Se acerco desde x=500; el muneco ya dio un golpe, antes del disparo del cuadro 120.
+x 665 30
+valor Enemigo/Comportamiento golpes_dados 1 0
+valor Enemigo/Comportamiento disparos 0 0
+valor Enemigo position:x 900 5

@@ -8,8 +8,9 @@ description: Reglas de física 2D y entrada de este proyecto (Godot 4.7.2). Usar
 Citas a `$env:GODOT_DOCS` como `archivo:línea`; «Cómo se comprueba aquí» dice cómo revisar la regla. Lo demás se
 busca con Grep ahí (rutas `tutorials/...`, las mismas que citan las tablas).
 
-Los valores (velocidades, ticks, gravedad, tamaños) no están aquí: viven en `docs/jugador.md` y en «Configuración
-del proyecto», «Entrada», «Componentes» y «Enemigos» de `docs/contrato.md`. Una regla de aquí nunca manda sobre
+Los valores (velocidades, ticks, gravedad, tamaños) no están aquí: viven en `docs/jugador.md`, en «Configuración
+del proyecto» de `docs/contrato.md`, «Entrada» de `docs/ajustes-y-entrada.md`, `docs/componentes.md` y
+`docs/enemigos.md`. Una regla de aquí nunca manda sobre
 esos documentos.
 
 ## Tick y movimiento
@@ -70,19 +71,19 @@ lo cubre el guion `poder_bola`. La documentación dice que un `Area2D` detecta c
 
 ## Entrada del jugador
 
-La entrada se sondea en el tick (decisión cerrada, `docs/contrato.md`, «Ciclo de vida» y «Entrada»): el jugador
+La entrada se sondea en el tick (decisión cerrada, `docs/contrato.md`, «Ciclo de vida», y `docs/ajustes-y-entrada.md`, «Entrada»): el jugador
 no usa `_input` ni `_unhandled_input`. Los guiones dependen de eso (`docs/guiones.md`: `Input.action_press` no
 genera evento).
 
 | Regla | Doc | Cómo se comprueba aquí |
 |---|---|---|
-| Leer acciones con nombre del InputMap, nunca la tecla ni el botón; acción nueva en `project.godot` y en la tabla del contrato | `tutorials/inputs/controllers_gamepads_joysticks.rst:40`, `tutorials/inputs/input_examples.rst:157` | Guiones `entrada_control`, `controles_configurables` |
+| Leer acciones con nombre del InputMap, nunca la tecla ni el botón; acción nueva en `project.godot` y en la tabla de `docs/ajustes-y-entrada.md` | `tutorials/inputs/controllers_gamepads_joysticks.rst:40`, `tutorials/inputs/input_examples.rst:157` | Guiones `entrada_control`, `controles_configurables` |
 | Nombres de acción en snake_case (`mover_izquierda`, `mapa_rapido`) | `tutorials/inputs/input_examples.rst:170` | Grep en la sección `[input]` de `project.godot` |
 | Lo que dura mientras se mantiene (moverse) se consulta en el singleton `Input` en el tick | `tutorials/inputs/input_examples.rst:26` | Guion `jugador_movimiento` |
 | Un eje de dos lados con `Input.get_axis(&"mover_izquierda", &"mover_derecha")`, no restando a mano | `tutorials/inputs/controllers_gamepads_joysticks.rst:91` | Guiones `controles_tactiles` (fuerza del joystick), `jugador_movimiento` |
 | Si entra apuntar libre (dos ejes como una entrada), `Input.get_vector`, que da zona muerta circular | `tutorials/inputs/controllers_gamepads_joysticks.rst:57` | Guion de la pieza nueva |
 | Saltar, atacar e impulso con `is_action_just_pressed` (verdadero un solo tick); `is_action_pressed` para lo que se mantiene | `tutorials/inputs/controllers_gamepads_joysticks.rst:147` | Guiones `jugador_salto_en_cola`, `parry_ventana` |
-| La zona muerta se fija por acción en el InputMap (la de omisión es 0,5; la del proyecto está en «Entrada» del contrato) | `tutorials/inputs/controllers_gamepads_joysticks.rst:202` | Grep de `deadzone` en `project.godot`; guion `entrada_control` |
+| La zona muerta se fija por acción en el InputMap (la de omisión es 0,5; la del proyecto está en «Entrada» de `docs/ajustes-y-entrada.md`) | `tutorials/inputs/controllers_gamepads_joysticks.rst:202` | Grep de `deadzone` en `project.godot`; guion `entrada_control` |
 | En Android el control no usa SDL: un cambio de mapeo del control se prueba también en el teléfono | `tutorials/inputs/controllers_gamepads_joysticks.rst:361` | Prueba manual en el teléfono con un control conectado |
 
 ## Medir en el S50 antes de cambiar

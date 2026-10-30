@@ -4,6 +4,7 @@ extends "res://herramientas/pruebas/prueba_base.gd"
 # ficha no tiene, y el jugador avisa saltos, pasos y aterrizajes. Con pantalla comprueba ademas que suena de verdad.
 
 const ESCENA_SALA: PackedScene = preload("res://herramientas/salas/sala_dialogo.tscn")
+const ESCENA_ENEMIGO: PackedScene = preload("res://nucleo/enemigo.tscn")
 
 var _pasos: int = 0
 var _aterrizajes: int = 0
@@ -41,6 +42,7 @@ func _ready() -> void:
 	_caso("el parry se pide y en la ficha del juego no suena", sonido.pedidos == pedidos + 1 and sonido.tocados == tocados + 4)
 	await _senales_a_eventos(sonido)
 	_sin_efecto(sonido)
+	_fichas_y_enemigo(sonido)
 	if sonido.mudo:
 		_caso("sin pantalla cuenta pero no toca", sonido.tocar(&"porton") == AudioStreamPlaybackPolyphonic.INVALID_ID)
 	else:
@@ -56,11 +58,13 @@ func _senales_a_eventos(sonido: Sonido) -> void:
 	var ficha: FichaSonidos = sonido.ficha
 	var completa: FichaSonidos = FichaSonidos.new()
 	var efecto: AudioStream = AudioStreamWAV.new()
-	# Los campos salen de la propia ficha: un campo nuevo sin su senal en esta tabla (y sin conexion en Sonido) falla.
+	# Los campos del bus salen de la propia ficha; vencido y ataque se prueban desde el enemigo y su comportamiento.
 	var campos: Array[StringName] = []
 	for propiedad: Dictionary in completa.get_property_list():
 		if propiedad["class_name"] == "AudioStream":
-			campos.append(StringName(propiedad["name"] as String))
+			var nombre: StringName = StringName(propiedad["name"] as String)
+			if nombre not in [&"vencido", &"ataque"]:
+				campos.append(nombre)
 	for campo: StringName in campos:
 		completa.set(campo, efecto)
 	sonido.ficha = completa
@@ -113,6 +117,71 @@ func _senales_a_eventos(sonido: Sonido) -> void:
 	sonido.ficha = ficha
 
 
+func _fichas_y_enemigo(sonido: Sonido) -> void:
+	var global: FichaSonidos = sonido.ficha
+	var sala_anterior: FichaSonidos = sonido.ficha_sala
+	var espera: int = sonido.ticks_entre_iguales
+	var mudo: bool = sonido.mudo
+	sonido.mudo = true
+	sonido.ticks_entre_iguales = 0
+	var base: FichaSonidos = FichaSonidos.new()
+	var sala: FichaSonidos = FichaSonidos.new()
+	var propia: FichaSonidos = FichaSonidos.new()
+	base.golpe = AudioStreamWAV.new()
+	sala.golpe = AudioStreamWAV.new()
+	propia.golpe = AudioStreamWAV.new()
+	propia.vencido = AudioStreamWAV.new()
+	propia.ataque = AudioStreamWAV.new()
+	sonido.ficha = base
+	sonido.ficha_sala = sala
+	var tocados: int = sonido.tocados
+	sonido.tocar(&"golpe", propia)
+	_caso("la ficha propia gana a sala y global", sonido.ultimo_stream == propia.golpe and sonido.tocados == tocados + 1)
+	sonido.tocar(&"golpe")
+	_caso("la sala gana a la global", sonido.ultimo_stream == sala.golpe and sonido.tocados == tocados + 2)
+	var vacia: FichaSonidos = FichaSonidos.new()
+	sonido.tocar(&"golpe", vacia)
+	_caso("un campo propio vacio cae a la sala", sonido.ultimo_stream == sala.golpe and sonido.tocados == tocados + 3)
+	sonido.ficha_sala = vacia
+	sonido.tocar(&"golpe", vacia)
+	_caso("un campo de sala vacio cae a la global", sonido.ultimo_stream == base.golpe and sonido.tocados == tocados + 4)
+	sonido.ficha = null
+	sonido.tocar(&"golpe", propia)
+	_caso("la propia funciona sin ficha global", sonido.ultimo_stream == propia.golpe and sonido.tocados == tocados + 5)
+	sonido.tocar(&"golpe", vacia)
+	_caso("sin efecto en ninguna ficha no suena", sonido.tocados == tocados + 5)
+	sonido.ficha = base
+	sonido.ficha_sala = sala
+	var enemigo: Enemigo = ESCENA_ENEMIGO.instantiate() as Enemigo
+	enemigo.ficha = FichaEnemigo.new()
+	enemigo.ficha.id = &"sonido_prueba"
+	enemigo.ficha.sonidos = propia
+	enemigo.id = &"sonido_prueba"
+	add_child(enemigo)
+	enemigo.golpeable.velocidad_retroceso = 0.0
+	tocados = sonido.tocados
+	enemigo.golpeable.recibir_golpe(enemigo)
+	_caso("el enemigo golpeado toca su golpe", sonido.tocados == tocados + 1 and sonido.ultimo == &"golpe"
+			and sonido.ultimo_stream == propia.golpe)
+	var comportamiento: ComportamientoEnemigo = ComportamientoEnemigo.new()
+	comportamiento.enemigo = enemigo
+	enemigo.add_child(comportamiento)
+	comportamiento.sonar(&"ataque")
+	_caso("el comportamiento pide su ataque", sonido.tocados == tocados + 2 and sonido.ultimo == &"ataque"
+			and sonido.ultimo_stream == propia.ataque)
+	# La senal local alcanza el handler real de muerte sin que el golpe del bus tape ultimo con golpe despues.
+	enemigo.golpeable.golpeado.emit(enemigo, 1)
+	_caso("vencerlo toca vencido una sola vez", enemigo.vida == 0 and sonido.tocados == tocados + 3
+			and sonido.ultimo == &"vencido" and sonido.ultimo_stream == propia.vencido)
+	enemigo.golpeable.golpeado.emit(enemigo, 1)
+	_caso("vencido no vuelve a sonar al recibir otro golpe muerto", sonido.tocados == tocados + 3)
+	Congelado.reiniciar()
+	sonido.ficha = global
+	sonido.ficha_sala = sala_anterior
+	sonido.ticks_entre_iguales = espera
+	sonido.mudo = mudo
+
+
 func _sin_efecto(sonido: Sonido) -> void:
 	var ficha: FichaSonidos = sonido.ficha
 	sonido.ficha = FichaSonidos.new()
@@ -152,7 +221,9 @@ func _jugador_en_sala(sonido: Sonido) -> void:
 	Eventos.jugador_paso.connect(_al_paso)
 	Eventos.jugador_aterrizo.connect(_al_aterrizar)
 	var sala: Sala = ESCENA_SALA.instantiate() as Sala
+	sala.sonidos = FichaSonidos.new()
 	add_child(sala)
+	_caso("entrar a una sala instala sus efectos", sonido.ficha_sala == sala.sonidos)
 	var vibracion: Vibracion = sala.get_node(^"Vibracion") as Vibracion
 	var jugador: Jugador = sala.get_node(^"Jugador") as Jugador
 	await _esperar(40)
@@ -178,6 +249,10 @@ func _jugador_en_sala(sonido: Sonido) -> void:
 	await _esperar(Jugador.TICKS_LLEGAR_CAMINANDO + 2)
 	_caso("entrar caminando por una puerta no da pasos (%d)" % (_pasos - pasos), _pasos == pasos)
 	sala.free()
+	var siguiente: Sala = ESCENA_SALA.instantiate() as Sala
+	add_child(siguiente)
+	_caso("entrar sin ficha de sala borra la anterior", sonido.ficha_sala == null)
+	siguiente.free()
 	Partida.reiniciar()
 	Eventos.jugador_paso.disconnect(_al_paso)
 	Eventos.jugador_aterrizo.disconnect(_al_aterrizar)

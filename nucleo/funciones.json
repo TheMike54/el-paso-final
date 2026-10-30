@@ -8,7 +8,7 @@
   {
     "id": "entrada-acciones",
     "que": "El InputMap tiene todas las acciones del juego con su teclado inicial y la logica solo lee acciones con nombre",
-    "comprobacion": "manual: project.godot lista las acciones de docs/contrato.md y ningun .gd de nucleo/ lee teclas ni toques, salvo nucleo/controles_tactiles.gd, que traduce los toques a acciones; nucleo/editor_controles.gd lee el raton emulado del toque para mover los botones , nucleo/configuracion.gd lee botones del control para reasignarlos y nucleo/ultima_entrada.gd lee toques, teclas, el control y el raton para saber que se uso al ultimo (foco e iconos de los menus)",
+    "comprobacion": "manual: project.godot lista las acciones de docs/ajustes-y-entrada.md y ningun .gd de nucleo/ lee teclas ni toques, salvo nucleo/controles_tactiles.gd, que traduce los toques a acciones; nucleo/editor_controles.gd lee el raton emulado del toque para mover los botones , nucleo/configuracion.gd lee botones del control para reasignarlos y nucleo/ultima_entrada.gd lee toques, teclas, el control y el raton para saber que se uso al ultimo (foco e iconos de los menus)",
     "pasa": true
   },
   {
@@ -85,8 +85,8 @@
   },
   {
     "id": "entrada-control",
-    "que": "El control (Xbox / PlayStation) emite las mismas acciones del InputMap, con su mapeo en docs/contrato.md",
-    "comprobacion": "manual: con un control conectado, el stick izquierdo y cada boton disparan la accion que dice docs/contrato.md",
+    "que": "El control (Xbox / PlayStation) emite las mismas acciones del InputMap, con su mapeo en docs/ajustes-y-entrada.md",
+    "comprobacion": "manual: con un control conectado, el stick izquierdo y cada boton disparan la accion que dice docs/ajustes-y-entrada.md",
     "pasa": true
   },
   {
@@ -217,7 +217,7 @@
   },
   {
     "id": "guardado-v3",
-    "que": "El guardado es la version 3 de docs/contrato.md (banco {sala, id}, listas de ids, monedas, mochila, mapas, salas visitadas y mapeadas, estado por sala, personaje, nombre y tiempo jugado); una partida de la version 2 es INCOMPATIBLE y un banco sin id es DANADA",
+    "que": "El guardado es la version 4 de docs/contrato.md (banco {sala, id}, listas de ids, monedas, mochila, mapas, salas visitadas y mapeadas, estado por sala, personaje, nombre y tiempo jugado, mas los campos de NUEVOS); una partida de la version 2 o 3 es INCOMPATIBLE y un banco sin id es DANADA",
     "comprobacion": "herramientas/guiones/nucleo/guardado.guion",
     "pasa": true
   },
@@ -373,14 +373,14 @@
   },
   {
     "id": "amuletos-banco",
-    "que": "Los amuletos se ponen y se quitan solo sentado en un banco, en la pagina Amuletos del marco de menus (la abre la accion inventario sentado, o el boton tactil que sentado dice Inventario); de pie solo se ven; Partida no pone uno que no se tiene, repetido ni mas de MAX_EQUIPADOS, y poner o quitar autoguarda",
+    "que": "Los amuletos se ponen y se quitan solo sentado en un banco, en la pagina Amuletos del marco de menus (la abre la accion inventario sentado, o el boton tactil que sentado dice Inventario); de pie solo se ven; Partida no pone uno que no se tiene, repetido ni uno que no cabe en la carga, y poner o quitar autoguarda",
     "comprobacion": "herramientas/guiones/nucleo/amuletos.guion",
     "pasa": true
   },
   {
     "id": "amuletos-telefono",
-    "que": "En el telefono la pagina Amuletos del marco de menus se abre sentado con el boton Inventario, se lee y se toca con el pulgar, y la brujula puesta sentado se ve en el mapa",
-    "comprobacion": "manual: fila Amuletos en el banco de docs/pruebas.md, en el S50 o el S20",
+    "que": "En el telefono la pagina Amuletos del marco de menus se abre sentado con el boton Inventario, se lee y se toca con el pulgar (la brujula, que antes se ponia aqui, ahora es un util: entrada equipo-telefono)",
+    "comprobacion": "manual: fila Amuletos y utiles en el banco de docs/pruebas.md, en el S50 o el S20",
     "pasa": true
   },
   {
@@ -1048,5 +1048,82 @@
     "que": "En el telefono el tema del menu suena sin cortes en el bucle, la cinematica lo calla, La Celda queda callada, la region de la sala de prueba Musica lo sube y lo baja sin reiniciarlo, reaparecer o cargar en su banco no lo empieza de nuevo ni lo baja un instante, al volver de esa sala a la lista de la zona el tema callado no vuelve a oirse, y en la pausa lejos de un tema Configuracion, Audio pone el tema y al cerrarla se calla",
     "comprobacion": "manual: docs/pruebas.md, «Musica»",
     "pasa": false
-  }
-]
+  },
+  {
+    "id": "enemigo-arte",
+    "que": "Enemigo y Palanca con arte: un AnimatedSprite2D hijo (animacion) apaga la caja gris. El del enemigo mira a la derecha, se refleja con scale.x cada vez que cambia mirando, toca quieto al aparecer, las demas con animar() y se detiene durante el congelado; el tipo con arte es una escena heredada de enemigo.tscn. El de la palanca se refleja hacia donde queda inclinada",
+    "comprobacion": "herramientas/guiones/nucleo/enemigo_arte.guion;herramientas/guiones/nucleo/enemigo_base.guion;herramientas/guiones/nucleo/muro_rompible.guion",
+    "pasa": true
+  },
+  {
+    "id": "enemigo-botin",
+    "que": "FichaEnemigo.botin: al vencerlo (con el ataque o con la bola, sin error del motor), un MonedasSueltas botin_<id> salta desde su centro y cae al suelo de abajo, tambien si el enemigo vuela; tomarlo suma sus PejeCoins y lo marca en su sala, y el mismo ejemplar ya no vuelve a soltarlo; una ficha sin botin no suelta nada; el validador reserva el prefijo botin_",
+    "comprobacion": "herramientas/guiones/nucleo/enemigo_botin.guion;herramientas/guiones/herramientas/validador.guion",
+    "pasa": true
+  },
+  {
+    "id": "enemigo-enganches",
+    "que": "Ganchos de ComportamientoEnemigo: bloquea_golpe (golpe bloqueado sin dano, sin empuje, sin contar ni dar Inspiracion, avisado como objeto), lado_de, jugador_lo_mira (Jugador.mirando de solo lectura) y flotar (sin gravedad y MOTION_MODE_FLOATING, y vuelta al modo de la ficha)",
+    "comprobacion": "herramientas/guiones/nucleo/enemigo_enganches.guion",
+    "pasa": true
+  },
+  {
+    "id": "enemigo-sonidos",
+    "que": "Efectos por ficha: FichaEnemigo.sonidos y Sala.sonidos; Sonido.tocar(evento, propia) usa el primer efecto de la ficha propia, la de la sala o la global; eventos vencido y ataque (ComportamientoEnemigo.sonar)",
+    "comprobacion": "herramientas/guiones/nucleo/sonido.guion",
+    "pasa": true
+  },
+  {
+    "id": "enemigo-datos",
+    "que": "Datos por ejemplar: el comportamiento lee sus numeros de un DatosComportamiento (del Enemigo de la sala, si no de su ficha, si no los de su clase), no de constantes; dos enemigos del mismo tipo con radio distinto se comportan distinto",
+    "comprobacion": "herramientas/guiones/nucleo/enemigo_datos.guion",
+    "pasa": true
+  },
+  {
+    "id": "amuletos-carga",
+    "que": "Los amuletos tienen ficha (FichaAmuleto: nombre, descripcion, costo 1 a 3, icono opcional y efectos) en un catalogo (CatalogoEquipo, contenido/equipo.tres y el de pruebas); Partida pone uno solo si esta en el catalogo, se tiene y su costo cabe en la carga (empieza en 3, como Hollow Knight); la carga se guarda",
+    "comprobacion": "herramientas/guiones/nucleo/amuletos.guion;herramientas/guiones/nucleo/guardado.guion",
+    "pasa": true
+  },
+  {
+    "id": "amuletos-efectos",
+    "que": "Los amuletos puestos cambian al jugador y al botin: velocidad al caminar, ticks sin dano tras un golpe, Inspiracion por golpe a un enemigo y PejeCoins del botin; quitar el amuleto vuelve al valor base",
+    "comprobacion": "herramientas/guiones/nucleo/efectos_amuletos.guion",
+    "pasa": true
+  },
+  {
+    "id": "amuletos-pagina-ficha",
+    "que": "La pagina Amuletos muestra por fila el icono de la ficha (sin el, el amuleto de gis), el nombre, el costo y si esta puesto, y la descripcion del que tiene el foco o se toca; uno fuera del catalogo se lista con su id y no responde",
+    "comprobacion": "herramientas/guiones/nucleo/amuletos.guion",
+    "pasa": true
+  },
+  {
+    "id": "utiles",
+    "que": "Utiles aparte de los amuletos, como las herramientas de Silksong: la brujula es el primero; Partida.utiles_tenidos y utiles_equipados (una ranura, sin carga), la pagina Utiles del marco entre Amuletos y Mapa (solo sentado se cambian) y el mapa marca al jugador con la brujula puesta; el guardado sube a la version 4 y una partida de la 3 da INCOMPATIBLE",
+    "comprobacion": "herramientas/guiones/nucleo/utiles.guion;herramientas/guiones/nucleo/marco.guion;herramientas/guiones/mapa/mapa_cuentas.guion;herramientas/guiones/nucleo/guardado.guion",
+    "pasa": true
+  },
+  {
+    "id": "equipo-telefono",
+    "que": "En el telefono las paginas Amuletos y Utiles se leen y se tocan con el pulgar: icono, nombre, costo y descripcion caben a 1280x720 y en el S50; la brujula puesta sentado en Utiles se ve en el mapa; con el amuleto de velocidad se nota caminar mas rapido",
+    "comprobacion": "manual: fila Amuletos y utiles en el banco de docs/pruebas.md, en el S50",
+    "pasa": true
+  },
+  {
+    "id": "inspiracion-y-carga-crecen",
+    "que": "La capacidad de Inspiracion empieza en INSPIRACION_INICIAL y los Modulos de RAM suman tres bloques hasta INSPIRACION_TOPE; la carga crece por muescas desde CARGA_INICIAL hasta CARGA_TOPE. Las recompensas autoguardan ambas capacidades, el guardado sin inspiracion_maxima usa la inicial y el HUD y el inventario muestran el maximo actual",
+    "comprobacion": "herramientas/guiones/nucleo/crecer.guion",
+    "pasa": true
+  },
+  {
+    "id": "jefe-fases-y-arena",
+    "que": "Ficha con umbrales de fase y jefe; cada fase cruzada emite y llama al gancho una vez; ArenaJefe duerme, cierra al entrar, abre al vencer, da recompensa y emite jefe_vencido una vez; volver sin jefe y morir sin premio",
+    "comprobacion": "herramientas/guiones/nucleo/sala_jefe.guion",
+    "pasa": true
+  },
+  {
+    "id": "jefe-telefono",
+    "que": "La arena y el jefe de caja gris se pueden jugar con el pulgar: se entiende el cambio de fase y el aviso de embestida, los portones cierran y abren, vencer da impulso una vez y morir no lo da",
+    "comprobacion": "manual: fila Jefe de docs/pruebas.md, en el telefono",
+    "pasa": false
+  }]

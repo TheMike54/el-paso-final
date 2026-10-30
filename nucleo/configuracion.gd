@@ -7,7 +7,7 @@ extends Control
 # creditos. Avanzado (maqueta aprobada el 25-oct-2026) agrupa Rendimiento: recursos (con aviso si se elige alto en un
 # telefono debil), FPS, luces 2D (bloqueadas en Recursos bajo), niebla y mostrar FPS; y Desarrollo: modo
 # desarrollador (el menu muestra la zona de pruebas) y, con el, el panel de pruebas y ver hitbox. Los ajustes graficos
-# se aplican al momento, tambien desde la pausa (Eventos.ajuste_grafico_cambiado). Cada opcion es un BotonValor: su valor en gis, con un ovalo en lo que vale, sin interruptores (mockup del 13-oct-2026). La
+# se aplican al momento, tambien desde la pausa (Eventos.ajuste_cambiado). Cada opcion es un BotonValor: su valor en gis, con un ovalo en lo que vale, sin interruptores (mockup del 13-oct-2026). La
 # partida se borra en su ranura (Ranuras). Cada cambio se guarda al momento en los ajustes (las barras, al
 # soltarlas). Volver va siempre arriba a la izquierda, y las cuadriculas toman las columnas que caben (Tema). Atras y
 # pausa vuelven un nivel a la vez: del subpanel a la lista, y de la lista al menu (cerrado); se ve un solo panel a la
@@ -293,7 +293,7 @@ func _al_tocar_luces() -> void:
 func _alternar(clave: StringName) -> void:
 	Ajustes.poner_si_no(clave, not Ajustes.si_no(clave))
 	_poner_valores()
-	Eventos.ajuste_grafico_cambiado.emit(clave)
+	Eventos.ajuste_cambiado.emit(clave)
 	_guardar()
 
 

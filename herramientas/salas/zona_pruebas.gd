@@ -13,13 +13,13 @@ const GRUPOS: Dictionary = {
 	"Combate": ["sala_combate.tscn", "sala_combate_chico.tscn", "sala_golpe.tscn", "sala_parry.tscn", "sala_pogo.tscn", "sala_picada.tscn", "sala_bola.tscn", "sala_curar.tscn"],
 	"Enemigos": ["sala_enemigos.tscn", "sala_enemigos_banco.tscn", "sala_peligro.tscn", "sala_peligro_movil.tscn", "sala_enemigos_moviles.tscn"],
 	"Mundo": ["sala_banco.tscn", "sala_puerta_a.tscn", "sala_puerta_c.tscn", "sala_camara.tscn", "sala_capas.tscn", "sala_secretos.tscn", "sala_pizarrones.tscn", "sala_plataformas.tscn", "sala_musica.tscn"],
-	"Partida": ["sala_dialogo.tscn", "sala_reto.tscn", "sala_lo_perdido.tscn", "sala_tienda.tscn"],
+	"Partida": ["sala_dialogo.tscn", "sala_reto.tscn", "sala_lo_perdido.tscn", "sala_tienda.tscn", "sala_equipo.tscn", "sala_jefe.tscn"],
 	"Rendimiento": ["sala_recursos.tscn", "sala_arte.tscn"],
 	"Zonas": ["la_celda.tscn", "zonas/mapa/mapa_1.tscn", "zonas/mapa/mapa_2.tscn", "zonas/prueba/prueba_1.tscn", "zonas/prueba/prueba_2.tscn", "zonas/prueba/prueba_3.tscn", "zonas/prueba/prueba_4.tscn"],
 }
-## Nombre y para que sirve cada sala de GRUPOS, el detalle en una linea corta (cabe en CELDA con Tema.LETRA_DETALLE).
-## validar.gd falla si una sala de GRUPOS no tiene su linea o si una linea nombra una sala que no esta en GRUPOS. Una
-## sala de «Otras» se ve con su nombre de archivo y sin detalle.
+## Nombre y para que sirve cada sala de GRUPOS o de enemigos/, el detalle en una linea corta (cabe en CELDA con Tema.LETRA_DETALLE).
+## validar.gd exige la linea para GRUPOS y solo admite otras lineas para escenas presentes en enemigos/.
+## Sin linea, una sala descubierta se ve con su nombre de archivo y sin detalle.
 const SALAS: Dictionary = {
 	"sala_movimiento.tscn": ["Movimiento", "Caminar y saltar"],
 	"sala_caida.tscn": ["Caída", "Caída larga y cámara"],
@@ -41,6 +41,10 @@ const SALAS: Dictionary = {
 	"sala_peligro.tscn": ["Peligro", "Volver a lo seguro"],
 	"sala_peligro_movil.tscn": ["Peligro móvil", "Sierra que va y viene"],
 	"sala_enemigos_moviles.tscn": ["Enemigos móviles", "Caminan, vuelan, lanzan"],
+	"enemigos/sala_caminante.tscn": ["Caminante", "Pared y orilla"],
+	"enemigos/sala_volador.tscn": ["Volador", "Perseguir en el aire"],
+	"enemigos/sala_escupidor.tscn": ["Escupidor", "Disparar desde arriba"],
+	"enemigos/sala_muneco_que_ataca.tscn": ["Muñeco que ataca", "Aviso, golpe y disparo"],
 	"sala_banco.tscn": ["Banco", "Sentarse y guardar"],
 	"sala_puerta_a.tscn": ["Puerta A", "Cambio de sala"],
 	"sala_puerta_c.tscn": ["Puerta C", "Puertas con interactuar"],
@@ -54,6 +58,8 @@ const SALAS: Dictionary = {
 	"sala_reto.tscn": ["Reto", "Preguntas con premio"],
 	"sala_lo_perdido.tscn": ["Lo perdido", "Volver por la mochila"],
 	"sala_tienda.tscn": ["Tienda", "Comprar con PejeCoins"],
+	"sala_equipo.tscn": ["Equipo", "Probar amuletos y útiles"],
+	"sala_jefe.tscn": ["Jefe", "Probar un jefe con fases y arena"],
 	"sala_recursos.tscn": ["Recursos", "Bajo y alto"],
 	"sala_arte.tscn": ["Arte", "FPS con todo el arte"],
 	"la_celda.tscn": ["La Celda", "Cinemática y sala"],
@@ -167,6 +173,17 @@ static func columnas_para(ancho: float) -> int:
 	return Tema.columnas(ancho, CELDA.x, Tema.SEPARACION, 2, 4)
 
 
+## Escenas de enemigos/, relativas a CARPETA y ordenadas; tambien lee .remap en publicacion.
+static func salas_enemigos() -> PackedStringArray:
+	var salas: PackedStringArray = []
+	for archivo: String in DirAccess.get_files_at(CARPETA + "enemigos"):
+		var nombre: String = archivo.trim_suffix(".remap")
+		if nombre.ends_with(".tscn") and not salas.has("enemigos/" + nombre):
+			salas.append("enemigos/" + nombre)
+	salas.sort()
+	return salas
+
+
 # Arma _salas con lo que hay en la carpeta (en un paquete exportado las escenas aparecen como <nombre>.tscn.remap).
 func _leer_salas() -> void:
 	var presentes: PackedStringArray = []
@@ -179,9 +196,15 @@ func _leer_salas() -> void:
 			var nombre: String = archivo.trim_suffix(".remap")
 			if nombre.ends_with(".tscn"):
 				presentes.append("zonas/" + zona + "/" + nombre)
+	var enemigos: PackedStringArray = salas_enemigos()
+	presentes.append_array(enemigos)
 	var agrupadas: PackedStringArray = []
 	for categoria: String in GRUPOS:
-		var lista: Array = GRUPOS[categoria]
+		var lista: Array = (GRUPOS[categoria] as Array).duplicate()
+		if categoria == "Enemigos":
+			for sala: String in enemigos:
+				if not lista.has(sala):
+					lista.append(sala)
 		var rutas: PackedStringArray = []
 		for sala: String in lista:
 			agrupadas.append(sala)

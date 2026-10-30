@@ -20,7 +20,7 @@ func _ready() -> void:
 	z_as_relative = false
 	top_level = true
 	_aplicar()
-	Eventos.ajuste_grafico_cambiado.connect(_al_cambiar_ajuste)
+	Eventos.ajuste_cambiado.connect(_al_cambiar_ajuste)
 
 
 func _process(_delta: float) -> void:

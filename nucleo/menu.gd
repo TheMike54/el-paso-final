@@ -18,7 +18,7 @@ const ALFA_VELO: float = 0.35
 ## Lo pone la zona de pruebas al volver: el menu abre con el foco en su entrada, un nivel atras de la zona.
 static var volver_a_zona: bool = false
 
-## Escena con que empieza una partida nueva: la cinematica de La Celda, que al terminar pasa a la primera sala.
+## Escena con que empieza una partida nueva: puede ser una cinematica que lleve a la primera sala.
 @export_file("*.tscn") var inicio_partida_nueva: String = ""
 ## Sala donde se continua una partida sin banco: la primera del juego, sin volver a ver la cinematica.
 @export_file("*.tscn") var sala_inicial: String = ""

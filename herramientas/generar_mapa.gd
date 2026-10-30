@@ -8,5 +8,5 @@ extends Node
 func _ready() -> void:
 	var indice: IndiceSalas = IndiceSalas.construir()
 	var error: Error = preload("res://herramientas/validar.gd").guardar_con_uids(indice, IndiceSalas.RUTA)
-	print("MAPA salas=%d error=%d" % [indice.rectangulos.size(), error])
+	print("MAPA salas=%d error=%d franja_libre_y=%d" % [indice.rectangulos.size(), error, ceili(indice.franja_libre())])
 	get_tree().quit(0 if error == OK else 1)

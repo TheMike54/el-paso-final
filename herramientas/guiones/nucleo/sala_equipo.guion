@@ -1,0 +1,4 @@
+# Entra a la sala jugable, camina a la entrega y pulsa interactuar desde prueba_sala_equipo.gd.
+# Verifica los cinco amuletos, la brujula, el banco y que el lote no se repite.
+escena res://herramientas/pruebas/sala_sala_equipo.tscn
+fin 180

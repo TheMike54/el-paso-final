@@ -11,7 +11,7 @@ Una a la vez. No se empieza la siguiente hasta que esta tiene su evidencia y su 
    `"pasa": false`, salvo que la persona nombre otra o que espere hardware o firma (se anota en `ESTADO.md` como
    bloqueo y se toma la siguiente). Decir cuál es y cuál es su `"comprobacion"`.
 2. **Contexto.** Si usa o cambia algo que otro bloque ve (autoloads, señales, forma de una sala, guardado),
-   leer `docs/contrato.md`.
+   leer `docs/contrato.md` (y el archivo del tema que toque, según su tabla inicial).
 3. **Plan.** Cambio chico: el plan en pocas líneas en la conversación. Más de un archivo o más de una sesión:
    `planes/activos/<bloque>-<tema>.md` con `ACTIVO` en la primera línea, hitos que se puedan comprobar con un
    comando, y la aprobación de la persona antes de programar.
@@ -28,7 +28,8 @@ Una a la vez. No se empieza la siguiente hasta que esta tiene su evidencia y su 
 7. **Evidencia.** Pegar la salida real del validador y de la comprobación. Si algo falla, se corrige la causa;
    no se cambia la comprobación para que pase.
 8. **Marcar.** Solo con la evidencia a la vista, cambiar `"pasa"` a `true` en esa entrada. Nada más del JSON.
-9. **Documentos.** Si cambió lo que el bloque ofrece: `docs/contrato.md` en el mismo cambio. Casos de QA
+9. **Documentos.** Si cambió lo que el bloque ofrece: `docs/contrato.md` o el archivo de su tema (tabla
+   al inicio del contrato) en el mismo cambio; una regla nueva del validador, en `docs/validador.md`. Casos de QA
    ejecutados: `docs/pruebas.md`. Herramienta de IA nueva o recurso ajeno: `docs/uso-de-ia.md`. `ESTADO.md` solo si cambió la
    rama, el PR, un bloqueo o una decisión abierta. Plan terminado: `CERRADO` y a `planes/cerrados/`.
 10. **Releer.** Cada `.md` tocado, completo: sin texto dirigido a una persona ni avisos de trabajo sin terminar

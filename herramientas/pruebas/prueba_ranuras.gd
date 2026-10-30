@@ -52,6 +52,11 @@ func _ready() -> void:
 	con_banco["banco"] = {"sala": "raices_1", "id": "banco_1"}
 	_caso("la ubicacion es la sala del banco", Ranuras.ubicacion(con_banco) == "Raices 1")
 	_caso("sin banco, la ultima sala visitada", Ranuras.ubicacion(PARTIDA) == "Prueba 2")
+	con_banco["banco"] = {"sala": "celda_3", "id": "banco_1"}
+	_caso("el banco muestra el nombre de su zona", Ranuras.ubicacion(con_banco) == "La Celda")
+	var en_celda: Dictionary = {"salas_visitadas": ["celda_3"]}
+	_caso("la ultima visitada muestra el nombre de su zona", Ranuras.ubicacion(en_celda) == "La Celda")
+	_caso("sin nombre de zona se conserva el id legible", Sala.nombre_de("sin_nombre_7") == "Sin Nombre 7")
 	var suelta: Dictionary = PARTIDA.duplicate(true)
 	suelta["salas_visitadas"] = ["res://herramientas/salas/sala_banco.tscn"]
 	_caso("una sala suelta, por el nombre de su escena", Ranuras.ubicacion(suelta) == "Sala Banco")

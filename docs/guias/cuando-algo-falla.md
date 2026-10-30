@@ -14,7 +14,7 @@ resuelto: síntoma, causa, arreglo y guion que lo cubre).
 
 | Síntoma | Qué mirar |
 |---|---|
-| `validar.ps1` termina en `FALLA` con líneas `FALLO ...` | Cada línea nombra el archivo y la regla. La regla vive en `docs/contrato.md` y su entrada `validador-*`, en `herramientas/funciones.json`. Corregir y repetir con `-SinImportar` si no cambió ningún asset |
+| `validar.ps1` termina en `FALLA` con líneas `FALLO ...` | Cada línea nombra el archivo y la regla. La regla vive en `docs/validador.md` y su entrada `validador-*`, en `herramientas/funciones.json`. Corregir y repetir con `-SinImportar` si no cambió ningún asset |
 | `validar.ps1` dice «la escena validadora no imprimio su resumen» | El validador no corrió completo, normalmente porque un script no compila. Leer `.godot\validar.log` y buscar `SCRIPT ERROR` |
 | `Parse Error` que Godot no refleja en el código de salida | `--import` y una corrida headless salen con 0 aunque un script no compile; solo `validar.ps1` lo atrapa. Reglas de tipado y diferencias con Python: skill `gdscript4` |
 | «Identifier not found» con `--check-only` | `--check-only` no carga autoloads; usar `validar.ps1` |

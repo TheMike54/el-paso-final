@@ -2,14 +2,13 @@
 
 **Para qué sirve:** llevar una imagen de escenario (capa, pieza de piso, orilla, calcomanía) desde que se genera
 hasta que la sala la usa y queda declarada.
-**Antes de empezar:** leer `CLAUDE.md` («Entorno y trampas»), `docs/contrato.md` («Recursos», viñetas «Tamaño del
-arte», «Importación del arte del mundo» y «Receta del arte de una sala») y «Arte de zona».
+**Antes de empezar:** leer `CLAUDE.md` («Entorno y trampas»), `docs/arte-y-rendimiento.md` («Recursos», viñetas «Tamaño del arte», «Importación del arte del mundo» y «Receta del arte de una sala») y «Arte de zona».
 
 1. Generar la imagen con una herramienta que ya conste en `docs/uso-de-ia.md`, «Herramientas de IA», fila
    «Imágenes». Una herramienta que no esté ahí se agrega primero (paso 8). Los textos con que se genera no se
    guardan en el repo.
 2. Procesar la imagen fuera del juego a PNG con transparencia: recortar al contenido, escalar y ajustar el tono. El
-   tamaño al que se pinta y la reducción de las capas de fondo están en `docs/contrato.md`, «Recursos», viñetas
+   tamaño al que se pinta y la reducción de las capas de fondo están en `docs/arte-y-rendimiento.md`, «Recursos», viñetas
    «Tamaño del arte» y «Receta del arte de una sala».
 3. Comprobar que ningún lado pasa del máximo de textura (`MAXIMO_LADO_TEXTURA` en `herramientas/validar.gd`; la
    decisión está en `CLAUDE.md`, «Decisiones cerradas»).
@@ -17,7 +16,7 @@ arte», «Importación del arte del mundo» y «Receta del arte de una sala») y
    `contenido/salas/<zona>/arte/` (ejemplo existente: `contenido/salas/celda/arte/`).
 5. Importar el proyecto para que nazca el `.import` junto a la imagen:
    `& $env:GODOT_PATH --headless --path . --import`.
-6. En el panel Import del editor, fijar la compresión y los mipmaps según `docs/contrato.md`, «Recursos», viñeta
+6. En el panel Import del editor, fijar la compresión y los mipmaps según `docs/arte-y-rendimiento.md`, «Recursos», viñeta
    «Importación del arte del mundo». VRAM Compressed solo en los casos y con la captura en el teléfono que
    describen esa viñeta y «Arte de zona», viñeta «Compresión».
 7. Colocarla en la escena de la sala (o en su pieza de `contenido/objetos/<zona>/`), siguiendo «Arte de zona»:
@@ -38,8 +37,7 @@ arte», «Importación del arte del mundo» y «Receta del arte de una sala») y
     parte.
 
 ## Si algo falla
-- `validar.ps1` con fallos de tamaño, importación o `uid`: la regla está en «Recursos» y «Sala» de
-  `docs/contrato.md`; el recorrido, en `docs/guias/cuando-algo-falla.md`. Una imagen sin uso no es un fallo: sale
+- `validar.ps1` con fallos de tamaño, importación o `uid`: la regla está en «Recursos» (`docs/arte-y-rendimiento.md`) y en «Sala» (`docs/contrato.md`, la lista del validador en `docs/validador.md`); el recorrido, en `docs/guias/cuando-algo-falla.md`. Una imagen sin uso no es un fallo: sale
   como `AVISO` y no cuenta en `fallos` (`docs/contrato.md`, «Sala», viñeta «Avisos del validador»).
 - Un fallo parecido a uno anterior: buscarlo en `docs/errores/` (por ejemplo
   `docs/errores/2026-10-27-hueco-niebla.md`, el hueco de una capa que se repite).

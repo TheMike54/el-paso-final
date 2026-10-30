@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://k7a08bqsbqd0" path="res://nucleo/sala.gd" id="1_sala"]
 [ext_resource type="PackedScene" uid="uid://dgy2sncgkvcml" path="res://nucleo/enemigo.tscn" id="6_enemigo"]
-[ext_resource type="Resource" uid="uid://pf2peg5tc8o" path="res://herramientas/salas/fichas/enemigo_debil.tres" id="7_debil"]
+[ext_resource type="PackedScene" uid="uid://bmt7wh3ka4jc6" path="res://herramientas/salas/fichas/enemigo_debil_arte.tscn" id="7_debil_arte"]
 [ext_resource type="Resource" uid="uid://hxjvhbe3y1wc" path="res://herramientas/salas/fichas/enemigo_fuerte.tres" id="8_fuerte"]
 [ext_resource type="PackedScene" uid="uid://cantrdqq1cwy8" path="res://nucleo/puerta.tscn" id="10_puerta"]
 
@@ -73,9 +73,8 @@ offset_bottom = 340.0
 mouse_filter = 2
 color = Color(0.3, 0.3, 0.32, 1)
 
-[node name="Debil" parent="." instance=ExtResource("6_enemigo")]
+[node name="Debil" parent="." instance=ExtResource("7_debil_arte")]
 position = Vector2(700, 680)
-ficha = ExtResource("7_debil")
 id = &"debil"
 
 [node name="Fuerte" parent="." instance=ExtResource("6_enemigo")]

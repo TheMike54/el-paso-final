@@ -154,7 +154,7 @@ func _ready() -> void:
 	_caso("una habilidad repetida no vuelve a guardar", Partida.autoguardados == antes + 1)
 	Eventos.jefe_vencido.emit(&"jefe_prueba")
 	_caso("vencer a un jefe lo anota y autoguarda", Partida.jefes.has(&"jefe_prueba") and Partida.autoguardados == antes + 2)
-	Partida.obtener_amuleto(&"brujula")
+	Partida.obtener_amuleto(&"amuleto_velocidad")
 	_caso("recoger un amuleto autoguarda", Partida.autoguardados == antes + 3)
 	Eventos.jugador_muerto.emit()
 	_caso("morir autoguarda", Partida.autoguardados == antes + 4)

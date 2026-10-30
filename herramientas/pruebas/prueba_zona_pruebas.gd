@@ -48,11 +48,13 @@ func _ready() -> void:
 	var puerta_b: bool = false
 	for i: int in range(nombres.size()):
 		await _esperar(1)
+		if nombres[i] == "Enemigos":
+			_revisar_enemigos(zona, lista)
 		for hijo: Node in lista.get_children():
 			var boton: Button = hijo as Button
 			if boton.is_queued_for_deletion():
 				continue
-			if (boton.get(&"detalle") as String).is_empty():
+			if nombres[i] != "Enemigos" and (boton.get(&"detalle") as String).is_empty():
 				sin_detalle.append(boton.text)
 			puerta_b = puerta_b or boton.text == "Puerta B"
 		zona.call(&"cambiar", 1)
@@ -87,3 +89,41 @@ func _marcados(botones: Array[Button]) -> Array[int]:
 func _mostrando(zona: Control, esperada: String, nombre: String) -> void:
 	var actual: String = zona.call(&"categoria")
 	_caso(nombre, actual == esperada)
+
+
+# Compara rutas y botones con la carpeta, conservando primero las salas de GRUPOS.
+func _revisar_enemigos(zona: Control, lista: GridContainer) -> void:
+	var constantes: Dictionary = (load("res://herramientas/salas/zona_pruebas.gd") as Script).get_script_constant_map()
+	var carpeta: String = constantes["CARPETA"]
+	var grupos: Dictionary = constantes["GRUPOS"]
+	var fichas: Dictionary = constantes["SALAS"]
+	var originales: Array = grupos["Enemigos"]
+	var esperadas: PackedStringArray = []
+	for sala: String in originales:
+		esperadas.append(carpeta + sala)
+	var nuevas: PackedStringArray = []
+	for archivo: String in DirAccess.get_files_at(carpeta + "enemigos"):
+		var nombre: String = archivo.trim_suffix(".remap")
+		if nombre.ends_with(".tscn") and not nuevas.has("enemigos/" + nombre):
+			nuevas.append("enemigos/" + nombre)
+	nuevas.sort()
+	for sala: String in nuevas:
+		if not esperadas.has(carpeta + sala):
+			esperadas.append(carpeta + sala)
+	var categorias: Dictionary = zona.get(&"_salas")
+	var actuales: PackedStringArray = categorias["Enemigos"]
+	_caso("Enemigos conserva GRUPOS primero y agrega toda la carpeta una sola vez", actuales == esperadas)
+	var presentes: bool = true
+	for comportamiento: String in ["caminante", "volador", "escupidor", "muneco_que_ataca"]:
+		var sala: String = "enemigos/sala_%s.tscn" % comportamiento
+		presentes = presentes and nuevas.has(sala) and not originales.has(sala) and actuales.has(carpeta + sala)
+	_caso("los cuatro comportamientos aparecen sin anotarlos en GRUPOS", presentes)
+	var botones_bien: bool = lista.get_child_count() == esperadas.size()
+	for j: int in range(mini(lista.get_child_count(), esperadas.size())):
+		var boton: Button = lista.get_child(j) as Button
+		var ruta: String = esperadas[j]
+		var info: Array = fichas.get(ruta.trim_prefix(carpeta), [])
+		var nombre: String = info[0] if info.size() == 2 else ruta.get_file().get_basename().trim_prefix("sala_").capitalize()
+		var detalle: String = info[1] if info.size() == 2 else ""
+		botones_bien = botones_bien and boton.text == nombre and (boton.get(&"detalle") as String) == detalle
+	_caso("Enemigos muestra el nombre y detalle de SALAS o el nombre del archivo", botones_bien)

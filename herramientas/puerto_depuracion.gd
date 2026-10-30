@@ -7,6 +7,7 @@ const TOLERANCIA: float = 0.5
 
 var _ruta: String = ""
 var _escena: String = ""
+var _habilidades: Array[StringName] = []
 var _cambio_lanzado: bool = false
 var _cuadro: int = 0
 var _fin: int = 0
@@ -43,6 +44,7 @@ func _ready() -> void:
 func _physics_process(_delta: float) -> void:
 	if not _escena_lista():
 		return
+	_dar_habilidades()
 	_cuadro += 1
 	if _cuadro == 1:
 		var motivo: String = _conectar_senales()
@@ -79,6 +81,13 @@ func _cargar() -> String:
 			if not partes[1].ends_with(".tscn") or not ResourceLoader.exists(partes[1]):
 				return "la escena '%s' no existe" % partes[1]
 			_escena = partes[1]
+		elif partes.size() == 2 and partes[0] == "habilidad":
+			if not _cuadros.is_empty():
+				return "la linea 'habilidad' debe ir antes de las entradas por cuadro"
+			var habilidad: StringName = StringName(partes[1])
+			if not Habilidades.TODAS.has(habilidad):
+				return "la habilidad '%s' no esta en Habilidades.TODAS" % habilidad
+			_habilidades.append(habilidad)
 		elif partes.size() == 3 and partes[0].is_valid_int() and (partes[2] == "press" or partes[2] == "release"):
 			if not InputMap.has_action(partes[1]):
 				return "la accion '%s' no esta en el InputMap" % partes[1]
@@ -115,6 +124,16 @@ func _cargar() -> String:
 	if _esperado.is_empty():
 		return "el archivo .esperado no comprueba nada"
 	return ""
+
+
+# Mismo camino silencioso que Sala.habilidades_de_prueba: el jugador consulta Partida.
+# Se reintenta en cada cuadro con jugador, tambien despues de un cambio de sala o un reinicio.
+func _dar_habilidades() -> void:
+	if _habilidades.is_empty() or get_tree().get_first_node_in_group(Jugador.GRUPO) == null:
+		return
+	for habilidad: StringName in _habilidades:
+		if not Partida.tiene(habilidad):
+			Partida.habilidades.append(habilidad)
 
 
 func _linea_esperada_valida(partes: PackedStringArray) -> bool:

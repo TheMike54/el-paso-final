@@ -3,7 +3,7 @@ extends PaginaMarco
 # Pantalla del mapa, como en Hollow Knight y Silksong: es la pagina Mapa del marco de menus (MarcoMenus, que la
 # abre con la accion mapa y detiene el juego) y mapa_rapido, mantenida, la muestra encima mientras se camina. Dos
 # estados, alejado y acercado, con + y -. Sin la habilidad pluma_mapa no hay nada dibujado; el jugador se ve solo
-# con el amuleto brujula equipado. La carga la sala con load() si existe: el nucleo no depende de este bloque.
+# con el util brujula equipado. La carga la sala con load() si existe: el nucleo no depende de este bloque.
 
 const PLUMA: StringName = Habilidades.PLUMA_MAPA
 const BRUJULA: StringName = &"brujula"
@@ -119,7 +119,7 @@ func alejar() -> void:
 # Con el mapa rapido a la vista, cada tick solo se mueve el marcador: el mapa no se rehace ni se redibuja. Equipar o
 # quitar la brujula a la vista lo rehace una vez.
 func _seguir_jugador() -> void:
-	if Partida.amuletos_equipados.has(BRUJULA) != _con_brujula:
+	if Partida.util_equipado(BRUJULA) != _con_brujula:
 		_mostrar()
 		return
 	if not _con_brujula:
@@ -128,8 +128,8 @@ func _seguir_jugador() -> void:
 	if sala == null:
 		return
 	var jugador: Node2D = get_tree().get_first_node_in_group(Jugador.GRUPO) as Node2D
-	if jugador != null:
-		lienzo.mover_marcador(sala.posicion_mapa + jugador.position)
+	if jugador != null and _indice.rectangulos.has(sala.id):
+		lienzo.mover_marcador(_indice.rectangulos[sala.id].position + jugador.position)
 
 
 # Descansar dibuja salas nuevas en el mapa: si se ve, se rehace despues de que Partida las anote con la misma senal.
@@ -143,7 +143,7 @@ func _mostrar() -> void:
 	_botones.visible = abierta
 	# En el marco, la barra de arriba tapa esa franja: el mapa se encaja debajo.
 	lienzo.offset_top = MarcoMenus.ALTO_BARRA if abierta else 0.0
-	_con_brujula = Partida.amuletos_equipados.has(BRUJULA)
+	_con_brujula = Partida.util_equipado(BRUJULA)
 	if not visible:
 		lienzo.soltar_texturas()
 		return
@@ -153,10 +153,10 @@ func _mostrar() -> void:
 	var zonas: Dictionary[String, Array] = DatosMapa.por_zona(_indice, mapeadas)
 	var marcador: Vector2 = Vector2.ZERO
 	var con_marcador: bool = false
-	if sala != null and _indice.rectangulos.has(sala.id) and Partida.amuletos_equipados.has(BRUJULA):
+	if sala != null and _indice.rectangulos.has(sala.id) and Partida.util_equipado(BRUJULA):
 		var jugador: Node2D = get_tree().get_first_node_in_group(Jugador.GRUPO) as Node2D
 		if jugador != null:
-			marcador = sala.posicion_mapa + jugador.position
+			marcador = _indice.rectangulos[sala.id].position + jugador.position
 			con_marcador = true
 	var sala_mochila: String = str(Partida.mochila.get("sala", ""))
 	var punto_mochila: Vector2 = Partida.punto_de_mochila()

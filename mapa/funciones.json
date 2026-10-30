@@ -28,5 +28,11 @@
     "que": "El mapa rapido solo se muestra si mapa_rapido empezo a pulsarse con el juego andando: cerrar el marco de menus (tambien abierto en Mapa desde el mapa rapido) o la pausa con LB o mapa_rapido sostenido no lo muestra hasta soltarlo y volver a pulsarlo; al cruzar una puerta con mapa_rapido sostenido la sala nueva lo sigue mostrando",
     "comprobacion": "herramientas/guiones/nucleo/marco.guion;herramientas/guiones/mapa/mapa_cuentas.guion",
     "pasa": true
+  },
+  {
+    "id": "mapa-nombre-color-zona",
+    "que": "El mapa alejado usa el nombre y color de FichaZona copiados al indice; sin ficha conserva el nombre desde el id y la paleta alternada; los rectangulos suman el origen de zona y el generador imprime la siguiente franja libre",
+    "comprobacion": "herramientas/guiones/mapa/mapa_cuentas.guion",
+    "pasa": true
   }
 ]

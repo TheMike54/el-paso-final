@@ -30,3 +30,9 @@ rutas = Dictionary[String, String]({
 "prueba_3": "res://herramientas/salas/zonas/prueba/prueba_3.tscn",
 "prueba_4": "res://herramientas/salas/zonas/prueba/prueba_4.tscn"
 })
+nombres_zona = Dictionary[String, String]({
+"celda": "La Celda"
+})
+colores_zona = Dictionary[String, Color]({
+"celda": Color(0.45, 0.55, 0.65, 1)
+})

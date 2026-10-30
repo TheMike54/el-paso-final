@@ -29,7 +29,7 @@ const MAXIMO_LADO_TEXTURA: int = 2048
 ## Arte del mundo: el de las salas del juego y el de la sala de arte. El HUD y los menus no llevan mipmaps.
 const CARPETAS_ARTE_MUNDO: PackedStringArray = ["res://contenido/", "res://herramientas/salas/arte/"]
 ## Imagenes con transparencia que van comprimidas en VRAM por excepcion (fondos de la sala de arte, decidido el
-## 13-oct-2026). Una excepcion nueva se anota aqui y en docs/contrato.md, «Recursos».
+## 13-oct-2026). Una excepcion nueva se anota aqui y en docs/arte-y-rendimiento.md, «Recursos».
 const ALFA_EN_VRAM: PackedStringArray = [
 	"res://herramientas/salas/arte/fondo1.png",
 	"res://herramientas/salas/arte/fondo2.png",
@@ -61,6 +61,9 @@ const CARPETA_GUIONES: String = "res://herramientas/guiones/"
 const ESCENA_DELGADA: String = "res://nucleo/piezas/plataforma_delgada.tscn"
 
 var _fallos: PackedStringArray = []
+# Recompensas de archivo ya revisadas contra el catalogo (_revisar_equipo), por su resource_path: una ficha de dialogo o
+# un articulo en su propio .tres se revisa como recurso y otra vez en cada escena que lo usa.
+var _equipo_revisado: Dictionary[String, bool] = {}
 # Avisos: lo que conviene revisar pero no rompe el juego. Se imprimen como AVISO y no cuentan en fallos.
 var _avisos: PackedStringArray = []
 # Imagenes de contenido/ encontradas al recorrer, para _avisar_imagenes_sin_uso.
@@ -68,6 +71,8 @@ var _imagenes_contenido: PackedStringArray = []
 var _total: int = 0
 # Salas con id: id -> {ruta, puertas: {id_puerta: [sala_destino, puerta_destino]}}.
 var _salas: Dictionary[String, Dictionary] = {}
+# Ruta de la ficha compartida por cada zona de las salas con id.
+var _fichas_zona: Dictionary[String, String] = {}
 # Cada .gd, .tscn y .tres revisado, para _revisar_pruebas_aparte.
 var _revisados: PackedStringArray = []
 # Fichas de datos que traen su propio fallos() (BolsaPreguntas es la de la mochila): el validador anota cada fallo con
@@ -203,6 +208,11 @@ func _revisar(ruta: String) -> void:
 	if _en_carpetas(ruta, CARPETAS_CON_UID) and ruta.get_extension() != "gd":
 		_revisar_uids(ruta, FileAccess.get_file_as_string(ruta))
 	var recurso: Resource = ResourceLoader.load(ruta)
+	if recurso is FichaDialogo:
+		for recompensa: Recompensa in (recurso as FichaDialogo).recompensas:
+			_revisar_equipo(ruta, recompensa)
+	elif recurso is ArticuloTienda:
+		_revisar_equipo(ruta, (recurso as ArticuloTienda).recompensa)
 	if recurso == null:
 		_fallos.append(ruta + " (no carga)")
 	elif recurso is GDScript:
@@ -246,6 +256,7 @@ func _revisar(ruta: String) -> void:
 				_revisar_avisos(ruta, nodo)
 				_revisar_estaciones(ruta, nodo)
 				_revisar_enemigos(ruta, nodo)
+				_revisar_arenas_jefe(ruta, nodo)
 				_revisar_recogibles(ruta, nodo)
 				_revisar_zonas_camara(ruta, nodo)
 				for muro: Node in _de_tipo(nodo, MuroRompible, true):
@@ -559,7 +570,7 @@ func _destino_de_puerta(ruta: String, puerta: Puerta) -> String:
 
 # Cada id de habilidad de una escena esta en Habilidades.TODAS: el de un ObjetoHabilidad puesto en una sala, el de las recompensas de
 # una EntregaRecompensas, un RetoPreguntas o un articulo de una Tienda (y su requisito) y los de habilidades_de_prueba. Las de un Npc las revisa
-# FichaDialogo.fallos().
+# FichaDialogo.fallos(). Las recompensas tambien comprueban el catalogo de amuletos y utiles.
 func _revisar_habilidades(ruta: String, raiz: Node) -> void:
 	for nodo: Node in _de_tipo(raiz, null, true):
 		var ids: Array[StringName] = []
@@ -569,6 +580,8 @@ func _revisar_habilidades(ruta: String, raiz: Node) -> void:
 			ids.append((nodo as ObjetoHabilidad).habilidad)
 		elif nodo is EntregaRecompensas:
 			recompensas = (nodo as EntregaRecompensas).recompensas
+		elif nodo is ArenaJefe:
+			recompensas.append((nodo as ArenaJefe).recompensa)
 		elif nodo is RetoPreguntas:
 			recompensas.append((nodo as RetoPreguntas).recompensa)
 		elif nodo is Tienda:
@@ -580,11 +593,48 @@ func _revisar_habilidades(ruta: String, raiz: Node) -> void:
 		elif nodo is Sala:
 			ids.append_array((nodo as Sala).habilidades_de_prueba)
 		for recompensa: Recompensa in recompensas:
+			_revisar_equipo(ruta, recompensa)
 			if recompensa != null and recompensa.tipo == Recompensa.Tipo.HABILIDAD:
 				ids.append(recompensa.id)
 		for id: StringName in ids:
 			if not Habilidades.TODAS.has(id):
 				_fallos.append("%s (%s: '%s' no es una habilidad de Habilidades.TODAS)" % [ruta, nodo.name, id])
+
+
+# Comparte la comprobacion entre recompensas de escenas y fichas sueltas, sin otro recorrido del proyecto. Una
+# recompensa de archivo se revisa una sola vez; las armadas en memoria (pruebas) no tienen ruta y se revisan siempre.
+func _revisar_equipo(ruta: String, recompensa: Recompensa) -> void:
+	if recompensa == null:
+		return
+	if not recompensa.resource_path.is_empty():
+		if _equipo_revisado.has(recompensa.resource_path):
+			return
+		_equipo_revisado[recompensa.resource_path] = true
+	# Fuera de herramientas/ solo vale el catalogo del juego: el de pruebas no viaja en el paquete de publicacion.
+	var del_juego: bool = not ruta.begins_with("res://herramientas/")
+	match recompensa.tipo:
+		Recompensa.Tipo.AMULETO:
+			if CatalogoEquipo.amuleto(recompensa.id) == null:
+				_fallos.append("%s ('%s' no es un amuleto de CatalogoEquipo)" % [ruta, recompensa.id])
+			elif del_juego and not _en_catalogo_del_juego(&"amuletos", recompensa.id):
+				_fallos.append("%s ('%s' solo esta en el catalogo de pruebas)" % [ruta, recompensa.id])
+		Recompensa.Tipo.UTIL:
+			if CatalogoEquipo.util(recompensa.id) == null:
+				_fallos.append("%s ('%s' no es un util de CatalogoEquipo)" % [ruta, recompensa.id])
+			elif del_juego and not _en_catalogo_del_juego(&"utiles", recompensa.id):
+				_fallos.append("%s ('%s' solo esta en el catalogo de pruebas)" % [ruta, recompensa.id])
+
+
+# Si el id esta en la lista (amuletos o utiles) de contenido/equipo.tres, sin mirar el catalogo de pruebas.
+func _en_catalogo_del_juego(lista: StringName, id: StringName) -> bool:
+	var catalogo: Resource = Cargar.si_existe(CatalogoEquipo.RUTA_JUEGO)
+	var fichas: Variant = catalogo.get(lista) if catalogo != null else null
+	if not fichas is Array:
+		return false
+	for ficha: Resource in fichas as Array:
+		if ficha != null and ficha.get(&"id") == id:
+			return true
+	return false
 
 
 # Una sala del juego o de una zona de prueba: raiz Sala con id <zona>_<numero> igual al archivo, en la carpeta de su
@@ -605,14 +655,26 @@ func _revisar_sala(ruta: String, nodo: Node) -> void:
 	if _salas.has(sala.id):
 		_fallos.append("%s (id %s repetido en %s)" % [ruta, sala.id, _salas[sala.id]["ruta"]])
 		return
+	var zona: String = Sala.zona_de(sala.id)
+	if sala.ficha_zona == null:
+		if ruta.begins_with(CARPETA_CONTENIDO):
+			_fallos.append(ruta + " (sala de contenido sin ficha_zona)")
+	else:
+		var ficha: String = sala.ficha_zona.resource_path
+		if _fichas_zona.has(zona) and _fichas_zona[zona] != ficha:
+			_fallos.append("%s (zona %s con fichas distintas: %s y %s)" % [ruta, zona, _fichas_zona[zona], ficha])
+		else:
+			_fichas_zona[zona] = ficha
 	if sala.limites.size.x <= 0.0 or sala.limites.size.y <= 0.0:
 		_fallos.append(ruta + " (limites sin area)")
 	# El mapa pone lo que se guarda en coordenadas de la sala (la mochila) sobre el rectangulo del indice, que empieza
-	# en posicion_mapa + limites.position: con otro origen sale corrido justo esa cantidad (docs/contrato.md, «Sala»).
+	# en origen de zona + posicion_mapa + limites.position: limites con otro origen corre el icono esa cantidad.
 	if sala.limites.position != Vector2.ZERO:
 		_fallos.append("%s (limites empieza en %s: debe empezar en (0, 0), mover el contenido de la sala)" % [ruta, sala.limites.position])
 	if ruta.begins_with(Sala.CARPETA_CONTENIDO) and not sala.habilidades_de_prueba.is_empty():
 		_fallos.append(ruta + " (habilidades_de_prueba es solo para salas de prueba)")
+	if ruta.begins_with(Sala.CARPETA_CONTENIDO) and sala.inspiracion_maxima_de_prueba != 0:
+		_fallos.append(ruta + " (inspiracion_maxima_de_prueba es solo para salas de prueba)")
 	var entrada: Node2D = sala.get_node_or_null(^"Entrada") as Node2D
 	if entrada == null or not sala.limites.has_point(entrada.position):
 		_fallos.append(ruta + " (falta Entrada o queda fuera de limites)")
@@ -627,6 +689,9 @@ func _revisar_sala(ruta: String, nodo: Node) -> void:
 		elif not recordado.is_empty():
 			if recordados.has(recordado):
 				_fallos.append("%s (id %s repetido en la sala)" % [ruta, recordado])
+			# El botin de un enemigo se marca al correr con "botin_<id>": un objeto colocado con ese prefijo compartiria la marca.
+			if recordado.begins_with(Enemigo.PREFIJO_BOTIN):
+				_fallos.append("%s (id %s usa el prefijo %s, reservado al botin de los enemigos)" % [ruta, recordado, Enemigo.PREFIJO_BOTIN])
 			recordados[recordado] = true
 	for hijo: Node in sala.get_children():
 		var puerta: Puerta = hijo as Puerta
@@ -663,6 +728,8 @@ func _revisar_npcs(ruta: String, raiz: Node) -> void:
 				continue
 			for fallo: String in ficha.fallos():
 				_fallos.append("%s (npc %s: %s)" % [ruta, npc.name, fallo])
+			for recompensa: Recompensa in ficha.recompensas:
+				_revisar_equipo(ruta, recompensa)
 	for nodo: Node in _de_tipo(raiz, RetoPreguntas, true):
 		var reto: RetoPreguntas = nodo as RetoPreguntas
 		if _id_reservado(reto.id):
@@ -1144,7 +1211,7 @@ func _id_recordado(nodo: Node) -> String:
 
 
 # El indice del mapa (mapa/indice_salas.tres) debe decir lo mismo que las salas: si una sala se agrega, se mueve o
-# cambia sus limites, posicion_mapa o su dibujo, hay que volver a generarlo. La clase se busca por ruta al correr,
+# cambia sus limites, posicion_mapa, dibujo o ficha de zona, hay que volver a generarlo. Se busca la clase al correr,
 # no por nombre, para que el validador siga funcionando en un proyecto sin el bloque mapa/.
 func _revisar_indice_mapa() -> void:
 	if not ResourceLoader.exists(INDICE_MAPA):
@@ -1200,9 +1267,11 @@ func _revisar_zona_pruebas() -> void:
 		var info: Array = salas.get(sala, [])
 		if info.size() != 2 or (info[0] as String).is_empty() or (info[1] as String).is_empty():
 			_fallos.append("%s (%s no tiene nombre y detalle en SALAS)" % [ZONA_PRUEBAS, sala])
+	# Las descubiertas son opcionales en SALAS, pero una linea no puede apuntar a una escena ausente.
+	var descubiertas: PackedStringArray = (load(ZONA_PRUEBAS) as Script).call(&"salas_enemigos")
 	for sala: String in salas:
-		if not agrupadas.has(sala):
-			_fallos.append("%s (SALAS nombra %s, que no esta en GRUPOS)" % [ZONA_PRUEBAS, sala])
+		if not agrupadas.has(sala) and not descubiertas.has(sala):
+			_fallos.append("%s (SALAS nombra %s, que no esta en GRUPOS ni en enemigos/)" % [ZONA_PRUEBAS, sala])
 
 
 # Las pruebas de codigo no viajan en el paquete de publicacion (exclude_filter de «Publicacion», docs/contrato.md,
@@ -1255,3 +1324,15 @@ func _revisar_puertas() -> void:
 			var vuelta: Array = otras[puerta_destino]
 			if vuelta[0] != _salas[id]["ruta"] or vuelta[1] != id_puerta:
 				_fallos.append("sala %s, puerta %s: %s no tiene la puerta %s de vuelta a ella" % [id, id_puerta, por_ruta[ruta_destino], puerta_destino])
+
+
+# La arena necesita una identidad persistente, el enemigo y la forma que detecta al jugador.
+func _revisar_arenas_jefe(ruta: String, raiz: Node) -> void:
+	for nodo: Node in _de_tipo(raiz, ArenaJefe, true):
+		var arena: ArenaJefe = nodo as ArenaJefe
+		if arena.id_jefe.is_empty():
+			_fallos.append("%s (la arena %s no tiene id_jefe)" % [ruta, arena.name])
+		if arena.jefe == null:
+			_fallos.append("%s (la arena %s no tiene jefe)" % [ruta, arena.name])
+		if not _con_forma_hija(arena):
+			_fallos.append("%s (la arena %s no tiene una CollisionShape2D hija con forma)" % [ruta, arena.name])

@@ -3,7 +3,8 @@ extends Node2D
 # Palanca que se mueve con un golpe del jugador (como la Lever de Silksong): el primer golpe la activa, la deja
 # inclinada hacia el otro lado y, tras ticks_retraso, abre cada Porton de su lista. Despues ya no cambia; los
 # golpes solo rebotan al jugador. La bola no la mueve. Con id se marca en el estado de su sala y aparece activada;
-# cada porton guarda lo suyo. Golpearla no da Inspiracion (su Golpeable no es un enemigo).
+# cada porton guarda lo suyo. Golpearla no da Inspiracion (su Golpeable no es un enemigo). Con un AnimatedSprite2D
+# (animacion) se ve con arte en vez de la caja gris.
 
 ## Al activarse.
 signal activada()
@@ -25,6 +26,9 @@ const LARGO: float = 70.0
 @export var ticks_congelado: int = 6
 @export var ticks_temblor: int = 10
 @export var px_temblor: float = 6.0
+## Dibujo opcional, hijo de la palanca; sin el, la caja gris. Inclinado a la derecha sin voltear: se refleja con
+## scale.x hacia donde queda inclinada.
+@export var animacion: AnimatedSprite2D = null
 
 ## Activada (ya no cambia) y si ya abrio sus portones; publicos para los guiones.
 var esta_activada: bool = false
@@ -53,7 +57,7 @@ func _ready() -> void:
 		esta_activada = true
 		abrio = true
 		_inclinacion = 1.0
-	queue_redraw()
+	_inclinar()
 
 
 func _physics_process(_delta: float) -> void:
@@ -76,7 +80,7 @@ func _al_recibir_golpe(atacante: Node2D, _dano: int) -> void:
 	# Se inclina hacia el lado contrario al de quien la golpea.
 	var lado: float = signf(global_position.x - atacante.global_position.x)
 	_inclinacion = lado if lado != 0.0 else -_inclinacion
-	queue_redraw()
+	_inclinar()
 	if not id.is_empty():
 		Partida.marcar(Sala.clave_de(self), id)
 	Congelado.pedir(ticks_congelado)
@@ -85,8 +89,18 @@ func _al_recibir_golpe(atacante: Node2D, _dano: int) -> void:
 	activada.emit()
 
 
+# Con dibujo lo refleja; sin el, redibuja la caja gris.
+func _inclinar() -> void:
+	if animacion != null:
+		animacion.scale.x = absf(animacion.scale.x) * _inclinacion
+	else:
+		queue_redraw()
+
+
 func _draw() -> void:
 	# Caja gris: base y palanca inclinada, mientras no haya arte.
+	if animacion != null:
+		return
 	draw_rect(Rect2(-30.0, -20.0, 60.0, 20.0), COLOR_BASE)
 	var punta: Vector2 = Vector2(0.0, -20.0) + Vector2.UP.rotated(deg_to_rad(GRADOS) * _inclinacion) * LARGO
 	draw_line(Vector2(0.0, -20.0), punta, COLOR_PALANCA, 10.0)

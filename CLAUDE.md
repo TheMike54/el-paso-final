@@ -136,7 +136,8 @@ PowerShell, desde la raíz del repo. `GODOT_PATH` es la ruta al ejecutable de co
 | HUD: corazones, Inspiración, PejeCoins, ícono de guardado | `interfaz/CLAUDE.md` | Antes de tocar `interfaz/` |
 | Pantalla del mapa | `mapa/CLAUDE.md` | Antes de tocar `mapa/` |
 | Validador, puerto de depuración, guiones, hooks | `herramientas/CLAUDE.md` | Antes de tocar `herramientas/` o `.github/` |
-| Configuración del proyecto, ciclo de vida, autoloads y lo que un bloque ofrece a otro | `docs/contrato.md` | Antes de crear contenido, un autoload o tocar el guardado |
+| Configuración del proyecto, ciclo de vida, guardado, autoloads, bus de eventos, forma de una sala y lo que un bloque ofrece a otro | `docs/contrato.md` (abre con la tabla de sus siete archivos por tema) | Antes de crear contenido, un autoload o tocar el guardado |
+| Piezas, enemigos, audio, ajustes y entrada, interfaz, arte y rendimiento, reglas del validador | `docs/componentes.md`, `enemigos.md`, `audio.md`, `ajustes-y-entrada.md`, `interfaz.md`, `arte-y-rendimiento.md`, `validador.md` | Si la tarea toca ese tema (la tabla de `docs/contrato.md` dice cuándo) |
 | Movimiento, combate, curar y habilidades del jugador | `docs/jugador.md` | Antes de tocar el jugador o ajustar sus valores |
 | Formato de los guiones | `docs/guiones.md` | Antes de escribir o cambiar un guion |
 | Qué hay en cada sala de la zona de pruebas | `docs/salas-de-prueba.md` | Antes de pedir una prueba o elegir dónde probar algo |

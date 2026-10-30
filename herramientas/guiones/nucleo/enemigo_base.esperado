@@ -6,6 +6,9 @@ escena res://herramientas/salas/sala_enemigos.tscn
 x 1040 60
 valor Jugador vidas 4
 valor Debil vida 2
+# El debil, que reaparecio, trae su arte provisional mirando a la izquierda (el dibujo, reflejado); el fuerte sigue
+# sin arte. El resto del dibujo (animar, voltear, congelado) lo prueba enemigo_arte.guion.
+valor Debil/Arte scale:x -0.2 0.01
 senal /root/Eventos enemigo_vencido 2
 senal /root/Eventos jugador_danado 0
 senal /root/Eventos cambio_de_sala 2

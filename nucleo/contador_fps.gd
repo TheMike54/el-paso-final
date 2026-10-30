@@ -41,7 +41,7 @@ func _ready() -> void:
 	_en_menu = _hay_menu()
 	Ajustes.aplicar_fps(_en_menu)
 	_al_cambiar_ajuste(Ajustes.MOSTRAR_FPS)
-	Eventos.ajuste_grafico_cambiado.connect(_al_cambiar_ajuste)
+	Eventos.ajuste_cambiado.connect(_al_cambiar_ajuste)
 
 
 func _process(delta: float) -> void:

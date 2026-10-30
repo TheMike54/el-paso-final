@@ -251,7 +251,7 @@ func _sala_de_arriba() -> Sala:
 
 # Hay un menu abierto si el arbol esta detenido: solo lo detienen la pausa, el marco de menus, la tienda, las
 # estaciones y su cobro. Cualquier pausa nueva del arbol tambien deja sin responder los botones de juego y el joystick
-# (docs/contrato.md, Entrada).
+# (docs/ajustes-y-entrada.md, Entrada).
 func _hay_menu() -> bool:
 	return get_tree().paused
 

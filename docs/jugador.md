@@ -1,8 +1,8 @@
 # Jugador
 
 Movimiento, combate, curar y habilidades del jugador: lo que el contenido y los guiones pueden dar por hecho.
-Es parte de `docs/contrato.md` (mismas reglas: se actualiza en el mismo cambio que el código) y se separó por
-largo. Los componentes que usa el contenido (`Golpeable`, `DanoContacto`, `Cortable`…) siguen en el contrato.
+Es parte del contrato (`docs/contrato.md` y sus archivos por tema; mismas reglas: se actualiza en el mismo cambio que el código) y se separó por
+largo. Los componentes que usa el contenido (`Golpeable`, `DanoContacto`, `Cortable`…) siguen en `docs/componentes.md`.
 
 `nucleo/jugador.tscn` (`class_name Jugador`, `CharacterBody2D`): camina y salta con toda su lógica en
 `_physics_process`. Reglas del salto, como en Hollow Knight.
@@ -17,7 +17,7 @@ Todos los valores son propiedades exportadas del jugador y se ajustan en la zona
 
 | Propiedad | Inicial | Qué es |
 |---|---|---|
-| `velocidad` | 360 px/s | Velocidad al caminar, sin aceleración |
+| `velocidad` | 360 px/s | Velocidad al caminar, sin aceleración; se multiplica por el `velocidad_factor` de los amuletos puestos (no la carrera ni el impulso) |
 | `gravedad` | 2400 px/s² | Gravedad |
 | `altura_salto` | 230 px | Altura máxima manteniendo `saltar`; el impulso se calcula a partir de ella |
 | `corte_salto` | 0,4 | Factor de la velocidad vertical al soltar `saltar` mientras sube |
@@ -34,7 +34,7 @@ Todos los valores son propiedades exportadas del jugador y se ajustan en la zona
 | `dano_ataque` | 1 | Daño de cada golpe del ataque a un `Golpeable` |
 | `posicion_pogo` | (0, 50) px | Centro del área de ataque hacia abajo (pogo), relativo a los pies |
 | `altura_pogo` | 120 px | Altura del rebote del pogo |
-| `ticks_invulnerable` | 60 | Ticks sin recibir daño después de un golpe |
+| `ticks_invulnerable` | 60 | Ticks sin recibir daño después de un golpe; los amuletos puestos suman su `invulnerable_extra` |
 | `ticks_retroceso` | 10 | Ticks en que el retroceso manda sobre el movimiento horizontal |
 | `retroceso` | (420, 420) px/s | Velocidad del retroceso: `x` alejándose del origen del daño, `y` hacia arriba |
 | `ticks_suelo_firme` | 6 | Ticks seguidos en el suelo para que una posición cuente como punto seguro |
@@ -43,14 +43,14 @@ Todos los valores son propiedades exportadas del jugador y se ajustan en la zona
 | `ticks_anti_bucle` | 30 | Ticks con control tras volver de un peligro durante los que otro peligro lleva al punto de llegada sin quitar vida |
 | `margen_fuera_de_sala` | 160 px | Px que los pies pasan del borde de abajo de `limites` para que salir por abajo cuente como peligro (el alto del cuerpo) |
 | `ticks_hit_stop` | 10 | Ticks de congelado común al recibir daño, antes del retroceso (ver `Congelado`) |
-| `ticks_invulnerable_parry`, `ticks_congelado_parry` | 15, 20 | Parry: ticks sin daño de enemigos y de congelado común (ver «Enemigos» en `docs/contrato.md`). 20 = 0,33 s: Hollow Knight 0,36 s (`NailClashEffect`), Silksong 0,2-0,3 s (medido en video) |
+| `ticks_invulnerable_parry`, `ticks_congelado_parry` | 15, 20 | Parry: ticks sin daño de enemigos y de congelado común (ver «Enemigos» en `docs/enemigos.md`). 20 = 0,33 s: Hollow Knight 0,36 s (`NailClashEffect`), Silksong 0,2-0,3 s (medido en video) |
 | `ticks_retroceso_parry`, `velocidad_retroceso_parry` | 8, 600 px/s | Parry: empuje del jugador hacia atrás, lejos del ataque, después del congelado |
 | `ticks_rebote_al_golpear` | 4 | Ticks en que el jugador sale empujado hacia atrás al golpear algo |
 | `velocidad_rebote_al_golpear` | 240 px/s | Velocidad de ese empuje |
 | `costo_curacion` | 33 | Inspiración que cuesta curar una vida |
 | `ticks_curacion` | 60 | Ticks de curación para recuperar una vida, contados desde `ticks_mantener_poder` |
 | `ticks_devolver_curacion` | 27 | Soltar `curar` antes de estos ticks de curación devuelve toda la Inspiración gastada |
-| `inspiracion_por_golpe` | 11 (`Partida.INSPIRACION_POR_GOLPE`, que también mide los bloques del HUD) | Inspiración que gana cada golpe del ataque a un enemigo (`Golpeable` con `es_enemigo`) |
+| `inspiracion_por_golpe` | 11 (`Partida.INSPIRACION_POR_GOLPE`, que también mide los bloques del HUD) | Inspiración que gana cada golpe del ataque a un enemigo (`Golpeable` con `es_enemigo`); los amuletos puestos suman su `inspiracion_extra` |
 | `ticks_mantener_poder` | 10 | Ticks manteniendo `curar` a partir de los cuales es mantener (curar) y no un toque (poder) |
 | `costo_poder` | 33 | Inspiración que cuesta cada poder |
 | `salida_proyectil` | (60, −90) px | Dónde sale la bola, relativo a los pies del jugador mirando a la derecha |
@@ -103,7 +103,9 @@ Combate:
   jugador, como un `DanoContacto`, para contar los ticks a la par del fundido. Mientras está quieto tras reaparecer, ningún peligro cuenta (el contacto de un `DanoContacto` se revisa con la lista del tick
   anterior). Anti-bucle (como Silksong): si otro peligro lo toca antes de `ticks_anti_bucle` ticks con control (30 =
   0,5 s), vuelve al punto por el que entró a la sala (puerta, banco o `Entrada`) sin perder vida; ese punto pasa a
-  ser su punto seguro y el siguiente peligro ya quita vida. El punto seguro es una posición con `ticks_suelo_firme` ticks seguidos en suelo fijo fuera de la
+  ser su punto seguro y el siguiente peligro ya quita vida. `PuntoSeguroJugador` (`nucleo/punto_seguro_jugador.gd`,
+  `RefCounted` con referencia al jugador) guarda los puntos y consulta el suelo cuando el jugador lo pide;
+  `ultimo_punto_seguro()` sigue disponible en `Jugador`. La colocación y el fundido siguen en el jugador. El punto seguro es una posición con `ticks_suelo_firme` ticks seguidos en suelo fijo fuera de la
   invulnerabilidad, tomada `ticks_atras_punto_seguro` posiciones atrás. Suelo fijo: un rayo hacia abajo en el centro de los
   pies o a 1 px de una orilla del cuerpo (8 px arriba, 40 abajo, `Capas.rayo_a_escenario`) encuentra un sólido que no
   se mueve según `Vaiven.movil_de`;
@@ -157,8 +159,7 @@ Combate:
   de la pausa o No del cobro, y A también es `saltar`), el jugador recibe `NOTIFICATION_UNPAUSED` y en su tick
   siguiente esa pulsación no cuenta como `saltar`: no salta, no queda en la cola
   del salto, no usa el coyote y no lo levanta del banco. Solo ese tick: una pulsación nueva en el siguiente sí salta.
-  Un menú que se cierra leyendo una acción en su `_physics_process` ya va después del jugador («Marco de menús» en
-  `docs/contrato.md`) y no pasa por aquí.
+  Un menú que se cierra leyendo una acción en su `_physics_process` ya va después del jugador («Marco de menús» en `docs/interfaz.md`) y no pasa por aquí.
 - Temblor pedido desde fuera: `temblar(ticks, px)` (lo llaman `MuroRompible` y `Palanca`) arranca un temblor con la
   misma forma que el del aterrizaje. Si ya hay uno que en ese tick es más fuerte que `px`, se queda el que hay; el
   aterrizaje y la picada usan el mismo camino. El jugador lo pasa a su `CamaraJugador`, que lleva el temblor en curso.
@@ -166,7 +167,7 @@ Combate:
   (`entrar_zona`, `salir_zona`) y la cámara recorta los `limites` de la sala con los de la zona que manda (la última en
   que entró). Recién colocada la cámara (llegar a la sala, reaparecer; los primeros 30 ticks, `TICKS_AL_INSTANTE`) la
   zona la coloca al instante; después la alcanza con un seguimiento lento de medio segundo (`TICKS_LENTO`, 30 ticks). El jugador no guarda nada de la zona: la pila vive en la cámara
-  (`docs/contrato.md`, «Componentes»; guion `nucleo/zona_camara`).
+  (`docs/componentes.md`, «Componentes»; guion `nucleo/zona_camara`).
 - `vidas`, `muerto`, `toques_poder`, `rebotes_pogo`, `en_picada`, `golpes_onda`, `descansando`, `hablando`, `temblor_x`, `temblor_y`, `aterrizando`, `atacando`, `paradas`, `desviados`, `corriendo`, `atacando_en_carrera`, `volteando`, `girando`, `invulnerable` y `puede_interactuar` (`aterrizando`, `atacando`, `girando`, `invulnerable` y `puede_interactuar`, de solo
   lectura) son propiedades públicas: los guiones las leen con `valor Jugador vidas`. `temblor_x` y `temblor_y` también son de
   solo lectura: las calcula la `CamaraJugador` y el jugador las lee de ella. `puede_interactuar` es la regla
@@ -217,15 +218,14 @@ Habilidades (solo si `Partida.tiene(<id>)`; los ids son las constantes de `nucle
 ## Dibujo
 
 El cuerpo es el nodo `Dibujo` (`AnimatedSprite2D`) de `nucleo/jugador.tscn`, con el `SpriteFrames`
-`nucleo/arte/jugador_hombre/jugador_hombre.tres` (atlas e importación: «Recursos» en `docs/contrato.md`). El dibujo
+`nucleo/arte/jugador_hombre/jugador_hombre.tres` (atlas e importación: «Recursos» en `docs/arte-y-rendimiento.md`). El dibujo
 solo lee al jugador: la física, el control y las áreas no dependen de él.
 
 - `Dibujo` está en (0, −80), el centro del cuerpo, que es también el pivote del giro de la voltereta; `centered`
   apagado y `offset` fijo (−158, −98), que pone el eje del cuerpo del lienzo común (316 × 182, pies en la fila 178)
   sobre la x del jugador y los pies en su y. El lienzo lo mide el script que arma el atlas: si cambia, cambia el
   `offset` (pasó de 180 a 182 el 24-oct-2026, al corregir la escala del ataque vertical). Lleva `show_behind_parent`: los hijos del jugador que no lo llevan (el trazo, el frente del aura de curar) quedan encima.
-- Cada golpe deja un trazo blanco (`Trazo`, un `TrazoAtaque` hijo del jugador, ver «Enemigos» en
-  `docs/contrato.md`): `_iniciar_ataque` lo dispara sobre el área de golpe ya colocada (de lado, `posicion_ataque_arriba`
+- Cada golpe deja un trazo blanco (`Trazo`, un `TrazoAtaque` hijo del jugador, ver «Enemigos» en `docs/enemigos.md`): `_iniciar_ataque` lo dispara sobre el área de golpe ya colocada (de lado, `posicion_ataque_arriba`
   o `posicion_pogo`), así sigue al área si esta cambia. Se ve desde el cuarto tick del golpe (guion
   `nucleo/trazo_jugador`).
 - Al final de `_physics_process`, tras mover y tras la cámara, `_animar()` llena un `AnimacionJugador.Estado` y
@@ -275,10 +275,12 @@ solo lee al jugador: la física, el control y las áreas no dependen de él.
   `modulate` mayor que 1 no aclara: Compatibility satura el color en 1 (`tutorials/rendering/renderers.rst:352,377`).
   El valor se cambia solo cuando cambia.
 - El golpe (normal, arriba, abajo y la estocada) se ve solo con su trazo blanco (`TrazoAtaque`); el área se ve con
-  «Ver hitbox» (decidido por la persona el 25-oct-2026). Desviar un disparo no aclara el cuerpo ni congela (contrato,
-  «Enemigos»).
+  «Ver hitbox» (decidido por la persona el 25-oct-2026). Desviar un disparo no aclara el cuerpo ni congela (`docs/enemigos.md`, «Enemigos»).
+- `EfectosJugador` (`nucleo/efectos_jugador.gd`, `RefCounted` con referencia al jugador) conserva los nodos del
+  destello y del aura, sus texturas y la foto de los amuletos. El jugador lo llama en los mismos puntos del tick y
+  renueva los amuletos al entrar y con `equipo_cambiado`.
 - Efectos (elegidos por la persona el 25-oct-2026 en maquetas animadas): hojas de cuadros que se reproducen con
-  `EfectoCuadros` (contrato, «Enemigos»), dibujadas una vez pixel por pixel por `herramientas/generar_efectos.gd` en
+  `EfectoCuadros` (`docs/enemigos.md`, «Enemigos»), dibujadas una vez pixel por pixel por `herramientas/generar_efectos.gd` en
   tres capas encajadas (azul, celeste, blanca), para que se vean de una sola pieza; en el juego son un sprite por
   efecto. Sin luz: la oscuridad de la sala no los apaga.
   - Parry: destello de luz (`efecto_parry.png`, 4 cuadros de 352x208, 0,2 s, aditivo) que corre durante el congelado,
@@ -296,3 +298,16 @@ solo lee al jugador: la física, el control y las áreas no dependen de él.
     crece con lo curado (0,35 + t / 0,6, como el aura del HTML de diseño) y titila. Se ven solo mientras `curando`.
     El aura va detrás con `show_behind_parent` y como primer hijo, no con `z_index` negativo, que la dejaba bajo el
     fondo de la sala.
+
+## Agregar una habilidad
+
+El doble salto sirve de modelo: su id `DOBLE_SALTO` y su entrada en `TODAS` van en `nucleo/habilidades.gd`;
+`Partida.tiene(Habilidades.DOBLE_SALTO)` habilita su rama en `nucleo/jugador.gd`. El estado transitorio vive en el
+jugador (`_doble_salto_disponible`), junto al resto del movimiento; los valores ajustables siguen como `@export`.
+La rama está en `_saltos`, después del salto desde suelo/coyote y del salto en pared: consume la disponibilidad
+y llama a `_saltar()` en ese tick. `_recuperar_aire()` la repone al tocar suelo, sostenerse en pared o rebotar.
+
+Revisar `nucleo/controles_tactiles.gd` al añadir una habilidad: el doble salto reutiliza `saltar`, sin botón nuevo;
+una acción nueva necesita su traducción táctil. Si cambia el dibujo, agregar su estado y su prioridad de animación en
+`nucleo/animacion_jugador.gd`, que solo lee la foto del jugador. Mantener la rama en el lugar que le corresponde del
+tick y comprobarla con un guion que tenga y otro que no tenga la habilidad, sin cambiar los resultados existentes.

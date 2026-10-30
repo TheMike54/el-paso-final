@@ -22,11 +22,15 @@ const FICHA: String = "res://nucleo/sonidos/sonidos_jugador.tres"
 @export var velocidad_aterrizaje_min: float = 200.0
 
 var ficha: FichaSonidos = null
+## Efectos de la sala actual; un campo vacio usa la ficha global.
+var ficha_sala: FichaSonidos = null
 ## Publicos para los guiones y la prueba, como en Vibracion: pedidos, tocados, el ultimo, los que no cupieron en
 ## las voces y si esta mudo (sin pantalla).
 var pedidos: int = 0
 var tocados: int = 0
 var ultimo: StringName = &""
+## Stream del ultimo efecto tocado, incluso sin pantalla; publico para los guiones.
+var ultimo_stream: AudioStream = null
 var descartados: int = 0
 ## Sin pantalla nadie oye: se cuenta igual pero no se toca (tocar sin pantalla dejaba recursos vivos al salir,
 ## docs/errores/2026-10-13-musica-sin-pantalla.md).
@@ -55,7 +59,7 @@ func _ready() -> void:
 	# Una conexion por senal: unbind quita los argumentos de la senal y bind agrega el evento
 	# (classes/class_callable.rst:231, :520-530). El aterrizaje elige su efecto por el argumento picada.
 	Eventos.jugador_salto.connect(tocar.bind(&"salto"))
-	Eventos.enemigo_golpeado.connect(tocar.bind(&"golpe").unbind(1))
+	Eventos.enemigo_golpeado.connect(_al_enemigo_golpeado)
 	Eventos.objeto_golpeado.connect(tocar.bind(&"golpe").unbind(1))
 	Eventos.muro_roto.connect(tocar.bind(&"muro_roto").unbind(1))
 	Eventos.porton_abierto.connect(tocar.bind(&"porton").unbind(1))
@@ -74,17 +78,23 @@ func _exit_tree() -> void:
 	_reproductor.stop()
 
 
-## Toca el efecto de un evento si la ficha tiene uno y no sono hace menos de ticks_entre_iguales. Devuelve el id de
+## Toca el primer efecto del evento en propia, ficha_sala o ficha si no sono hace menos de ticks_entre_iguales.
+## Devuelve el id de
 ## la voz (AudioStreamPlaybackPolyphonic.INVALID_ID si no sono). Avisa con un WARNING si el evento no es campo de
 ## FichaSonidos: nunca sonaria.
-func tocar(evento: StringName) -> int:
+func tocar(evento: StringName, propia: FichaSonidos = null) -> int:
 	pedidos += 1
-	if ficha == null:
+	var primera: FichaSonidos = propia if propia != null else (ficha_sala if ficha_sala != null else ficha)
+	if primera == null:
 		return AudioStreamPlaybackPolyphonic.INVALID_ID
-	if not ficha.tiene_campo(evento):
+	if not primera.tiene_campo(evento):
 		push_warning("Sonido: el evento %s no es campo de FichaSonidos y nunca suena" % evento)
 		return AudioStreamPlaybackPolyphonic.INVALID_ID
-	var stream: AudioStream = ficha.efecto(evento)
+	var stream: AudioStream = propia.efecto(evento) if propia != null else null
+	if stream == null and ficha_sala != null:
+		stream = ficha_sala.efecto(evento)
+	if stream == null and ficha != null:
+		stream = ficha.efecto(evento)
 	if stream == null:
 		return AudioStreamPlaybackPolyphonic.INVALID_ID
 	var tick: int = Engine.get_physics_frames()
@@ -94,6 +104,7 @@ func tocar(evento: StringName) -> int:
 	_tick_evento[evento] = tick
 	tocados += 1
 	ultimo = evento
+	ultimo_stream = stream
 	if mudo or _voces == null:
 		return AudioStreamPlaybackPolyphonic.INVALID_ID
 	# El bus va explicito: por omision play_stream usa Master y se saltaria la barra de Efectos
@@ -107,6 +118,11 @@ func tocar(evento: StringName) -> int:
 ## Si la voz que devolvio tocar() sigue sonando (false si esta mudo).
 func sonando(voz: int) -> bool:
 	return _voces != null and voz != AudioStreamPlaybackPolyphonic.INVALID_ID and _voces.is_stream_playing(voz)
+
+
+func _al_enemigo_golpeado(nodo: Node) -> void:
+	var enemigo: Enemigo = nodo as Enemigo
+	tocar(&"golpe", enemigo.ficha.sonidos if enemigo != null and enemigo.ficha != null else null)
 
 
 func _al_aterrizar(velocidad: float, duro: bool, picada: bool) -> void:

@@ -1,14 +1,11 @@
 class_name MenuEstaciones
-extends CanvasLayer
+extends ModalPausa
 # Menu de destinos de una Estacion, con el juego detenido, como el del Ciervo de Hollow Knight: a la izquierda una
 # ListaElegir con las estaciones abiertas de su tabla, en su orden, y el foco en la actual, en gris y sin elegirse; a la
 # derecha su MapaEstaciones (sin indice del mapa, la lista sola). Elegir otra cierra el menu y la Estacion viaja;
 # Volver, Circulo / B, pausa y Atras de Android lo cierran. Mientras existe, la pausa no se abre (grupo pantalla_encima).
 
-signal cerrado
 
-## La misma capa que la pausa y el menu de la tienda: nunca hay dos abiertos a la vez.
-const CAPA: int = 20
 const TITULO: String = "Viajar"
 const AQUI: String = "Aquí"
 const TEXTO_VIAJAR: String = "Viajar"
@@ -35,10 +32,7 @@ var ayudas: HBoxContainer = null
 
 
 func _ready() -> void:
-	layer = CAPA
-	process_mode = Node.PROCESS_MODE_ALWAYS
-	process_physics_priority = MarcoMenus.PRIORIDAD_FISICA
-	add_to_group(MarcoMenus.GRUPO)
+	super()
 	var fondo: ColorRect = Tema.fondo_menu()
 	add_child(fondo)
 	lista = ListaElegir.new()
@@ -55,29 +49,6 @@ func _ready() -> void:
 	_armar()
 	lista.resized.connect(_acomodar)
 	_acomodar()
-
-
-func _physics_process(_delta: float) -> void:
-	if Input.is_action_just_pressed(&"volver") or Input.is_action_just_pressed(&"pausa"):
-		cerrar()
-
-
-func _notification(que: int) -> void:
-	if que == NOTIFICATION_WM_GO_BACK_REQUEST:
-		cerrar()
-
-
-## La pausa no se abre con el menu a la vista (ni en el tick en que se cierra: el menu sigue en el arbol).
-func bloquea_pausa() -> bool:
-	return true
-
-
-func cerrar() -> void:
-	if is_queued_for_deletion():
-		return
-	get_tree().paused = false
-	cerrado.emit()
-	queue_free()
 
 
 ## El centro del rectangulo de cada sala, en orden; vacio si a alguna le falta el rectangulo (entonces no hay mapa).

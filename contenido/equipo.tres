@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="CatalogoEquipo" format=3 uid="uid://c7fq2mmnd1jow"]
+
+[ext_resource type="Script" uid="uid://cfinu2td5srxh" path="res://nucleo/catalogo_equipo.gd" id="1_catalogo"]
+[ext_resource type="Script" uid="uid://bkps75534o0wk" path="res://nucleo/ficha_util.gd" id="2_util"]
+
+[sub_resource type="Resource" id="util_brujula"]
+script = ExtResource("2_util")
+id = &"brujula"
+nombre = "Brújula"
+descripcion = "Con ella puesta, el mapa muestra dónde estás."
+
+[resource]
+script = ExtResource("1_catalogo")
+utiles = Array[ExtResource("2_util")]([SubResource("util_brujula")])

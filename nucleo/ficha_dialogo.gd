@@ -36,7 +36,8 @@ func fallos() -> PackedStringArray:
 		var recompensa: Recompensa = recompensas[i]
 		if recompensa == null:
 			lista.append("recompensa %d vacia" % i)
-		elif recompensa.tipo in [Recompensa.Tipo.AMULETO, Recompensa.Tipo.HABILIDAD, Recompensa.Tipo.MAPA] and recompensa.id == &"":
+		elif recompensa.tipo in [Recompensa.Tipo.AMULETO, Recompensa.Tipo.UTIL, Recompensa.Tipo.HABILIDAD,
+				Recompensa.Tipo.MAPA] and recompensa.id == &"":
 			lista.append("recompensa %d sin id" % i)
 		elif recompensa.tipo == Recompensa.Tipo.HABILIDAD and not Habilidades.TODAS.has(recompensa.id):
 			lista.append("recompensa %d: %s no es una habilidad" % [i, recompensa.id])

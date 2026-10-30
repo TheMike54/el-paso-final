@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://4q1a2mb0hdo2"]
+
+[ext_resource type="Script" uid="uid://bq45xxao05yve" path="res://herramientas/pruebas/prueba_enemigo_botin.gd" id="1_prueba"]
+
+[node name="Sala" type="Node"]
+script = ExtResource("1_prueba")

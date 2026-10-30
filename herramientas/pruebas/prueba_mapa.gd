@@ -11,6 +11,7 @@ const RUTA: String = "user://prueba_mapa.json"
 func _ready() -> void:
 	_aislar_partida(RUTA)
 	_cuentas()
+	_fichas_zona()
 	var sala: Sala = (load(SALA) as PackedScene).instantiate() as Sala
 	add_child(sala)
 	await get_tree().physics_frame
@@ -42,8 +43,8 @@ func _ready() -> void:
 
 	Partida.mapas.append("prueba")
 	Eventos.descanso_en_banco.emit(&"banco_mapa_1")
-	Partida.amuletos_tenidos.append(&"brujula")
-	Partida.equipar(&"brujula")
+	Partida.utiles_tenidos.append(&"brujula")
+	Partida.equipar_util(&"brujula")
 	marco.abrir(&"mapa")
 	mapa.alejar()
 	_caso("alejado muestra todas las zonas dibujadas", not mapa.lienzo.quedo_acercado and mapa.lienzo.salas_dibujadas == 3 and mapa.lienzo.zonas_dibujadas == 2)
@@ -82,6 +83,7 @@ func _ready() -> void:
 	await get_tree().physics_frame
 	await get_tree().physics_frame
 	_caso("con el mapa rapido y la brujula, el marcador sigue al jugador", mapa.lienzo.marcador_en_pantalla.x > antes.x + 1.0)
+	await _origen_del_marcador(mapa, sala, jugador)
 	Input.action_release(&"mapa_rapido")
 	await get_tree().physics_frame
 	await get_tree().physics_frame
@@ -108,3 +110,80 @@ func _cuentas() -> void:
 	var esquina: Vector2 = t * Vector2(0, 0)
 	var opuesta: Vector2 = t * Vector2(200, 100)
 	_caso("encajar llena el ancho util sin deformar y centra", is_equal_approx(t.x.x, 4.0) and is_equal_approx(t.y.y, 4.0) and esquina.is_equal_approx(Vector2(100, 300)) and opuesta.is_equal_approx(Vector2(900, 700)))
+
+
+func _fichas_zona() -> void:
+	var indice: IndiceSalas = IndiceSalas.new()
+	_caso("sin salas la franja libre es 0", is_zero_approx(indice.franja_libre()))
+	_caso("sin ficha el nombre sale del id", DatosMapa.nombre_de_zona(indice, "prueba") == "Prueba")
+	_caso("sin ficha el color alterna la paleta", DatosMapa.color_de_zona(indice, "prueba", 5) == DatosMapa.COLORES_ZONA[1])
+	var sala: Sala = Sala.new()
+	sala.id = "prueba_1"
+	sala.posicion_mapa = Vector2(20.0, 30.0)
+	# Un origen de limites no nulo comprueba tambien esa suma, aunque una sala publicada lo deja en cero.
+	sala.limites = Rect2(5.0, 7.0, 100.0, 50.0)
+	indice.agregar_sala(sala, SALA)
+	_caso("sin ficha el rectangulo parte de cero", indice.rectangulos[sala.id] == Rect2(25.0, 37.0, 100.0, 50.0))
+	_caso("sin ficha no se agregan nombre ni color", indice.nombres_zona.is_empty() and indice.colores_zona.is_empty())
+	var ficha: FichaZona = FichaZona.new()
+	ficha.nombre = "La Prueba"
+	ficha.color = Color(0.2, 0.3, 0.4, 1.0)
+	ficha.origen_mapa = Vector2(1000.0, 2000.0)
+	sala.ficha_zona = ficha
+	indice.agregar_sala(sala, SALA)
+	_caso("el origen de zona desplaza el rectangulo", indice.rectangulos[sala.id] == Rect2(1025.0, 2037.0, 100.0, 50.0))
+	_caso("el nombre visible viene de la ficha via indice", DatosMapa.nombre_de_zona(indice, "prueba") == "La Prueba")
+	_caso("el color viene de la ficha via indice", DatosMapa.color_de_zona(indice, "prueba", 5) == ficha.color)
+	var lienzo: LienzoMapa = LienzoMapa.new()
+	lienzo.size = Vector2(1000.0, 600.0)
+	var zonas: Dictionary[String, Array] = DatosMapa.por_zona(indice, [sala.id] as Array[String])
+	lienzo.dibujar(indice, zonas, "prueba", false, false, Vector2.ZERO)
+	# Object.get permite inspeccionar el dibujo preparado sin publicar sus caches (class_object.rst:1089).
+	var nombres: PackedStringArray = lienzo.get(&"_nombres_zona")
+	var colores: Dictionary[String, Color] = lienzo.get(&"_colores_zona")
+	_caso("el lienzo prepara el nombre de la ficha para dibujar", nombres == PackedStringArray(["La Prueba"]))
+	_caso("el lienzo prepara el color de la ficha para dibujar", colores.has("prueba") and colores["prueba"] == ficha.color)
+	lienzo.free()
+	indice.rectangulos["otra_1"] = Rect2(0.0, -100.0, 20.0, 20.0)
+	_caso("la franja libre es el borde inferior mas bajo", is_equal_approx(indice.franja_libre(), 2087.0))
+	var copia: IndiceSalas = indice.duplicate() as IndiceSalas
+	_caso("indices copiados son iguales", IndiceSalas.iguales(indice, copia))
+	copia.nombres_zona = {"prueba": "Otro nombre"}
+	_caso("un nombre distinto cambia el indice", not IndiceSalas.iguales(indice, copia))
+	copia.nombres_zona = indice.nombres_zona.duplicate()
+	copia.colores_zona = {"prueba": Color.RED}
+	_caso("un color distinto cambia el indice", not IndiceSalas.iguales(indice, copia))
+	indice.rectangulos = {"otra_1": Rect2(0.0, -100.0, 20.0, 20.0)}
+	_caso("la franja tambien considera mapas enteramente negativos", is_equal_approx(indice.franja_libre(), -80.0))
+	sala.free()
+
+
+# Un indice propio desplaza la sala sin cambiar el recurso cargado del juego. El centro de la sala debe quedar
+# en el centro del lienzo, tanto al abrir como en el siguiente tick del mapa rapido.
+func _origen_del_marcador(mapa: PantallaMapa, sala: Sala, jugador: Node2D) -> void:
+	var anterior: IndiceSalas = mapa.get(&"_indice") as IndiceSalas
+	var indice: IndiceSalas = IndiceSalas.new()
+	var modelo: Sala = Sala.new()
+	modelo.id = sala.id
+	modelo.posicion_mapa = sala.posicion_mapa
+	modelo.limites = sala.limites
+	modelo.ficha_zona = FichaZona.new()
+	modelo.ficha_zona.origen_mapa = Vector2(1000.0, 2000.0)
+	indice.agregar_sala(modelo, SALA)
+	modelo.free()
+	var mapeadas: Array[String] = Partida.salas_mapeadas.duplicate()
+	var posicion: Vector2 = jugador.position
+	Partida.salas_mapeadas = [sala.id]
+	jugador.position = sala.limites.get_center()
+	# La pantalla recibe un indice en memoria solo para esta prueba (class_object.rst:1605).
+	mapa.set(&"_indice", indice)
+	mapa.acercar()
+	_caso("al abrir, el marcador incluye el origen de zona", mapa.lienzo.marcador_en_pantalla.is_equal_approx(mapa.lienzo.size / 2.0))
+	await get_tree().physics_frame
+	await get_tree().physics_frame
+	# La gravedad cambia y; sin movimiento horizontal, x debe seguir centrada tras actualizar el mapa rapido.
+	_caso("el mapa rapido conserva el origen al seguir al jugador", is_equal_approx(mapa.lienzo.marcador_en_pantalla.x, mapa.lienzo.size.x / 2.0))
+	mapa.set(&"_indice", anterior)
+	Partida.salas_mapeadas = mapeadas
+	jugador.position = posicion
+	mapa.acercar()

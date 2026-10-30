@@ -20,9 +20,10 @@ Validador, puerto de depuración, guiones, revisión del entorno y hooks: lo que
   solo de una lista fija y escribiendo solo dentro de `user://`.
 - Los guiones siguen `docs/guiones.md`: comprueban lo que importa, con tolerancia.
 - Un error puesto a propósito en un `.gd` debe hacer fallar `validar.ps1`; si no falla, el validador está mal.
-- Las reglas del validador sobre escenas viven en `docs/contrato.md` («Sala», «Recursos», «Paquete de publicación») y
-  en `mapa/CLAUDE.md` (índice de salas). Cada una tiene su entrada en `funciones.json` (casi todas `validador-*`):
-  se busca por el id. Una regla nueva va al contrato y a su entrada, no aquí.
+- Las reglas del validador sobre escenas viven en `docs/validador.md` (la lista completa), `docs/contrato.md`
+  («Sala», «Paquete de publicación»), `docs/arte-y-rendimiento.md` («Recursos») y `mapa/CLAUDE.md` (índice de
+  salas). Cada una tiene su entrada en `funciones.json` (casi todas `validador-*`): se busca por el id. Una regla
+  nueva va a `docs/validador.md` y a su entrada, no aquí.
 - Los `.ps1`, además de lo que dice el raíz: sin `$ErrorActionPreference = 'Stop'` alrededor de un ejecutable.
 - El detalle de `validar.ps1` va a `.godot/validar.log`.
 - El CI corre la misma validación que `validar.ps1` y además todos los guiones, los mensajes de commit y los

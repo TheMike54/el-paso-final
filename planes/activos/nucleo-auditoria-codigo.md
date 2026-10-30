@@ -82,8 +82,7 @@ Lo que más pesa:
 3. **Romper un muro y abrir un portón nunca suenan.**
    - `Sonido` escucha `muro_roto` y `porton_abierto` y llama `tocar(&"muro_roto")` y `tocar(&"porton")`, pero
      `FichaSonidos` no tiene esos campos. `efecto()` usa `get()`, que devuelve `null` sin avisar.
-   - Aunque se agregue el archivo de sonido, no hay dónde ponerlo. `docs/contrato.md` («Ajustes y vibración», la
-     línea de `Sonido`) dice que sí suenan.
+   - Aunque se agregue el archivo de sonido, no hay dónde ponerlo. `docs/audio.md` («Efectos de sonido», la línea de `Sonido`) dice que sí suenan.
    - Comprobado leyendo `ficha_sonidos.gd` y `nucleo/sonidos/sonidos_prueba.tres`.
 
 Cuando se arregle cada uno se escribe su `docs/errores/AAAA-MM-DD-tema.md`, en el mismo cambio (regla del

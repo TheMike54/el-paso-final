@@ -3,9 +3,11 @@
 [ext_resource type="Script" uid="uid://k7a08bqsbqd0" path="res://nucleo/sala.gd" id="1_sala"]
 [ext_resource type="AudioStream" uid="uid://cxnwd8q11ot44" path="res://nucleo/sonidos/silencio.tres" id="2_silencio"]
 [ext_resource type="CanvasItemMaterial" uid="uid://cbonitpbsi8a6" path="res://nucleo/arte/sin_luz.tres" id="3_sin_luz"]
+[ext_resource type="Resource" uid="uid://ced813var22ek" path="res://contenido/zonas/celda/zona_celda.tres" id="4_zona"]
 
 [node name="SalaCelda" type="Node2D"]
 script = ExtResource("1_sala")
+ficha_zona = ExtResource("4_zona")
 oscuridad = 0.58
 tema_musica = ExtResource("2_silencio")
 

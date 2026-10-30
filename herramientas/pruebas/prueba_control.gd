@@ -1,6 +1,6 @@
 extends Node
 # Prueba del mapeo del control (Xbox / PlayStation) sin control conectado: para cada fila de la
-# tabla de docs/contrato.md arma el evento de boton o de eje y revisa que el InputMap lo
+# tabla de docs/ajustes-y-entrada.md arma el evento de boton o de eje y revisa que el InputMap lo
 # traduzca a su accion, y solo a esa. Deja en "casos" y "fallos" el resultado para el guion.
 
 var casos: int = 0

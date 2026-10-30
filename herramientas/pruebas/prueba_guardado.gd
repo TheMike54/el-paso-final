@@ -6,7 +6,8 @@ const RUTA: String = "user://prueba_guardado.json"
 const PARTIDA: Dictionary = {"banco": {"sala": "raices_1", "id": "banco_raices_1"}, "vidas_maximas": 4,
 		"habilidades": ["impulso"], "jefes": [], "amuletos_tenidos": [], "amuletos_equipados": [], "monedas": 0,
 		"mochila": {}, "mapas": ["raices"], "salas_visitadas": ["raices_1"], "salas_mapeadas": [],
-		"estaciones": ["estacion_raices_1"], "botones_ensenados": ["saltar"], "salas": {"raices_1": {"examenes_1": true, "ascensor": 2}}, "personaje": "", "nombre": "", "tiempo_jugado": 12.5}
+		"estaciones": ["estacion_raices_1"], "botones_ensenados": ["saltar"], "salas": {"raices_1": {"examenes_1": true, "ascensor": 2}}, "personaje": "", "nombre": "", "tiempo_jugado": 12.5,
+		"carga_maxima": 3, "inspiracion_maxima": 33, "utiles_tenidos": [], "utiles_equipados": []}
 # Valores de prueba de los campos objeto del recorrido completo: su contenido se lee por clave (banco, mochila,
 # salas), asi que no hay un objeto generico que sirva para todos. Un campo objeto nuevo sin su forma aqui hace
 # fallar el recorrido.
@@ -74,6 +75,9 @@ func _ready() -> void:
 	_caso("version mas vieja da INCOMPATIBLE", Guardado.cargar(RUTA).estado == Guardado.Estado.INCOMPATIBLE)
 	_escribir(RUTA, JSON.stringify({"version": 2, "partida": {"banco": "raices_1", "sala": "res://x.tscn", "vidas_maximas": 4, "habilidades": []}}))
 	_caso("una partida de la version 2 da INCOMPATIBLE (sin migracion)", Guardado.cargar(RUTA).estado == Guardado.Estado.INCOMPATIBLE)
+	# La 3 tenia la brujula entre los amuletos: hasta terminar el juego no se convierte (ver Guardado.VERSION).
+	_escribir(RUTA, JSON.stringify({"version": 3, "partida": PARTIDA}))
+	_caso("una partida de la version 3 da INCOMPATIBLE (sin conversion)", Guardado.cargar(RUTA).estado == Guardado.Estado.INCOMPATIBLE)
 	var sin_banco: Dictionary = PARTIDA.duplicate(true)
 	sin_banco["banco"] = {}
 	_escribir(RUTA, JSON.stringify({"version": Guardado.VERSION, "partida": sin_banco}))

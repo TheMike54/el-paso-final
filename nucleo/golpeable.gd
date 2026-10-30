@@ -7,6 +7,8 @@ extends Area2D
 # golpean el ataque del jugador y el proyectil.
 
 signal golpeado(atacante: Node2D, dano: int)
+## Un golpe que bloqueo (bloqueo dio true): no conto, no empujo ni dio Inspiracion.
+signal bloqueado(atacante: Node2D)
 
 ## Velocidad con que el padre sale empujado al recibir un golpe, en px/s. 0: no se mueve. 600 x 6 ticks = 60 px.
 @export var velocidad_retroceso: float = 600.0
@@ -19,6 +21,11 @@ signal golpeado(atacante: Node2D, dano: int)
 ## Golpes recibidos desde que entro a la sala, y el dano que sumaron.
 var golpes: int = 0
 var dano_recibido: int = 0
+## Si es valido y devuelve true para el atacante, el golpe rebota (escudo, caparazon cerrado), como el golpe que
+## bloquea HealthManager.Invincible de Hollow Knight: sin dano, sin empuje y sin Inspiracion; avisa con
+## Eventos.objeto_golpeado (suena y vibra como pegarle a un objeto) y con bloqueado. Lo fija el Enemigo con
+## ComportamientoEnemigo.bloquea_golpe. Firma: func(atacante: Node2D) -> bool (classes/class_callable.rst:484).
+var bloqueo: Callable = Callable()
 
 var _ticks_empujado: int = 0
 var _sentido: float = 0.0
@@ -28,7 +35,12 @@ func _ready() -> void:
 	Capas.poner(self, Capas.GOLPEABLE, 0)
 
 
-func recibir_golpe(atacante: Node2D, dano: int = 1) -> void:
+## Recibe un golpe; devuelve false si lo bloqueo (para que quien golpea no cuente Inspiracion).
+func recibir_golpe(atacante: Node2D, dano: int = 1) -> bool:
+	if bloqueo.is_valid() and bloqueo.call(atacante) == true:
+		bloqueado.emit(atacante)
+		Eventos.objeto_golpeado.emit(get_parent())
+		return false
 	golpes += 1
 	dano_recibido += dano
 	var padre: Node2D = get_parent() as Node2D
@@ -42,6 +54,7 @@ func recibir_golpe(atacante: Node2D, dano: int = 1) -> void:
 		Eventos.enemigo_golpeado.emit(get_parent())
 	else:
 		Eventos.objeto_golpeado.emit(get_parent())
+	return true
 
 
 func _physics_process(delta: float) -> void:

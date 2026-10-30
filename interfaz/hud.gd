@@ -72,7 +72,7 @@ func _ready() -> void:
 	vidas = Partida.vidas
 	vidas_maximas = Partida.vidas_maximas
 	inspiracion = Partida.inspiracion
-	inspiracion_maxima = Partida.INSPIRACION_MAXIMA
+	inspiracion_maxima = Partida.inspiracion_maxima
 	bloques_llenos = inspiracion / Partida.INSPIRACION_POR_GOLPE
 	monedas = Partida.monedas
 	monedas_mostradas = monedas

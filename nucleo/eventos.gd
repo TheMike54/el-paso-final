@@ -30,6 +30,12 @@ signal habilidad_obtenida(habilidad: StringName)
 @warning_ignore("unused_signal")
 signal amuleto_obtenido(amuleto: StringName)
 @warning_ignore("unused_signal")
+signal util_obtenido(util: StringName)
+## Cambiaron los amuletos o los utiles puestos (equipar, quitar, cargar o empezar partida): quien guarda
+## Partida.efectos_amuletos() lo renueva aqui.
+@warning_ignore("unused_signal")
+signal equipo_cambiado
+@warning_ignore("unused_signal")
 signal mapa_obtenido(zona: String)
 @warning_ignore("unused_signal")
 signal coleccionable_obtenido(coleccionable: StringName)
@@ -67,7 +73,7 @@ signal viaje_hecho(estacion: String)
 signal dispositivo_cambiado(dispositivo: int)
 @warning_ignore("unused_signal")
 signal mando_cambiado()
-# Pese al nombre, Configuracion._alternar la emite con cualquier ajuste de si o no (tambien vibracion y temblor, que
+# Configuracion._alternar la emite con cualquier ajuste de si o no (tambien vibracion y temblor, que
 # nadie escucha): clave dice cual.
 @warning_ignore("unused_signal")
-signal ajuste_grafico_cambiado(clave: StringName)
+signal ajuste_cambiado(clave: StringName)

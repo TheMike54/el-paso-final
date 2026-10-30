@@ -274,7 +274,7 @@ func _ready() -> void:
 	var luces: BotonValor = config.get_node(NodePath(GRUPOS + "Rendimiento/Luces")) as BotonValor
 	var avisadas: Array[StringName] = []
 	var anotar: Callable = func(clave: StringName) -> void: avisadas.append(clave)
-	Eventos.ajuste_grafico_cambiado.connect(anotar)
+	Eventos.ajuste_cambiado.connect(anotar)
 	Ajustes.luces_avanzadas = true
 	Ajustes.recursos = Recursos.BAJO
 	config.abrir()
@@ -298,7 +298,7 @@ func _ready() -> void:
 	var ocultas: bool = not pruebas.visible
 	modo.pressed.emit()
 	_caso("Pruebas aparece al encender Desarrollador, que avisa al bus", ocultas and pruebas.visible and (avisadas.back() as StringName) == Ajustes.MODO_DESARROLLADOR)
-	Eventos.ajuste_grafico_cambiado.disconnect(anotar)
+	Eventos.ajuste_cambiado.disconnect(anotar)
 	Ajustes.luces_avanzadas = luces_real
 	Ajustes.niebla = niebla_real
 	Ajustes.recursos = recursos_real

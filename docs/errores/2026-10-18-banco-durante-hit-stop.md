@@ -12,7 +12,7 @@
   ya pide `interactuar` recién pulsado y sin `Congelado.activo()` antes de `Jugador.encima_de`, y llama al gancho
   `_al_interactuar`, que hace `descansar(jugador)` o `entregar()`. La pulsación hecha durante el congelado se pierde,
   como en el `Npc`. Nada cambia a la vista: sin aviso no siguen `cerca` ni dibujan nada propio. La regla quedó en
-  `docs/contrato.md` («Bancos», `EntregaRecompensas` e `Interactuable`).
+  `docs/contrato.md` («Bancos») y `docs/componentes.md` (`EntregaRecompensas` e `Interactuable`).
 - **Lo cubre:** `herramientas/guiones/nucleo/estado_sala.guion` (`prueba_estado_sala.gd`): «en el congelado
   interactuar sobre un banco no descansa» (no cambia `Partida.banco`, no emite `descanso_en_banco` y el jugador no
   queda sentado), «en el congelado interactuar sobre la entrega no entrega» (`entregadas` en 0 y las monedas igual),

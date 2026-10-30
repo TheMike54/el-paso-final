@@ -2,7 +2,8 @@
 
 Qué hay en cada sala de la zona de pruebas y para qué sirve, para elegir dónde probar algo sin abrir las escenas.
 Las salas viven en `herramientas/salas/`; el menú las agrupa según `GRUPOS` de `herramientas/salas/zona_pruebas.gd`
-(una que no esté ahí ni en `OCULTAS` sale sola en «Otras»). Las pruebas de código, sin jugador, están aparte, en
+(las de `enemigos/`, una por comportamiento de enemigo, se agregan solas al final de «Enemigos»; otra que no esté
+ahí ni en `OCULTAS` sale sola en «Otras»). Las pruebas de código, sin jugador, están aparte, en
 `herramientas/pruebas/` (ver «Fuera del menú»). Al agregar, quitar o cambiar una sala, se actualiza su
 fila aquí en el mismo cambio. Inventario del 15-oct-2026; siete categorías desde el 17-oct-2026.
 
@@ -50,11 +51,15 @@ propósito: Peligro (el foso de pinchos) e Impulso (los bloques altos). Igualado
 
 | Botón | Qué hay | Habilidades | Para probar |
 |---|---|---|---|
-| Enemigos | 2400×720: enemigo débil (`enemigo_debil.tres`, vida 2) y fuerte (`enemigo_fuerte.tres`, vida 3); puerta a «Enemigos Banco» | pluma | Pelear contra enemigos con retroceso, congelado al vencer |
+| Enemigos | 2400×720: enemigo débil con arte provisional (`fichas/enemigo_debil_arte.tscn`, ficha `enemigo_debil.tres`, vida 2) y fuerte en caja gris (`enemigo_fuerte.tres`, vida 3); puerta a «Enemigos Banco» | pluma | Pelear contra enemigos con retroceso, congelado al vencer; el dibujo del débil se refleja hacia donde mira y se detiene en el congelado |
 | Enemigos banco | 1600×720: banco `banco_enemigos` y puerta de vuelta | pluma | Descansar y volver: los enemigos reaparecen |
 | Peligro | 2000×940: dos suelos con pinchos en el hueco | pluma | Caer en un peligro y volver al punto seguro |
 | Peligro móvil | 2000×720: sierra que va y viene y pinchos fijos | pluma | Peligro que se mueve |
 | Enemigos móviles | 3600×1080: un caminante sobre una plataforma de 600 px y otro en el suelo junto a un tope; un volador junto a un pilar que tapa la vista, con dos escalones a su izquierda para subirlo (de ida: de vuelta no se sube); un escupidor al fondo a la derecha | pluma | Enemigos que caminan, vuelan y lanzan en arco; FPS con los tres a la vez |
+| Caminante | `enemigos/sala_caminante.tscn`: 1600×720, un caminante sobre una plataforma de 600 px con pared a la izquierda y orilla a la derecha; suelo abajo | pluma | Caminar, pausar y girar ante la pared y la orilla sin caer |
+| Volador | `enemigos/sala_volador.tscn`: 1600×720, un volador en el aire y suelo despejado | pluma | Detectar al jugador y perseguirlo por el aire |
+| Escupidor | `enemigos/sala_escupidor.tscn`: 1600×720, un escupidor en una repisa 120 px sobre el suelo, a 700 px de la entrada | pluma | Aviso y disparo en arco desde una altura hacia el jugador |
+| Muñeco que ataca | `enemigos/sala_muneco_que_ataca.tscn`: 1600×720, un muñeco y suelo libre para acercarse a su frente | pluma | Aviso y golpe al acercarse; parry y disparo al esperar un ciclo |
 
 ## Mundo
 
@@ -68,7 +73,7 @@ propósito: Peligro (el foso de pinchos) e Impulso (los bloques altos). Igualado
 | Capas | La de Cámara con tres capas `Parallax2D` de franjas | pluma | Paralaje |
 | Secretos | 3200×1200: muro de 4 golpes que destapa un cuarto con premio y 10 PejeCoins encerradas (al romperse aparece la orilla del hueco, `descubre`), muro que solo se rompe desde la derecha, techo rompible con premio arriba, palanca que abre un portón con premio detrás | pluma, `proyectil` | Muros rompibles, tapas, lo que descubre el muro y que las monedas no se tomen antes de romperlo, golpe por lado, bola contra el muro, palanca y portón; volver a entrar y que siga roto y abierto |
 | Pizarrones | 3600×720, en el orden de King's Pass, y se entra con una vida menos (`vida_menos_prueba.gd`) para poder curar aunque el caminante no pegue, y sin los botones de saltar, atacar ni curar, que aparecen al llegar a su pizarrón: saltar en x 1000 ante un bloque (x 1300); atacar en x 1600, dentro de un corral que cierra otro bloque en x 2500, con un caminante que va y viene y pega al tocarlo; curar en x 2850, con la nota «Golpea enemigos para ganar Inspiración»; «Sentarse» sobre el banco `banco_pizarrones` (x 3300), sin pizarrón | pluma | Que cada aviso salga poco después de entrar, con su botón y su palabra (con el control, el del control en uso; tras un toque, el de la pantalla, que late); que se vaya al hacer la acción y no vuelva al regresar a la sala en la misma partida; que cada botón de la pantalla aparezca al llegar a su pizarrón; y que el caminante deje con ganas de curarse |
-| Plataformas | 2400×720: lámpara de una vía (`PlataformaDelgada`, cara a 180 px del suelo) a la izquierda, barra que gira (`Giro`, golpe) arriba y a su derecha (centro en x=650, y=230; barre x 550-750), 800 px de pinchos con una plataforma que va y viene encima (`Vaiven` en el `AnimatableBody2D`, con espera en cada extremo), y un elevador que sube del suelo a una cornisa a la derecha; suelo de 120 px de grueso (regla del contrato bajo una pieza sólida que baja) | pluma | Que la plataforma y el elevador lleven al jugador; caer a los pinchos desde la plataforma y volver al suelo fijo, no al aire; quedarse debajo del elevador cuando baja (no daña, lo deja encima); saltar del elevador mientras baja (sube como desde el suelo); cruzar la lámpara caminando y subirse de un salto |
+| Plataformas | 2400×720: lámpara de una vía (`PlataformaDelgada`, cara a 180 px del suelo) a la izquierda, barra que gira (`Giro`, golpe) arriba y a su derecha (centro en x=650, y=230; barre x 550-750), 800 px de pinchos con una plataforma que va y viene encima (`Vaiven` en el `AnimatableBody2D`, con espera en cada extremo), y un elevador que sube del suelo a una cornisa a la derecha; suelo de 120 px de grueso (regla de `Vaiven` en `docs/componentes.md`, «Componentes», bajo una pieza sólida que baja) | pluma | Que la plataforma y el elevador lleven al jugador; caer a los pinchos desde la plataforma y volver al suelo fijo, no al aire; quedarse debajo del elevador cuando baja (no daña, lo deja encima); saltar del elevador mientras baja (sube como desde el suelo); cruzar la lámpara caminando y subirse de un salto |
 | Música | 2000×720: sala callada (`tema_musica` = `Musica.SILENCIO`) con una `RegionMusica` del tema del menú de 700×400 sobre el banco `banco_musica` (a la derecha; una franja morada en el suelo marca la región) y la `Entrada` fuera de ella, a la izquierda | ninguna | Que el tema suba al acercarse al banco (3 s) y se apague al alejarse (6 s) sin volver a empezar; sentarse, morir o salir y continuar, y que al reaparecer en el banco el tema siga donde iba; en la pausa, lejos del banco, abrir Configuración → Audio: suena el tema del menú y se calla al cerrarlo |
 
 ## Partida
@@ -79,6 +84,8 @@ propósito: Peligro (el foso de pinchos) e Impulso (los bloques altos). Igualado
 | Reto | 1600×720: «Sinodal», 3 preguntas, meta 2, premio 50 PejeCoins | ninguna | Reto de preguntas |
 | Lo perdido | 2400×720: da 120 PejeCoins al entrar sin monedas ni mochila y deja una vida; pinchos a la derecha | pluma | Morir con monedas, volver por la mochila y recuperarla con el reto de la bolsa de prueba (6 preguntas, 3 por intento, meta 2) |
 | Tienda | 2000×720: da 300 PejeCoins la primera vez; el impulso a la izquierda y la tienda a la derecha, con cuatro artículos: pluma del mapa (50), vida máxima (500, no alcanza), doble salto (100, solo con el impulso) y un amuleto (120) | pluma | Comprar: el precio, lo gris, confirmar con Sí / No con el pulgar y con el control, y que lo comprado no vuelva |
+| Equipo | 3600×720: una entrega junto a la entrada da una sola vez los cinco amuletos de prueba (prueba, velocidad, escudo, Inspiración, botín) y la brújula; un banco cerca; suelo largo y despejado; al fondo, un caminante en una plataforma con 6 de vida y 10 PejeCoins de botín | pluma | Las páginas Amuletos y Útiles sentado, la carga, la brújula en el mapa y cada efecto: caminar, recibir un golpe, golpear y vencer con botín |
+| Jefe | 2400×720: jefe de caja gris con 12 de vida y umbral en 6, dos portones abiertos al entrar; dentro se cierran y despierta; fase 0 camina, fase 1 acelera y embiste tras una pausa; premio impulso | pluma | Cerrar al entrar, reconocer la segunda fase y su aviso, abrir al vencer y recibir impulso una sola vez; volver sin jefe y morir sin premio |
 
 ## Rendimiento
 

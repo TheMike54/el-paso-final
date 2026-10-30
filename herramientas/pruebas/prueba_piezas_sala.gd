@@ -59,7 +59,7 @@ func _ready() -> void:
 	_caso("en bajo no hay luz 2D", pulso.get_node_or_null(^"Luz") == null)
 	Ajustes.luces_avanzadas = true
 	Ajustes.recursos = Recursos.ALTO
-	Eventos.ajuste_grafico_cambiado.emit(Ajustes.LUCES_AVANZADAS)
+	Eventos.ajuste_cambiado.emit(Ajustes.LUCES_AVANZADAS)
 	_caso("en alto con luces avanzadas aparece la luz 2D", pulso.get_node_or_null(^"Luz") is PointLight2D)
 	# Como en una sala: la luz fija entra antes que el Brillo (la Sala lo crea en su _ready, despues de sus hijos).
 	var fija: LuzSala = _luz(LuzSala.Tipo.FIJA)
@@ -72,7 +72,7 @@ func _ready() -> void:
 		and is_equal_approx(luz_fija.energy, 0.58 * LuzSala.FUERZA_LUZ))
 	brillo.queue_free()
 	Ajustes.luces_avanzadas = false
-	Eventos.ajuste_grafico_cambiado.emit(Ajustes.LUCES_AVANZADAS)
+	Eventos.ajuste_cambiado.emit(Ajustes.LUCES_AVANZADAS)
 	await get_tree().process_frame
 	_caso("al apagar las luces avanzadas la luz 2D se va", pulso.get_node_or_null(^"Luz") == null)
 
@@ -114,7 +114,7 @@ func _ready() -> void:
 	add_child(niebla)
 	_caso("con la niebla apagada no se ve ni avanza", not niebla.visible and not niebla.is_processing())
 	Ajustes.niebla = true
-	Eventos.ajuste_grafico_cambiado.emit(Ajustes.NIEBLA)
+	Eventos.ajuste_cambiado.emit(Ajustes.NIEBLA)
 	_caso("al encender la niebla se ve y avanza", niebla.visible and niebla.is_processing())
 	# La pieza nucleo/piezas/niebla.tscn: ruido horneado (nada que generar al cargar) y una vuelta sin costura: la
 	# banda mide lo que repite el Parallax2D y lo que avanza la Niebla antes de volver, y cubre 1760 px (22:9). Con
@@ -169,7 +169,7 @@ func _ready() -> void:
 	var filas: Node = panel.find_child("Filas", true, false)
 	_caso("sin el modo desarrollador el panel no se ve", not panel.visible)
 	Ajustes.modo_desarrollador = true
-	Eventos.ajuste_grafico_cambiado.emit(Ajustes.MODO_DESARROLLADOR)
+	Eventos.ajuste_cambiado.emit(Ajustes.MODO_DESARROLLADOR)
 	_caso("con el modo y el ajuste se ve, cerrado en la pestana", panel.visible and not (panel.find_child("Tarjeta", true, false) as Control).visible)
 	_caso("un boton por grupo presente (luces y particulas), ninguno de lo que no hay", filas.get_node_or_null(^"Luces") != null
 		and filas.get_node_or_null(^"Partículas") != null and filas.get_node_or_null(^"Fondos") == null)
@@ -181,7 +181,7 @@ func _ready() -> void:
 	_caso("encenderlas las devuelve y Partículas toma los emisores de la sala", pulso.visible and pulso.process_mode == Node.PROCESS_MODE_INHERIT and not particulas.visible)
 	# Encender un grupo lo deja como estaba, no visible: la niebla con su ajuste apagado sigue oculta.
 	Ajustes.niebla = false
-	Eventos.ajuste_grafico_cambiado.emit(Ajustes.NIEBLA)
+	Eventos.ajuste_cambiado.emit(Ajustes.NIEBLA)
 	panel.apagar("Niebla", true)
 	panel.apagar("Niebla", false)
 	_caso("encender Niebla con su ajuste apagado la deja oculta", not niebla.visible and niebla.process_mode == Node.PROCESS_MODE_INHERIT)
@@ -198,7 +198,7 @@ func _ready() -> void:
 	sala.add_child(hitbox)
 	var oculto: bool = not hitbox.visible and not hitbox.is_processing()
 	Ajustes.ver_hitbox = true
-	Eventos.ajuste_grafico_cambiado.emit(Ajustes.VER_HITBOX)
+	Eventos.ajuste_cambiado.emit(Ajustes.VER_HITBOX)
 	_caso("ver hitbox se enciende al momento con su ajuste", oculto and hitbox.visible and hitbox.is_processing())
 
 	Ajustes.ver_hitbox = ver_real

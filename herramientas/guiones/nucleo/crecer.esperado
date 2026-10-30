@@ -1,0 +1,3 @@
+# Los 30 casos de prueba_crecer.gd; cada fallo imprime FALLO crecer y el resumen da la cuenta.
+valor . casos 30
+valor . fallos 0

@@ -76,7 +76,7 @@ func _ready() -> void:
 	desplazable.add_child(_filas)
 	abrir(false)
 	_aplicar()
-	Eventos.ajuste_grafico_cambiado.connect(_al_cambiar_ajuste)
+	Eventos.ajuste_cambiado.connect(_al_cambiar_ajuste)
 	# Las piezas de la sala entran despues que este nodo: los botones se arman al final del cuadro.
 	_armar.call_deferred()
 

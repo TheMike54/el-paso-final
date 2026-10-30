@@ -1,0 +1,3 @@
+# Los 13 casos recorren la sala real con guardado aislado y lo restauran al terminar.
+valor . casos 13
+valor . fallos 0

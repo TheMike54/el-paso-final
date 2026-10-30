@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://7j1pi6t6wnil"]
+
+[ext_resource type="Script" uid="uid://crb4c5opj0813" path="res://herramientas/pruebas/prueba_efectos_amuletos.gd" id="1_prueba"]
+
+[node name="SalaEfectosAmuletos" type="Node"]
+script = ExtResource("1_prueba")
