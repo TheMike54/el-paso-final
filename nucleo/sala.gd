@@ -54,6 +54,9 @@ static var _indice_nombres_cargado: bool = false
 ## Botones de la pantalla que en esta sala no se ven hasta que un AvisoAccion los ensena (Partida.botones_ensenados):
 ## la sala Pizarrones empieza sin saltar, atacar ni curar. Solo tactil; el validador exige que un aviso de la sala ensene cada uno.
 @export var botones_por_ensenar: Array[StringName] = []
+## Botones que aqui no se ven porque los ensena un AvisoAccion de una sala posterior, que puede ser de otra zona (la base
+## de La Celda esconde curar hasta Las Raices). A diferencia de botones_por_ensenar, no pide un aviso en esta sala.
+@export var botones_ocultos: Array[StringName] = []
 ## Esquina de la sala en px desde ficha_zona.origen_mapa (sin ficha, desde (0, 0)). Las salas de una zona se
 ## acomodan como se recorren (la de la derecha empieza donde acaba la otra); el indice suma tambien limites.position.
 @export var posicion_mapa: Vector2 = Vector2.ZERO

@@ -274,6 +274,34 @@ Avance (29-oct-2026):
   registrar, fechas y cifras de `const` que contradecían la regla de mantenimiento, el alcance de la conversión de
   partidas): arreglados devolviendo el texto del contrato viejo. `validar` 391 archivos, batería completa 205/205.
 
+## Tras las pruebas en el S50 (30-oct-2026)
+
+La persona probó los siete grupos en el S50 sin fallos (filas «Cierre de la auditoría en el S50» y «Jefe» de
+`docs/pruebas.md`). De esa prueba salieron cuatro cambios, en el bloque de commit 56:
+
+| Cambio | Decisión y porqué |
+|---|---|
+| El ataque suena siempre | `jugador_ataco` y `ataque_jugador`, con el WAV del golpe (pedido por la persona). Antes solo sonaba pegarle a algo. Pegar suena doble; la persona lo oyó y lo aprueba |
+| Sonido de curar | `curar.wav` sube 1,9 s con el pico a los 1,2 s y se tocaba al terminar los 60 ticks: el pico llegaba unos 2,2 s después de apretar. Ahora empieza con la curación y `curacion_cortada` lo calla (`docs/errores/2026-10-30-sonido-curar-tarde.md`) |
+| Botón de curar | Lo enseña un pizarrón de Las Raíces justo antes del primer enemigo: en La Celda no hay a quién pegarle. `Sala.botones_ocultos` en la base de la zona. `botones_por_ensenar` no servía: exige el aviso en la misma sala. Cuando exista Las Raíces, sus salas anteriores al pizarrón lo llevan también |
+| El Eterno | Segunda conversación de una línea, para no repetir la entrega |
+
+La barra de Inspiración se queda como está: 3 bloques repartidos en el ancho fijo, más grandes que los 9 (la persona lo
+vio y lo aprueba).
+
+## Aplastar (1-nov-2026)
+
+El QA de la issue #10 (3.3) reportó que el elevador deja encima al que aplasta. La persona pidió resolverlo como Silksong.
+
+| Tema | Decisión y porqué |
+|---|---|
+| Referencia | Leído en los datos: de 744 escenas y prefabs, solo `Bone_16` asigna `heroSquasherLeft/Right`. Son zonas fijas en los extremos del recorrido, peligro de tipo SPIKES, activas solo mientras la pieza se mueve y está cerca. `LiftControl` y `RuinsLift` no tienen nada de daño: lo demás se evita con el diseño de la sala |
+| Forma | `DanoContacto.aplastador` y `Vaiven.aplasta`, sin clase nueva. La zona es fija, así que sigue la regla de que lo que se mueve no lleva peligro y el validador la acepta |
+| Dirección y lado | La pieza debe venir hacia la zona y el jugador estar delante de su origen: el elevador de prueba llega al nivel del suelo y quien va encima pisa la zona |
+| Solo en el suelo | Sin esto, quien cae por el boquete de `celda_4` bajo la raíz recibía el golpe sin estar aplastado |
+| Ancho | El de la pieza. En `celda_4` la zona cruza el boquete: el cuerpo (80 px) cabe bajo la raíz desde los dos pisos |
+| Salas | Sala Plataformas y `celda_4` la llevan. `celda_2` no: quedan 240 px bajo el elevador |
+| Reaparecer | En la zona no se recuerda punto seguro (`Jugador.no_recordar_punto_seguro`, reinicia los ticks de suelo firme: no depende del orden de los nodos). El `revisor` midió por qué: con el punto bajo la pieza, la física lo dejaba encima (la misma queja de la 3.3), hasta 59 px dentro del piso o fuera de la sala por `PuertaAbajo`. Silksong no lo sufre porque reaparece en marcas fijas |
 ## Fuera de este plan
 Decidido por la persona el 29-oct-2026, tras probar las páginas en el S50 (funcionan; el diseño se rehace): el
 pulido visual de las páginas del marco (Amuletos y Útiles; Mapa e Inventario) va a los otros dos integrantes, uno

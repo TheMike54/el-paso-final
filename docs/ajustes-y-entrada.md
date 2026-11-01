@@ -108,6 +108,8 @@ letra de la distribución. Una acción nueva se agrega a `project.godot` y a est
   No late un botón sin su habilidad, ni con el editor abierto, ni hablando. `latiendo` es pública para las pruebas.
 - Botones por enseñar: en una sala con `botones_por_ensenar`, el botón de esas acciones no se dibuja ni responde hasta
   que la acción está en `Partida.botones_ensenados` (`por_ensenar(accion)`, pública). Solo táctil: el control y el
-  teclado no cambian. Los controles buscan su sala subiendo por el árbol al entrar.
+  teclado no cambian. Los controles buscan su sala subiendo por el árbol al entrar. `botones_ocultos` esconde igual,
+  pero el pizarrón que lo enseña está en una sala posterior: la base de La Celda esconde curar hasta Las Raíces, donde
+  llegan los primeros enemigos. Una sala de Las Raíces anterior a ese pizarrón lleva también el suyo.
 - Control (Xbox / PlayStation): un evento del InputMap junto a cada tecla, para cualquier control (`device` -1).
   El stick usa la zona muerta de cada acción (0,2); RT es un eje que cuenta como presionado pasada esa zona. LT queda libre.

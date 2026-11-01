@@ -24,6 +24,9 @@ size = Vector2(300, 40)
 [sub_resource type="RectangleShape2D" id="forma_barra"]
 size = Vector2(200, 20)
 
+[sub_resource type="RectangleShape2D" id="forma_aplastar"]
+size = Vector2(200, 40)
+
 [node name="SalaPlataformas" type="Node2D"]
 script = ExtResource("1_sala")
 limites = Rect2(0, 0, 2400, 720)
@@ -138,6 +141,16 @@ offset_right = 100.0
 offset_bottom = 20.0
 mouse_filter = 2
 color = Color(0.45, 0.45, 0.5, 1)
+
+[node name="AplastarElevador" type="Area2D" parent="." node_paths=PackedStringArray("aplastador")]
+position = Vector2(2000, 680)
+script = ExtResource("2_dano")
+peligro = true
+aplastador = NodePath("../Elevador")
+
+[node name="Forma" type="CollisionShape2D" parent="AplastarElevador"]
+position = Vector2(0, -20)
+shape = SubResource("forma_aplastar")
 
 [node name="Cornisa" type="StaticBody2D" parent="."]
 position = Vector2(2250, 380)

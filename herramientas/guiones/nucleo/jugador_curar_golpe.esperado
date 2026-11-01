@@ -4,3 +4,4 @@
 valor Jugador vidas 2
 valor /root/Partida inspiracion 21 1
 valor Jugador curando false
+senal /root/Eventos curacion_cortada 1

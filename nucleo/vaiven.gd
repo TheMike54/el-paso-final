@@ -28,14 +28,14 @@ func _ready() -> void:
 	var cuerpo: PhysicsBody2D = nodo as PhysicsBody2D
 	if cuerpo != null:
 		Capas.poner(cuerpo, Capas.ESCENARIO, 0)
-	position = _inicio + recorrido * avance_en(_tick + desfase_ticks)
+	position = _posicion_en(_tick)
 
 
 func _physics_process(_delta: float) -> void:
 	if Congelado.activo() or ticks_ida <= 0:
 		return
 	_tick += 1
-	position = _inicio + recorrido * avance_en(_tick + desfase_ticks)
+	position = _posicion_en(_tick)
 
 
 ## Avance de 0 (origen) a 1 (extremo) en el tick t del ciclo: espera en el origen, ida, espera en el extremo, vuelta.
@@ -53,6 +53,16 @@ func avance_en(t: int) -> float:
 	return 1.0 - float(fase - 2 * espera - ticks_ida) / float(ticks_ida)
 
 
+## Si va hacia destino y punto esta delante de su origen a alcance px o menos (DanoContacto.aplastador). Quieta o
+## alejandose da false, y quien va encima queda detras de su origen: no la aplasta su propia plataforma.
+func aplasta(punto: Vector2, destino: Vector2, alcance: float) -> bool:
+	var paso: Vector2 = _posicion_en(_tick + 1) - _posicion_en(_tick)
+	if paso.dot(destino - global_position) <= 0.0:
+		return false
+	var delante: float = (punto - global_position).dot(paso.normalized())
+	return delante > 0.0 and delante <= alcance
+
+
 ## El primer nodo, desde nodo hacia arriba (el mismo incluido), que se mueve: un Vaiven, un Giro o un cuerpo que se
 ## mueve (AnimatableBody2D, el Porton incluido; CharacterBody2D, como Enemigo; RigidBody2D) o un PathFollow2D. null
 ## si nada lo mueve. Una sola lista para el jugador (no toma punto seguro sobre ello) y el validador (lo que va dentro
@@ -65,3 +75,7 @@ static func movil_de(nodo: Node) -> Node:
 			return arriba
 		arriba = arriba.get_parent()
 	return null
+
+
+func _posicion_en(tick: int) -> Vector2:
+	return _inicio + recorrido * avance_en(tick + desfase_ticks)

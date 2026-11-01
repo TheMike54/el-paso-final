@@ -1,5 +1,5 @@
-# Los casos de herramientas/pruebas/prueba_sonido.gd corrieron y ninguno fallo (32 sin pantalla, como el CI; con
-# pantalla son 34: los de play_stream, el porton que sigue sonando y las voces llenas reemplazan al de sin pantalla).
+# Los casos de herramientas/pruebas/prueba_sonido.gd corrieron y ninguno fallo (33 sin pantalla, como el CI; con
+# pantalla son 36: los de play_stream, el porton que sigue sonando, las voces llenas y el corte de la curacion reemplazan al de sin pantalla).
 # Cada caso que falla imprime una linea "FALLO sonido: <caso>".
-valor . casos 32
+valor . casos 33
 valor . fallos 0

@@ -52,7 +52,7 @@ const SALAS: Dictionary = {
 	"sala_capas.tscn": ["Capas", "Paralaje"],
 	"sala_secretos.tscn": ["Secretos", "Muros y palancas"],
 	"sala_pizarrones.tscn": ["Pizarrones", "Aprender cada acción"],
-	"sala_plataformas.tscn": ["Plataformas", "Llevan y no aplastan"],
+	"sala_plataformas.tscn": ["Plataformas", "Llevan y aplastan"],
 	"sala_musica.tscn": ["Música", "Tema de una región"],
 	"sala_dialogo.tscn": ["Diálogo", "Opciones y premios"],
 	"sala_reto.tscn": ["Reto", "Preguntas con premio"],

@@ -12,7 +12,7 @@ extends Resource
 @export var dano: AudioStream = null
 ## Efecto al parar un ataque.
 @export var parry: AudioStream = null
-## Efecto al curarse.
+## Efecto que acompana la curacion: empieza con ella y se corta si no termina.
 @export var curar: AudioStream = null
 ## Efecto al sentarse en un banco.
 @export var banco: AudioStream = null
@@ -32,6 +32,8 @@ extends Resource
 @export var vencido: AudioStream = null
 ## Efecto de un ataque de enemigo; lo pide su comportamiento.
 @export var ataque: AudioStream = null
+## Efecto de cada ataque del jugador, pegue o no; si pega, suena ademas el golpe.
+@export var ataque_jugador: AudioStream = null
 
 # Nombres de los campos de efecto, iguales en toda ficha: de la clase y no de cada recurso.
 static var _campos: Array[StringName] = []

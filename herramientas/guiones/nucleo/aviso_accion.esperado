@@ -1,4 +1,4 @@
-# Los 32 casos de herramientas/pruebas/prueba_aviso_accion.gd corrieron y ninguno fallo. Cada caso que falla imprime una
+# Los 34 casos de herramientas/pruebas/prueba_aviso_accion.gd corrieron y ninguno fallo. Cada caso que falla imprime una
 # linea "FALLO aviso_accion: <caso>".
-valor . casos 32
+valor . casos 34
 valor . fallos 0

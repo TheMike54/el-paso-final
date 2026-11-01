@@ -1048,6 +1048,9 @@ func _revisar_avisos(ruta: String, raiz: Node) -> void:
 					ensenado = true
 			if not ensenado:
 				_fallos.append("%s (el boton '%s' esta por ensenar y ningun aviso de la sala lo ensena)" % [ruta, accion])
+		for accion: StringName in sala.botones_ocultos:
+			if not ControlesTactiles.ACCIONES.has(accion):
+				_fallos.append("%s (botones_ocultos nombra '%s', que no es un boton de la pantalla)" % [ruta, accion])
 
 
 # Cada Estacion va como hija directa de una sala con id, se llama estacion_<id de la sala> (una por sala), esta en la

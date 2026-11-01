@@ -69,7 +69,7 @@
     "id": "sala-celda-3-telefono",
     "que": "En el telefono la sala 3 se ve como el arte aprobado (azulejo hasta el piso, nicho tapado hasta romper el plafon), la cinematica de la Pluma se ve completa y junto al banco de la sala 1 suena el tema del menu",
     "comprobacion": "manual: docs/pruebas.md, «La Celda, salas 2 a 5»",
-    "pasa": false
+    "pasa": true
   },
   {
     "id": "sala-celda-4-ruta",
@@ -81,6 +81,12 @@
     "id": "sala-celda-4-telefono",
     "que": "En el telefono la sala 4 se ve como el arte aprobado (pared del tiro oscurecida detras de la raiz, raices sobre la junta del pasillo) y corre a 60 FPS en bajo en el S50",
     "comprobacion": "manual: docs/pruebas.md, «La Celda, salas 2 a 5»",
-    "pasa": false
+    "pasa": true
+  },
+  {
+    "id": "eterno-segunda-conversacion",
+    "que": "Tras entregar la Pluma, hablar otra vez con el Eterno da su segunda conversacion (seguir subiendo), sin otra cinematica ni otra entrega; despues se repite esa",
+    "comprobacion": "herramientas/guiones/contenido/celda_3_pluma.guion",
+    "pasa": true
   }
 ]

@@ -40,6 +40,7 @@
 [ext_resource type="PackedScene" uid="uid://dhvmyltu15vqf" path="res://contenido/objetos/celda/pila_cortable.tscn" id="37_pila_cortable"]
 [ext_resource type="Script" uid="uid://dycfvji2i3yph" path="res://nucleo/ficha_dialogo.gd" id="38_ficha"]
 [ext_resource type="Texture2D" uid="uid://dstamayabpovb" path="res://contenido/salas/celda/arte/orilla_hueco.png" id="39_orilla"]
+[ext_resource type="Resource" uid="uid://c41fftdqodkt3" path="res://contenido/npc/eterno/eterno_celda_despues.tres" id="40_ficha_eterno_despues"]
 
 [sub_resource type="RectangleShape2D" id="forma_suelo"]
 size = Vector2(3200, 80)
@@ -380,7 +381,7 @@ flip_h = true
 [node name="Eterno" parent="." instance=ExtResource("29_eterno")]
 position = Vector2(1540, 1080)
 id = "eterno"
-conversaciones = Array[ExtResource("38_ficha")]([ExtResource("30_ficha_eterno")])
+conversaciones = Array[ExtResource("38_ficha")]([ExtResource("30_ficha_eterno"), ExtResource("40_ficha_eterno_despues")])
 
 [node name="AvisoAtacar" type="Area2D" parent="."]
 position = Vector2(2290, 1080)

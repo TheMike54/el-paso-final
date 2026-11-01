@@ -8,6 +8,7 @@
 [node name="SalaCelda" type="Node2D"]
 script = ExtResource("1_sala")
 ficha_zona = ExtResource("4_zona")
+botones_ocultos = Array[StringName]([&"curar"])
 oscuridad = 0.58
 tema_musica = ExtResource("2_silencio")
 

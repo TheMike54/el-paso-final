@@ -472,6 +472,11 @@ func _physics_process(delta: float) -> void:
 # que se cierra leyendo una accion en su _physics_process lo hace dentro del tick y no pasa por aqui. No se mira si
 # saltar esta recien pulsado aqui: a 120 FPS A puede bajar un cuadro y subir el siguiente sin tick entre medio, y aqui
 # ya no cuenta como recien pulsado aunque el tick siguiente si lo lea asi.
+# Dejar la sala a medio curar (salir al menu) corta la curacion: Sonido vive fuera de las salas y seguiria sonando.
+func _exit_tree() -> void:
+	_cortar_curacion()
+
+
 func _notification(que: int) -> void:
 	if que == NOTIFICATION_UNPAUSED and not Engine.is_in_physics_frame():
 		_saltar_del_menu = true
@@ -1154,6 +1159,7 @@ func _empezar_curacion(en_suelo: bool) -> void:
 	_ticks_rebote = 0
 	# Mientras cura, _mover sale por _boton_poderes antes de _atacar(): un ataque a medias quedaria encendido.
 	_cortar_ataque()
+	Eventos.curacion_empezada.emit()
 
 
 func _seguir_curando(en_suelo: bool, mantiene: bool) -> bool:
@@ -1174,6 +1180,8 @@ func _seguir_curando(en_suelo: bool, mantiene: bool) -> bool:
 
 
 func _cortar_curacion() -> void:
+	if curando:
+		Eventos.curacion_cortada.emit()
 	curando = false
 	ticks_curados = 0
 
@@ -1231,6 +1239,7 @@ func _iniciar_ataque(abajo_en_el_aire: bool) -> void:
 	else:
 		_forma_ataque.position = Vector2(absf(_posicion_ataque.x) * _mirando, _posicion_ataque.y)
 	_ataque.set_deferred(&"monitoring", true)
+	Eventos.jugador_ataco.emit()
 	# El trazo sale del area de golpe ya colocada: si el area se mueve, el trazo la sigue.
 	var direccion: TrazoAtaque.Direccion = TrazoAtaque.Direccion.LADO
 	if _atacando_abajo:
@@ -1376,6 +1385,7 @@ func recibir_dano(dano: int, origen_x: float, peligro: bool = false) -> void:
 		return
 	if peligro and _ticks_desde_peligro < ticks_anti_bucle:
 		var llegada: Vector2 = _llegada_con_suelo()
+		_cortar_curacion()
 		_reaparecer(llegada)
 		# El punto seguro pasa a ser la llegada, y el siguiente peligro ya cuesta una vida: si la llegada
 		# tambien fuera peligrosa, el bucle termina en vez de seguir sin fin.
@@ -1425,11 +1435,16 @@ func _morir() -> void:
 # Puntos seguros: posiciones con ticks_suelo_firme ticks seguidos en el suelo fijo, fuera de la
 # invulnerabilidad (asi no cuenta un suelo con pinchos que se piso sin recibir dano). Se vuelve a
 # la mas vieja de las ultimas ticks_atras_punto_seguro: un poco antes de la orilla, no en ella. Sobre algo que se
-# mueve (plataforma, elevador, porton) no cuenta: al volver ya no estaria ahi (docs/errores). El suelo lo dice un
-# rayo bajo los pies y no los choques de move_and_slide, que no siempre registra uno estando quieto
+# mueve (plataforma, elevador, porton) no cuenta: al volver ya no estaria ahi (docs/errores). Bajo lo que aplasta
+# tampoco (no_recordar_punto_seguro). El suelo lo dice un rayo bajo los pies y no los choques de move_and_slide, que no siempre registra uno estando quieto
 # (tutorials/physics/using_character_body_2d.rst:160).
 func _recordar_punto_seguro(en_suelo: bool) -> void:
 	_punto_seguro._recordar_punto_seguro(en_suelo)
+
+
+## Para quien tenga al jugador donde no debe volver (la zona de DanoContacto.aplastador): vuelve a contar el suelo firme.
+func no_recordar_punto_seguro() -> void:
+	_punto_seguro._ticks_en_suelo = 0
 
 
 ## Donde volveria tras un peligro: nunca sobre pinchos ni en el aire. Ahi queda la mochila al morir. Comprueba el suelo

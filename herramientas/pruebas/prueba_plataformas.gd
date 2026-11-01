@@ -6,6 +6,7 @@ extends "res://herramientas/pruebas/prueba_base.gd"
 
 const ESCENA_SALA: PackedScene = preload("res://herramientas/salas/sala_plataformas.tscn")
 const ESCENA_DELGADA: PackedScene = preload("res://nucleo/piezas/plataforma_delgada.tscn")
+const ESCENA_CELDA_4: PackedScene = preload("res://contenido/salas/celda/celda_4.tscn")
 ## Cara de arriba del suelo de la sala.
 const SUELO_Y: float = 680.0
 ## Suelo fijo a la izquierda de los pinchos, lejos de la Entrada (x=300).
@@ -229,22 +230,97 @@ func _suelo_fragil_roto() -> void:
 	sala.free()
 
 
-# El elevador solido baja sobre el jugador parado en el suelo: lo hunde en el suelo mientras baja y lo saca encima,
-# sin dano y sin dejarlo atrapado.
+# El elevador baja sobre el jugador parado en el suelo: el peligro del extremo le quita una vida y lo devuelve a un suelo
+# firme antes de que el cuerpo solido lo hunda. Quien va encima, quien sigue en el aire y quien sale a tiempo no se tocan.
 func _aplastar() -> void:
 	var sala: Sala = await _nueva_sala()
 	var jugador: Jugador = _jugador(sala)
 	var elevador: Node2D = sala.get_node(^"Elevador") as Node2D
 	await _esperar_elevador_arriba(elevador)
+	_poner(jugador, Vector2(1800.0, SUELO_Y))
+	await _esperar(30)
 	_poner(jugador, Vector2(2000.0, SUELO_Y))
 	var vidas: int = jugador.vidas
+	var hundido: float = 0.0
+	for _i: int in range(120):
+		await _esperar(1)
+		hundido = maxf(hundido, jugador.global_position.y - SUELO_Y)
+	_caso("aplastar: el elevador que baja le quita una vida, sin hundirlo", jugador.vidas == vidas - 1 and hundido < 1.0)
+	await _esperar_fundido()
 	await _esperar(200)
-	_caso("aplastar: el elevador que baja sobre el jugador no le quita vida y lo deja encima",
-		jugador.vidas == vidas and absf(jugador.global_position.y - SUELO_Y) < 1.0 and jugador.is_on_floor())
+	_caso("aplastar: y reaparece fuera de la pieza sin otro golpe", jugador.vidas == vidas - 1 and jugador.is_on_floor()
+		and jugador.global_position.distance_to(Vector2(1800.0, SUELO_Y)) < 1.0)
+	sala.free()
+
+	sala = await _nueva_sala()
+	jugador = _jugador(sala)
+	elevador = sala.get_node(^"Elevador") as Node2D
+	await _esperar_elevador_arriba(elevador)
+	_poner(jugador, Vector2(2000.0, ELEVADOR_ARRIBA))
+	vidas = jugador.vidas
+	await _esperar(200)
+	_caso("aplastar: quien va encima baja sin dano", jugador.vidas == vidas and jugador.global_position.y < SUELO_Y + 1.0)
+	sala.free()
+
+	sala = await _nueva_sala()
+	jugador = _jugador(sala)
+	elevador = sala.get_node(^"Elevador") as Node2D
+	await _esperar_elevador_arriba(elevador)
+	vidas = jugador.vidas
+	var en_el_aire: bool = true
+	while elevador.global_position.y < 488.0:
+		_poner(jugador, Vector2(2000.0, SUELO_Y - 10.0))
+		await _esperar(1)
+		en_el_aire = en_el_aire and not jugador.is_on_floor()
+	_caso("aplastar: en el aire no aplasta, como quien cae por un foso", en_el_aire and jugador.vidas == vidas)
+	sala.free()
+
+	sala = await _nueva_sala()
+	jugador = _jugador(sala)
+	elevador = sala.get_node(^"Elevador") as Node2D
+	await _esperar_elevador_arriba(elevador)
+	_poner(jugador, Vector2(2000.0, SUELO_Y))
+	vidas = jugador.vidas
+	while elevador.global_position.y < 400.0:
+		await _esperar(1)
 	Input.action_press(&"mover_izquierda")
-	await _esperar(30)
+	await _esperar(60)
 	Input.action_release(&"mover_izquierda")
-	_caso("aplastar: y sale caminando", jugador.global_position.x < 1900.0)
+	_caso("aplastar: sale a tiempo de debajo y no lo golpea", jugador.vidas == vidas and jugador.global_position.x < 1860.0)
+	sala.free()
+
+	sala = await _nueva_sala()
+	jugador = _jugador(sala)
+	elevador = sala.get_node(^"Elevador") as Node2D
+	_poner(jugador, Vector2(2000.0, SUELO_Y))
+	vidas = jugador.vidas
+	while elevador.global_position.y > 590.0:
+		await _esperar(1)
+	_caso("aplastar: quien va encima sube sin dano", jugador.vidas == vidas)
+	_poner(jugador, Vector2(2000.0, SUELO_Y))
+	await _esperar(20)
+	_caso("aplastar: debajo del elevador que sube no lo golpea", jugador.vidas == vidas)
+	sala.free()
+
+	# La raiz de celda_4, en los dos pisos del foso: el punto seguro no puede quedar bajo ella, o la fisica lo hunde en el
+	# piso, lo saca por la puerta de abajo o lo deja encima al recuperar el control.
+	Partida.reiniciar()
+	sala = ESCENA_CELDA_4.instantiate() as Sala
+	add_child(sala)
+	await _esperar(2)
+	jugador = _jugador(sala)
+	var raiz: Node2D = sala.get_node(^"Terreno/RaizMovil") as Node2D
+	for debajo: Vector2 in [Vector2(1900.0, 1280.0), Vector2(1925.0, 1280.0), Vector2(2085.0, 1280.0)] as Array[Vector2]:
+		var firme: Vector2 = Vector2(1780.0 if debajo.x < 2000.0 else 2200.0, 1280.0)
+		_poner(jugador, firme)
+		while raiz.global_position.y > 660.5:
+			await _esperar(1)
+		await _esperar(30)
+		_poner(jugador, debajo)
+		vidas = jugador.vidas
+		await _esperar(260)
+		_caso("aplastar: bajo la raiz de celda_4 vuelve a su suelo firme, x=%d" % roundi(debajo.x),
+			jugador.vidas == vidas - 1 and jugador.is_on_floor() and jugador.global_position.distance_to(firme) < 1.0)
 	sala.free()
 
 

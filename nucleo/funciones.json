@@ -429,7 +429,7 @@
     "id": "sonidos-telefono",
     "que": "En el telefono cada evento se oye, el golpe dado y el recibido se distinguen, nada se corta al cruzar una puerta y el volumen de efectos los baja",
     "comprobacion": "manual: fila Efectos de los eventos de docs/pruebas.md, en el S50 o el S20",
-    "pasa": false
+    "pasa": true
   },
   {
     "id": "marco-menus",
@@ -705,7 +705,7 @@
     "id": "aviso-accion-rediseno-telefono",
     "que": "En el telefono la sala Pizarrones se entiende en orden (saltar, atacar al caminante, curar, sentarse): cada aviso con su palabra se lee, se va al hacer la accion y el caminante deja con ganas de curarse",
     "comprobacion": "manual: zona de pruebas, Mundo, Pizarrones, en el telefono con el dedo: recorrer la sala de izquierda a derecha y volver a entrar",
-    "pasa": false
+    "pasa": true
   },
   {
     "id": "botones-por-ensenar",
@@ -717,7 +717,7 @@
     "id": "botones-por-ensenar-telefono",
     "que": "En el telefono, en la sala Pizarrones, cada boton de la pantalla aparece al llegar a su pizarron y se entiende que es nuevo; con una vida menos se puede probar curar",
     "comprobacion": "manual: zona de pruebas, sala Pizarrones, en el telefono con el dedo: recorrerla de izquierda a derecha y curarse en el pizarron de curar",
-    "pasa": false
+    "pasa": true
   },
   {
     "id": "menus-gis",
@@ -975,7 +975,7 @@
     "id": "plataformas-telefono",
     "que": "En el telefono, en la sala Plataformas: subirse y bajarse de la plataforma y del elevador se siente bien, saltar del elevador mientras baja no se siente corto, quedarse debajo del elevador no se ve mal, y la lampara se cruza caminando y se sube de un salto",
     "comprobacion": "manual: S50, APK de desarrollo, zona de pruebas, Mundo, Plataformas",
-    "pasa": false
+    "pasa": true
   },
   {
     "id": "puertas-tipo",
@@ -999,7 +999,7 @@
     "id": "puertas-telefono",
     "que": "En el telefono, en la sala Puerta C: pasar por enfrente de una PUERTA, aun corriendo con el joystick algo inclinado hacia arriba, no la cruza, atacar hacia arriba enfrente no la cruza, inclinar el joystick hacia arriba enfrente si, y el cruce (voltearse, fundido, salir de espaldas) se ve bien y no responde a toques",
     "comprobacion": "manual: S50, APK de desarrollo, zona de pruebas, Mundo, Puerta C",
-    "pasa": false
+    "pasa": true
   },
   {
     "id": "zona-camara",
@@ -1047,7 +1047,7 @@
     "id": "musica-telefono",
     "que": "En el telefono el tema del menu suena sin cortes en el bucle, la cinematica lo calla, La Celda queda callada, la region de la sala de prueba Musica lo sube y lo baja sin reiniciarlo, reaparecer o cargar en su banco no lo empieza de nuevo ni lo baja un instante, al volver de esa sala a la lista de la zona el tema callado no vuelve a oirse, y en la pausa lejos de un tema Configuracion, Audio pone el tema y al cerrarla se calla",
     "comprobacion": "manual: docs/pruebas.md, «Musica»",
-    "pasa": false
+    "pasa": true
   },
   {
     "id": "enemigo-arte",
@@ -1125,5 +1125,53 @@
     "id": "jefe-telefono",
     "que": "La arena y el jefe de caja gris se pueden jugar con el pulgar: se entiende el cambio de fase y el aviso de embestida, los portones cierran y abren, vencer da impulso una vez y morir no lo da",
     "comprobacion": "manual: fila Jefe de docs/pruebas.md, en el telefono",
-    "pasa": false
+    "pasa": true
+  },
+  {
+    "id": "sonido-ataque-jugador",
+    "que": "Cada ataque del jugador, pegue o no, emite Eventos.jugador_ataco y Sonido toca ataque_jugador (en la ficha del juego, el mismo WAV que el golpe); si pega, el golpe suena aparte",
+    "comprobacion": "herramientas/guiones/nucleo/sonido.guion",
+    "pasa": true
+  },
+  {
+    "id": "sonido-ataque-jugador-telefono",
+    "que": "En el telefono el ataque al aire suena, y pegarle a algo no se oye como un golpe doble molesto",
+    "comprobacion": "manual: zona de pruebas, Combate, atacar al aire y al muneco",
+    "pasa": true
+  },
+  {
+    "id": "sonido-curar-al-empezar",
+    "que": "El efecto de curar suena con curacion_empezada y no con jugador_curado; el jugador emite curacion_cortada al soltar o con un golpe, y Sonido calla la voz (esto ultimo, solo con ventana: prueba_sonido)",
+    "comprobacion": "herramientas/guiones/nucleo/sonido.guion;herramientas/guiones/nucleo/jugador_curar_soltar.guion;herramientas/guiones/nucleo/jugador_curar_golpe.guion",
+    "pasa": true
+  },
+  {
+    "id": "sonido-curar-telefono",
+    "que": "En el telefono el sonido de curar acompana la curacion sin retraso y se calla al soltar a medias",
+    "comprobacion": "manual: zona de pruebas, Combate, Curar",
+    "pasa": true
+  },
+  {
+    "id": "botones-ocultos",
+    "que": "Sala.botones_ocultos esconde un boton hasta que un AvisoAccion de una sala posterior lo ensena, sin pedir aviso en esa sala; la base de La Celda esconde curar",
+    "comprobacion": "herramientas/guiones/nucleo/aviso_accion.guion;herramientas/guiones/herramientas/validador.guion",
+    "pasa": true
+  },
+  {
+    "id": "botones-ocultos-telefono",
+    "que": "En La Celda no se ve el boton de curar y los demas no se mueven",
+    "comprobacion": "manual: La Celda, en el telefono",
+    "pasa": true
+  },
+  {
+    "id": "aplastar-peligro",
+    "que": "Una pieza solida que baja sobre el jugador lo golpea en vez de hundirlo: DanoContacto.aplastador, zona fija con peligro en el extremo del recorrido, solo dana al que esta en el suelo mientras Vaiven.aplasta dice que la pieza viene hacia la zona y lo alcanza; quien va encima, sigue en el aire o sale a tiempo no se toca, y en la zona no se recuerda punto seguro. Reemplaza lo que plataformas-moviles y sala-celda-4-ruta dicen del aplastamiento sin dano",
+    "comprobacion": "herramientas/guiones/nucleo/plataformas.guion;herramientas/guiones/contenido/celda_4_raiz.guion",
+    "pasa": true
+  },
+  {
+    "id": "aplastar-telefono",
+    "que": "El golpe de aplastar se siente justo al tocar la pieza y el jugador reaparece de pie fuera de ella, en la sala Plataformas y en la raiz de La Celda",
+    "comprobacion": "manual: fila Aplastar de docs/pruebas.md, en el telefono",
+    "pasa": true
   }]

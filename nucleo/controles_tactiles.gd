@@ -237,7 +237,7 @@ func _disponible(i: int) -> bool:
 
 ## true si la sala esconde el boton de esa accion hasta que un pizarron lo ensene y todavia no lo enseno.
 func por_ensenar(accion: StringName) -> bool:
-	return (_sala != null and _sala.botones_por_ensenar.has(accion)
+	return (_sala != null and (_sala.botones_por_ensenar.has(accion) or _sala.botones_ocultos.has(accion))
 			and not Partida.botones_ensenados.has(accion))
 
 

@@ -18,7 +18,7 @@ func _ready() -> void:
 	_eterno.conversacion_terminada.connect(_al_terminar_conversacion)
 
 
-# Solo la primera etapa entrega la Pluma; las siguientes repiten la conversacion sin cinematica. Se pasa el jugador:
+# Solo la primera etapa entrega la Pluma; la segunda (seguir subiendo) se repite despues, sin cinematica. Se pasa el jugador:
 # si muere mientras oscurece, manda la muerte y no hay cinematica (Fundido.cambiar_sala).
 func _al_terminar_conversacion(etapa: int) -> void:
 	if etapa != 1:

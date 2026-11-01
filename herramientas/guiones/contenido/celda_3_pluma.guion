@@ -1,6 +1,7 @@
 # La Celda, sala 3: el Eterno entrega la Pluma. Desde la Entrada (x=1340) camina hasta el Eterno (x=1540), habla con
 # interactuar y pasa sus cinco lineas con saltar (un toque completa la linea, otro la pasa). Al terminar entrega la
 # habilidad pluma, anima la entrega (72 ticks) y la sala pasa a la cinematica de la Pluma, que vuelve a la Entrada.
+# De vuelta, habla otra vez con el Eterno: su segunda conversacion, de una linea, no repite la entrega.
 escena res://contenido/salas/celda/celda_3.tscn
 2 mover_derecha press
 29 mover_derecha release
@@ -26,4 +27,12 @@ escena res://contenido/salas/celda/celda_3.tscn
 65 saltar release
 67 saltar press
 68 saltar release
-fin 300
+300 mover_derecha press
+327 mover_derecha release
+335 interactuar press
+336 interactuar release
+340 saltar press
+341 saltar release
+343 saltar press
+344 saltar release
+fin 500

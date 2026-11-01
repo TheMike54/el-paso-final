@@ -76,10 +76,11 @@ func _senales_a_eventos(sonido: Sonido) -> void:
 		[&"muro_roto", func() -> void: Eventos.muro_roto.emit(&"muro")],
 		[&"porton", func() -> void: Eventos.porton_abierto.emit(&"porton")],
 		[&"parry", func() -> void: Eventos.parry.emit()],
-		[&"curar", func() -> void: Eventos.jugador_curado.emit(4)],
+		[&"curar", func() -> void: Eventos.curacion_empezada.emit()],
 		[&"banco", func() -> void: Eventos.descanso_en_banco.emit(&"banco_prueba")],
 		[&"paso", func() -> void: Eventos.jugador_paso.emit()],
 		[&"impulso", func() -> void: Eventos.jugador_impulso.emit()],
+		[&"ataque_jugador", func() -> void: Eventos.jugador_ataco.emit()],
 		[&"aterrizaje", func() -> void: Eventos.jugador_aterrizo.emit(600.0, false, false)],
 		[&"picada", func() -> void: Eventos.jugador_aterrizo.emit(1800.0, false, true)],
 	]
@@ -187,8 +188,11 @@ func _sin_efecto(sonido: Sonido) -> void:
 	sonido.ficha = FichaSonidos.new()
 	var pedidos: int = sonido.pedidos
 	var tocados: int = sonido.tocados
-	Eventos.jugador_curado.emit(4)
+	Eventos.curacion_empezada.emit()
 	_caso("lo que la ficha no tiene se pide pero no suena", sonido.pedidos == pedidos + 1 and sonido.tocados == tocados)
+	Eventos.curacion_cortada.emit()
+	Eventos.jugador_curado.emit(4)
+	_caso("terminar de curar ya no pide el efecto: sono al empezar", sonido.pedidos == pedidos + 1)
 	sonido.ficha = ficha
 
 
@@ -212,6 +216,14 @@ func _con_pantalla(sonido: Sonido) -> void:
 	for i: int in range(sonido.voces):
 		sonido.tocar(&"dano")
 	_caso("con las voces llenas se descarta el nuevo y el primero sigue", sonido.descartados > descartados and sonido.sonando(primera))
+	await _esperar(90)
+	Eventos.curacion_empezada.emit()
+	var voz: int = sonido.voz_curar
+	await _esperar(3)
+	var sonaba: bool = sonido.sonando(voz)
+	Eventos.curacion_cortada.emit()
+	await _esperar(3)
+	_caso("la curacion suena al empezar y se calla al cortarse", sonaba and not sonido.sonando(voz))
 
 
 # En una sala con suelo: aparecer no es aterrizar, saltar pide el salto, caer avisa un aterrizaje que no vibra

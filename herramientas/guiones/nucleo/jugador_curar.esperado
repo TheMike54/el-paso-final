@@ -11,6 +11,7 @@ valor Jugador curando false
 valor Vibracion pedidas 5
 valor Vibracion ultima al_curarse
 senal /root/Eventos jugador_curado 1
+senal /root/Eventos curacion_cortada 0
 
 # Antes en curacion.guion:
 # Tras curarse, otra vez 4 corazones llenos y la barra vacia. Si la interfaz solo oyera

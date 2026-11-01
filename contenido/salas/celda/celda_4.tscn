@@ -11,6 +11,7 @@
 [ext_resource type="Texture2D" uid="uid://7ic4s1sc4eno" path="res://contenido/salas/celda/arte/boquete_piso.png" id="7_boquete_piso"]
 [ext_resource type="Texture2D" uid="uid://c0mhgdwil72uv" path="res://contenido/salas/celda/arte/raiz_movil.png" id="8_raiz"]
 [ext_resource type="Script" uid="uid://c2i8bitphouxk" path="res://nucleo/vaiven.gd" id="9_vaiven"]
+[ext_resource type="Script" uid="uid://jy2tkfmforul" path="res://nucleo/dano_contacto.gd" id="99_dano"]
 [ext_resource type="Texture2D" uid="uid://cmac1tt8x8oik" path="res://contenido/salas/celda/arte/techo.png" id="10_techo"]
 [ext_resource type="Texture2D" uid="uid://dh3rgbh4pqdd1" path="res://contenido/salas/celda/arte/columna.png" id="11_columna"]
 [ext_resource type="PackedScene" uid="uid://c3v0dvamqoi4p" path="res://contenido/objetos/celda/luz_tubo.tscn" id="12_luz_tubo"]
@@ -51,6 +52,9 @@ size = Vector2(203, 200)
 
 [sub_resource type="RectangleShape2D" id="forma_raiz"]
 size = Vector2(210, 20)
+
+[sub_resource type="RectangleShape2D" id="forma_aplastar"]
+size = Vector2(210, 40)
 
 [sub_resource type="RectangleShape2D" id="forma_zona_pasillo"]
 size = Vector2(1665, 560)
@@ -294,6 +298,16 @@ limites = Rect2(0, 0, 2720, 720)
 [node name="Forma" type="CollisionShape2D" parent="ZonaCamaraPasillo"]
 position = Vector2(832.5, 280)
 shape = SubResource("forma_zona_pasillo")
+
+[node name="AplastarRaiz" type="Area2D" parent="." node_paths=PackedStringArray("aplastador")]
+position = Vector2(1955, 1280)
+script = ExtResource("99_dano")
+peligro = true
+aplastador = NodePath("../Terreno/RaizMovil")
+
+[node name="Forma" type="CollisionShape2D" parent="AplastarRaiz"]
+position = Vector2(0, -20)
+shape = SubResource("forma_aplastar")
 
 [node name="PuertaIzquierda" parent="." instance=ExtResource("16_boquete")]
 position = Vector2(70, 560)

@@ -106,7 +106,7 @@ Combate:
   ser su punto seguro y el siguiente peligro ya quita vida. `PuntoSeguroJugador` (`nucleo/punto_seguro_jugador.gd`,
   `RefCounted` con referencia al jugador) guarda los puntos y consulta el suelo cuando el jugador lo pide;
   `ultimo_punto_seguro()` sigue disponible en `Jugador`. La colocación y el fundido siguen en el jugador. El punto seguro es una posición con `ticks_suelo_firme` ticks seguidos en suelo fijo fuera de la
-  invulnerabilidad, tomada `ticks_atras_punto_seguro` posiciones atrás. Suelo fijo: un rayo hacia abajo en el centro de los
+  invulnerabilidad y fuera de la zona de un `DanoContacto.aplastador`, tomada `ticks_atras_punto_seguro` posiciones atrás. Suelo fijo: un rayo hacia abajo en el centro de los
   pies o a 1 px de una orilla del cuerpo (8 px arriba, 40 abajo, `Capas.rayo_a_escenario`) encuentra un sólido que no
   se mueve según `Vaiven.movil_de`;
   sobre una plataforma, un elevador (también en su pausa) o un portón no cuenta
@@ -149,8 +149,8 @@ Combate:
   su `velocidad_aterrizaje_min` (bajar un escalón) y `Vibracion` solo vibra con el duro o la picada.
 - Pasos: `jugador_paso` sale al entrar a uno de los cuadros de pasos del clip que se ve (metadato `pasos` del
   `SpriteFrames` del personaje: hoy `correr` y `carrera`, cuadros 0 y 3), con `frame_changed` y `animation_changed`
-  del `AnimatedSprite2D`, en el suelo y fuera de un cruce de puerta. `jugador_impulso` sale al empezar cada impulso.
-  Los tres los oye `Sonido`.
+  del `AnimatedSprite2D`, en el suelo y fuera de un cruce de puerta. `jugador_impulso` sale al empezar cada impulso y
+  `jugador_ataco` al empezar cada ataque, pegue o no. Los cuatro los oye `Sonido`.
 - Hablar: `empezar_a_hablar()` (lo llama un `Npc`) corta el impulso, la curación a medias y el retroceso, y deja al
   jugador quieto con gravedad (`hablando`) hasta `dejar_de_hablar()`. El tick siguiente también queda quieto: la
   pulsación que cerró la caja no salta ni ataca. Un golpe, un peligro o morir lo cortan. Mientras habla, el banco no
@@ -183,7 +183,7 @@ Curar y sensación del golpe:
 - Curar: al llegar a `ticks_mantener_poder`, si el jugador está en el suelo, con vidas por llenar, fuera del
   retroceso y del impulso, y con `Partida.inspiracion >= costo_curacion`, corta un ataque a medias (y el que estaba en
   cola), se queda quieto y gasta la Inspiración
-  poco a poco mientras mantiene `curar`. A los `ticks_curacion` ticks recupera una vida y emite `jugador_curado`. Soltar, dejar el suelo o recibir daño antes lo
+  poco a poco mientras mantiene `curar`. Al empezar emite `curacion_empezada`, si no termina `curacion_cortada`. A los `ticks_curacion` ticks recupera una vida y emite `jugador_curado`. Soltar, dejar el suelo o recibir daño antes lo
   corta y lo gastado se pierde, salvo al soltar antes de `ticks_devolver_curacion`: la Inspiración vuelve al valor
   de antes de empezar, nunca a más. Cada golpe a un `Golpeable` con `es_enemigo` da `inspiracion_por_golpe` (tope 99); a un muro o una palanca, nada.
 - Sensación: al golpear, el jugador sale empujado hacia atrás y lo golpeado hacia el otro lado

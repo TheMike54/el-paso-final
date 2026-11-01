@@ -32,7 +32,8 @@ Parte del contrato (`docs/contrato.md`): lo que revisa `herramientas/validar.gd`
   `ObjetoHabilidad`, de una recompensa, del requisito de un artículo y de `habilidades_de_prueba` está en
   `Habilidades.TODAS`; cada `AvisoAccion` enseña 1 o 2 acciones del InputMap, lleva id en `UNA_VEZ` y no lo lleva en `POR_VISITA`, y su id, si lo tiene, no se repite en la
   escena ni con otro objeto que se recuerda en la sala, ni usa un prefijo reservado; cada acción de
-  `botones_por_ensenar` es un botón de la pantalla y algún aviso de la sala la enseña; cada puerta en el borde izquierdo
+  `botones_por_ensenar` es un botón de la pantalla y algún aviso de la sala la enseña; cada acción de `botones_ocultos`
+  es un botón de la pantalla; cada puerta en el borde izquierdo
   o derecho de `limites` lleva detrás su pared, y la llegada de cada puerta cae dentro de `limites` y, salvo en una
   `PUERTA`, deja el cuerpo del jugador fuera de su área (`docs/contrato.md`, «Cambio de sala»). En cualquier escena, también: ninguna forma
   de una vía salvo la de una `PlataformaDelgada`, que no va dentro de algo que se mueve (`docs/contrato.md`, «Suelos y plataformas»);

@@ -32,6 +32,8 @@ var ultimo: StringName = &""
 ## Stream del ultimo efecto tocado, incluso sin pantalla; publico para los guiones.
 var ultimo_stream: AudioStream = null
 var descartados: int = 0
+## Voz de la curacion en curso; publica para la prueba.
+var voz_curar: int = AudioStreamPlaybackPolyphonic.INVALID_ID
 ## Sin pantalla nadie oye: se cuenta igual pero no se toca (tocar sin pantalla dejaba recursos vivos al salir,
 ## docs/errores/2026-10-13-musica-sin-pantalla.md).
 var mudo: bool = Ajustes.sin_ventana()
@@ -65,10 +67,12 @@ func _ready() -> void:
 	Eventos.porton_abierto.connect(tocar.bind(&"porton").unbind(1))
 	Eventos.jugador_danado.connect(tocar.bind(&"dano").unbind(1))
 	Eventos.parry.connect(tocar.bind(&"parry"))
-	Eventos.jugador_curado.connect(tocar.bind(&"curar").unbind(1))
+	Eventos.curacion_empezada.connect(_al_empezar_curacion)
+	Eventos.curacion_cortada.connect(_al_cortar_curacion)
 	Eventos.descanso_en_banco.connect(tocar.bind(&"banco").unbind(1))
 	Eventos.jugador_paso.connect(tocar.bind(&"paso"))
 	Eventos.jugador_impulso.connect(tocar.bind(&"impulso"))
+	Eventos.jugador_ataco.connect(tocar.bind(&"ataque_jugador"))
 	Eventos.jugador_aterrizo.connect(_al_aterrizar)
 
 
@@ -123,6 +127,17 @@ func sonando(voz: int) -> bool:
 func _al_enemigo_golpeado(nodo: Node) -> void:
 	var enemigo: Enemigo = nodo as Enemigo
 	tocar(&"golpe", enemigo.ficha.sonidos if enemigo != null and enemigo.ficha != null else null)
+
+
+func _al_empezar_curacion() -> void:
+	voz_curar = tocar(&"curar")
+
+
+# La voz se calla sola si ya acabo: su id deja de ser valido (classes/class_audiostreamplaybackpolyphonic.rst:92).
+func _al_cortar_curacion() -> void:
+	if sonando(voz_curar):
+		_voces.stop_stream(voz_curar)
+	voz_curar = AudioStreamPlaybackPolyphonic.INVALID_ID
 
 
 func _al_aterrizar(velocidad: float, duro: bool, picada: bool) -> void:

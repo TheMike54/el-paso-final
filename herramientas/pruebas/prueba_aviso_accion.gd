@@ -7,6 +7,20 @@ extends "res://herramientas/pruebas/prueba_base.gd"
 const SALA: String = "res://herramientas/salas/sala_pizarrones.tscn"
 
 
+# botones_ocultos esconde igual que botones_por_ensenar, y la base de La Celda esconde curar: toda sala de la zona lo hereda.
+func _botones_ocultos(sala: Sala, controles: ControlesTactiles) -> void:
+	sala.botones_ocultos.assign([&"pausa"])
+	var oculto: bool = controles.por_ensenar(&"pausa")
+	Partida.ensenar_boton(&"pausa")
+	_caso("un boton oculto no se ve hasta que se ensena", oculto and not controles.por_ensenar(&"pausa"))
+	Partida.botones_ensenados.erase(&"pausa")
+	sala.botones_ocultos.clear()
+	var escena: PackedScene = load("res://contenido/salas/celda/celda_1.tscn") as PackedScene
+	var celda: Sala = escena.instantiate() as Sala
+	_caso("La Celda esconde el boton de curar", celda.botones_ocultos.has(&"curar"))
+	celda.free()
+
+
 func _ready() -> void:
 	Partida.reiniciar()
 	var sala: Sala = await _abrir_sala()
@@ -16,6 +30,7 @@ func _ready() -> void:
 	_caso("la sala empieza con una vida menos, para poder curar", Partida.vidas == Partida.vidas_maximas - 1)
 	_caso("se empieza sin los botones de saltar, atacar ni curar", controles.por_ensenar(&"saltar")
 			and controles.por_ensenar(&"atacar") and controles.por_ensenar(&"curar") and not controles.por_ensenar(&"pausa"))
+	_botones_ocultos(sala, controles)
 	_poner(jugador, Vector2(700.0, 680.0))
 	await _esperar(AvisoAccion.TICKS_APARECER + 2)
 	_caso("fuera de su zona no se ve", not saltar.dentro and saltar.alfa == 0.0)
