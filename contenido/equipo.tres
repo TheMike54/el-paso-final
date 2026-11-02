@@ -2,6 +2,8 @@
 
 [ext_resource type="Script" uid="uid://cfinu2td5srxh" path="res://nucleo/catalogo_equipo.gd" id="1_catalogo"]
 [ext_resource type="Script" uid="uid://bkps75534o0wk" path="res://nucleo/ficha_util.gd" id="2_util"]
+[ext_resource type="Script" uid="uid://c41xt1vprgy0k" path="res://nucleo/ficha_amuleto.gd" id="3_amuleto"]
+[ext_resource type="Texture2D" uid="uid://ddxjko2ns7d5o" path="res://contenido/objetos/equipo/patas_de_cucaracha.png" id="4_patas"]
 
 [sub_resource type="Resource" id="util_brujula"]
 script = ExtResource("2_util")
@@ -9,6 +11,16 @@ id = &"brujula"
 nombre = "Brújula"
 descripcion = "Con ella puesta, el mapa muestra dónde estás."
 
+[sub_resource type="Resource" id="amuleto_patas_cucaracha"]
+script = ExtResource("3_amuleto")
+id = &"patas_cucaracha"
+nombre = "Patas de Cucaracha"
+descripcion = "Corres más rápido."
+costo = 1
+icono = ExtResource("4_patas")
+velocidad_factor = 1.25
+
 [resource]
 script = ExtResource("1_catalogo")
+amuletos = Array[ExtResource("3_amuleto")]([SubResource("amuleto_patas_cucaracha")])
 utiles = Array[ExtResource("2_util")]([SubResource("util_brujula")])

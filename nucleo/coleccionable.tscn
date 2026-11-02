@@ -18,7 +18,7 @@ shape = SubResource("forma_coleccionable")
 
 [node name="Arte" type="Sprite2D" parent="."]
 material = ExtResource("3_sin_luz")
-position = Vector2(0, -24)
+position = Vector2(0, -32)
 texture = ExtResource("2_arte")
 
 [node name="Halo" type="Node2D" parent="Arte"]
