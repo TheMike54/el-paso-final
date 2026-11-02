@@ -1,7 +1,8 @@
 class_name Cargar
 extends RefCounted
-# Carga un recurso que puede no existir: el nucleo no depende de interfaz/, mapa/, contenido/ ni herramientas/, asi
-# que los nombra por ruta y los carga solo si estan (nunca con preload). Un solo lugar para esa comprobacion.
+# Centraliza la carga opcional para que el nucleo funcione sin interfaz/, mapa/, contenido/ ni herramientas/.
+# Nombra los recursos por ruta y los carga solo si existen, sin preload que los vuelva dependencias obligatorias.
+# Devuelve null ante una ruta vacia o ausente; quien llama convierte el recurso a su tipo.
 
 
 ## El recurso de la ruta, o null si no existe. Quien lo llama lo convierte con `as` a su tipo.

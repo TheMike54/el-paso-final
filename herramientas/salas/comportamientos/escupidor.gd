@@ -37,7 +37,7 @@ func actuar() -> void:
 	if _ticks_aviso == 0:
 		if ve_al_jugador(_d.radio):
 			_ticks_aviso = _d.aviso
-			enemigo.modulate = Color(1.7, 1.7, 1.7)
+			enemigo.modulate = COLOR_AVISO
 		return
 	_ticks_aviso -= 1
 	if _ticks_aviso > 0 or objetivo == null:

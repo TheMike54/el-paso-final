@@ -370,5 +370,17 @@
     "que": "El validador falla una sala con id bajo contenido/ sin ficha_zona y dos salas de una misma zona con fichas de distinto resource_path; las salas de herramientas/ pueden no tener ficha",
     "comprobacion": "herramientas/guiones/herramientas/validador.guion",
     "pasa": true
+  },
+  {
+    "id": "validador-objeto-amuleto",
+    "que": "El validador falla un ObjetoAmuleto cuyo id no esta en un catalogo o, fuera de herramientas/, solo en el de pruebas",
+    "comprobacion": "herramientas/guiones/herramientas/validador.guion",
+    "pasa": true
+  },
+  {
+    "id": "validador-banco-en-pieza",
+    "que": "La regla banco_<id> alcanza a los bancos dentro de una pieza",
+    "comprobacion": "herramientas/guiones/herramientas/validador.guion",
+    "pasa": true
   }
 ]

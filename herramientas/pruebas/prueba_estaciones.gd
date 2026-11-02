@@ -74,8 +74,7 @@ func _pagar() -> void:
 	# cobrar y Si cobra una vez.
 	Partida.estaciones.clear()
 	Partida.monedas = 80
-	jugador.global_position = estacion.global_position
-	jugador.velocity = Vector2.ZERO
+	_poner(jugador, estacion.global_position)
 	await _esperar(30)
 	await _presionar(&"interactuar")
 	var cobro: CobroEstacion = estacion.cobro
@@ -125,8 +124,7 @@ func _viajar() -> void:
 	await _esperar(3)
 	var estacion: Estacion = sala.get_node(^"Estacion") as Estacion
 	var jugador: Jugador = sala.get_node(^"Jugador") as Jugador
-	jugador.global_position = estacion.global_position
-	jugador.velocity = Vector2.ZERO
+	_poner(jugador, estacion.global_position)
 	await _esperar(30)
 	await _presionar(&"interactuar")
 	var menu: MenuEstaciones = estacion.menu
@@ -208,8 +206,7 @@ func _mapa(menu: MenuEstaciones, estacion: Estacion) -> void:
 	solo.estacion = estacion
 	solo.ruta_indice = "res://mapa/no_existe.tres"
 	add_child(solo)
-	await get_tree().process_frame
-	await get_tree().process_frame
+	await _esperar_cuadros(2)
 	_caso("sin indice queda la lista sola a lo ancho, con las mismas filas", solo.mapa == null and solo.ids == menu.ids and solo.lista.cuerpo.get_child_count() == 1 and is_equal_approx(solo.lista.desliza.size.x, solo.lista.size.x))
 	solo.cerrar()
 	get_tree().paused = true

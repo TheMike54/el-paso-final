@@ -6,7 +6,7 @@ extends DatosComportamiento
 ## Distancia a la que despierta, en px (7,6 u de Hollow Knight).
 @export var radio_alerta: float = 330.0
 ## Aceleracion por eje al perseguir, en px/s^2: llega al tope en 1 s (en Hollow Knight, 2,25 u/s^2 = 98 px/s^2,
-## tardaba 2,2 s y en el telefono se sintio lento, 17-oct-2026).
+## tardaba 2,2 s y en el telefono se sintio lento).
 @export var aceleracion: float = 217.0
 ## Rapidez maxima por eje al perseguir, en px/s (5 u/s).
 @export var tope: float = 217.0

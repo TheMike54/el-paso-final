@@ -1,6 +1,6 @@
 class_name FichaZona
 extends Resource
-# Datos comunes de una zona para el mapa: nombre visible, color y esquina de su franja.
+# Datos comunes de una zona para el mapa: nombre visible, color y origen de sus salas en el mapa.
 # Se asigna en la base de zona para que todas sus salas compartan el mismo recurso.
 # El indice copia estos datos: el mapa no necesita cargar el contenido de la zona.
 

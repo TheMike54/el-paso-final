@@ -1,10 +1,9 @@
 class_name Proyectil
 extends Area2D
-# Poder del boton de curar (habilidad proyectil; nombre neutro hasta decidir que es en el mundo):
-# avanza recto y sin gravedad, golpea una sola vez a cada Golpeable que toca y lo atraviesa, corta cada Cortable, y
-# desaparece contra un solido o al acabar su recorrido. Los solidos se buscan con un rayo: este Area2D, movido
-# por posicion, no detecto los StaticBody2D de las salas (docs/errores/2026-10-06-bola-atravesaba-paredes.md).
-# Lo crea el jugador en su sala. Se ve como bola de fuego en capas (EfectoCuadros con nucleo/arte/efecto_bola.png).
+# Poder del boton de curar con nombre neutro hasta definirlo en el mundo; el jugador lo crea en su sala.
+# Avanza sin gravedad, atraviesa cada Golpeable con un solo golpe y corta Cortable; termina en solidos o por recorrido.
+# Busca solidos con un rayo porque este Area2D movido por posicion no detectaba los StaticBody2D de las salas.
+# EfectoCuadros con nucleo/arte/efecto_bola.png lo muestra como una bola de fuego en capas.
 const TAMANO: Vector2 = Vector2(60.0, 40.0)
 const HOJA: Texture2D = preload("res://nucleo/arte/efecto_bola.png")
 ## Cuadros de la hoja y cuantos salen de la fila sin gotas sueltas: al salir asomarian sobre la cabeza del jugador.

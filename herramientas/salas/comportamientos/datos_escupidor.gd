@@ -6,7 +6,7 @@ extends DatosComportamiento
 @export var radio: float = 900.0
 @export var aviso: int = 30
 ## Ticks entre un tiro y el siguiente aviso: una bola cada 1,25 s (con 90, cada 2 s, se esquivaba muy facil en el
-## telefono, 17-oct-2026).
+## telefono).
 @export var espera: int = 45
 ## Angulo de salida sobre la horizontal.
 @export var grados: float = 50.0

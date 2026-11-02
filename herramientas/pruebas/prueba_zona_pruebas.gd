@@ -6,7 +6,6 @@ extends "res://herramientas/pruebas/prueba_base.gd"
 const ZONA: String = "res://herramientas/salas/zona_pruebas.tscn"
 
 
-# Instancia la zona como hija.
 func _ready() -> void:
 	var escena: PackedScene = load(ZONA) as PackedScene
 	var zona: Control = escena.instantiate() as Control

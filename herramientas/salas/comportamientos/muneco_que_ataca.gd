@@ -27,7 +27,7 @@ func actuar() -> void:
 	reloj += 1
 	var fase: int = reloj % _d.ciclo
 	# Aviso: se aclara los aviso ticks antes del golpe.
-	enemigo.modulate = Color(1.7, 1.7, 1.7) if fase > _d.ciclo / 2 - _d.aviso and fase < _d.ciclo / 2 else Color.WHITE
+	enemigo.modulate = COLOR_AVISO if fase > _d.ciclo / 2 - _d.aviso and fase < _d.ciclo / 2 else Color.WHITE
 	if fase == _d.ciclo / 2:
 		golpes_dados += 1
 		atacar(_d.rectangulo_golpe, _d.golpe, 1, golpes_dados % 2 == 1)

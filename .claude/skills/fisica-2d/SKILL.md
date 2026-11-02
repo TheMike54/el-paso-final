@@ -8,7 +8,7 @@ description: Reglas de física 2D y entrada de este proyecto (Godot 4.7.2). Usar
 Citas a `$env:GODOT_DOCS` como `archivo:línea`; «Cómo se comprueba aquí» dice cómo revisar la regla. Lo demás se
 busca con Grep ahí (rutas `tutorials/...`, las mismas que citan las tablas).
 
-Los valores (velocidades, ticks, gravedad, tamaños) no están aquí: viven en `docs/jugador.md`, en «Configuración
+Los valores (velocidades, ticks, gravedad, tamaños) no están aquí: viven en los `@export` de `nucleo/jugador.gd` y su significado en `docs/jugador.md`, en «Configuración
 del proyecto» de `docs/contrato.md`, «Entrada» de `docs/ajustes-y-entrada.md`, `docs/componentes.md` y
 `docs/enemigos.md`. Una regla de aquí nunca manda sobre
 esos documentos.
@@ -28,7 +28,7 @@ esos documentos.
 | Un `RigidBody2D` se controla en `_integrate_forces` (fuerzas, impulsos, velocidad), nunca asignando `position` cada tick | `tutorials/physics/physics_introduction.rst:283` | `validar.ps1` y un guion de la pieza nueva |
 | Algo que va hacia un punto se detiene bajo un umbral de distancia, o tiembla al llegar | `tutorials/2d/2d_movement.rst:300` | Guion del comportamiento nuevo |
 | Un nodo con `PROCESS_MODE_ALWAYS` procesa en pausa pero su física no: nada de mover cuerpos ni esperar choques en menús | `tutorials/scripting/pausing_games.rst:87` | Grep de `process_mode` en las escenas con cuerpos; guion de la pieza nueva |
-| Si importa quién se procesa primero en el mismo tick, fijarlo con `process_priority` (menor va antes), no con el orden del árbol | `tutorials/scripting/scene_tree.rst:126` | Guion que reproduzca el caso |
+| Si importa quién se procesa primero en el mismo tick, fijarlo con `process_physics_priority` en la física o `process_priority` fuera de ella (menor va antes), no con el orden del árbol | `tutorials/scripting/scene_tree.rst:126` | Guion que reproduzca el caso |
 
 ## Formas de colisión
 
@@ -46,7 +46,7 @@ El arte no colisiona (decisión cerrada en `CLAUDE.md`): las formas son invisibl
 | Regla | Doc | Cómo se comprueba aquí |
 |---|---|---|
 | Capa y máscara de cada cuerpo y área con `Capas.poner(self, capa, mascara)` en su `_ready`, nunca en el `.tscn`; una pieza nueva usa una capa de la tabla de `docs/contrato.md`, «Capas de física», y una capa nueva va ahí, en `nucleo/capas.gd` y en `[layer_names]` de `project.godot` | `tutorials/physics/physics_introduction.rst:115` | Guion `capas_fisica`; Grep de `collision_layer` y `collision_mask` en los `.tscn`: sin resultados. Ejemplos: `nucleo/recogible.gd` (área), `nucleo/plataforma_delgada.gd` y `nucleo/suelo_fragil.gd` (cuerpo), `nucleo/vaiven.gd` (pone la capa al cuerpo que mueve) |
-| `Area2D` para detectar y para lo que golpea sin más física; `StaticBody2D` para el entorno (`docs/contrato.md`, «Sala») | `tutorials/physics/using_area_2d.rst:95`, `tutorials/physics/physics_introduction.rst:55` | `validar.ps1`; ejemplo `nucleo/recogible.gd` (base de `Coleccionable`, `MonedasSueltas`, `ObjetoHabilidad` y `ObjetoMapa`) |
+| `Area2D` para detectar y para lo que golpea sin más física; `StaticBody2D` para el entorno (`docs/sala.md`) | `tutorials/physics/using_area_2d.rst:95`, `tutorials/physics/physics_introduction.rst:55` | `validar.ps1`; ejemplo `nucleo/recogible.gd` (base de `Coleccionable`, `MonedasSueltas`, `ObjetoHabilidad` y `ObjetoMapa`) |
 | `body_entered` si lo que llega es un cuerpo (el jugador), `area_entered` si es un área (un `Golpeable`) | `tutorials/physics/using_area_2d.rst:63` | Guiones `combate_chico`, `poder_bola`; ejemplo `nucleo/proyectil.gd` |
 | Apagar lo que no debe detectar o ser detectado con `monitoring` / `monitorable`. Convención del repo: dentro del tick, con `set_deferred(&"monitoring", ...)` (`nucleo/jugador.gd`, `nucleo/ataque_enemigo.gd`) | `tutorials/physics/using_area_2d.rst:37` | Guiones `jugador_ataque_y_vida`, `parry` |
 | Agregar nodos desde un callback de física con `add_child.call_deferred(...)` (así nace la bola en `nucleo/jugador.gd`) | `tutorials/performance/thread_safe_apis.rst:41` | Guiones `poder_bola`, `poder_bola_recarga` |

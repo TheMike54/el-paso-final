@@ -8,7 +8,7 @@ extends Area2D
 ## UNA_VEZ: hecha la accion se va y no vuelve en la partida (King's Pass; su id se marca con Partida.marcar).
 ## POR_VISITA: hecha se va, y vuelve al entrar otra vez a la sala (sin id). SIEMPRE: el pizarron sale cada vez que el
 ## jugador entra a su zona, aunque ya la haya hecho; el boton de la pantalla late solo hasta hacerla, y con id eso se
-## recuerda en la partida (los pizarrones de La Celda, decision del 26-oct-2026).
+## recuerda en la partida (los pizarrones de La Celda).
 enum Modo { UNA_VEZ, POR_VISITA, SIEMPRE }
 
 ## Ticks en que el dibujo aparece al entrar y se va al salir.
@@ -70,7 +70,7 @@ var _hablaba: bool = false
 
 func _ready() -> void:
 	Capas.poner(self, Capas.INTERACCION, Capas.JUGADOR)
-	hecha = _recordada() and Partida.estado_de(Sala.clave_de(self), id) != null
+	hecha = _recordada() and Sala.recordado(self, id)
 	var forma: CollisionShape2D = CollisionShape2D.new()
 	var caja: RectangleShape2D = RectangleShape2D.new()
 	caja.size = tamano

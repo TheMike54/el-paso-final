@@ -1,9 +1,9 @@
 class_name Vaiven
 extends Node2D
-# Pieza que va y viene en linea recta (sierras que viajan, trampas, plataformas, elevadores): espera ticks_espera en
-# el origen, recorre recorrido en ticks_ida ticks, espera en el extremo, vuelve y repite; quieta durante el congelado
-# comun. Lo que dana dentro de ella solo golpea (lo exige el validador). La plataforma que lleva al jugador es ella
-# misma el AnimatableBody2D con este script: un cuerpo hijo de un Vaiven no lo lleva (docs/errores).
+# Ida y vuelta en linea recta para sierras, trampas, plataformas y elevadores; se detiene en el congelado comun.
+# Espera ticks_espera en cada extremo y tarda ticks_ida en recorrer recorrido tanto al ir como al volver.
+# El dano dentro de la pieza solo golpea, como exige el validador para peligros moviles.
+# Para llevar al jugador, el propio AnimatableBody2D usa este script: un cuerpo hijo de un Vaiven no lo transporta.
 
 ## Desplazamiento de la ida, desde donde empieza.
 @export var recorrido: Vector2 = Vector2(200.0, 0.0)
@@ -21,7 +21,7 @@ var _tick: int = 0
 func _ready() -> void:
 	_inicio = position
 	# El cuerpo que lleva al jugador es escenario y no mira nada: un AnimatableBody2D no reacciona a choques
-	# (classes/class_animatablebody2d.rst:22).
+	# (classes/class_animatablebody2d.rst).
 	# Por Object: un Node2D no se convierte a PhysicsBody2D en la compilacion, aunque la escena lo ponga en uno. Un
 	# Area2D no es PhysicsBody2D: si lleva este script, conserva sus capas y sigue detectando.
 	var nodo: Object = self

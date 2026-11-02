@@ -1,7 +1,7 @@
 class_name Toques
 extends RefCounted
 # Pregunta una vez a Android si la pantalla declara 5 o mas toques a la vez (jazzhand). Hay telefonos de gama baja
-# que solo reconocen 2 (el S50, medido el 12-oct-2026): el juego no cambia por eso, pero el menu y Configuracion lo
+# que solo reconocen 2: el juego no cambia por eso, pero el menu y Configuracion lo
 # avisan con una linea discreta. Fuera de Android, o si la pregunta falla, no avisa; las pruebas usan forzar().
 
 enum Respuesta {

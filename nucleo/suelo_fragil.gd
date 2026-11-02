@@ -14,7 +14,7 @@ var roto: bool = false
 
 func _ready() -> void:
 	Capas.poner(self, Capas.ESCENARIO, 0)
-	if not id.is_empty() and Partida.estado_de(Sala.clave_de(self), id) != null:
+	if not id.is_empty() and Sala.recordado(self, id):
 		roto = true
 		queue_free()
 

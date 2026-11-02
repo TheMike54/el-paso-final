@@ -15,7 +15,8 @@ metodología de la persona, fuera del repo. El PR declara cada herramienta y su 
 «Código y documentación», suma Codex en el primer PR que lleve código suyo.
 
 ## Decisiones de la persona (antes de su grupo)
-Del plan anterior quedaron aprobadas D5, D7 y D9. Faltan estas, con la recomendación de Claude:
+Del plan anterior quedaron aprobadas D5, D7 y D9. D1, D2, D3, D4 y D8 están aprobadas; D10 no entra.
+La tabla conserva las preguntas y recomendaciones; el alcance de D3 figura en el grupo 2.
 
 | # | Grupo | Pregunta | Recomendación |
 |---|---|---|---|
@@ -129,8 +130,8 @@ dejaba recursos sin liberar al salir (`docs/errores/2026-10-29-fuga-catalogo-equ
   recibe el foco y su descripción no se lee; ya pasaba antes de este grupo y la QA del 24-oct con control pasó.
 - Cierre del grupo 2 (29-oct-2026): `validar` 391 archivos sin fugas, batería completa 205/205, `revisor` de cierre
   con 2 fallos de documentos arreglados. Por su observación sobre F-042 («lista oficial»), fuera de `herramientas/`
-  el validador rechaza un id que solo está en el catálogo de pruebas. Falta la prueba en el teléfono
-  (`equipo-telefono`), hecha el mismo día en el S50: pasa.
+  el validador rechaza un id que solo está en el catálogo de pruebas. La prueba en el teléfono
+  (`equipo-telefono`), hecha el mismo día en el S50, pasa.
 - La entrega de la sala «Equipo» es una variante de prueba: la `EntregaRecompensas` del núcleo da una recompensa por
   cada número de coleccionables, no un lote.
 
@@ -153,7 +154,8 @@ worktree; Claude valida e integra.
   curación por barra llena; en Hollow Knight caben tres. Los números quedan en constantes para ajustarlos al probar.
 - Avance (29-oct-2026): hecho por Codex e integrado. `validar` 393 archivos sin fallos; `crecer` (30 casos) y los
   guiones vecinos 8/8, con `vidas_e_inspiracion` (99 → 33) y la partida de `prueba_guardado` al día. `revisor`:
-  aprobado. Falta ver en la tienda los dos íconos nuevos.
+  aprobado. Los dos íconos nuevos de la tienda pasan en la prueba de los siete grupos en el S50
+  registrada en «Tras las pruebas en el S50».
 
 ## Grupo 3 · Jefes
 - F-086 y F-035: vida por fases, arena que cierra un `Porton`, entrega de habilidad y `jefe_vencido` con emisor, probado
@@ -180,8 +182,8 @@ worktree; Claude valida e integra.
   lectura: dos fallos arreglados (una fase repetida o saltada si el gancho de fase provoca otro golpe; un jefe ya
   vencido que existía hasta su `queue_free`: ahora se apaga de inmediato). La barra de 33 dejó a `poder_bola_recarga`
   sin sus dos bolas: las salas de prueba tienen `inspiracion_maxima_de_prueba` (el validador la exige en 0 en
-  `contenido/`; `validador` 181 casos). `validar` 399 archivos sin fallos; batería completa 207/207. Falta
-  `jefe-telefono`.
+  `contenido/`; `validador` 181 casos). `validar` 399 archivos sin fallos; batería completa 207/207.
+  `jefe-telefono` pasa según la fila «Jefe» de `docs/pruebas.md`.
 
 ## Grupo 5 · Mapa por zonas
 - F-094 (nombre visible y color de zona como dato), F-095 (franja de la zona calculada), F-100 (la zona deja de ser el
@@ -252,8 +254,9 @@ Avance (29-oct-2026): 4.1 a 4.7 hechas por Codex en dos tandas e integradas.
 - 4.6: los tres comentarios ya estaban corregidos desde el 29-oct; solo se renombró la señal.
 - 4.7: `cambio_pedido_ms` lo limpia el primer tick, no `_ready`: el contrato dice lo que hace el código.
 - Ningún `.esperado` cambió salvo `ranuras`. `validar` 405 archivos sin fallos; batería completa 207/207; Terra sin
-  fallos en 5 y 4a; `revisor` aprobado (5 y 4). Faltan las pruebas de sensación en el S50: caer a espinas,
-  reaparecer, curar; ir y volver por el hueco `celda_2` ↔ `celda_5` (F-090).
+  fallos en 5 y 4a; `revisor` aprobado (5 y 4). Las pruebas de sensación en el S50 (caer a espinas,
+  reaparecer, curar; ir y volver por el hueco `celda_2` ↔ `celda_5`, F-090) pasan según
+  «Tras las pruebas en el S50» y la fila «Cierre de la auditoría en el S50» de `docs/pruebas.md`.
 
 ## Grupo 6 · Contrato más corto
 Pedido por la persona el 29-oct-2026: `docs/contrato.md` tiene 1412 líneas (196 KB) y cuesta leerlo antes de cada

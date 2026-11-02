@@ -73,7 +73,7 @@ func _ready() -> void:
 	for i: int in range(5, 13):
 		Partida.marcar("prueba_2", "coleccionable_%d" % i)
 	_caso("con 12 se entregan el amuleto y la vida maxima", entrega.entregar() == 2 and Partida.amuletos_tenidos.has(&"amuleto_prueba") and Partida.vidas_maximas == 5)
-	# La regla de interactuar es una para banco, Npc, reto y entrega: sentado no se interactua (la entrega lo olvidaba).
+	# La regla de interactuar es una para banco, Npc, reto y entrega: sentado no se interactua.
 	# El jugador cae hasta el suelo: asi la unica diferencia entre los dos casos es estar sentado.
 	for i: int in range(90):
 		if jugador.is_on_floor():
@@ -190,9 +190,7 @@ func _suelo_en_pieza(sala: Sala, id: String) -> SueloFragil:
 
 
 func _borrar() -> void:
-	for ruta: String in [RUTA, RUTA + ".tmp"]:
-		if FileAccess.file_exists(ruta):
-			DirAccess.remove_absolute(ruta)
+	_borrar_archivos(RUTA)
 
 
 # Compara un Variant sin pasarlo directo a _caso (el tipado estricto no lo deja). 3.0 del JSON vale 3.

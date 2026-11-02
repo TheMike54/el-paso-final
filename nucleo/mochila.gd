@@ -3,7 +3,7 @@ extends Interactuable
 # Lo perdido al morir (Partida.mochila), en el ultimo punto seguro de su sala: la crea la Sala al entrar si la
 # mochila es suya. Con el jugador encima, interactuar abre un reto con preguntas al azar de la bolsa: es una sola
 # oportunidad. Con la meta devuelve las PejeCoins; sin ella se pierden. En los dos casos desaparece. Sin bolsa basta
-# interactuar. Se dibuja con la mochila abierta aprobada (21-oct-2026), flotando como un objeto que se recoge.
+# interactuar. Se dibuja con la mochila abierta, flotando como un objeto que se recoge.
 
 ## Area para tocarla; el dibujo es mas chico (ALTO_DIBUJO).
 const ANCHO: float = 80.0

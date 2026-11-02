@@ -1,11 +1,11 @@
 class_name Cinematica
 extends Control
 # Cinematica a pantalla completa antes de una sala, como el CinematicPlayer de Hollow Knight: reproduce su video a todo
-# lo ancho (sin franjas a los lados en un telefono 20:9; decidido por la persona el 24-oct-2026) y al terminar pasa a
+# lo ancho (sin franjas a los lados en un telefono 20:9) y al terminar pasa a
 # sala_destino. Solo con el modo desarrollador se salta («Saltar», Atras, pausa, B o A); sin el se ve entera.
 
 ## Video sin extension: <video>.mp4 (H.264, Android) y <video>.ogv (Theora, PC). Sin imagen de respaldo: si el
-## telefono no puede reproducirlo, se pasa directo a la sala (decidido por la persona el 25-oct-2026). Ver ReproductorVideo.
+## telefono no puede reproducirlo, se pasa directo a la sala. Ver ReproductorVideo.
 @export var video: String = ""
 ## Id de la sala a la que se pasa al terminar (Sala.ruta_de).
 @export var sala_destino: String = ""
@@ -55,9 +55,10 @@ func ir_a_la_sala() -> void:
 
 
 # Sin fundido propio (el video ya termina en negro): cambia por la misma rutina que el Fundido, que escribe la llegada
-# (la Entrada) y avisa si el cambio falla. Diferido: el boton o el video pueden llamar dentro de un tick.
+# (la Entrada) y avisa si el cambio falla; en ese caso vuelve al menu. Diferido: el boton o el video pueden llamar dentro de un tick.
 func _ir() -> void:
-	Fundido.ir_a_sala(get_tree(), Sala.ruta_de(sala_destino), Fundido.Llegada.ENTRADA, "")
+	if Fundido.ir_a_sala(get_tree(), Sala.ruta_de(sala_destino), Fundido.Llegada.ENTRADA, "") != OK:
+		get_tree().change_scene_to_file(MenuPrincipal.RUTA)
 
 
 # Abajo a la derecha, tenue y sin foco: no tapa el video ni lo toma el control.

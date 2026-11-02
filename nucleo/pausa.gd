@@ -1,12 +1,9 @@
 class_name Pausa
 extends CanvasLayer
-# Pausa del juego: la accion pausa o el boton Atras de Android la abren y la cierran durante el
-# juego, y se abre sola al salir de la app o cambiar de ventana. Pausar detiene el arbol y no
-# guarda la partida; salir al menu si guarda lo obtenido, y pasar a segundo plano lo guarda Partida. Continuar,
-# Configuracion (la misma del menu, encima y con el juego detenido; de ahi sale el editor de botones tactiles) y
-# Salir al menu, como en Hollow Knight, centradas como en Silksong. Los amuletos y el mapa estan en el marco de
-# menus. La crea cada sala.
-# pausa.tscn conserva layer = 20, el valor de ModalPausa.CAPA (la escena no lee constantes).
+# Cada sala crea la pausa: pausa o Atras la alternan; salir de la app o cambiar de ventana la abre y detiene el arbol.
+# Pausar no guarda; salir al menu guarda lo obtenido y Partida guarda al pasar a segundo plano.
+# Continuar, ajustes del menu con editor tactil y salir, centrados como en Silksong; mapa y amuletos van en el marco.
+# pausa.tscn conserva layer = 20 de ModalPausa.CAPA porque la escena no lee constantes.
 const ESCENA_EDITOR: PackedScene = preload("res://nucleo/editor_controles.tscn")
 const ESCENA_CONFIGURACION: PackedScene = preload("res://nucleo/configuracion.tscn")
 ## Configuracion abierta desde la pausa: encima de la pausa y del marco, debajo del editor de botones (23).
@@ -58,11 +55,13 @@ func _physics_process(_delta: float) -> void:
 		alternar()
 
 
-# Una pantalla abierta encima del juego (el marco de menus) se queda la pulsacion de pausa y Atras: se
-# encuentra por el grupo, sin conocerla, y dice si bloquea con bloquea_pausa().
+# Una pantalla abierta encima del juego (el marco de menus o un ModalPausa) se queda la pulsacion de pausa y Atras: se
+# encuentra por el grupo y dice si bloquea con bloquea_pausa(), con llamadas tipadas que el validador revisa.
 func _pantalla_encima() -> bool:
-	for nodo: Node in get_tree().get_nodes_in_group(&"pantalla_encima"):
-		if nodo.has_method(&"bloquea_pausa") and nodo.call(&"bloquea_pausa") == true:
+	for nodo: Node in get_tree().get_nodes_in_group(MarcoMenus.GRUPO):
+		var marco: MarcoMenus = nodo as MarcoMenus
+		var modal: ModalPausa = nodo as ModalPausa
+		if (marco != null and marco.bloquea_pausa()) or (modal != null and modal.bloquea_pausa()):
 			return true
 	return false
 

@@ -1,18 +1,9 @@
 class_name Configuracion
 extends Control
-# Configuracion del menu principal y de la pausa, en orden de uso: audio (panel con el volumen general, de musica y de
-# efectos, cada uno con su barra ancha y un altavoz que silencia; si no se oye musica, mientras esta abierto suena un tema
-# de prueba, y tiene un boton para oir un efecto), brillo (su pantalla, con la escena de la sala o una de muestra), vibracion,
-# temblor, botones tactiles (abre el editor), botones del control (con aviso si no hay uno conectado), Avanzado y
-# creditos. Avanzado (maqueta aprobada el 25-oct-2026) agrupa Rendimiento: recursos (con aviso si se elige alto en un
-# telefono debil), FPS, luces 2D (bloqueadas en Recursos bajo), niebla y mostrar FPS; y Desarrollo: modo
-# desarrollador (el menu muestra la zona de pruebas) y, con el, el panel de pruebas y ver hitbox. Los ajustes graficos
-# se aplican al momento, tambien desde la pausa (Eventos.ajuste_cambiado). Cada opcion es un BotonValor: su valor en gis, con un ovalo en lo que vale, sin interruptores (mockup del 13-oct-2026). La
-# partida se borra en su ranura (Ranuras). Cada cambio se guarda al momento en los ajustes (las barras, al
-# soltarlas). Volver va siempre arriba a la izquierda, y las cuadriculas toman las columnas que caben (Tema). Atras y
-# pausa vuelven un nivel a la vez: del subpanel a la lista, y de la lista al menu (cerrado); se ve un solo panel a la
-# vez (Seccion). El panel de audio (PanelAudio) y la pantalla de brillo (PantallaBrillo) son scripts aparte; aqui
-# queda guardar sus barras. Se usa con toque, teclado y control.
+# Configuracion compartida por el menu principal y la pausa, con toque, teclado y control.
+# Agrupa audio, brillo, entrada, rendimiento y desarrollo; muestra una Seccion para volver un nivel a la vez.
+# Aplica y guarda cada cambio al momento; las barras guardan al soltarlas para evitar escrituras por cada paso.
+# PanelAudio y PantallaBrillo separan la presentacion; Configuracion conserva el guardado de sus ajustes.
 
 signal cerrado()
 signal editor_pedido()
@@ -48,7 +39,7 @@ var refresco: float = -1.0
 ## Accion del control que espera que se presione un boton, o vacio.
 var esperando: StringName = &""
 ## Franja de abajo que se deja libre (el aviso de pocos toques del menu), en px de la vista: sin ella, el aviso de
-## recursos quedaba encima de ese (S50, 13-oct-2026).
+## recursos queda encima de ese en el S50.
 var reservado_abajo: float = 0.0:
 	set(valor):
 		reservado_abajo = valor
@@ -119,8 +110,8 @@ func _ready() -> void:
 		Tema.encabezado(get_node(arriba) as Control)
 	_controles.pressed.connect(editor_pedido.emit)
 	_mando.pressed.connect(_abrir_mando)
-	_vibracion.pressed.connect(_alternar.bind(&"vibracion"))
-	_temblor.pressed.connect(_alternar.bind(&"temblor"))
+	_vibracion.pressed.connect(_alternar.bind(Ajustes.VIBRACION))
+	_temblor.pressed.connect(_alternar.bind(Ajustes.TEMBLOR))
 	_audio.pressed.connect(_abrir_audio)
 	_volver_audio.pressed.connect(atras)
 	_brillo.pressed.connect(_abrir_brillo)
@@ -189,7 +180,7 @@ func abrir() -> void:
 	visible = true
 	_mostrar(Seccion.LISTA)
 	Tema.dar_foco(_audio)
-	# Seguir el foco bajaba la lista unos 20 px y cortaba la primera fila (vista de 1280x720, 12-oct-2026).
+	# Seguir el foco baja la lista unos 20 px y corta la primera fila en la vista de 1280x720.
 	_desplazable.set_deferred(&"scroll_vertical", 0)
 
 

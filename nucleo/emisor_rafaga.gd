@@ -1,7 +1,7 @@
 class_name EmisorRafaga
 extends CPUParticles2D
 # Emisor que suelta rafagas cada cierto tiempo al azar (chispas de un cable, piedritas que caen). La rafaga es un
-# disparo unico con todas las particulas a la vez (particle_systems_2d.rst:159, :182). El reloj es propio: quieto en
+# disparo unico con todas las particulas a la vez (particle_systems_2d.rst). El reloj es propio: quieto en
 # la pausa y el congelado. Si tiene una LuzSala de destello, la enciende en cada rafaga.
 
 ## Cada rafaga, al soltarla (la sala puede encadenar otra, como el rebote de unas piedritas).

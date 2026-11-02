@@ -1,9 +1,8 @@
 extends "res://herramientas/pruebas/prueba_base.gd"
-# Prueba de MuroRompible, Palanca y Porton en la sala de secretos: golpes que aguanta, lado, ataque real sin
-# Inspiracion, bola, pogo, tapas, lo que descubre, las monedas encerradas tras el muro, lo guardado al volver a crear
-# la sala, el retraso de la palanca y cerrar el porton.
-# Instancia la sala como hija y la vuelve a crear para ver lo guardado; su guion lee "valor . casos" y
-# "valor . fallos".
+# Comprueba muros, palancas y portones de la sala de secretos.
+# Cubre su respuesta al combate y la recogida del botin.
+# Verifica que el estado guardado se conserve al recrear la sala.
+# El guion lee los casos y fallos para detectar regresiones.
 const SALA: String = "res://herramientas/salas/sala_secretos.tscn"
 const PROYECTIL: String = "res://nucleo/proyectil.tscn"
 
@@ -106,8 +105,15 @@ func _ready() -> void:
 	await _esperar(60)
 
 	# Palanca: la bola no la mueve; el ataque si, y abre el porton tras el retraso.
+	var interrumpida: Palanca = sala.get_node(^"Palanca") as Palanca
+	interrumpida.golpeable.recibir_golpe(jugador, 1)
+	sala = await _crear_sala()
+	jugador = get_tree().get_first_node_in_group(&"jugador") as Jugador
 	var palanca: Palanca = sala.get_node(^"Palanca") as Palanca
 	var porton: Porton = sala.get_node(^"Porton") as Porton
+	_caso("salir antes del retraso deja la palanca sin activar", not palanca.esta_activada
+			and not palanca.abrio and Partida.estado_de(clave, "palanca") == null
+			and not porton.abriendo and not porton.esta_abierto)
 	var cerrado_en: Vector2 = porton.position
 	var activaciones: Array[int] = [0]
 	palanca.activada.connect(func() -> void: activaciones[0] += 1)
@@ -117,13 +123,14 @@ func _ready() -> void:
 	_caso("la bola no mueve la palanca", not palanca.esta_activada)
 	jugador.global_position = Vector2(2620.0, 1160.0)
 	palanca.golpeable.recibir_golpe(jugador, 1)
-	_caso("el golpe del jugador la activa y la marca", palanca.esta_activada and Partida.estado_de(clave, "palanca") != null)
+	_caso("el golpe del jugador la activa", palanca.esta_activada)
 	await _esperar(palanca.ticks_retraso - 10)
 	_caso("antes del retraso el porton no se mueve", not porton.abriendo and not porton.esta_abierto and porton.position == cerrado_en)
 	palanca.golpeable.recibir_golpe(jugador, 1)
 	_caso("el segundo golpe no la vuelve a activar", activaciones[0] == 1)
 	await _esperar(palanca.ticks_congelado + 20)
 	_caso("pasado el retraso el porton se abre y se marca", (porton.abriendo or porton.esta_abierto) and Partida.estado_de(clave, "porton") != null)
+	_caso("la palanca se marca al abrir los portones", palanca.abrio and Partida.estado_de(clave, "palanca") != null)
 	await _esperar(porton.ticks_apertura + 4)
 	_caso("abierto, subio su alto", porton.esta_abierto and is_equal_approx(porton.position.y, cerrado_en.y - 300.0) and aperturas[0] == 1)
 
@@ -153,6 +160,21 @@ func _ready() -> void:
 	porton_2.cerrar()
 	await _esperar(porton_2.ticks_apertura + 4)
 	_caso("cerrar() lo baja otra vez", not porton_2.esta_abierto and is_equal_approx(porton_2.position.y, cerrado_en.y))
+
+	# Un banco dentro de una pieza guarda la sala, no la ruta de la pieza.
+	var pieza: Node2D = Node2D.new()
+	pieza.scene_file_path = "res://pieza_de_prueba.tscn"
+	pieza.position = Vector2(300.0, 40.0)
+	sala.add_child(pieza)
+	var banco: Banco = Banco.new()
+	banco.id = "banco_de_pieza"
+	pieza.add_child(banco)
+	banco.descansar()
+	_caso("un banco dentro de una pieza guarda la clave de su sala", Partida.sala == sala.clave())
+	Sala.llegada_a_banco = true
+	var llegada: Vector2 = sala._punto_de_llegada(null)
+	Sala.llegada_a_banco = false
+	_caso("y se puede volver a el", llegada == sala.to_local(banco.global_position) and sala.puntos_de_respaldo().has(banco.global_position))
 
 	sala.queue_free()
 	_restaurar_partida()

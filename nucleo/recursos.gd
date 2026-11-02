@@ -1,17 +1,17 @@
 class_name Recursos
 extends RefCounted
-# Modo de recursos: bajo para telefonos debiles (sin decoracion prescindible, plantas y niebla quietas), alto
-# con todo dentro del presupuesto. El ajuste "recursos" vale auto, bajo o alto; en auto decide la deteccion: un
-# build de 32 bits, menos de UMBRAL_MEMORIA de memoria o un telefono que Android marca de poca memoria es debil.
-# Estatico: lo consultan las piezas decorativas al entrar a la sala, asi un cambio en Configuracion vale desde la
-# sala siguiente. En Android OS.get_memory_info() da -1: la memoria se lee de /proc/meminfo (medido el 25-oct-2026).
+# Elige recursos bajos para telefonos debiles o altos con todo dentro del presupuesto; auto usa la deteccion.
+# En bajo omite decoracion prescindible y deja plantas y niebla quietas para reducir el costo de la sala.
+# Las piezas consultan el modo al entrar: un cambio en Configuracion vale desde la sala siguiente.
+# En Android OS.get_memory_info() da -1: la memoria se lee de /proc/meminfo.
 
 const AUTO: String = "auto"
 const BAJO: String = "bajo"
 const ALTO: String = "alto"
 const MODOS: PackedStringArray = [AUTO, BAJO, ALTO]
+const BYTES_POR_GIB: int = 1024 * 1024 * 1024
 ## Memoria fisica por debajo de la cual el telefono cuenta como debil (el S50 tiene 1,9 GB; el S20, 8 GB).
-const UMBRAL_MEMORIA: int = 3 * 1024 * 1024 * 1024
+const UMBRAL_MEMORIA: int = 3 * BYTES_POR_GIB
 
 static var _debil_calculado: bool = false
 static var _debil: bool = false
@@ -67,7 +67,7 @@ static func _memoria() -> int:
 static func _es_de_poca_memoria() -> bool:
 	if OS.get_name() != "Android" or not Engine.has_singleton("AndroidRuntime"):
 		return false
-	# Cada llamada se revisa: get_exception solo guarda la de la ultima (classes/class_javaclasswrapper.rst:36).
+	# Cada llamada se revisa: get_exception solo guarda la de la ultima (classes/class_javaclasswrapper.rst).
 	var runtime: Object = Engine.get_singleton("AndroidRuntime")
 	var contexto: Object = runtime.call(&"getApplicationContext") as Object
 	if contexto == null or JavaClassWrapper.get_exception() != null:
@@ -86,12 +86,13 @@ static func _es_de_poca_memoria() -> bool:
 static func motivo() -> String:
 	if OS.has_feature("32"):
 		return "32 bits"
+	# Completa la deteccion y su cache de _poca_memoria antes de consultar el motivo.
 	es_debil()
 	if _poca_memoria:
 		return "Android lo marca de poca memoria"
 	var memoria: int = _memoria()
 	if memoria > 0:
-		return "%.1f GB de memoria" % (float(memoria) / float(1024 * 1024 * 1024))
+		return "%.1f GB de memoria" % (float(memoria) / float(BYTES_POR_GIB))
 	return "memoria desconocida"
 
 

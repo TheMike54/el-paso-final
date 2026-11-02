@@ -42,7 +42,7 @@ func _ready() -> void:
 	lista.titulo.text = TITULO
 	lista.elegida.connect(_al_elegir)
 	lista.cerrada.connect(cerrar)
-	# El pie (la descripcion de la fila) nunca se lleno aqui: en su lugar van las ayudas de Viajar y Cancelar.
+	# En lugar del pie van las ayudas Viajar y Cancelar.
 	lista.pie.visible = false
 	_armar_ayudas()
 	get_tree().paused = true

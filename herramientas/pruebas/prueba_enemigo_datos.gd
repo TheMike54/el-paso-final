@@ -1,9 +1,8 @@
 extends "res://herramientas/pruebas/prueba_base.gd"
-# Prueba de los datos por ejemplar de los comportamientos: dos voladores del mismo tipo en la misma sala, uno con un
-# radio de alerta propio (Enemigo.datos, que gana a los de su ficha) y otro sin datos, ven al jugador a la misma
-# distancia de forma distinta; un tercero, mas cerca, toma los de su ficha (radio 100) y no lo ve. Desde que aparece,
-# el jugador ya esta entre los radios: si empezara mas cerca, el volador lo veria con cualquier radio y lo seguiria
-# persiguiendo. Los datos no se tocan al correr. Deja casos y fallos para enemigo_datos.guion.
+# Prueba que los datos por ejemplar del volador prevalezcan sobre la ficha y que sin ellos se use la ficha.
+# El jugador aparece entre los radios de alerta para distinguirlos sin que una persecucion previa falsee el caso.
+# Comprueba que los recursos compartidos no se modifiquen al correr.
+# Deja casos y fallos para enemigo_datos.guion.
 
 const SALA: String = "res://herramientas/salas/enemigos/sala_volador.tscn"
 const ENEMIGO: String = "res://nucleo/enemigo.tscn"

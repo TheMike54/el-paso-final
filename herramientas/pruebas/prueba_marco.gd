@@ -197,8 +197,7 @@ func _ready() -> void:
 	_caso("con el control la barra muestra Volver, L1 y R1, y Continuar el de volver", iconos.size() == 3 and _iconos_en(iconos, true) and continuar.size() == 1 and _iconos_en(continuar, true))
 	# En Utiles las vecinas son Amuletos y Mapa; comprobar tambien el ancho con control.
 	marco.abrir(&"utiles")
-	await get_tree().process_frame
-	await get_tree().process_frame
+	await _esperar_cuadros(2)
 	var boton_siguiente: Control = marco.get_node(^"Barra/Siguiente") as Control
 	var orilla: float = boton_siguiente.get_viewport_rect().size.x - Tema.MARGEN_LATERAL
 	_caso("con el control la barra cabe: Siguiente no pasa del margen derecho", boton_siguiente.visible and boton_siguiente.get_global_rect().end.x <= orilla + 0.5)

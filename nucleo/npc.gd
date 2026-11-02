@@ -1,11 +1,9 @@
 class_name Npc
 extends Interactuable
-# Personaje con quien se habla: con el jugador encima y en el suelo, interactuar abre una CajaDialogo con la
-# conversacion de su etapa y deja al jugador quieto (Jugador.hablando). Terminarla contando entrega sus recompensas
-# una sola vez, sube la etapa (un numero en el estado de su sala, sin cambiar el guardado) y autoguarda; la ultima
-# se repite sin entregar. Un golpe, un peligro o morir la cortan sin contarla. Va como hijo directo de una sala. Con
-# un AnimatedSprite2D (animacion) anima quieto, hablar y entregar y se voltea hacia el jugador: el NPC que sale en
-# varias salas trae su dibujo en su escena y ninguna sala lo programa.
+# Interactuar en el suelo abre CajaDialogo e inmoviliza al jugador; golpe, peligro o muerte la cortan.
+# Terminar contando entrega una vez, avanza la etapa numerica en el estado de sala y autoguarda sin cambiar el formato.
+# La ultima etapa se repite sin premio; interrumpir no cuenta. El de varias salas trae su dibujo en su escena.
+# Con un AnimatedSprite2D (animacion) anima quieto, hablar y entregar y mira al jugador; sin el, forma provisional.
 
 signal conversacion_terminada(etapa: int)
 
@@ -24,8 +22,8 @@ const ZONA_MUERTA: float = 4.0
 @export var conversaciones: Array[FichaDialogo] = []
 
 ## Dibujo animado opcional (hijo del Npc; sin el, la forma provisional). Se tocan solo las animaciones que tenga
-## (classes/class_spriteframes.rst:280): ANIM_QUIETO, ANIM_HABLAR mientras dura la conversacion y ANIM_ENTREGAR al
-## terminar contando una etapa, que vuelve a quieto al acabar (sin bucle; classes/class_animatedsprite2d.rst:112).
+## (classes/class_spriteframes.rst): ANIM_QUIETO, ANIM_HABLAR mientras dura la conversacion y ANIM_ENTREGAR al
+## terminar contando una etapa, que vuelve a quieto al acabar (sin bucle; classes/class_animatedsprite2d.rst).
 @export var animacion: AnimatedSprite2D = null
 ## Se voltea hacia el jugador: el dibujo mira a la derecha sin voltear y se refleja con scale.x, sobre los pies.
 @export var mirar_al_jugador: bool = true

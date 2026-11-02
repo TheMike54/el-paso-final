@@ -118,10 +118,15 @@ func _ready() -> void:
 	jugador.free()
 	get_tree().paused = false
 	_restaurar_partida()
+	# El objeto de una sala da su amuleto una vez y, ya tenido, no aparece.
+	var objeto: ObjetoAmuleto = (load("res://nucleo/objeto_amuleto.tscn") as PackedScene).instantiate() as ObjetoAmuleto
+	objeto.amuleto = &"amuleto_de_objeto"
+	add_child(objeto)
+	objeto._al_recoger(null)
+	_caso("el objeto da su amuleto", Partida.amuletos_tenidos.has(&"amuleto_de_objeto"))
+	var repetido: ObjetoAmuleto = objeto.duplicate() as ObjetoAmuleto
+	add_child(repetido)
+	_caso("ya tenido, el objeto no aparece", repetido.is_queued_for_deletion())
+	objeto.free()
+	Partida.amuletos_tenidos.erase(&"amuleto_de_objeto")
 	_resumen()
-
-
-# Espera cuadros de dibujo: el acomodo de los contenedores y el follow_focus corren diferidos.
-func _esperar_cuadros(cuadros: int) -> void:
-	for i: int in range(cuadros):
-		await get_tree().process_frame

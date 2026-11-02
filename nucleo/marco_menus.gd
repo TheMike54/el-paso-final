@@ -91,7 +91,7 @@ func _boton(barra: HBoxContainer, texto: String, al_tocar: Callable) -> Button:
 
 
 # El contrapeso iguala a Volver solo con lo que sobra: en la vista de 1280 la barra con los botones del control no
-# cabe con el entero, y empujaba Siguiente fuera de la pantalla (16-oct-2026).
+# cabe con el entero y empuja Siguiente fuera de la pantalla.
 func _acomodar_contrapeso() -> void:
 	var otros: float = _barra.get_combined_minimum_size().x - _contrapeso.custom_minimum_size.x
 	var ancho: float = _barra.get_viewport_rect().size.x - 2.0 * Tema.MARGEN_LATERAL

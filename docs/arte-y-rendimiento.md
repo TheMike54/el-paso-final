@@ -29,7 +29,7 @@ Configuración vale desde la sala siguiente. Elegir alto en un teléfono débil 
   apagar un grupo oculta sus nodos y les quita el proceso, y encenderlo los deja como estaban (una niebla con su
   ajuste apagado sigue oculta). `VerHitbox` (`nucleo/ver_hitbox.gd`, también de cada sala,
   con `Ajustes.desarrollo(VER_HITBOX)`) dibuja encima cada forma de colisión: rojo lo que daña, verde el escenario, azul
-  los cuerpos y amarillo las demás áreas. La oscuridad de la sala es `Sala.oscuridad` (ver `docs/contrato.md`, «Sala»).
+  los cuerpos y amarillo las demás áreas. La oscuridad de la sala es `Sala.oscuridad` (ver `docs/sala.md`).
 
 - Materiales comunes: uno de cada tipo en todo el juego, como recurso compartido (`tutorials/scripting/resources.rst:30-32`;
   las piezas con el mismo material se dibujan juntas, `tutorials/performance/gpu_optimization.rst:44-52`).
@@ -39,23 +39,23 @@ Configuración vale desde la sala siguiente. Elegir alto en un teléfono débil 
   cargada con `preload` (las constantes `_SIN_LUZ` y `_ADITIVO` son privadas: una sola entrada por material); una
   escena los nombra como `ext_resource` con su uid, nunca como un `sub_resource` propio ni con `Material.new()`.
 
-- Presupuesto por sala (lo revisa el validador en toda escena cuya raíz es una `Sala`; las cifras son las constantes `MAXIMO_EMISORES`, `MAXIMO_PARTICULAS`, `MAXIMO_PLANTAS` y `MAXIMO_CAPAS_TRANSLUCIDAS` de `herramientas/validar.gd`): emisores de partículas y partículas entre todos, plantas, ninguna luz 2D en la escena (las de `LuzSala` se crean en código solo con su ajuste) y un máximo de capas translúcidas grandes: un `Sprite2D`, `TextureRect`, `ColorRect`, `NinePatchRect` o `Polygon2D` visible con alfa efectivo menor que 1 (el de su color en `ColorRect` y `Polygon2D`, por su `self_modulate` y el `modulate` de él y de sus padres; dentro de un `CanvasLayer` oculto no cuenta) que cubre al menos un cuarto de 1280×720 con la escala de sus padres y sus anclas. Los halos de `LuzSala` (sumados, aclaran) cuentan aparte: cada uno cubre `area_halo()` (con `LuzSala.caja_halo()`, sin correr `_ready`) por la escala de sus padres, y el que cubre al menos lo de una capa grande se suma a las capas; si las capas solas pasan el máximo es un fallo, y si lo pasan solo con los halos, un aviso del validador (`docs/contrato.md`, «Avisos del validador»), porque la cuenta es por sala y no por pantalla. Nunca se marca como prescindible un aviso de peligro ni algo cuya colisión importe.
+- Presupuesto por sala (lo revisa el validador en toda escena cuya raíz es una `Sala`; las cifras son las constantes `MAXIMO_EMISORES`, `MAXIMO_PARTICULAS`, `MAXIMO_PLANTAS` y `MAXIMO_CAPAS_TRANSLUCIDAS` de `herramientas/validar.gd`): emisores de partículas y partículas entre todos, plantas, ninguna luz 2D en la escena (las de `LuzSala` se crean en código solo con su ajuste) y un máximo de capas translúcidas grandes: un `Sprite2D`, `TextureRect`, `ColorRect`, `NinePatchRect` o `Polygon2D` visible con alfa efectivo menor que 1 (el de su color en `ColorRect` y `Polygon2D`, por su `self_modulate` y el `modulate` de él y de sus padres; dentro de un `CanvasLayer` oculto no cuenta) que cubre al menos un cuarto de 1280×720 con la escala de sus padres y sus anclas. Los halos de `LuzSala` (sumados, aclaran) cuentan aparte: cada uno cubre `area_halo()` (con `LuzSala.caja_halo()`, sin correr `_ready`) por la escala de sus padres, y el que cubre al menos lo de una capa grande se suma a las capas; si las capas solas pasan el máximo es un fallo, y si lo pasan solo con los halos, un aviso del validador (`docs/validador.md`, «Avisos del validador»), porque la cuenta es por sala y no por pantalla. Nunca se marca como prescindible un aviso de peligro ni algo cuya colisión importe.
   Excepción: la sala de arte (`herramientas/salas/sala_arte.gd`) arma su decoración en `_ready` y pasa del presupuesto a propósito (hasta 12 emisores y ~500 partículas en alto): es la sala para medir el rendimiento.
 - `herramientas/salas/sala_recursos.tscn` llena el presupuesto (2 nieblas, 30 plantas, 3 emisores, 6 cortables;
   prescindibles una niebla, dos emisores y cuatro cortables) para medir los FPS en bajo y en alto.
-- Un `Fondo` opaco (con el `FondoExtendido` que crea, ver «Fondo extendido» en `docs/contrato.md`, «Sala») cuesta en el S50 (medición en «Mediciones», más abajo). Una sala cuyo fondo puede ser negro va sin `Fondo`; el núcleo no tiene otra forma de dar un color de fondo. El validador no lo revisa.
+- Un `Fondo` opaco (con el `FondoExtendido` que crea, ver «Fondo extendido» en `docs/sala.md`) cuesta en el S50 (medición en «Mediciones», más abajo). Una sala cuyo fondo puede ser negro va sin `Fondo`; el núcleo no tiene otra forma de dar un color de fondo. El validador no lo revisa.
 - Tamaño del arte: se pinta al tamaño en que se ve en la vista de 1280×720 (1x; el personaje mide 160 px) y no se encoge en la escena. Ninguna imagen pasa de 2048 px por lado.
 - Importación del arte del mundo (`contenido/` y `herramientas/salas/arte/`; lo revisa el validador leyendo cada `.import`): Mipmaps > Generate encendido, porque la vista se encoge en las pantallas más chicas (`tutorials/assets_pipeline/importing_images.rst:373-393`). Compresión Lossless por omisión; VRAM Compressed solo en una imagen sin transparencia, como los fondos opacos grandes (`importing_images.rst:185-189`: en 2D deja artefactos). Excepción: `fondo1`, `fondo2`, `lejana1` y `suelo` de la sala de arte, con transparencia, van en VRAM (`ALFA_EN_VRAM` en `herramientas/validar.gd`). El HUD y los menús van sin mipmaps.
 - Receta del arte de una sala (La Celda): la imagen entra ya procesada, en `contenido/salas/<zona>/arte/`, en snake_case. Las capas de fondo se exportan reducidas (la capa media a ½, las lejanas a ¼, el profundo a ⅛) y el frente a ½, con la escala compensada en la escena para que midan lo mismo en pantalla: baja la memoria de video y el APK, aunque en el S50 no subió los FPS. Una capa con mucha transparencia va como malla (`Polygon2D` con la textura, solo donde no es transparente, como «Convertir a Polygon2D» del editor), no como `Sprite2D`. La imagen encendida de una luz se recorta a su zona usada. Las capas que una pared opaca tapa van dentro de un `FondoTapado`. Una tira que se repite con `region` lleva unas filas transparentes al pie, o el filtro lineal pinta una línea en su orilla de arriba. Las piezas encendidas y las siluetas del frente van con un material sin sombreado (`LIGHT_MODE_UNSHADED`), para que la oscuridad no las apague.
 - Qué limita los FPS de una sala no se supone: lo que se optimiza se mide combinado, y se mide A/B en el teléfono, con y sin la pieza sospechosa (herramienta en `docs/pruebas.md`, «Medición de rendimiento»; cifras en «Mediciones», más abajo). En el mundo no se dibuja con `_draw` lo que se repite: se hornea a PNG (`herramientas/generar_efectos.gd`), y ningún `queue_redraw()` en `_process` va sin una guarda que lo haga solo cuando algo cambió (lo avisa el validador). Una capa lejana con mucha transparencia lleva `Prescindible` y `repeat_times = 1`.
 - Filtro por omisión del lienzo: lineal con mipmaps (`rendering/textures/canvas_textures/default_texture_filter` = 2 en `project.godot`).
 - Hojas de efectos del núcleo (`nucleo/arte/efecto_*.png`: curar, curar al frente, bola y parry): van sin mipmaps y fuera de `CARPETAS_ARTE_MUNDO` a propósito; son efectos de pantalla, no arte de sala. No se cambia su importación.
-- Atlas del jugador: `nucleo/arte/jugador_hombre/atlas_0.png`, una página con los cuadros del hombre a 1x y 8 px entre ellos, Lossless y «Fix Alpha Border» encendido (las hojas de origen llegaron en JPG, `importing_images.rst:423-433`). Cada cuadro es un `AtlasTexture` con `region` justa, `filter_clip` y el lienzo común de 316 × 182 en `margin` (`margin.position` lo coloca; `margin.size` completa el lienzo, así todos miden lo mismo, `classes/class_atlastexture.rst:102`). El `SpriteFrames` (`jugador_hombre.tres`) lo escribe `herramientas/generar_sprites.tscn` con `guardar_con_uids` de `herramientas/validar.gd` (fuera del editor `ResourceSaver` no escribe los uid; ver `docs/contrato.md`, «Sala», uid), tras reimportar el atlas (comando en su cabecera), y conserva los metadatos del anterior que el atlas no trae (`pasos`: por animación, los cuadros en que un pie toca el suelo). La página y el JSON que lee `generar_sprites` salen de un script que vive fuera del repo con las hojas originales, que no entran: desde un clon no se rehace el atlas, y un cambio en las animaciones del jugador pasa por el responsable del arte (decisión del 28-oct-2026). Va sin mipmaps y fuera de `CARPETAS_ARTE_MUNDO`.
+- Atlas del jugador: `nucleo/arte/jugador_hombre/atlas_0.png`, una página con los cuadros del hombre a 1x y 8 px entre ellos, Lossless y «Fix Alpha Border» encendido (las hojas de origen llegaron en JPG, `importing_images.rst:423-433`). Cada cuadro es un `AtlasTexture` con `region` justa, `filter_clip` y el lienzo común de 316 × 182 en `margin` (`margin.position` lo coloca; `margin.size` completa el lienzo, así todos miden lo mismo, `classes/class_atlastexture.rst:102`). El `SpriteFrames` (`jugador_hombre.tres`) lo escribe `herramientas/generar_sprites.tscn` con `guardar_con_uids` de `herramientas/validar.gd` (fuera del editor `ResourceSaver` no escribe los uid; ver `docs/validador.md`, «uid de escenas y recursos»), tras reimportar el atlas (comando en su cabecera), y conserva los metadatos del anterior que el atlas no trae (`pasos`: por animación, los cuadros en que un pie toca el suelo). La página y el JSON que lee `generar_sprites` salen de un script que vive fuera del repo con las hojas originales, que no entran: desde un clon no se rehace el atlas, y un cambio en las animaciones del jugador pasa por el responsable del arte. Va sin mipmaps y fuera de `CARPETAS_ARTE_MUNDO`.
 
 ## Arte de zona
 
-Criterio para el arte de las salas de una zona (decidido el 27-oct-2026). Lo mecánico (tamaños, importación,
-presupuesto, uid, escala no uniforme, imágenes sin uso) lo revisa el validador («Recursos» y `docs/contrato.md`, «Sala»); aquí queda lo
+Criterio para el arte de las salas de una zona. Lo mecánico (tamaños, importación,
+presupuesto, uid, escala no uniforme, imágenes sin uso) lo revisa el validador («Recursos» y `docs/validador.md`); aquí queda lo
 que se decide mirando.
 
 - Capas: la misma escalera en todas las salas con fondo, `scroll_scale.x` y `z_index`: profundo 0,05 (−100), lejana
@@ -65,13 +65,13 @@ que se decide mirando.
   dos ejes (`classes/class_parallax2d.rst:22`). Las capas de fondo se exportan reducidas («Recursos», receta del
   arte).
 - Color: lo que lastima tiene puntas y es cálido; el turquesa queda para lo vivo (hongos, raíces que no dañan).
-  Excepción (27-oct-2026): en la bajada hacia Las Raíces, los peligros toman el color de la zona a la que llevan: las
+  Excepción: en la bajada hacia Las Raíces, los peligros toman el color de la zona a la que llevan: las
   espinas de la sala 4 de La Celda, cuando entren (hoy no tienen un uso claro y no están en la sala), llevan
   puntas turquesa (`#5fe0c8`, brillo `#b8fff0`), como sus hongos. Un
   peligro se distingue del fondo por valor y color, siempre tiene una señal que se ve entre una ráfaga y otra (una
   `LuzSala` chica o el dibujo encendido, no solo chispas), y su forma de daño sigue al
   dibujo, un poco más chica.
-- Lo que se pisa o se salta (28-oct-2026, tras una prueba con jugadores en el S50): una pieza con colisión nunca
+- Lo que se pisa o se salta: una pieza con colisión nunca
   reutiliza arte de decoración ni de fondo (en `celda_2` la columna que se salta era el pie de la columna de la pared
   y se leía como fondo). Lleva arte propio de pieza jugable: contorno más grueso, la cara de arriba iluminada y un
   acento cálido que la separa de la decoración. Se apoya en el piso con escombros o losa rota en la base, hundida unos
@@ -81,17 +81,17 @@ que se decide mirando.
   material sin sombreado, como Hollow Knight. Lo que se apoya en el piso no asoma más de 40 px por encima de él (no
   tapa los pies del jugador); lo que cuelga del techo (cadenas, cables, raíces) baja desde arriba de la vista y no
   llega a la altura de la cabeza del jugador sobre el piso por donde se camina. El `modulate` se hereda a los hijos (`classes/class_canvasitem.rst:645`): lo que debe brillar
-  delante (chispas) va en su propio nodo, fuera de `Frente`. Excepción (28-oct-2026): el frente de `celda_1` conserva
+  delante (chispas) va en su propio nodo, fuera de `Frente`. Excepción: el frente de `celda_1` conserva
   sus siluetas propias (`s_*` y `frente_mesa`, a su escala), más altas que 40 px, por decisión de la persona.
 - Escala de capa: exacta y uniforme, la que compensa su exportación (media ×2, lejana ×4, profundo ×8; el frente, la de la pieza del kit que repite); si
   una pieza no cubre el ancho, se repite (`repeat_size` o `region`), no se estira. Una sala de más de una pantalla de
   alto pone `scroll_scale.y` igual a `x` en sus capas, y recoloca lo que va apoyado en el piso de la capa: con la
   cámara con su borde de arriba en T, una pieza puesta en Y dentro de la capa se ve en pantalla en
-  Y − `scroll_scale.y` · T (la regla de desplazamiento de `docs/contrato.md`, «Sala»), así que una silueta del frente se coloca en la Y que la apoya en el piso
+  Y − `scroll_scale.y` · T (la regla de desplazamiento de `docs/sala.md`), así que una silueta del frente se coloca en la Y que la apoya en el piso
   visible desde la altura de cámara en que se ve.
 - Bordes: todo borde de capa o de pared que la cámara alcanza a ver termina en una pieza de orilla o en negro con
   degradado, nunca en un corte recto; si no hay pieza, se recortan los `limites` a donde acaba el arte.
-- Huecos y roturas (28-oct-2026, salas 2, 3 y 5 de La Celda, probado en el S50): un hueco en losa, techo o pared
+- Huecos y roturas: un hueco en losa, techo o pared
   lleva a cada lado una pieza de orilla rota (concreto con varillas, `orilla_hueco.png`, con el lado que toca la losa
   fundido a transparente para que se funda con el techo o el piso de debajo), volteada con `flip_h` y `flip_v` según
   el lado y con un `modulate` medido para que su tono sea el de la losa en la captura. Si el hueco lo abre un
@@ -105,7 +105,7 @@ que se decide mirando.
   el límite de la sala (`celda_5`, `BajoPiso`), en vez de un `ColorRect` negro con orilla recta.
 - Lo que cuelga del techo (columnas, capiteles) se apoya en la cara de la losa, no en la orilla de abajo de las vigas:
   en `techo.png` la losa termina en la fila 74 y las vigas en la 111.
-- Lo que se pisa no se marca con una orilla aparte (`docs/contrato.md`, «Sala», «Suelos y plataformas»): la superficie la dice el dibujo,
+- Lo que se pisa no se marca con una orilla aparte (`docs/sala.md`, «Suelos y plataformas»): la superficie la dice el dibujo,
   y la forma de colisión coincide con su borde.
 - Kit: una zona nueva se pide como kit desde el principio: tiras de pared, piso y techo que se repiten sin costura
   (con `region` y `texture_repeat`), piezas de orilla, de 10 a 20 calcomanías y pocas piezas únicas. La Celda se queda
@@ -140,10 +140,11 @@ que se decide mirando.
 
 Cifras medidas en el Senwa S50 (y en el equipo indicado) que sostienen las reglas de arriba. Al medir de nuevo, se anota aquí o en `docs/pruebas.md`.
 
-- Presupuesto de partículas: se subió el 25-oct-2026 desde 3 emisores y 60 partículas a los actuales; en La Celda, 13 emisores y ~100 partículas costaron menos de 1 FPS en el S50, medido A/B quitándolas.
+- Presupuesto de partículas: en La Celda, 13 emisores y ~100 partículas costaron menos de 1 FPS en el S50, medido A/B quitándolas.
 - `Fondo` opaco (13-oct-2026): dos salas de pruebas bajaban de 60 a ~50 FPS con él (detalle en `docs/pruebas.md`, «Medir antes de optimizar»; no se separó cuánto es de cada rectángulo).
-- Mipmaps del arte del mundo (13-oct-2026, sala de arte): 34,1 → 34,3 FPS y el APK +1,8 MB. Excepción de VRAM: decidida el 13-oct-2026.
+- Mipmaps del arte del mundo (13-oct-2026, sala de arte): 34,1 → 34,3 FPS y el APK +1,8 MB.
 - Receta del arte de una sala (La Celda, 25-oct-2026): las capas reducidas no subieron los FPS (bajan la memoria de video y el APK); las nueve optimizaciones solas casi no se notaban y juntas llevaron la sala de 19 a 52,6 FPS.
 - Medido en bajo (26-oct-2026): las PejeCoins sueltas redibujadas en vector cada cuadro bajaban las salas con PejeCoins de 59,7 a 37-40 FPS; la capa lejana translúcida costaba unos 7-10 FPS donde se veía; ni los draw calls ni el tamaño de las texturas decidían los FPS.
 - Hojas de efectos del núcleo (28-oct-2026): suman 8,9 MB de RGBA sin comprimir (cálculo de sus medidas) y los mipmaps agregarían unos 3 MB.
 - Atlas del jugador (21-oct-2026; rehecho el 24-oct con el ataque vertical a su escala y la muerte apoyada en el suelo): una página de 2020 × 668 con los 61 cuadros. Medido en el S50 (APK de desarrollo, 60 s por escena tras 5 s): sin mipmaps, 59,6 FPS de media en la sala de recursos, en la zona de pruebas y en la de movimiento (mínimo 58-59), con 146,7, 141,9 y 146,0 MB de PSS; con mipmaps, las mismas medias y mínimos, con 146,9, 141,2 y 147,0 MB, y el APK +0,27 MB. Antes del cambio (18-oct-2026), recursos y zona daban 59,6 con 144,0 y 142,1 MB.
+- Proceso en reposo, con 300 nodos en el S50: `Golpeable` 8,9 µs por nodo y tick, `Cortable` 14,8 µs, `LuzSala` con `DESTELLO` apagado 50,9 µs. Con lo que hay en una sala (unos pocos) queda muy por debajo del umbral de 0,5 ms por cuadro, así que siguen con su proceso activo.

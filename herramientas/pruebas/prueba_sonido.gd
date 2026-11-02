@@ -12,7 +12,7 @@ var _picadas: int = 0
 
 
 func _ready() -> void:
-	# Sonido es hija de un autoload: siempre existe (tutorials/scripting/singletons_autoload.rst:30).
+	# Sonido es hija de un autoload: siempre existe (tutorials/scripting/singletons_autoload.rst).
 	var sonido: Sonido = Arranque.sonido
 	var reproductor: AudioStreamPlayer = sonido.get_node_or_null(^"Voces") as AudioStreamPlayer
 	var polifonico: AudioStreamPolyphonic = reproductor.stream as AudioStreamPolyphonic if reproductor != null else null
@@ -198,7 +198,7 @@ func _sin_efecto(sonido: Sonido) -> void:
 
 # Solo con pantalla: play_stream toca un Randomizer, un sonido largo no lo corta una tanda de pasos y con las voces
 # llenas se descarta el nuevo sin cortar el viejo. Todo en el mismo tick y sin espera entre iguales: con ventana los
-# ticks no van a tiempo real (unos 100 ms cada uno al arrancar, medido el 27-oct-2026) y el porton (2,6 s) acabaria
+# ticks no van a tiempo real (unos 100 ms cada uno al arrancar) y el porton (2,6 s) acabaria
 # solo.
 func _con_pantalla(sonido: Sonido) -> void:
 	var espera: int = sonido.ticks_entre_iguales

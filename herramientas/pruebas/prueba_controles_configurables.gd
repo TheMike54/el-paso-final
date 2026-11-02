@@ -96,8 +96,7 @@ func _toques() -> void:
 	d.colocar(SALTAR, nuevo, c.size, Rect2(Vector2.ZERO, c.size), 0.0)
 	Ajustes.disposicion = d
 	# process_frame llega antes del _process de los nodos: hacen falta dos cuadros.
-	await get_tree().process_frame
-	await get_tree().process_frame
+	await _esperar_cuadros(2)
 	_caso("los controles toman la disposicion nueva sin recargar la sala", c.centro(&"saltar").is_equal_approx(nuevo))
 	_tocar(c, 0, nuevo, true)
 	_caso("un toque sobre el boton movido acciona su accion", Input.is_action_pressed(&"saltar"))

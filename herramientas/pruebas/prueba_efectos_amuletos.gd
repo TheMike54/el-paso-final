@@ -1,8 +1,7 @@
-# Comprueba los cuatro efectos con las escenas reales del jugador y del enemigo.
-# Mide las funciones y contadores del jugador sin avanzar su fisica, para aislar las cuentas del congelado.
-# Pone y quita cada amuleto por Partida en el mismo jugador: asi comprueba tambien la renovacion del cache.
-# El botin se vence en un tick de fisica y se recoge despues de su alta diferida, con guardado aislado.
 extends "res://herramientas/pruebas/prueba_base.gd"
+# Comprueba los efectos de amuletos en escenas reales, con la fisica del jugador detenida para aislar las cuentas.
+# Equipar y quitar cada amuleto verifica que el cache se renueva y que se recuperan los valores base.
+# Espera la creacion diferida del botin y comprueba su recogida con guardado aislado de la partida habitual.
 
 const ESCENA_JUGADOR: PackedScene = preload("res://nucleo/jugador.tscn")
 const ESCENA_ENEMIGO: PackedScene = preload("res://nucleo/enemigo.tscn")
@@ -66,11 +65,11 @@ func _comprobar(amuleto: StringName, jugador: Jugador, efecto: FichaAmuleto, eta
 					is_equal_approx(jugador.velocity.x, jugador.velocidad * efecto.velocidad_factor))
 		&"amuleto_escudo":
 			jugador.vidas = Partida.vidas_maximas
-			jugador._ticks_sin_dano = 0
+			jugador.ticks_sin_dano = 0
 			jugador.recibir_dano(1, jugador.global_position.x - 100.0)
 			_caso("invulnerabilidad tras dano: %s" % etapa,
 					jugador.vidas == Partida.vidas_maximas - 1
-					and jugador._ticks_sin_dano == jugador.ticks_invulnerable + efecto.invulnerable_extra)
+					and jugador.ticks_sin_dano == jugador.ticks_invulnerable + efecto.invulnerable_extra)
 		&"amuleto_inspiracion":
 			_comprobar_inspiracion(jugador, efecto, etapa)
 		&"amuleto_botin":
@@ -120,7 +119,7 @@ func _comprobar_inspiracion(jugador: Jugador, efecto: FichaAmuleto, etapa: Strin
 	objeto.free()
 
 	jugador._golpeados.clear()
-	jugador._ticks_sin_dano = 0
+	jugador.ticks_sin_dano = 0
 	enemigo = _crear_enemigo()
 	var ataque: AtaqueEnemigo = AtaqueEnemigo.crear(Rect2(-40.0, -80.0, 80.0, 80.0), 0, 1, true)
 	ataque.con_trazo = false
@@ -129,7 +128,7 @@ func _comprobar_inspiracion(jugador: Jugador, efecto: FichaAmuleto, etapa: Strin
 	_caso("el golpe del parry al enemigo da Inspiracion: %s" % etapa,
 			Partida.inspiracion == esperado and enemigo.vida == enemigo.ficha.vida - jugador.dano_ataque)
 	_caso("el parry conserva su invulnerabilidad propia: %s" % etapa,
-			jugador._ticks_sin_dano == jugador.ticks_invulnerable_parry)
+			jugador.ticks_sin_dano == jugador.ticks_invulnerable_parry)
 	enemigo.free()
 
 
@@ -141,8 +140,7 @@ func _comprobar_botin(jugador: Jugador, efecto: FichaAmuleto, etapa: String) -> 
 	# _soltar_botin consulta el suelo: se vence en fisica y se espera el add_child diferido.
 	await get_tree().physics_frame
 	enemigo.golpeable.recibir_golpe(jugador, enemigo.ficha.vida)
-	await get_tree().process_frame
-	await get_tree().process_frame
+	await _esperar_cuadros(2)
 	var monedas: MonedasSueltas = _mundo.get_node_or_null(NodePath(id_botin)) as MonedasSueltas
 	var cantidad: int = monedas.cantidad if monedas != null else -1
 	if monedas != null:
@@ -155,7 +153,6 @@ func _comprobar_botin(jugador: Jugador, efecto: FichaAmuleto, etapa: String) -> 
 	antes = Partida.monedas
 	await get_tree().physics_frame
 	enemigo.golpeable.recibir_golpe(jugador, enemigo.ficha.vida)
-	await get_tree().process_frame
-	await get_tree().process_frame
+	await _esperar_cuadros(2)
 	_caso("botin cero no crea monedas: %s" % etapa,
 			not _mundo.has_node(NodePath(id_botin)) and Partida.monedas == antes)

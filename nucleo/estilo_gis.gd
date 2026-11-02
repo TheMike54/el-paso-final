@@ -2,7 +2,7 @@ class_name EstiloGis
 extends StyleBox
 # Trazo de gis de los menus, como StyleBox para que cualquier Button lo herede del tema sin cambiar cada menu (las
 # formas, en Forma). Un StyleBox no conoce el texto del boton: el subrayado va de lado a lado del contenido y las
-# flechitas de LADOS van en las orillas (classes/class_stylebox.rst:180). Los trazos tiemblan con una semilla que sale
+# flechitas de LADOS van en las orillas (classes/class_stylebox.rst). Los trazos tiemblan con una semilla que sale
 # del tamano: no cambian al redibujar.
 
 enum Forma {
@@ -21,6 +21,7 @@ const TEMBLOR: float = 1.4
 ## Largo de la flechita del foco y de la de Volver, y su lugar desde la orilla izquierda: Tema deja ese margen.
 const ANCHO_FLECHA: float = 30.0
 const MARGEN_FLECHA: float = 6.0
+const GROSOR_FLECHA: float = 3.4
 
 var forma: Forma = Forma.MARCA
 var color: Color = Color.WHITE
@@ -47,17 +48,17 @@ func _draw(to_canvas_item: RID, rect: Rect2) -> void:
 	match forma:
 		Forma.MARCA:
 			var punta: Vector2 = Vector2(rect.position.x + MARGEN_FLECHA + ANCHO_FLECHA, medio)
-			_trazo(to_canvas_item, azar, punta - Vector2(ANCHO_FLECHA, -1.0), punta, 3.4, 1.0)
-			_trazo(to_canvas_item, azar, punta + Vector2(-12.0, -10.0), punta, 3.4, 0.8)
-			_trazo(to_canvas_item, azar, punta + Vector2(-12.0, 11.0), punta, 3.4, 0.8)
+			_trazo(to_canvas_item, azar, punta - Vector2(ANCHO_FLECHA, -1.0), punta, GROSOR_FLECHA, 1.0)
+			_trazo(to_canvas_item, azar, punta + Vector2(-12.0, -10.0), punta, GROSOR_FLECHA, 0.8)
+			_trazo(to_canvas_item, azar, punta + Vector2(-12.0, 11.0), punta, GROSOR_FLECHA, 0.8)
 			_subrayar(to_canvas_item, azar, rect)
 		Forma.SUBRAYADO:
 			_subrayar(to_canvas_item, azar, rect)
 		Forma.ATRAS:
 			var punta: Vector2 = Vector2(rect.position.x + MARGEN_FLECHA, medio)
-			_trazo(to_canvas_item, azar, punta + Vector2(ANCHO_FLECHA, 0.0), punta, 3.4, 1.0)
-			_trazo(to_canvas_item, azar, punta + Vector2(12.0, -11.0), punta, 3.4, 0.8)
-			_trazo(to_canvas_item, azar, punta + Vector2(12.0, 11.0), punta, 3.4, 0.8)
+			_trazo(to_canvas_item, azar, punta + Vector2(ANCHO_FLECHA, 0.0), punta, GROSOR_FLECHA, 1.0)
+			_trazo(to_canvas_item, azar, punta + Vector2(12.0, -11.0), punta, GROSOR_FLECHA, 0.8)
+			_trazo(to_canvas_item, azar, punta + Vector2(12.0, 11.0), punta, GROSOR_FLECHA, 0.8)
 		Forma.CAJA:
 			if fondo.a > 0.0:
 				RenderingServer.canvas_item_add_rect(to_canvas_item, rect, fondo)
@@ -71,13 +72,13 @@ func _draw(to_canvas_item: RID, rect: Rect2) -> void:
 		Forma.LADOS:
 			# La flechita de MARCA a la izquierda y su espejo a la derecha, las dos hacia el texto.
 			var izquierda: Vector2 = Vector2(rect.position.x + MARGEN_FLECHA + ANCHO_FLECHA, medio)
-			_trazo(to_canvas_item, azar, izquierda - Vector2(ANCHO_FLECHA, -1.0), izquierda, 3.4, 1.0)
-			_trazo(to_canvas_item, azar, izquierda + Vector2(-12.0, -10.0), izquierda, 3.4, 0.8)
-			_trazo(to_canvas_item, azar, izquierda + Vector2(-12.0, 11.0), izquierda, 3.4, 0.8)
+			_trazo(to_canvas_item, azar, izquierda - Vector2(ANCHO_FLECHA, -1.0), izquierda, GROSOR_FLECHA, 1.0)
+			_trazo(to_canvas_item, azar, izquierda + Vector2(-12.0, -10.0), izquierda, GROSOR_FLECHA, 0.8)
+			_trazo(to_canvas_item, azar, izquierda + Vector2(-12.0, 11.0), izquierda, GROSOR_FLECHA, 0.8)
 			var derecha: Vector2 = Vector2(rect.end.x - MARGEN_FLECHA - ANCHO_FLECHA, medio)
-			_trazo(to_canvas_item, azar, derecha + Vector2(ANCHO_FLECHA, -1.0), derecha, 3.4, 1.0)
-			_trazo(to_canvas_item, azar, derecha + Vector2(12.0, -10.0), derecha, 3.4, 0.8)
-			_trazo(to_canvas_item, azar, derecha + Vector2(12.0, 11.0), derecha, 3.4, 0.8)
+			_trazo(to_canvas_item, azar, derecha + Vector2(ANCHO_FLECHA, -1.0), derecha, GROSOR_FLECHA, 1.0)
+			_trazo(to_canvas_item, azar, derecha + Vector2(12.0, -10.0), derecha, GROSOR_FLECHA, 0.8)
+			_trazo(to_canvas_item, azar, derecha + Vector2(12.0, 11.0), derecha, GROSOR_FLECHA, 0.8)
 		Forma.ADORNO:
 			_adorno(to_canvas_item, azar, rect)
 		Forma.FRANJA:

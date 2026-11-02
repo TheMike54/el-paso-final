@@ -2,8 +2,7 @@ class_name PanelAudio
 extends VBoxContainer
 # Panel de audio de Configuracion (el nodo PanelAudio de configuracion.tscn): tres filas de volumen (general, musica y
 # efectos) con su barra ancha, su porcentaje y un altavoz que silencia, y el boton de probar un efecto; mientras el panel
-# esta abierto le pide a Musica un tema para probar si no se oye ninguno. Aparte de Configuracion para que esta no cargue con todo (M6 de
-# planes/cerrados/nucleo-auditoria-7-menus.md); guardar los ajustes sigue siendo de Configuracion, a la que avisa con barra_movida y barra_soltada.
+# esta abierto le pide a Musica un tema para probar si no se oye ninguno. Aparte de Configuracion para que esta no cargue con todo; guardar los ajustes sigue siendo de Configuracion, a la que avisa con barra_movida y barra_soltada.
 
 ## Una barra cambio de valor (aplicado ya en Ajustes): Configuracion lo anota como sin guardar.
 signal barra_movida()
@@ -49,6 +48,8 @@ func poner_valores() -> void:
 	_barras["General"].value = roundf(Ajustes.volumen * 100.0)
 	_barras["Musica"].value = roundf(Ajustes.volumen_musica * 100.0)
 	_barras["Efectos"].value = roundf(Ajustes.volumen_efectos * 100.0)
+	for nombre: String in _barras:
+		_porcentajes[nombre].text = "%d %%" % roundi(_barras[nombre].value)
 
 
 ## La primera barra, la del volumen general: toma el foco al abrir el panel.

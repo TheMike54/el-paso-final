@@ -10,7 +10,7 @@ const TICKS_APLICAR: int = 2
 
 
 func _ready() -> void:
-	# Musica es hija de un autoload: siempre existe (tutorials/scripting/singletons_autoload.rst:30).
+	# Musica es hija de un autoload: siempre existe (tutorials/scripting/singletons_autoload.rst).
 	var musica: Musica = Arranque.musica
 	var en_bus: bool = musica.get_child_count() == 2
 	for hijo: Node in musica.get_children():

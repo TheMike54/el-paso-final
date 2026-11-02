@@ -1,7 +1,8 @@
 class_name LineaDialogo
 extends Resource
-# Una linea de una conversacion: quien habla, que dice y, si pregunta algo, sus opciones en fila con el destino de
-# cada una. Es dato, no codigo: el texto lo cambia quien escribe sin tocar el nucleo (lo usa CajaDialogo).
+# Una linea de conversacion contiene quien habla, el texto y sus opciones.
+# Es dato, no codigo: se cambia sin tocar el nucleo.
+# CajaDialogo la presenta y sigue sus destinos.
 
 ## Destinos especiales de una opcion: terminar contando la conversacion, o terminar sin contarla (se repite).
 const FIN: int = -1

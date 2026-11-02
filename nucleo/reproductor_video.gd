@@ -1,16 +1,15 @@
 class_name ReproductorVideo
 extends AspectRatioContainer
-# Video a pantalla completa sin deformar (tutorials/animation/playing_videos.rst:62-80). En Android, el .mp4 H.264 por
-# el decodificador del telefono: MediaPlayer dibuja en una SurfaceTexture atada a una ExternalTexture, armado desde
-# GDScript con JavaClassWrapper (sin plugin; prueba V0 del 25-oct-2026, planes nucleo-video-hardware). En la PC, el
-# .ogv con Theora, que no viaja en el APK; si el telefono no puede, la imagen de respaldo (un video sin bucle termina
-# al momento). Sin ventana (guiones), nada: un video sin bucle termina a los DURACION_SIN_VENTANA s. Lo usan el menu y la Cinematica.
+# Video a pantalla completa sin deformar para el menu y la Cinematica (tutorials/animation/playing_videos.rst).
+# Android usa el decodificador H.264 del telefono via MediaPlayer y JavaClassWrapper, sin plugin, para reducir el costo.
+# En PC usa Theora (.ogv, fuera del APK); si no puede reproducir, muestra el respaldo y sin bucle termina al momento.
+# Sin ventana no reproduce: un video sin bucle termina a los DURACION_SIN_VENTANA s para poder comprobarlo en guiones.
 
 signal terminado
 
 const SHADER_EXTERNO: String = "res://nucleo/arte/video_externo.gdshader"
 const SHADER_DESENFOQUE: String = "res://nucleo/arte/video_desenfoque.gdshader"
-## Division del fondo desenfocado: el video se reduce a 1/8 de la pantalla (elegido en el S50 el 25-oct-2026).
+## Division del fondo desenfocado: el video se reduce a 1/8 de la pantalla.
 const DIVISION_DESENFOQUE: int = 8
 ## Lo que dura un video sin bucle sin ventana: no al momento, para que el puerto de depuracion alcance a ver la
 ## escena que lo reproduce antes de que cambie (un guion empieza contando cuadros en la escena de su linea «escena»).
@@ -21,7 +20,7 @@ const CARPETA_COPIAS: String = "user://video/"
 const ESPERA_TEXTURA: int = 120
 ## Vigilante de un video sin bucle: cada REVISAR_CADA s lee la posicion de MediaPlayer; si no avanza en SIN_AVANCE s
 ## de reproduccion (se trabo sin error, o termino sin avisar), termina igual. No compara con la duracion: en el S50
-## el video va un poco detras del reloj y un margen fijo cortaba el final (25-oct-2026). Pausa y segundo plano no
+## el video va un poco detras del reloj y un margen fijo cortaba el final. Pausa y segundo plano no
 ## cuentan.
 const REVISAR_CADA: float = 1.0
 const SIN_AVANCE: float = 5.0
@@ -54,7 +53,7 @@ var _desde_revision: float = 0.0
 ## Contenedor con el video de ruta_base (sin extension: <ruta_base>.mp4, <ruta_base>.ogv y, si lo hay, la imagen de
 ## respaldo <ruta_base>.jpg para cuando no se puede reproducir ninguno). modo: STRETCH_COVER llena
 ## la pantalla recortando (menu); STRETCH_WIDTH_CONTROLS_HEIGHT ocupa todo el ancho (cinematica,
-## classes/class_aspectratiocontainer.rst:68).
+## classes/class_aspectratiocontainer.rst).
 static func crear(ruta_base: String, bucle: bool, modo: AspectRatioContainer.StretchMode) -> ReproductorVideo:
 	var video: ReproductorVideo = ReproductorVideo.new()
 	video.name = &"Video"
@@ -109,7 +108,7 @@ func reproducir() -> void:
 		_reproducir_respaldo()
 		return
 	# La ExternalTexture recien creada no tiene id hasta que la crea el hilo de dibujo; sin la extension que pide
-	# (classes/class_externaltexture.rst:24) no llegaria nunca: tras ESPERA_TEXTURA cuadros, el respaldo.
+	# (classes/class_externaltexture.rst) no llegaria nunca: tras ESPERA_TEXTURA cuadros, el respaldo.
 	var espera: int = 0
 	while is_inside_tree() and _externa.get_external_texture_id() == 0 and espera < ESPERA_TEXTURA:
 		espera += 1
@@ -156,7 +155,7 @@ func pausar(si: bool) -> void:
 ## El fondo desenfocado de Configuracion, congelado: el video se dibuja una vez a media pantalla (una sola lectura de
 ## la textura del decodificador por px: leerla varias veces costaba hasta 26 FPS en el S50), se reduce a 1/8 y se
 ## desenfoca en una pasada, y se estira con filtro lineal; el video se pausa mientras tanto. En el S50: menu 52,7 FPS,
-## con Configuracion y el desenfoque 55,1 (25-oct-2026). Falso lo quita y sigue el video.
+## con Configuracion y el desenfoque 55,1. Falso lo quita y sigue el video.
 func desenfocar(si: bool) -> void:
 	if _borroso != null:
 		_borroso.queue_free()
@@ -318,7 +317,7 @@ func _armar_lienzo() -> void:
 
 
 # SurfaceTexture(id) -> Surface -> MediaPlayer, con el .mp4 copiado a user://. Falso si un paso falla: el llamador
-# pasa al respaldo. Cada llamada se revisa con JavaClassWrapper.get_exception (classes/class_javaclasswrapper.rst:36).
+# pasa al respaldo. Cada llamada se revisa con JavaClassWrapper.get_exception (classes/class_javaclasswrapper.rst).
 func _armar_medios(id: int) -> bool:
 	var archivo: String = _copiar(_ruta + ".mp4")
 	if archivo.is_empty():
@@ -332,7 +331,7 @@ func _armar_medios(id: int) -> bool:
 	_medios = JavaClassWrapper.wrap("android.media.MediaPlayer").call(&"MediaPlayer") as Object
 	if not _bien("MediaPlayer"):
 		return false
-	# Un solo proxy atiende el fin y el error (classes/class_javaclasswrapper.rst:78).
+	# Un solo proxy atiende el fin y el error (classes/class_javaclasswrapper.rst).
 	var oyente: Object = JavaClassWrapper.create_proxy(self,
 			["android.media.MediaPlayer$OnCompletionListener", "android.media.MediaPlayer$OnErrorListener"])
 	return (_llamar(&"setDataSource", [ProjectSettings.globalize_path(archivo)])
@@ -346,7 +345,7 @@ func _armar_medios(id: int) -> bool:
 
 # Copia el .mp4 del paquete a user:// si no esta o si cambio su tamano (otra version del APK). Devuelve la copia o
 # vacio si fallo. 13 MB tardan 122 ms en el S50, una sola vez. No usa Archivo.copiar_atomico: DirAccess.copy_absolute
-# no abre un archivo del paquete del APK (sparse pack, probado en el S50 el 25-oct-2026). Una copia cortada no se
+# no abre un archivo del paquete del APK (sparse pack). Una copia cortada no se
 # queda: su tamano no coincide y se vuelve a copiar.
 func _copiar(origen: String) -> String:
 	var destino: String = CARPETA_COPIAS + origen.get_file()

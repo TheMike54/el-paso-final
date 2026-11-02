@@ -33,6 +33,22 @@ func _esperar(ticks: int) -> void:
 		await get_tree().physics_frame
 
 
+# Espera cuadros de dibujo para el trabajo diferido de la interfaz.
+func _esperar_cuadros(cuadros: int) -> void:
+	for i: int in range(cuadros):
+		await get_tree().process_frame
+
+
+func _poner(jugador: Jugador, punto: Vector2) -> void:
+	jugador.global_position = punto
+	jugador.velocity = Vector2.ZERO
+
+
+# Espera hasta la recolocacion por peligro; extra conserva el margen de cada prueba.
+func _esperar_fundido(extra: int = 0) -> void:
+	await _esperar(Fundido.TICKS_OSCURECER + Fundido.TICKS_EN_NEGRO_PELIGRO + extra)
+
+
 ## Presiona una accion dos ticks y la suelta, como un toque corto.
 func _presionar(accion: StringName) -> void:
 	Input.action_press(accion)
@@ -115,9 +131,9 @@ func _iconos(raiz: Node) -> Array[IconoBoton]:
 	return iconos
 
 
-## Anota el ultimo dispositivo como lo haria un evento real (control o toque). Los iconos lo ven en el acto por el bus
-## (Eventos.dispositivo_cambiado); se siguen esperando los dos cuadros que pedia el sondeo de antes, para no cambiar lo
-## que miran los casos que la usan.
+## Anota el ultimo dispositivo como lo haria un evento real (control o toque).
+## Los iconos lo ven en el acto por el bus (Eventos.dispositivo_cambiado); los dos cuadros de espera se conservan para
+## no cambiar lo que miran los casos que la usan.
 func _usar(con_control: bool) -> void:
 	if con_control:
 		var boton: InputEventJoypadButton = InputEventJoypadButton.new()
@@ -127,8 +143,7 @@ func _usar(con_control: bool) -> void:
 		var toque: InputEventScreenTouch = InputEventScreenTouch.new()
 		toque.pressed = true
 		UltimaEntrada.anotar(toque)
-	await get_tree().process_frame
-	await get_tree().process_frame
+	await _esperar_cuadros(2)
 
 
 ## true si todos los iconos estan visibles (o todos ocultos, con visibles = false) y hay al menos uno.
@@ -155,7 +170,12 @@ func _aislar_partida(ruta: String = Partida.RUTA_PRUEBAS) -> void:
 func _restaurar_partida() -> void:
 	Partida.reiniciar()
 	Partida.ruta_guardado = _ruta_real
-	for ruta: String in [_ruta_aislada, _ruta_aislada + ".tmp"]:
+	_borrar_archivos(_ruta_aislada)
+
+
+# Borra el archivo y el temporal de Archivo.escribir_atomico.
+func _borrar_archivos(base: String) -> void:
+	for ruta: String in [base, base + ".tmp"]:
 		if FileAccess.file_exists(ruta):
 			DirAccess.remove_absolute(ruta)
 

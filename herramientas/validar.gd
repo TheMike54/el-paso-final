@@ -1,35 +1,20 @@
 extends Node
-# Carga cada script, escena y recurso del proyecto con los autoloads activos
-# y sale con 1 si alguno no carga. Imprime solo los fallos y un resumen.
-# Existe porque Godot sale con 0 aunque un script no compile. Ademas revisa las salas con id (contenido/salas y
-# las zonas de prueba): id igual al archivo, puertas de ida y vuelta, bancos con su id, Entrada dentro y
-# objetos recordados (suelo fragil, recogibles, npc, reto de preguntas) con id unico. Revisa tambien la forma de
-# cada FichaDialogo y FichaPregunta, y de los Npc y RetoPreguntas de cualquier escena. En cualquier escena, un DanoContacto que se mueve
-# (dentro de un Vaiven, un Giro, un enemigo o un cuerpo que se mueve) no puede ser peligro, y ningun cuerpo de fisica va
-# dentro de un Vaiven o un Giro. Cada ZonaCamara lleva su forma hija y, en una sala, limites con area dentro de los de
-# la sala. Toda ruta de nodo guardada para una variable de script resuelve; las tapas y lo que descubre un
-# MuroRompible son dibujos fuera de el, y lo que descubre no tiene fisica. Las tablas de la zona de pruebas
-# (GRUPOS y OCULTAS) solo nombran escenas que existen. Ninguna imagen pasa de 2048 px por lado. Cada puerta lleva a un
-# destino que existe, por id si es una sala con id; cada puerta en el borde lleva su pared detras; cada id de habilidad esta en Habilidades.TODAS; el arte del
-# mundo se importa con mipmaps y en VRAM solo sin transparencia. En los bloques del juego cada ext_resource lleva el uid
-# de su destino. La unica una via es una PlataformaDelgada fija; las salas con id empiezan sus limites en (0, 0) y no se
-# enciman en el mapa; un FondoTapado se ve en algun punto; RegionMusica lleva su forma hija y todo tema se repite.
-# Ademas imprime avisos (AVISO, no fallan): imagen de contenido/ sin uso, queue_redraw sin guarda en _process, nodo
-# oculto, colision apagada o escala no uniforme en contenido/ y halos de LuzSala que pasan el presupuesto de capas.
+# Carga scripts, escenas y recursos con los autoloads activos y comprueba las reglas de docs/validador.md.
+# Existe porque Godot sale con 0 aunque un script no compile.
+# Imprime fallos, avisos y un resumen; sale con 1 si hay fallos. Los avisos no hacen fallar.
 const IGNORAR: PackedStringArray = ["addons", "build"]
 const CAMPOS_TEXTO: PackedStringArray = ["id", "que", "comprobacion"]
 const INDICE_MAPA: String = "res://mapa/indice_salas.gd"
 const ZONA_PRUEBAS: String = "res://herramientas/salas/zona_pruebas.gd"
 ## Carpetas donde cada sala lleva id y vive en <carpeta>/<zona>/<id>.tscn.
 const CARPETAS_SALAS: PackedStringArray = [Sala.CARPETA_CONTENIDO, Sala.CARPETA_PRUEBAS]
-# Ninguna textura de mas de 2048 px por lado (decision cerrada del CLAUDE.md raiz: limite de los telefonos de gama
-# baja con el renderer Compatibility).
+# Ninguna textura de mas de 2048 px por lado (limite para telefonos de gama baja con el renderer Compatibility).
 const IMAGENES: PackedStringArray = ["png", "jpg", "jpeg", "webp", "svg"]
 const MAXIMO_LADO_TEXTURA: int = 2048
 ## Arte del mundo: el de las salas del juego y el de la sala de arte. El HUD y los menus no llevan mipmaps.
 const CARPETAS_ARTE_MUNDO: PackedStringArray = ["res://contenido/", "res://herramientas/salas/arte/"]
-## Imagenes con transparencia que van comprimidas en VRAM por excepcion (fondos de la sala de arte, decidido el
-## 13-oct-2026). Una excepcion nueva se anota aqui y en docs/arte-y-rendimiento.md, «Recursos».
+## Imagenes con transparencia que van comprimidas en VRAM por excepcion (fondos de la sala de arte).
+## Una excepcion nueva se anota aqui y en docs/arte-y-rendimiento.md, «Recursos».
 const ALFA_EN_VRAM: PackedStringArray = [
 	"res://herramientas/salas/arte/fondo1.png",
 	"res://herramientas/salas/arte/fondo2.png",
@@ -57,7 +42,7 @@ const CARPETA_CONTENIDO: String = "res://contenido/"
 const CARPETAS_REDIBUJO: PackedStringArray = ["res://contenido/", "res://nucleo/"]
 ## Carpeta de los guiones de prueba (_avisar_salas_sin_guion).
 const CARPETA_GUIONES: String = "res://herramientas/guiones/"
-## Escena de la unica plataforma de una via (docs/contrato.md, «Sala», «Suelos y plataformas»).
+## Escena de la unica plataforma de una via (docs/sala.md, «Suelos y plataformas»).
 const ESCENA_DELGADA: String = "res://nucleo/piezas/plataforma_delgada.tscn"
 
 var _fallos: PackedStringArray = []
@@ -103,7 +88,7 @@ func _ready() -> void:
 
 
 ## Uid en texto (uid://...) del recurso de ruta, o "" si no tiene: un .tscn o .tres sin uid en su cabecera
-## (classes/class_resourceloader.rst:266).
+## (classes/class_resourceloader.rst).
 static func uid_de(ruta: String) -> String:
 	var uid: int = ResourceLoader.get_resource_uid(ruta)
 	return ResourceUID.id_to_text(uid) if uid != ResourceUID.INVALID_ID else ""
@@ -129,8 +114,8 @@ static func con_uids(texto: String) -> String:
 
 
 ## Guarda recurso en ruta (un .tres o .tscn) con ResourceSaver, que escribe el formato, y le pone lo que ese guardado no
-## escribe fuera del editor (medido el 27-oct-2026; ResourceSaver.set_uid tampoco lo escribe): el uid de la cabecera, el
-## que ya tenia el archivo o uno nuevo (classes/class_resourceuid.rst:106), y el de cada ext_resource (con_uids). Lo
+## escribe fuera del editor (ResourceSaver.set_uid tampoco lo escribe): el uid de la cabecera, el
+## que ya tenia el archivo o uno nuevo (classes/class_resourceuid.rst), y el de cada ext_resource (con_uids). Lo
 ## usan generar_sprites y generar_mapa.
 static func guardar_con_uids(recurso: Resource, ruta: String) -> Error:
 	var uid: int = ResourceLoader.get_resource_uid(ruta)
@@ -184,7 +169,7 @@ func _revisar_imagen(ruta: String) -> void:
 			_revisar_importacion(ruta)
 
 
-# Importacion del arte del mundo (tutorials/assets_pipeline/importing_images.rst:185-189 y :373-393): con mipmaps,
+# Importacion del arte del mundo (tutorials/assets_pipeline/importing_images.rst): con mipmaps,
 # porque la vista de 1280x720 se encoge en las pantallas mas chicas; Lossless por omision y VRAM Compressed solo en
 # una imagen sin transparencia (en 2D, VRAM deja artefactos que se notan mas en los bordes translucidos).
 func _revisar_importacion(ruta: String) -> void:
@@ -282,7 +267,7 @@ func _de_tipo(raiz: Node, clase: Script, con_raiz: bool) -> Array[Node]:
 
 
 # Una puerta en el borde izquierdo o derecho de limites lleva detras un StaticBody2D fuera de limites, pegado al
-# borde, desde lo alto de la sala hasta el pie de la puerta (docs/contrato.md, «Cambio de sala»): sin el, un salto
+# borde, desde lo alto de la sala hasta el pie de la puerta (docs/sala.md, «Cambio de sala»): sin el, un salto
 # pasa por encima del area y el jugador sale de la sala (docs/errores/2026-10-14-salto-sobre-puerta.md).
 func _revisar_pared_tras_puerta(ruta: String, sala: Sala) -> void:
 	var limites: Rect2 = sala.limites
@@ -322,7 +307,7 @@ func _revisar_pared_tras_puerta(ruta: String, sala: Sala) -> void:
 
 # La llegada de cada puerta (position + llegada, los pies del jugador) cae dentro de limites, y en una puerta que se
 # cruza al tocarla (todas menos Puerta.Tipo.PUERTA) el cuerpo del jugador recien llegado (Jugador.TAMANO) no toca el
-# area de la puerta: si la tocara, la cruzaria de vuelta al llegar (docs/contrato.md, «Cambio de sala»).
+# area de la puerta: si la tocara, la cruzaria de vuelta al llegar (docs/sala.md, «Cambio de sala»).
 func _revisar_llegada_puertas(ruta: String, sala: Sala) -> void:
 	for hijo: Node in sala.get_children():
 		var puerta: Puerta = hijo as Puerta
@@ -359,10 +344,10 @@ func _transformada_en(raiz: Node, nodo: Node) -> Transform2D:
 
 
 # Presupuesto de una sala, medido para el S50: a lo mas 16 emisores de particulas con 200 particulas entre todos
-# (La Celda, con 13 y ~100, costo menos de 1 FPS el 25-oct-2026; que limita en el S50 depende de la sala y se mide
+# (La Celda, con 13 y ~100, costo menos de 1 FPS; que limita en el S50 depende de la sala y se mide
 # A/B, herramientas/pruebas/medicion.tscn), 30 plantas, ninguna luz 2D en la escena (LuzSala la crea en codigo solo
 # con su ajuste) y 2 capas translucidas grandes (cada capa translucida se pinta encima de lo de atras: el costo es el
-# area, tutorials/performance/gpu_optimization.rst:259-263). El halo de una LuzSala tambien es una capa que se suma
+# area, tutorials/performance/gpu_optimization.rst). El halo de una LuzSala tambien es una capa que se suma
 # encima: los grandes se cuentan como aviso, no como fallo, porque su costo en el S50 aun no se mide A/B.
 func _revisar_presupuesto(ruta: String, sala: Node) -> void:
 	var emisores: int = 0
@@ -578,6 +563,11 @@ func _revisar_habilidades(ruta: String, raiz: Node) -> void:
 		# La escena de la pieza sola (nucleo/objeto_habilidad.tscn) va sin habilidad: la pone la sala que la usa.
 		if nodo is ObjetoHabilidad and nodo != raiz:
 			ids.append((nodo as ObjetoHabilidad).habilidad)
+		elif nodo is ObjetoAmuleto and nodo != raiz:
+			var amuleto: Recompensa = Recompensa.new()
+			amuleto.tipo = Recompensa.Tipo.AMULETO
+			amuleto.id = (nodo as ObjetoAmuleto).amuleto
+			recompensas.append(amuleto)
 		elif nodo is EntregaRecompensas:
 			recompensas = (nodo as EntregaRecompensas).recompensas
 		elif nodo is ArenaJefe:
@@ -702,8 +692,10 @@ func _revisar_sala(ruta: String, nodo: Node) -> void:
 				var destino: String = _destino_de_puerta(ruta, puerta)
 				if not destino.is_empty():
 					puertas[String(puerta.id)] = [destino, String(puerta.puerta_destino), puerta.tipo]
-		var banco: Banco = hijo as Banco
-		if banco != null and banco.id != "banco_" + sala.id:
+	# Tambien el que va dentro de una pieza (Sala._bancos).
+	for con_id: Node in _de_tipo(sala, Banco, false):
+		var banco: Banco = con_id as Banco
+		if banco.id != "banco_" + sala.id:
 			_fallos.append("%s (el banco %s debe tener id banco_%s)" % [ruta, banco.id, sala.id])
 	_salas[sala.id] = {"ruta": ruta, "puertas": puertas}
 
@@ -769,8 +761,8 @@ func _revisar_recogibles(ruta: String, raiz: Node) -> void:
 
 
 # Cada ZonaCamara lleva su forma como CollisionShape2D hija directa, con forma y encendida (las nietas no cuentan,
-# tutorials/physics/collision_shapes_2d.rst:18): sin ella no detecta al jugador y la zona no hace nada. En una sala,
-# sus limites tienen area y caben en los de la sala (classes/class_rect2.rst:281): fuera de ellos la camara los
+# tutorials/physics/collision_shapes_2d.rst): sin ella no detecta al jugador y la zona no hace nada. En una sala,
+# sus limites tienen area y caben en los de la sala (classes/class_rect2.rst): fuera de ellos la camara los
 # recortaria igual, y un eje sin tope se escribe igual al de la sala.
 func _revisar_zonas_camara(ruta: String, raiz: Node) -> void:
 	var sala: Sala = raiz as Sala
@@ -803,10 +795,10 @@ func _en_carpetas(ruta: String, carpetas: PackedStringArray) -> bool:
 	return false
 
 
-# Una via (docs/contrato.md, «Sala», «Suelos y plataformas»): la unica es PlataformaDelgada, que crea su forma al correr
+# Una via (docs/sala.md, «Suelos y plataformas»): la unica es PlataformaDelgada, que crea su forma al correr
 # con grosor y margen fijos. Por eso toda forma con one_way_collision escrita en una escena falla
-# (classes/class_collisionshape2d.rst:108, classes/class_collisionpolygon2d.rst:126), y una PlataformaDelgada nunca va
-# en algo que se mueve (Vaiven.movil_de): medido el 27-oct-2026, una de una via que baja hasta el suelo pasa a traves
+# (classes/class_collisionshape2d.rst, classes/class_collisionpolygon2d.rst), y una PlataformaDelgada nunca va
+# en algo que se mueve (Vaiven.movil_de): una de una via que baja hasta el suelo pasa a traves
 # del jugador parado. Si algun dia entra un TileMapLayer, su una via por poligono (classes/class_tiledata.rst) se suma
 # aqui.
 func _revisar_una_via(ruta: String, raiz: Node) -> void:
@@ -839,8 +831,8 @@ func _revisar_musica(ruta: String, raiz: Node) -> void:
 
 # Un tema de musica se repite: sin bucle se apaga al acabar y la sala queda callada sin que nadie lo pidiera (Musica no
 # lo vuelve a tocar). Musica.SILENCIO no se reproduce nunca y se salta; null es «no tocar». El bucle se lee por tipo
-# (classes/class_audiostreamoggvorbis.rst:137, classes/class_audiostreammp3.rst:179,
-# classes/class_audiostreamwav.rst:253); otro tipo falla, para que nada se cuele sin revisar.
+# (classes/class_audiostreamoggvorbis.rst, classes/class_audiostreammp3.rst,
+# classes/class_audiostreamwav.rst); otro tipo falla, para que nada se cuele sin revisar.
 func _revisar_tema(ruta: String, quien: String, tema: AudioStream) -> void:
 	if tema == null or tema == Musica.SILENCIO:
 		return
@@ -877,7 +869,7 @@ func _revisar_fondos_tapados(ruta: String, sala: Sala) -> void:
 
 
 # En los bloques del juego (CARPETAS_CON_UID) cada ext_resource lleva el uid de su destino: con el, la referencia
-# sigue intacta aunque el archivo se mueva o se renombre (classes/class_resourceuid.rst:22). Falla una linea sin uid,
+# sigue intacta aunque el archivo se mueva o se renombre (classes/class_resourceuid.rst). Falla una linea sin uid,
 # con un uid que no es el del destino, o que nombra un recurso de texto sin uid en su cabecera (no se le puede poner
 # hasta darselo). El arreglo es con_uids, el mismo que usan generar_sprites y generar_mapa al guardar. La escena o el
 # recurso mismo tambien lleva uid en su cabecera: sin el, la primera escena que lo nombre fallaria la regla.
@@ -930,7 +922,7 @@ func _avisar_contenido(ruta: String, raiz: Node) -> void:
 
 
 # queue_redraw() en _process o _physics_process sin un if que lo guarde redibuja en cada cuadro (en el S50, las monedas
-# vectoriales costaban hasta 23 FPS, medido el 25-oct-2026). Revision de texto, sin entender el codigo: una linea con
+# vectoriales costaban hasta 23 FPS). Revision de texto, sin entender el codigo: una linea con
 # queue_redraw( a un solo tabulador dentro del cuerpo de una de esas funciones. Un return antes de esa linea en la misma
 # funcion (una salida temprana como if not cambio: return) cuenta como guarda. Un script que llama a set_process( o
 # set_physics_process( prende y apaga su proceso (VerHitbox, solo mientras se ve): se toma como guarda y no se avisa. Huecos conocidos, por ser
@@ -963,12 +955,11 @@ static func _es_return(linea: String) -> bool:
 
 # Cada sala de contenido/ debe tener un guion (herramientas/guiones/) con una linea `escena <su ruta>`: el validador solo
 # revisa los guiones que nombra un funciones.json, y una sala sin guion pasaria el CI sin que nada la corra. Aviso por
-# ahora; falla cuando todas las salas de La Celda esten al dia (docs/contrato.md, «Avisos del validador»).
+# ahora; falla cuando todas las salas de La Celda esten al dia (docs/validador.md, «Avisos del validador»).
 func _avisar_salas_sin_guion() -> void:
 	var con_guion: Dictionary[String, bool] = {}
 	for guion: String in _guiones_en(CARPETA_GUIONES):
-		for linea: String in FileAccess.get_file_as_string(guion).split("
-"):
+		for linea: String in FileAccess.get_file_as_string(guion).split("\n"):
 			if linea.begins_with("escena "):
 				con_guion[linea.trim_prefix("escena ").strip_edges()] = true
 	for id: String in _salas:
@@ -1130,7 +1121,7 @@ func _revisar_tiendas(ruta: String, raiz: Node) -> void:
 
 # Las tapas y lo que descubre un MuroRompible son dibujos fuera del muro (el muro se va al romperse y se los llevaria),
 # ninguno en las dos listas, y lo descubierto sin fisica: visible no apaga un area ni su proceso
-# (classes/class_canvasitem.rst:803), asi que lo que se toma va encerrado detras del muro, no oculto. Que cada ruta
+# (classes/class_canvasitem.rst), asi que lo que se toma va encerrado detras del muro, no oculto. Que cada ruta
 # resuelva lo revisa _revisar_rutas_de_nodos; que sea un CanvasItem (o un Porton en una Palanca), el arreglo tipado,
 # que da error al cargar.
 func _revisar_muro(ruta: String, muro: MuroRompible) -> void:
@@ -1151,8 +1142,8 @@ func _revisar_muro(ruta: String, muro: MuroRompible) -> void:
 
 
 # Toda ruta de nodo que la escena guarda para una variable de script resuelve al instanciarla (tapas, descubre,
-# portones, encendida, destello y las que vengan). Rota, Godot deja null sin una linea de error (medido el
-# 27-oct-2026): se compara lo guardado en el SceneState (classes/class_scenestate.rst:384) con lo instanciado. Un
+# portones, encendida, destello y las que vengan). Rota, Godot deja null sin una linea de error: se compara lo
+# guardado en el SceneState (classes/class_scenestate.rst) con lo instanciado. Un
 # export de nodo en null a proposito no guarda ruta y no cuenta.
 func _revisar_rutas_de_nodos(ruta: String, escena: PackedScene, raiz: Node) -> void:
 	var estado: SceneState = escena.get_state()
@@ -1228,10 +1219,10 @@ func _revisar_indice_mapa() -> void:
 	_revisar_encimes(nuevo.get(&"rectangulos") as Dictionary)
 
 
-# Todas las zonas comparten un plano: cada una va en su franja (docs/contrato.md, «Sala», posicion_mapa) y una sala
+# Todas las zonas comparten un plano, cada una con su origen (docs/sala.md, posicion_mapa) y una sala
 # encimada con la de otra zona se pintaria encima en la vista alejada del mapa. Dentro de una zona tampoco se enciman:
 # dos salas del mismo espacio no ocupan el mismo lugar, y el mapa pintaria una sobre la otra. Tocarse por un borde no
-# es encimarse (classes/class_rect2.rst:464, intersects con include_borders en false).
+# es encimarse (classes/class_rect2.rst, intersects con include_borders en false).
 func _revisar_encimes(rectangulos: Dictionary) -> void:
 	var ids: Array = rectangulos.keys()
 	for i: int in range(ids.size()):

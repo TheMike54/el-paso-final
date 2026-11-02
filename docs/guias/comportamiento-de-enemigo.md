@@ -35,6 +35,40 @@ Además:
 - Lo que un guion necesita leer (cuántas veces giró, cuántos disparos) va en una variable pública, como `giros` en
   `caminante.gd`.
 
+## Ejemplo: datos por omisión y acceso tipado
+
+En `herramientas/salas/comportamientos/volador.gd`, el script de datos se precarga y `_ready()` convierte
+`datos` al tipo propio. El núcleo ya eligió y asignó ese recurso antes de agregar el comportamiento.
+Si ni el ejemplar ni la ficha aportan datos, `datos_por_omision()` devuelve una instancia con los valores
+por omisión de `datos_volador.gd`:
+
+```gdscript
+extends ComportamientoEnemigo
+
+const DatosVolador = preload("datos_volador.gd")
+
+var persiguiendo: bool = false
+
+var _d: DatosVolador = null
+
+
+func _ready() -> void:
+	_d = datos as DatosVolador
+
+
+func datos_por_omision() -> DatosComportamiento:
+	return DatosVolador.new()
+
+
+func actuar() -> void:
+	var ve: bool = ve_al_jugador(_d.radio_alerta)
+	if ve:
+		persiguiendo = true
+```
+
+`_d.radio_alerta` muestra el acceso tipado a los números del recurso; el estado que cambia al actuar sigue
+en el comportamiento.
+
 ## Ejemplo: un enemigo con escudo
 Bloquea los golpes que le llegan de frente; por la espalda recibe el daño. Es
 `herramientas/pruebas/comportamiento_escudo_prueba.gd`, que pasa `validar.ps1` y lo prueba
@@ -73,6 +107,8 @@ Usa el mismo `Enemigo` con `jefe = true` en su ficha. Pon `umbrales_fase` de may
 con vida 12): empieza en fase 0 y a 6 de vida pasa a fase 1. El comportamiento puede leer `enemigo.fase` en
 `actuar()` o sobrescribir `al_cambiar_fase(fase: int) -> void` para reiniciar un estado o un contador. Un golpe que
 salta varios umbrales llama al gancho una vez por fase; no modifiques la ficha ni la vida desde ese gancho.
+El gancho puede ejecutarse dentro de una señal de física: no crear ataques ni disparos con `atacar()`,
+`disparar()` o `lanzar_en_arco()` allí; hacerlo en `actuar()` según `enemigo.fase`.
 
 En la sala, agrega una `ArenaJefe` con una `CollisionShape2D` hija directa que cubra el interior del combate.
 Asigna `jefe`, un `id_jefe` estable, los `portones` con `abierto_al_empezar = true` y la `recompensa`.

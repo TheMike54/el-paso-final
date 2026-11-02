@@ -11,7 +11,7 @@ const RUTA_PUERTO: String = "res://herramientas/puerto_depuracion.gd"
 @export var proporcion_maxima: float = 22.0 / 9.0
 
 ## Los servicios hermanos que crea en _ready, con su tipo: se llaman como Arranque.musica.poner(...), sin ruta de nodo
-## ni comprobar null (un autoload esta siempre cargado, tutorials/scripting/singletons_autoload.rst:30).
+## ni comprobar null (un autoload esta siempre cargado, tutorials/scripting/singletons_autoload.rst).
 var sonido: Sonido = null
 var musica: Musica = null
 
@@ -43,6 +43,10 @@ func _ready() -> void:
 	print("ARRANQUE depuracion=%s puerto=%s" % [depuracion, existe])
 	if depuracion and existe:
 		var guion: GDScript = load(RUTA_PUERTO) as GDScript
+		# Un script que no compila no se instancia: sin este alto, un error en el puerto tumbaria el arranque.
+		if guion == null or not guion.can_instantiate():
+			push_error("Arranque: no se pudo cargar el puerto de depuracion")
+			return
 		var puerto: Node = guion.new() as Node
 		puerto.name = "PuertoDepuracion"
 		add_child(puerto)
@@ -50,7 +54,7 @@ func _ready() -> void:
 
 # Diferido: cambiar content_scale dentro de size_changed dejaba a veces la imagen con la vista anterior
 # al pasar a una ventana muy larga o al maximizar desde ella o desde una vertical (medido con una ventana
-# real el 07-oct-2026), aunque la ventana dijera que cambio. Al final del cuadro el cambio si se dibuja.
+# real), aunque la ventana dijera que cambio. Al final del cuadro el cambio si se dibuja.
 func _al_cambiar_tamano() -> void:
 	_ajustar_vista.call_deferred()
 

@@ -78,6 +78,12 @@ func _ready() -> void:
 	_caso("usa textura o brujula de gis segun la ficha", ficha != null
 			and ((ficha.icono != null and icono is TextureRect and (icono as TextureRect).texture == ficha.icono)
 			or (ficha.icono == null and icono is IconoArticulo and (icono as IconoArticulo).forma == IconoArticulo.Forma.UTIL)))
+	# La fila deshabilitada tambien se consulta: el toque la describe.
+	descripcion.text = ""
+	var toque: InputEventScreenTouch = InputEventScreenTouch.new()
+	toque.pressed = true
+	pantalla.botones[BRUJULA].gui_input.emit(toque)
+	_caso("de pie, tocar un util deshabilitado lo describe", ficha != null and descripcion.text == ficha.descripcion)
 	jugador.descansando = true
 	pantalla.mostrar_en_marco()
 	_caso("sentado pone la brujula que consulta el mapa", not pantalla.botones[BRUJULA].disabled
@@ -115,8 +121,3 @@ func _ready() -> void:
 	Eventos.equipo_cambiado.disconnect(al_cambiar)
 	_restaurar_partida()
 	_resumen()
-
-
-func _esperar_cuadros(cuadros: int) -> void:
-	for i: int in range(cuadros):
-		await get_tree().process_frame

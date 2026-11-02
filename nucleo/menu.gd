@@ -1,18 +1,16 @@
 class_name MenuPrincipal
 extends Control
-# Menu principal: Jugar (abre las ranuras de partida, Ranuras; una vacia pide personaje y nombre, NuevaPartida), Configuracion (nucleo/configuracion.tscn) y, con el
-# modo desarrollador encendido, la zona de pruebas. De fondo, el video de ESCOM en bucle (ReproductorVideo, sin audio), con un
-# velo para leer el gis, desenfocado y quieto detras de Configuracion, y el tema del menu (Musica). Usa el tema tactil de los menus (Tema). Al abrir pasa la partida
-# de antes de las ranuras a la ranura 1, y pide confirmacion antes de cerrar la app con Atras o con pausa. Atras y
-# pausa vuelven un nivel a la vez: del editor de botones a Configuracion, de Nueva partida a las ranuras, de las ranuras o de Configuracion al menu,
-# y ahi piden salir. Abajo, el aviso de pocos toques si el telefono lo necesita.
+# Menu tactil: Jugar abre ranuras y pide personaje y nombre si estan vacias; ofrece ajustes y pruebas de desarrollador.
+# Video mudo de ESCOM en bucle y Musica; velo para leer el gis, fondo quieto y desenfocado detras de Configuracion.
+# Migra la partida anterior a la ranura 1; Atras y pausa retroceden un nivel y en el menu piden confirmar salida.
+# Muestra abajo el aviso de pocos toques cuando el telefono lo necesita.
 ## Escena del menu principal: a ella vuelven la pausa y la zona de pruebas.
 const RUTA: String = "res://nucleo/menu.tscn"
 const ZONA_PRUEBAS: String = "res://herramientas/salas/zona_pruebas.tscn"
 const ESCENA_EDITOR: PackedScene = preload("res://nucleo/editor_controles.tscn")
 ## Video del fondo, sin extension (ver ReproductorVideo).
 const VIDEO_FONDO: String = "res://nucleo/video/menu"
-## Velo negro sobre el video: las letras de gis se leen encima (elegido en el S50, 24-oct-2026).
+## Velo negro sobre el video: las letras de gis se leen encima.
 const ALFA_VELO: float = 0.35
 
 ## Lo pone la zona de pruebas al volver: el menu abre con el foco en su entrada, un nivel atras de la zona.
@@ -66,6 +64,7 @@ func _ready() -> void:
 	nueva_partida.confirmada.connect(_empezar_nueva)
 	nueva_partida.cerrado.connect(_al_cerrar_nueva)
 	_armar_confirmacion()
+	_poner_aviso_guardado()
 	_jugar.pressed.connect(abrir_ranuras)
 	_configuracion.pressed.connect(abrir_configuracion)
 	configuracion.editor_pedido.connect(abrir_editor)
@@ -93,7 +92,7 @@ func _poner_video() -> void:
 	move_child(_video, ($Fondo as Control).get_index() + 1)
 	var velo: ColorRect = ColorRect.new()
 	velo.name = &"Velo"
-	velo.color = Color(0.0, 0.0, 0.0, ALFA_VELO)
+	velo.color = Tema.negro(ALFA_VELO)
 	velo.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	velo.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_video.add_sibling(velo)
@@ -108,11 +107,25 @@ func _poner_aviso_toques() -> void:
 		add_child(aviso)
 		move_child(aviso, _confirmar.get_index())
 		# El menu y las ranuras quedan arriba del aviso: centrado en toda la pantalla, el menu quedaba encima del
-		# aviso (S50, 12-oct-2026).
+		# aviso en el S50.
 		_centro.offset_bottom = aviso.offset_top
 		ranuras.reservado_abajo = -aviso.offset_top
 		nueva_partida.reservado_abajo = -aviso.offset_top
 		configuracion.reservado_abajo = -aviso.offset_top
+
+
+# Salir de una partida guarda lo obtenido: si fallo, el aviso del Hud ya no alcanza a verse y se dice aqui.
+func _poner_aviso_guardado() -> void:
+	if not Partida.ultimo_guardado_fallo:
+		return
+	var aviso: Label = Label.new()
+	aviso.name = "AvisoGuardado"
+	aviso.text = Partida.TEXTO_GUARDADO_FALLIDO
+	aviso.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	aviso.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	aviso.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
+	aviso.offset_top = Tema.MARGEN_VERTICAL
+	add_child(aviso)
 
 
 # La zona de pruebas guarda aparte: nunca pisa una partida real.
@@ -148,12 +161,13 @@ func _al_cerrar_nueva() -> void:
 ## (para Restaurar) y se continua en su banco (sin banco, en sala_inicial); una vacia empieza una partida nueva con el
 ## personaje y el nombre elegidos, solo en memoria, y va a inicio_partida_nueva: el archivo nace con su primer guardado
 ## (banco, autoguardado, morir, salir al menu), como en Hollow Knight y Silksong, asi que cerrar durante la cinematica
-## deja la ranura vacia. Una danada o de otra version no se toca y devuelve vacio: solo se borra con su confirmacion.
+## deja la ranura vacia. Una que no se abre (Guardado.Resultado.cerrada) no se toca y devuelve vacio: solo se borra con
+## su confirmacion.
 func preparar_ranura(numero: int, personaje: String = "", nombre: String = "") -> String:
 	var ruta: String = ranuras.ruta(numero)
 	var leida: Guardado.Resultado = Guardado.cargar(ruta)
-	if leida.estado == Guardado.Estado.DANADA or leida.estado == Guardado.Estado.INCOMPATIBLE:
-		push_warning("Menu: la partida %d esta danada o es de otra version; no se abre" % numero)
+	if leida.cerrada():
+		push_warning("Menu: la partida %d esta danada, es de otra version o no se pudo leer; no se abre" % numero)
 		return ""
 	if leida.estado == Guardado.Estado.VACIA:
 		Partida.reiniciar()
@@ -165,6 +179,8 @@ func preparar_ranura(numero: int, personaje: String = "", nombre: String = "") -
 	if copia != OK:
 		push_error("Menu: no se pudo copiar la partida %d (error %d)" % [numero, copia])
 	Partida.desde_diccionario(leida.partida)
+	# Lo que se acaba de leer es lo que hay en disco: el fallo era de la partida de antes.
+	Partida.ultimo_guardado_fallo = false
 	Partida.ruta_guardado = ruta
 	var escena: String = "" if Partida.sala.is_empty() else Sala.ruta_de(Partida.sala)
 	if not escena.is_empty() and not ResourceLoader.exists(escena):

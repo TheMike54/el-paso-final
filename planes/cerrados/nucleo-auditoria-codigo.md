@@ -1,4 +1,4 @@
-ACTIVO
+CERRADO (1-nov-2026, por decisión de la persona; el paso 13 pasó a `planes/activos/herramientas-utilidad-pruebas.md`)
 
 # Auditoría del código (17-oct-2026) y tandas de arreglos
 
@@ -152,8 +152,8 @@ que ya se ven en el juego.
   que el ataque se refleje solo según `mirando`.
 - Señales sin oyente: se quitan `Cortable.cortado`, `Palanca.portones_abiertos` y `RetoPreguntas.respondida`. Se
   quedan `Porton.abierto` y `MuroRompible.se_rompio`, cada una con un guion que la use.
-- El APK de publicación sigue llevando las salas jugables de la zona de pruebas. Que salgan las pruebas de código
-  (H25) se replanteó el mismo día: ver «Por decidir».
+- El APK de publicación sigue llevando las salas jugables de la zona de pruebas. Las pruebas de código
+  (H25) se excluyen, como recoge «Decisiones resueltas» y el cierre del paso 2.
 - El jugador se refactoriza (T7). La prueba de sensación se hace después.
 - Ni máquina de estados para el jugador ni partir `Partida`: J2 y la propuesta de partir `Partida` quedan
   descartados.
@@ -274,42 +274,20 @@ La persona aprobó el 18-oct dos textos de instrucciones de Claude, y ya están 
 Lo que el juego cambia, además de lo aprobado: cerrar un menú con `mapa_rapido` sostenido ya no muestra el mapa
 rápido. Es el cuarto fallo, de la misma clase que el de B.
 
-## Por decidir (la persona; lo recomendado va primero)
+## Decisiones resueltas
 
-- **T1 antes o después del PR del domingo.** Recomendado: después, en `chore/auditoria-codigo`; son tres arreglos
-  chicos de tipo `fix:`. La otra opción es meterlos en el PR del domingo.
-- **Cómo se protege el cierre con B.**
-  - Recomendado: `process_priority`, para que los menús y la pausa se procesen después del jugador sin importar
-    dónde cuelguen.
-  - La otra opción es un aviso de «cerré este tick» que el jugador lee.
-- **`hacia_donde_mira`.**
-  - Recomendado: que `ComportamientoEnemigo.atacar()` refleje el golpe con `enemigo.mirando`, antes del primer
-    enemigo de `contenido/`.
-  - La otra opción es borrarlo.
-- **Señales sin oyente** (`Cortable.cortado`, `Palanca.portones_abiertos`, `Porton.abierto`,
-  `MuroRompible.se_rompio`, `RetoPreguntas.respondida`).
-  - Recomendado: quitarlas, salvo `Porton.abierto` y `se_rompio`, que un guion puede esperar en una instancia
-    concreta.
-- **¿La bola corta el pasto?** Hoy lo atraviesa sin cortarlo (J32). Es decisión de diseño.
-- **¿Los botones táctiles de Pausa y Mapa siguen activos bajo un menú?** (E5). Hoy sí; tocar el de Pausa encima de
-  Configuración la cierra.
-- **Lo que viaja en el APK de publicación** (H25). Replanteado por la persona el 17-oct-2026: fuera las pruebas de
-  código, dentro las salas jugables de la zona de pruebas. Medido en `build/el-paso-final-desarrollo-5d377b4.apk`
-  (61.943 KB): los `.guion` y `.esperado` ya no viajan (`all_resources` solo exporta recursos); los `prueba_*` y el
-  validador suman unos 103 KB comprimidos, el 0,2 %. Aprobado por la persona el 17-oct-2026, frente a dejarlas en el
-APK ocultas, porque separa juego de prueba; va en el paso 2 (infraestructura de pruebas), para que las pruebas
-nuevas nazcan ya en su carpeta:
-  - las 32 escenas de prueba de código (`sala_*.tscn` con `prueba_*.gd`) y sus scripts pasan a
-    `herramientas/pruebas/`, movidas en el editor; las salas de `GRUPOS` se quedan en `herramientas/salas/`;
-  - el preset «Publicacion» excluye `herramientas/pruebas/*`, `validar.*`, `generar_mapa.*` y
-    `puerto_depuracion.*`; «Desarrollo» sigue llevando todo;
-  - `validar.gd` falla si algo fuera de `herramientas/pruebas/` la nombra;
-  - el motivo es el orden y que en publicación no salgan en «Otras» (H15), no el peso;
-  - cambia la decisión cerrada del `CLAUDE.md` raíz y «Paquete de publicación» del contrato: el texto nuevo del
-    `CLAUDE.md` se le muestra antes de escribirlo.
-- **Base `Interactuable`** (T4).
-  - Recomendado: empezar con los cinco objetos que el plan `nucleo-tienda-gis` no toca, y sumar la tienda y la
-    estación al cerrar ese plan.
+Las decisiones de esta sección ya se ejecutaron; el detalle y la evidencia están en «Avance de los pasos»
+y en los planes cerrados de cada paso.
+
+| Tema | Resolución |
+|---|---|
+| T1 y cierre con B | Hechos en el paso 1; el cierre se protege con `process_priority` |
+| `hacia_donde_mira` | Eliminado en el paso 3 por decisión técnica delegada; detalle en `planes/cerrados/nucleo-auditoria-3-muerto.md` |
+| Señales sin oyente | Eliminadas `Cortable.cortado`, `Palanca.portones_abiertos` y `RetoPreguntas.respondida` en el paso 3; se conservan `Porton.abierto` y `MuroRompible.se_rompio`, usadas por guiones |
+| Bola y pasto | La bola corta el pasto que toca y sigue su camino; hecho en el paso 12 y cubierto por `poder_bola_pasto`. La altura de salida es una decisión distinta, descrita en ese paso |
+| Botones táctiles bajo un menú | Inactivos; resuelto en el paso 6 |
+| Publicación (H25) | Las salas jugables permanecen en `herramientas/salas/`; las pruebas de código están en `herramientas/pruebas/` y se excluyen junto con las herramientas de desarrollo. Resuelto en el paso 2; regla vigente en `docs/contrato.md`, «Paquete de publicación» |
+| Base `Interactuable` | Los siete objetos con interacción heredan de ella; cerrado en el paso 8 |
 
 ## Aviso al plan `nucleo-tienda-gis`
 

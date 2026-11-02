@@ -1,10 +1,9 @@
 class_name Palanca
 extends Node2D
-# Palanca que se mueve con un golpe del jugador (como la Lever de Silksong): el primer golpe la activa, la deja
-# inclinada hacia el otro lado y, tras ticks_retraso, abre cada Porton de su lista. Despues ya no cambia; los
-# golpes solo rebotan al jugador. La bola no la mueve. Con id se marca en el estado de su sala y aparece activada;
-# cada porton guarda lo suyo. Golpearla no da Inspiracion (su Golpeable no es un enemigo). Con un AnimatedSprite2D
-# (animacion) se ve con arte en vez de la caja gris.
+# Palanca como la Lever de Silksong: el primer golpe la inclina y abre sus Porton tras ticks_retraso.
+# Despues los golpes solo rebotan al jugador; la bola no la mueve y su Golpeable es objeto para no dar Inspiracion.
+# Con id se marca al abrir y vuelve activada; cada porton conserva su propio estado para separar ambas persistencias.
+# Un AnimatedSprite2D (animacion) reemplaza la caja gris cuando tiene arte.
 
 ## Al activarse.
 signal activada()
@@ -53,7 +52,7 @@ func _ready() -> void:
 	golpeable.add_child(forma)
 	add_child(golpeable)
 	golpeable.golpeado.connect(_al_recibir_golpe)
-	if not id.is_empty() and Partida.estado_de(Sala.clave_de(self), id) != null:
+	if not id.is_empty() and Sala.recordado(self, id):
 		esta_activada = true
 		abrio = true
 		_inclinacion = 1.0
@@ -68,6 +67,8 @@ func _physics_process(_delta: float) -> void:
 		return
 	_ticks_para_abrir = -1
 	abrio = true
+	if not id.is_empty():
+		Partida.marcar(Sala.clave_de(self), id)
 	for porton: Porton in portones:
 		if is_instance_valid(porton):
 			porton.abrir()
@@ -81,8 +82,6 @@ func _al_recibir_golpe(atacante: Node2D, _dano: int) -> void:
 	var lado: float = signf(global_position.x - atacante.global_position.x)
 	_inclinacion = lado if lado != 0.0 else -_inclinacion
 	_inclinar()
-	if not id.is_empty():
-		Partida.marcar(Sala.clave_de(self), id)
 	Congelado.pedir(ticks_congelado)
 	(atacante as Jugador).temblar(ticks_temblor, px_temblor)
 	_ticks_para_abrir = ticks_retraso

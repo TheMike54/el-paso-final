@@ -48,9 +48,9 @@ func _init() -> void:
 
 # Se arma ya en el arbol y con la pregunta configurada antes de agregarla, como la armaban las ranuras: armada en
 # _init y con el ancho y el ajuste de linea puestos despues, la pregunta media 1847 px de alto en la prueba de las
-# ranuras (18-oct-2026) y la caja salia de la vista por arriba.
+# ranuras y la caja salia de la vista por arriba.
 func _ready() -> void:
-	color = Color(0.0, 0.0, 0.0, alfa_velo)
+	color = Tema.negro(alfa_velo)
 	var caja: VBoxContainer = VBoxContainer.new()
 	caja.name = "Caja"
 	caja.add_theme_constant_override(&"separation", separacion)

@@ -4,31 +4,21 @@ extends Resource
 # nucleo/sonidos/sonidos_jugador.tres. Un evento sin efecto no suena. Efectos en WAV: se tocan sin decodificar, lo
 # barato para la gama baja. La variacion de tono es dato del propio efecto: un AudioStreamRandomizer en lugar del WAV.
 
-## Efecto al saltar.
 @export var salto: AudioStream = null
-## Efecto al pegarle a algo.
 @export var golpe: AudioStream = null
-## Efecto al recibir dano.
 @export var dano: AudioStream = null
-## Efecto al parar un ataque.
 @export var parry: AudioStream = null
 ## Efecto que acompana la curacion: empieza con ella y se corta si no termina.
 @export var curar: AudioStream = null
-## Efecto al sentarse en un banco.
 @export var banco: AudioStream = null
-## Efecto al romperse un muro rompible.
 @export var muro_roto: AudioStream = null
-## Efecto al empezar a abrirse un porton.
 @export var porton: AudioStream = null
-## Efecto de cada paso al caminar o correr.
 @export var paso: AudioStream = null
 ## Efecto al aterrizar, suave o duro.
 @export var aterrizaje: AudioStream = null
 ## Efecto al aterrizar de la picada (en lugar del de aterrizaje).
 @export var picada: AudioStream = null
-## Efecto al empezar un impulso.
 @export var impulso: AudioStream = null
-## Efecto al vencer a un enemigo.
 @export var vencido: AudioStream = null
 ## Efecto de un ataque de enemigo; lo pide su comportamiento.
 @export var ataque: AudioStream = null

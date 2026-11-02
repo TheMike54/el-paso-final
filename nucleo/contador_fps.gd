@@ -1,10 +1,8 @@
 class_name ContadorFps
 extends CanvasLayer
-# FPS en pantalla (Ajustes.mostrar_fps) arriba al centro y, con el panel de pruebas encendido, el monitor en la misma
-# linea: peor cuadro, draw calls, memoria de video y nodos. Ademas pone el limite de FPS: 60 mientras el arbol esta
-# en pausa (cualquier menu de la sala) o en el menu principal. NOTIFICATION_PAUSED solo llega a los nodos que la pausa
-# detiene (classes/class_node.rst:809), y este procesa siempre: lo mira en cada cuadro, y asi ningun menu tiene que
-# acordarse de llamar a Ajustes.aplicar_fps.
+# Muestra FPS arriba al centro; el panel de pruebas agrega peor cuadro, draw calls, memoria de video y nodos.
+# Limita a 60 FPS durante la pausa y en el menu principal sin exigir que cada menu llame a Ajustes.aplicar_fps.
+# Consulta la pausa por cuadro porque procesa siempre y no recibe NOTIFICATION_PAUSED (classes/class_node.rst).
 
 ## Cada cuanto se reescribe el texto: leer los monitores en cada cuadro no hace falta para leerlo a ojo.
 const CADA: float = 0.5

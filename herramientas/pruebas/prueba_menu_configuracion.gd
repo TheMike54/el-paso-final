@@ -1,9 +1,7 @@
 extends "res://herramientas/pruebas/prueba_base.gd"
-# Prueba de la Configuracion del menu principal: recorre menu, Configuracion, sus subpaneles y el editor de controles
-# con Atras y con pausa, un nivel a la vez, y lo que puede romperse en cada panel: disposicion, botones del control,
-# modo desarrollador, audio, opciones de si o no, Avanzado (Recursos, luces 2D, niebla, panel de pruebas), brillo,
-# columnas y el aviso de pocos toques. Todo en
-# archivos de prueba. Deja casos y fallos para menu_configuracion.guion.
+# Prueba Configuracion desde el menu y la pausa, incluido el editor de controles y sus paneles.
+# Revisa disposicion, opciones, audio, modo desarrollador y avisos.
+# Deja casos y fallos para menu_configuracion.guion.
 
 const ESCENA_MENU: PackedScene = preload("res://nucleo/menu.tscn")
 const RUTA_PRUEBA: String = "user://prueba_menu_configuracion.json"
@@ -64,12 +62,10 @@ func _ready() -> void:
 	var volver_lista: Button = config.get_node(^"Lista/Arriba/Volver") as Button
 	var icono_volver: IconoBoton = volver_lista.get_node(^"Icono") as IconoBoton
 	UltimaEntrada.anotar(boton_control)
-	await get_tree().process_frame
-	await get_tree().process_frame
+	await _esperar_cuadros(2)
 	_caso("con el control, Volver muestra el boton de volver y le hace lugar", icono_volver.visible and volver_lista.icon != null)
 	UltimaEntrada.anotar(toque)
-	await get_tree().process_frame
-	await get_tree().process_frame
+	await _esperar_cuadros(2)
 	_caso("tras un toque, Volver queda solo con su texto", not icono_volver.visible and volver_lista.icon == null)
 	var stick: InputEventJoypadMotion = InputEventJoypadMotion.new()
 	stick.axis_value = 0.2
@@ -230,7 +226,7 @@ func _ready() -> void:
 	var recursos_antes: String = Ajustes.recursos
 	recursos.pressed.emit()
 	_caso("en la partida, tocar Recursos no lo cambia y dice que se cambia desde el menu", Ajustes.recursos == recursos_antes and aviso_de_recursos.visible and aviso_de_recursos.text.contains(Configuracion.AVISO_RECURSOS_EN_PARTIDA))
-	# Desde el 25-oct-2026 Desarrollador si aparece en la partida: enciende el panel de pruebas y ver hitbox al momento.
+	# Desarrollador aparece en la partida: enciende el panel de pruebas y ver hitbox al momento.
 	_caso("en la partida aparece Desarrollador", modo.visible)
 	config.en_partida = false
 	config.abrir()
@@ -305,11 +301,14 @@ func _ready() -> void:
 	await _esperar(3)
 
 	# Audio: un panel con tres barras anchas, cada una en su ajuste y en su bus, con altavoz.
+	# En 0 la barra no cambia al abrir y no avisa: el porcentaje lo escribe el panel.
+	Ajustes.volumen = 0.0
 	_boton(config, "Audio").pressed.emit()
 	var panel_audio: Control = config.get_node(^"PanelAudio") as Control
 	var general: HSlider = _barra_audio(config, "General")
 	_caso("Audio abre su panel con el foco en General", panel_audio.visible and not lista.visible and general.has_focus())
 	_caso("las barras son anchas, sin - ni +", general.theme_type_variation == Tema.BARRA_ANCHA and config.get_node_or_null(^"PanelAudio/Desplazable/Centro/Filas/General/Mas") == null)
+	_caso("al abrir Audio el porcentaje ya dice el valor", (config.get_node(^"PanelAudio/Desplazable/Centro/Filas/General/Porcentaje") as Label).text == "0 %")
 	var antes: String = FileAccess.get_file_as_string(RUTA_PRUEBA)
 	general.value = 40.0
 	_barra_audio(config, "Musica").value = 30.0
@@ -359,11 +358,14 @@ func _ready() -> void:
 	# Brillo: su pantalla, con la escena y la barra.
 	var brillo: BotonValor = _boton(config, "Brillo") as BotonValor
 	_caso("Brillo dice su valor y que abre otra pantalla", brillo.valor == "%d %%" % roundi(Ajustes.brillo * 100.0) and brillo.estilo == BotonValor.Estilo.ENLACE)
+	# Lo mismo en el minimo de la barra.
+	Ajustes.brillo = Ajustes.BRILLO_MINIMO
 	brillo.pressed.emit()
 	var panel_brillo: Control = config.get_node(^"PanelBrillo") as Control
 	var barra_brillo: HSlider = config.get_node(^"PanelBrillo/Columna/Fila/Barra") as HSlider
 	_caso("Brillo abre su pantalla con el foco en la barra", panel_brillo.visible and not lista.visible and barra_brillo.has_focus())
 	_caso("desde el menu no hay foto: se ve la escena de muestra", not config.brillo_con_foto())
+	_caso("al abrir Brillo el porcentaje ya dice el valor", (config.get_node(^"PanelBrillo/Columna/Fila/Porcentaje") as Label).text == "50 %")
 	barra_brillo.value = 140.0
 	_caso("la barra del brillo aplica pero no escribe hasta soltarla", is_equal_approx(Ajustes.brillo, 1.4) and not FileAccess.get_file_as_string(RUTA_PRUEBA).contains("1.4"))
 	# La escena (muestra y foto, en la ventana y en el fondo) y el cuadro de calibracion: el brillo de la sala no llega.
@@ -434,15 +436,14 @@ func _ready() -> void:
 	var aviso: Label = con_aviso.get_node_or_null(^"AvisoToques") as Label
 	_caso("con pocos toques el menu muestra el aviso", aviso != null and aviso.visible and aviso.text == Toques.TEXTO_AVISO)
 	_caso("el aviso queda debajo de la confirmacion de salida", aviso != null and aviso.get_index() < (con_aviso.get_node(^"Confirmar") as Control).get_index())
-	# El aviso de recursos de Configuracion queda arriba de esa linea, no encima (S50, 13-oct-2026).
+	# El aviso de recursos de Configuracion queda arriba de esa linea, no encima.
 	var conf: Configuracion = con_aviso.get_node(^"Configuracion") as Configuracion
 	conf.abrir()
 	(conf.get_node(NodePath(OPCIONES + "Avanzado")) as Button).pressed.emit()
 	var aviso_recursos: Label = conf.get_node(^"PanelAvanzado/AvisoRecursos") as Label
 	aviso_recursos.text = "x"
 	aviso_recursos.visible = true
-	await get_tree().process_frame
-	await get_tree().process_frame
+	await _esperar_cuadros(2)
 	_caso("el aviso de recursos queda arriba del de pocos toques", aviso != null and aviso_recursos.get_global_rect().end.y <= aviso.get_global_rect().position.y + 1.0)
 	remove_child(con_aviso)
 	con_aviso.free()

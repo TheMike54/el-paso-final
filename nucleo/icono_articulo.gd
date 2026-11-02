@@ -2,8 +2,10 @@ class_name IconoArticulo
 extends Control
 # Icono de gis de un articulo de la tienda segun lo que entrega (vida, mapa, amuleto, habilidad, monedas, util), y la moneda
 # de su precio, como las filas de las tiendas de los dos juegos. Se dibuja en codigo con trazos de EstiloGis hasta que
-# haya arte (decision del plan nucleo-tienda-gis): un solo _draw por icono, que solo se repite al cambiar de tamano.
+# haya arte: un solo _draw por icono, que solo se repite al cambiar de tamano.
 
+## Grosor del trazo de gis y margen del icono dentro de su caja.
+const GROSOR: float = 3.0
 enum Forma {
 	NINGUNA,
 	MONEDA,
@@ -67,29 +69,29 @@ func _draw() -> void:
 	azar.seed = hash(Vector2i(size)) + int(forma)
 	var color: Color = Tema.GRIS_APAGADO if apagado else Tema.GIS
 	var c: Vector2 = size / 2.0
-	var r: float = minf(size.x, size.y) / 2.0 - 3.0
+	var r: float = minf(size.x, size.y) / 2.0 - GROSOR
 	match forma:
 		Forma.INSPIRACION_MAXIMA:
-			# Modulo de RAM: placa, tres chips y contactos, con trazos de gis.
+			# Placa, chips y contactos, con trazos de gis.
 			var placa: PackedVector2Array = [c + Vector2(-r, -r * 0.55), c + Vector2(r, -r * 0.55),
 					c + Vector2(r, r * 0.55), c + Vector2(-r, r * 0.55), c + Vector2(-r, -r * 0.55)]
 			for i: int in range(placa.size() - 1):
-				draw_polyline(EstiloGis.puntos(azar, placa[i], placa[i + 1], 0.8), color, 3.0, true)
+				draw_polyline(EstiloGis.puntos(azar, placa[i], placa[i + 1], 0.8), color, GROSOR, true)
 			for i: int in range(3):
 				var x: float = c.x + (i - 1) * r * 0.6
 				draw_polyline(EstiloGis.puntos(azar, Vector2(x, c.y - r * 0.25),
 						Vector2(x, c.y + r * 0.25), 0.8), color, 5.0, true)
 				draw_polyline(EstiloGis.puntos(azar, Vector2(x, c.y + r * 0.55),
-						Vector2(x, c.y + r * 0.85), 0.8), color, 3.0, true)
+						Vector2(x, c.y + r * 0.85), 0.8), color, GROSOR, true)
 		Forma.CARGA:
 			# Una muesca libre: aro con una abertura arriba y un apoyo abajo.
 			var puntos: PackedVector2Array = []
 			for i: int in range(21):
 				puntos.append(c + Vector2(r * 0.8, 0.0).rotated(-PI / 3.0 + i * PI / 12.0)
 						+ _temblor(azar, 0.7))
-			draw_polyline(puntos, color, 3.0, true)
+			draw_polyline(puntos, color, GROSOR, true)
 			draw_polyline(EstiloGis.puntos(azar, c + Vector2(-r * 0.45, r),
-					c + Vector2(r * 0.45, r), 0.8), color, 3.0, true)
+					c + Vector2(r * 0.45, r), 0.8), color, GROSOR, true)
 		Forma.UTIL:
 			# Brujula: aro y aguja inclinada, con el mismo temblor de gis que las otras formas.
 			_circulo(azar, c, r, color)
@@ -97,7 +99,7 @@ func _draw() -> void:
 					c + Vector2(r * 0.18, r * 0.18), c + Vector2(-r * 0.4, r * 0.75),
 					c - Vector2(r * 0.18, r * 0.18), c + Vector2(r * 0.4, -r * 0.75)]
 			for i: int in range(aguja.size() - 1):
-				draw_polyline(EstiloGis.puntos(azar, aguja[i], aguja[i + 1], 0.8), color, 3.0, true)
+				draw_polyline(EstiloGis.puntos(azar, aguja[i], aguja[i + 1], 0.8), color, GROSOR, true)
 		Forma.MONEDA:
 			_circulo(azar, c, r, color)
 			_circulo(azar, c, r * 0.55, Color(color, 0.7))
@@ -109,7 +111,7 @@ func _draw() -> void:
 				var x: float = 16.0 * pow(sin(t), 3.0)
 				var y: float = 13.0 * cos(t) - 5.0 * cos(2.0 * t) - 2.0 * cos(3.0 * t) - cos(4.0 * t)
 				puntos.append(c + Vector2(x, -y - 1.5) * r / 17.0 + _temblor(azar, 0.8))
-			draw_polyline(puntos, color, 3.0, true)
+			draw_polyline(puntos, color, GROSOR, true)
 		Forma.AMULETO:
 			# Un dije: la piedra redonda colgando de una argolla chica.
 			_circulo(azar, c + Vector2(0.0, r * 0.25), r * 0.7, color)
@@ -120,7 +122,7 @@ func _draw() -> void:
 			for i: int in range(8):
 				var largo: float = r if i % 2 == 0 else r * 0.5
 				var punta: Vector2 = c + Vector2(0.0, -largo).rotated(i * PI / 4.0)
-				draw_polyline(EstiloGis.puntos(azar, c + (punta - c) * 0.18, punta, 0.8), color, 3.0, true)
+				draw_polyline(EstiloGis.puntos(azar, c + (punta - c) * 0.18, punta, 0.8), color, GROSOR, true)
 		Forma.MAPA:
 			# Un mapa doblado en tres, con la ruta punteada en medio.
 			var alto: float = r * 0.75
@@ -134,7 +136,7 @@ func _draw() -> void:
 				var y: float = c.y + alto + (r * 0.18 if i % 2 == 1 else 0.0)
 				esquinas.append(Vector2(x0 + i * tercio, y))
 			esquinas.append(esquinas[0])
-			draw_polyline(esquinas, color, 3.0, true)
+			draw_polyline(esquinas, color, GROSOR, true)
 			for i: int in range(1, 3):
 				draw_line(esquinas[i], esquinas[7 - i], Color(color, 0.6), 2.0, true)
 			for i: int in range(3):
@@ -147,7 +149,7 @@ func _circulo(azar: RandomNumberGenerator, centro: Vector2, radio: float, color:
 	var n: int = maxi(12, int(TAU * radio / EstiloGis.PASO))
 	for i: int in range(n + 2):
 		puntos.append(centro + Vector2(radio, 0.0).rotated(TAU * i / n - 0.4) + _temblor(azar, 0.7))
-	draw_polyline(puntos, color, 3.0, true)
+	draw_polyline(puntos, color, GROSOR, true)
 
 
 func _temblor(azar: RandomNumberGenerator, cuanto: float) -> Vector2:

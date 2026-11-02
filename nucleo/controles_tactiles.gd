@@ -1,12 +1,9 @@
 class_name ControlesTactiles
 extends Control
-# Controles tactiles: traducen cada toque a las mismas acciones del InputMap que el teclado,
-# con Input.action_press y action_release, para que la logica nunca lea el toque. Joystick
-# invisible abajo a la izquierda y botones en la distribucion inicial del diseno, anclados a
-# su esquina. Se ocultan al usar teclado o control y reaparecen al tocar la pantalla. Un boton
-# que pide una habilidad solo se dibuja y responde mientras Partida la tiene. Donde va cada boton y su
-# tamano los da Ajustes.disposicion, que cambia el editor de controles de Configuracion. El boton del mapa
-# tiene doble uso: de pie dice Mapa y manda mapa; sentado en un banco dice Inventario y manda inventario.
+# Traduce toques a acciones del InputMap con action_press/action_release para que la logica no dependa del tactil.
+# Joystick invisible abajo a la izquierda y botones anclados; Ajustes.disposicion permite editar posiciones y tamanos.
+# Se oculta con teclado o control y vuelve al tocar; los botones de habilidad solo se ven y responden si se tiene.
+# El boton Mapa manda mapa de pie; sentado en un banco cambia a Inventario y manda inventario.
 
 const ACCIONES: Array[StringName] = [&"saltar", &"atacar", &"curar", &"impulso", &"pausa", &"mapa"]
 const ETIQUETAS: PackedStringArray = ["Saltar", "Atacar", "Curar", "Impulso", "Pausa", "Mapa"]
@@ -41,8 +38,7 @@ const COLOR_PRESIONADO: Color = Color(1.0, 1.0, 1.0, 0.25)
 ## Botones que solo existen con una habilidad: accion -> habilidad de Partida. Sin ella no se
 ## dibujan ni responden, y los demas no se mueven.
 const HABILIDAD_DE_BOTON: Dictionary[StringName, StringName] = {&"impulso": Habilidades.IMPULSO, &"atacar": Habilidades.PLUMA}
-## Segmentos de cada aro y tamano unico de las etiquetas: en el S50 el dibujo de los controles costaba
-## ~3,5 FPS jugando (medido el 12-oct-2026), sobre todo por intercalar aros y letras de tres tamanos.
+## Aros con pocos segmentos y etiquetas de un solo tamano para agrupar las llamadas de dibujo.
 const SEGMENTOS_ARCO: int = 24
 const TAMANO_LETRA: int = 16
 
@@ -118,8 +114,7 @@ func _exit_tree() -> void:
 
 
 # Al perder el foco la ventana o la app, o al pausarla Android, no llega el soltar de los dedos que estaban en la
-# pantalla: se suelta todo para que ninguna accion quede presionada al volver (classes/class_node.rst:1001-1005,
-# :1151-1155, :1173-1177).
+# pantalla: se suelta todo para que ninguna accion quede presionada al volver (classes/class_node.rst).
 func _notification(que: int) -> void:
 	if (que == NOTIFICATION_WM_WINDOW_FOCUS_OUT or que == NOTIFICATION_APPLICATION_FOCUS_OUT
 			or que == NOTIFICATION_APPLICATION_PAUSED):
@@ -190,7 +185,7 @@ func procesar(evento: InputEvent) -> void:
 			visible = true
 			queue_redraw()
 		# Un toque cancelado (el sistema se quedo con el gesto) suelta como levantar el dedo
-		# (classes/class_inputeventscreentouch.rst:60-71). En 4.7.2 canceled ya deja pressed en false: la
+		# (classes/class_inputeventscreentouch.rst). En 4.7.2 canceled ya deja pressed en false: la
 		# comprobacion es por si otra version los manda juntos.
 		if toque.pressed and not toque.canceled:
 			# Con un menu abierto, _tocar solo deja Pausa y Mapa; soltar y arrastrar siguen siempre.

@@ -2,7 +2,7 @@
 
 Las reglas de este repositorio están en `CLAUDE.md` (raíz) y en el `CLAUDE.md` de cada bloque (`nucleo/`, `contenido/`,
 `interfaz/`, `mapa/`, `herramientas/`). Léelos antes de cambiar nada y síguelos igual que Claude: valen para cualquier
-agente.
+agente. Para crear contenido, las recetas paso a paso están en `docs/guias/README.md`.
 
 Lo que más se rompe:
 - Godot 4.7.2 con tipado estricto: toda variable con tipo y toda función con tipo de retorno. Las skills de

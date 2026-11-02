@@ -1,10 +1,8 @@
 class_name Sala
 extends Node2D
-# Raiz de toda sala: al entrar crea al jugador (en la puerta por la que llega o en Entrada), le
-# pasa los limites para la camara y pone los controles tactiles, la pausa, el marco de menus con sus paginas, la vibracion, el fundido
-# a negro (empieza en negro y aclara), el contador de FPS (que tambien pone el limite de FPS), el panel de pruebas y ver
-# hitbox (siempre creados; solo se ven con el modo desarrollador), la interfaz y el mapa. Si el jugador muere, el Fundido funde a negro y lo
-# hace reaparecer en el ultimo banco (o en Entrada) con las vidas llenas.
+# Crea al jugador en su llegada y monta las capas de la sala.
+# Si muere, prepara su reaparicion.
+# La interfaz y el mapa se cargan solo cuando existen.
 const ESCENA_JUGADOR: PackedScene = preload("res://nucleo/jugador.tscn")
 const ESCENA_CONTROLES: PackedScene = preload("res://nucleo/controles_tactiles.tscn")
 const ESCENA_PAUSA: PackedScene = preload("res://nucleo/pausa.tscn")
@@ -33,8 +31,8 @@ static var llegada_a_banco: bool = false
 ## Id de la Estacion donde aparece el jugador en la proxima sala (viaje rapido); manda sobre puerta_llegada.
 static var estacion_llegada: String = ""
 ## Time.get_ticks_msec() cuando el Fundido pidio el cambio de escena; -1 si no hay uno en curso. En un build de
-## depuracion, el primer tick de la sala nueva imprime cuanto tardo (decision del 14-oct-2026: se mide en el S50
-## antes de pensar en cargar en segundo plano).
+## depuracion, el primer tick de la sala nueva imprime cuanto tardo: se mide la carga antes de pensar en cargar
+## en segundo plano.
 static var cambio_pedido_ms: int = -1
 
 static var _indice_nombres: Resource = null
@@ -126,7 +124,7 @@ func clave() -> String:
 
 ## Clave de la sala a la que pertenece un nodo: su owner si es la Sala y, si no, la primera Sala entre sus ancestros;
 ## vacia si no esta en una sala. Dentro de una pieza instanciada el owner es la raiz de la pieza
-## (classes/class_node.rst:38): sin subir por los padres, un objeto recordado dentro de una pieza no se guardaria.
+## (classes/class_node.rst): sin subir por los padres, un objeto recordado dentro de una pieza no se guardaria.
 static func clave_de(nodo: Node) -> String:
 	var sala: Sala = nodo.owner as Sala
 	var actual: Node = nodo.get_parent()
@@ -136,6 +134,11 @@ static func clave_de(nodo: Node) -> String:
 	return sala.clave() if sala != null else ""
 
 
+## Si Partida recuerda el objeto (roto, abierto, recogido, comprado) en la sala del nodo.
+static func recordado(nodo: Node, objeto: String) -> bool:
+	return Partida.estado_de(clave_de(nodo), objeto) != null
+
+
 ## Donde puede volver el jugador si ningun punto seguro ni su llegada tienen suelo (Jugador.ultimo_punto_seguro): la
 ## Entrada y cada banco de la sala, en globales y en ese orden.
 func puntos_de_respaldo() -> PackedVector2Array:
@@ -143,11 +146,18 @@ func puntos_de_respaldo() -> PackedVector2Array:
 	var entrada: Node2D = get_node_or_null(^"Entrada") as Node2D
 	if entrada != null:
 		puntos.append(entrada.global_position)
-	for hijo: Node in get_children():
-		var banco: Banco = hijo as Banco
-		if banco != null:
-			puntos.append(banco.global_position)
+	for banco: Banco in _bancos():
+		puntos.append(banco.global_position)
 	return puntos
+
+
+# Los bancos de la sala, tambien los que van dentro de una pieza.
+func _bancos() -> Array[Banco]:
+	var bancos: Array[Banco] = []
+	for nodo: Node in find_children("*", "", true, false):
+		if nodo is Banco:
+			bancos.append(nodo as Banco)
+	return bancos
 
 
 func _ready() -> void:
@@ -260,7 +270,7 @@ func _poner_mochila() -> void:
 	add_child(mochila)
 
 
-# Se reaparece en el ultimo banco donde se descanso; si no hay, en la Entrada de esta sala.
+# Arma la cuenta atras de la reaparicion.
 func _al_morir_el_jugador() -> void:
 	_ticks_para_reaparecer = TICKS_PARA_REAPARECER
 
@@ -317,10 +327,9 @@ func _puerta_con_id(id_puerta: StringName) -> Puerta:
 
 func _punto_de_llegada(por_puerta: Puerta) -> Vector2:
 	if llegada_a_banco:
-		for hijo: Node in get_children():
-			var banco: Banco = hijo as Banco
-			if banco != null and banco.id == Partida.banco:
-				return banco.position
+		for banco: Banco in _bancos():
+			if banco.id == Partida.banco:
+				return to_local(banco.global_position)
 		push_error("Sala %s: no hay un banco con id '%s'" % [scene_file_path, Partida.banco])
 	elif not estacion_llegada.is_empty():
 		# Si una puerta y una estacion piden a la vez, manda la estacion: el viaje es lo ultimo que se pidio.

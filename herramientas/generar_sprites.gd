@@ -1,10 +1,8 @@
 extends Node
-# Genera nucleo/arte/jugador_hombre/jugador_hombre.tres (SpriteFrames del cuerpo del jugador) desde el JSON que deja el
-# script que arma el atlas, fuera del repo: por cuadro, su region en la pagina, su margin.position en el lienzo comun
-# y su duracion. Con ResourceSaver, para que Godot escriba el formato, mas el uid de la cabecera y el del atlas, que ese
-# guardado no escribe fuera del editor (guardar_con_uids de validar.gd). Se corre tras reimportar el atlas:
-# & $env:GODOT_PATH --headless --path . --quit-after 600 res://herramientas/generar_sprites.tscn -- --atlas=<json>
-# Los metadatos del .tres anterior (META_CONSERVADOS) pasan al nuevo: son datos del personaje que el atlas no trae.
+# Genera jugador_hombre.tres desde el JSON del atlas externo: regiones, margenes y duraciones por cuadro.
+# Se corre con generar_sprites.tscn y --atlas=<json> tras reimportar el atlas; ResourceSaver escribe el formato.
+# Agrega los uid del recurso y del atlas, que ResourceSaver no escribe fuera del editor.
+# Conserva META_CONSERVADOS del .tres anterior porque son datos del personaje que el atlas no trae.
 
 const CARPETA: String = "res://nucleo/arte/jugador_hombre/"
 const DESTINO: String = CARPETA + "jugador_hombre.tres"

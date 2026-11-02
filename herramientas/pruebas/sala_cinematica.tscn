@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://cebyr64ic063i"]
+
+[ext_resource type="Script" uid="uid://dlhxocqqmcba7" path="res://herramientas/pruebas/prueba_cinematica.gd" id="1_prueba"]
+
+[node name="SalaCinematica" type="Node"]
+script = ExtResource("1_prueba")

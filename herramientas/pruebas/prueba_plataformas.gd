@@ -47,16 +47,6 @@ func _jugador(sala: Sala) -> Jugador:
 	return sala.get_node(^"Jugador") as Jugador
 
 
-func _poner(jugador: Jugador, punto: Vector2) -> void:
-	jugador.global_position = punto
-	jugador.velocity = Vector2.ZERO
-
-
-# Un peligro deja al jugador quieto mientras la pantalla funde a negro y, ya en negro, lo pone en su punto.
-func _esperar_fundido() -> void:
-	await _esperar(Fundido.TICKS_OSCURECER + Fundido.TICKS_EN_NEGRO_PELIGRO + 1)
-
-
 func _esperar_elevador_arriba(elevador: Node2D) -> void:
 	while elevador.global_position.y > ELEVADOR_ARRIBA + 0.5:
 		await _esperar(1)
@@ -178,7 +168,7 @@ func _punto_seguro_sobre_plataforma() -> void:
 	await _esperar(120)
 	var vidas: int = jugador.vidas
 	jugador.recibir_dano(1, jugador.global_position.x, true)
-	await _esperar_fundido()
+	await _esperar_fundido(1)
 	_caso("punto seguro: tras ir en la plataforma, un peligro vuelve al ultimo suelo fijo y quita una vida",
 		jugador.global_position.distance_to(PUNTO_FIRME) < 1.0 and jugador.vidas == vidas - 1)
 	sala.free()
@@ -201,7 +191,7 @@ func _punto_seguro_en_la_pausa() -> void:
 	_caso("punto seguro: bajo una llegada sobre el elevador, el rayo largo da el suelo fijo y no el elevador",
 		en_pausa and not abajo.is_empty() and absf((abajo["position"] as Vector2).y - SUELO_Y) < 1.0)
 	jugador.recibir_dano(1, jugador.global_position.x, true)
-	await _esperar_fundido()
+	await _esperar_fundido(1)
 	_caso("punto seguro: quieto sobre el elevador en su pausa no cuenta",
 		en_pausa and jugador.global_position.distance_to(Vector2(1800.0, SUELO_Y)) < 1.0)
 	sala.free()
@@ -223,7 +213,7 @@ func _suelo_fragil_roto() -> void:
 	while jugador.vidas == vidas and ticks < 120:
 		await _esperar(1)
 		ticks += 1
-	await _esperar_fundido()
+	await _esperar_fundido(1)
 	_caso("punto seguro: roto el suelo fragil, el peligro de abajo lleva a la llegada y no al aire",
 		jugador.vidas == vidas - 1 and jugador.global_position.distance_to(ENTRADA) < 1.0)
 	_caso("punto seguro: la mochila tampoco queda en el aire", jugador.ultimo_punto_seguro().distance_to(ENTRADA) < 1.0)
@@ -246,7 +236,7 @@ func _aplastar() -> void:
 		await _esperar(1)
 		hundido = maxf(hundido, jugador.global_position.y - SUELO_Y)
 	_caso("aplastar: el elevador que baja le quita una vida, sin hundirlo", jugador.vidas == vidas - 1 and hundido < 1.0)
-	await _esperar_fundido()
+	await _esperar_fundido(1)
 	await _esperar(200)
 	_caso("aplastar: y reaparece fuera de la pieza sin otro golpe", jugador.vidas == vidas - 1 and jugador.is_on_floor()
 		and jugador.global_position.distance_to(Vector2(1800.0, SUELO_Y)) < 1.0)
@@ -395,7 +385,7 @@ func _delgada_saltar() -> void:
 		absf(jugador.global_position.y - lampara.global_position.y) < 1.0 and jugador.is_on_floor())
 	await _esperar(30)
 	jugador.recibir_dano(1, jugador.global_position.x, true)
-	await _esperar_fundido()
+	await _esperar_fundido(1)
 	_caso("delgada: es fija, cuenta como punto seguro", absf(jugador.global_position.y - lampara.global_position.y) < 1.0)
 	sala.free()
 

@@ -1,10 +1,9 @@
 class_name MuroRompible
 extends StaticBody2D
-# Pared, techo o suelo que se rompe a golpes, como los muros secretos de Hollow Knight y Silksong: aguanta
-# golpes (uno por golpe, sea el ataque, la bola o la onda de la picada), se sacude y hace temblar la camara con cada
-# uno y, al romperse, suelta escombros, desvanece lo que tapaba (tapas), muestra lo que solo existe roto (descubre) y
-# se queda roto: con id se marca en el estado de su sala. Golpearlo no da Inspiracion (su Golpeable no es un enemigo).
-# Va en la sala con su forma y su dibujo. Lo escondido detras queda encerrado por el solido, no oculto.
+# Pared, techo o suelo secreto como en Hollow Knight y Silksong; cuenta una vez cada ataque, bola u onda de picada.
+# Cada golpe sacude muro y camara; romperlo suelta escombros, desvanece tapas y muestra descubre.
+# Con id conserva la rotura en su sala; su Golpeable es objeto para no dar Inspiracion al golpearlo.
+# Va con forma y dibujo en la sala: lo de detras queda encerrado por el solido, sin ocultarse por si mismo.
 
 ## Al romperse.
 signal se_rompio()
@@ -24,10 +23,10 @@ const COLOR_ESCOMBROS: Color = Color(0.5, 0.47, 0.44)
 ## Solo cuentan los golpes desde este lado (un atajo que se abre desde dentro). CUALQUIERA: todos.
 @export var solo_desde: Lado = Lado.CUALQUIERA
 ## Dibujos que tapan lo de detras: se desvanecen al romperse y, ya roto, no aparecen. Nodos exportados, resueltos por
-## el editor (tutorials/scripting/gdscript/gdscript_exports.rst:321).
+## el editor (tutorials/scripting/gdscript/gdscript_exports.rst).
 @export var tapas: Array[CanvasItem] = []
 ## Dibujos que solo existen roto (las orillas del hueco, lo que asoma por el): ocultos hasta romperse. Solo dibujos:
-## visible no apaga la fisica ni el proceso (classes/class_canvasitem.rst:803), asi que un objeto que se toma va
+## visible no apaga la fisica ni el proceso (classes/class_canvasitem.rst), asi que un objeto que se toma va
 ## encerrado detras del muro y no aqui (lo exige el validador).
 @export var descubre: Array[CanvasItem] = []
 ## Ticks que tarda una tapa en desvanecerse.
@@ -67,7 +66,7 @@ func _ready() -> void:
 		elif hijo is CanvasItem:
 			_dibujos.append(hijo as CanvasItem)
 			_posiciones.append(_posicion_de(hijo as CanvasItem))
-	var ya_roto: bool = not id.is_empty() and Partida.estado_de(Sala.clave_de(self), id) != null
+	var ya_roto: bool = not id.is_empty() and Sala.recordado(self, id)
 	_mostrar_descubiertos(ya_roto)
 	if ya_roto:
 		roto = true

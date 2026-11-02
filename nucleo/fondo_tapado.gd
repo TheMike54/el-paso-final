@@ -1,10 +1,9 @@
 class_name FondoTapado
 extends Control
-# Fondos que una pared opaca tapa: sus hijos (las capas Parallax2D de atras) se recortan al borde donde acaba la
-# pared (clip_contents, classes/class_control.rst:1616) y se ocultan del todo mientras la vista cae entera dentro de
-# la pared. Lo tapado ya no se pinta: +7 FPS donde se ve el fin de la pared y +2,6 en el recorrido (La Celda en el S50,
-# 25-oct-2026); que limita en cada sala se mide A/B. En el editor se usa en (0, 0); se acomoda solo al entrar.
-# La pared esta a la izquierda de lo que se ve (lo normal) o a la derecha (lado).
+# Recorta los Parallax2D hijos tras una pared opaca con clip_contents (classes/class_control.rst) para no pintarlos.
+# Los oculta del todo si la vista queda dentro de la pared; lado admite pared a izquierda o derecha de lo visible.
+# En La Celda del S50 dio +7 FPS en el borde y +2,6 en el recorrido; el limite de cada sala se mide A/B.
+# Se coloca en (0, 0) en el editor y se acomoda al entrar para compensar el recorte.
 
 ## Grupo de los fondos tapados de la sala: el panel de pruebas los apaga juntos.
 const GRUPO: StringName = &"fondos_sala"

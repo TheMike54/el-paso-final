@@ -1,10 +1,9 @@
 class_name Golpeable
 extends Area2D
-# Componente de lo que el ataque del jugador puede golpear (enemigos, objetos que se rompen).
-# Va como hijo del nodo golpeable, con su forma; cuenta los golpes, empuja un poco a su padre
-# lejos del atacante (sin cruzar paredes ni salir de la sala) y avisa con la senal golpeado (con el dano, para quien lleve la vida) y con
-# Eventos.enemigo_golpeado, o con Eventos.objeto_golpeado si no es un enemigo (muro, palanca: sin Inspiracion). Lo
-# golpean el ataque del jugador y el proyectil.
+# Receptor comun de ataques del jugador y proyectiles para enemigos y objetos, como muros o palancas.
+# Va como hijo con su forma; cuenta golpes y empuja al padre sin cruzar paredes ni salir de la sala.
+# Delega la vida con golpeado(atacante, dano) y avisa por Eventos.enemigo_golpeado u objeto_golpeado.
+# Distingue objetos de enemigos para que golpear un objeto no de Inspiracion.
 
 signal golpeado(atacante: Node2D, dano: int)
 ## Un golpe que bloqueo (bloqueo dio true): no conto, no empujo ni dio Inspiracion.
@@ -24,7 +23,7 @@ var dano_recibido: int = 0
 ## Si es valido y devuelve true para el atacante, el golpe rebota (escudo, caparazon cerrado), como el golpe que
 ## bloquea HealthManager.Invincible de Hollow Knight: sin dano, sin empuje y sin Inspiracion; avisa con
 ## Eventos.objeto_golpeado (suena y vibra como pegarle a un objeto) y con bloqueado. Lo fija el Enemigo con
-## ComportamientoEnemigo.bloquea_golpe. Firma: func(atacante: Node2D) -> bool (classes/class_callable.rst:484).
+## ComportamientoEnemigo.bloquea_golpe. Firma: func(atacante: Node2D) -> bool (classes/class_callable.rst).
 var bloqueo: Callable = Callable()
 
 var _ticks_empujado: int = 0

@@ -12,7 +12,7 @@ const RUTA_PRUEBAS: String = "res://herramientas/salas/fichas/equipo_prueba.tres
 
 
 ## La ficha del amuleto con ese id, o null si no esta en ningun catalogo. Busca primero en el del juego. Sin cache
-## propia: load() devuelve la copia que ya tiene el motor (tutorials/scripting/resources.rst:30) y las listas son
+## propia: load() devuelve la copia que ya tiene el motor (tutorials/scripting/resources.rst) y las listas son
 ## cortas; una estatica que guardara las fichas no se libera al salir. El catalogo se lee como Resource y no como
 ## CatalogoEquipo: que este script se nombre a si mismo deja al salir un ciclo de referencias que no se libera
 ## (docs/errores/2026-10-29-fuga-catalogo-equipo.md).

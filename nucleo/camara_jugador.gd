@@ -2,8 +2,8 @@ class_name CamaraJugador
 extends Camera2D
 # Camara del jugador (nodo Camara de nucleo/jugador.tscn): lo sigue a mano, recortada a los limites de la sala y a
 # los de la ZonaCamara que manda, y tiembla. No tiene tick ni _ready propios: el Jugador la llama en su
-# _physics_process, en los mismos puntos de siempre, para que el seguimiento y el temblor corran en el mismo orden que
-# el movimiento y paren con el congelado.
+# _physics_process para mantener el orden respecto al movimiento. El seguimiento corre siempre;
+# solo el avance del temblor se detiene con el congelado.
 
 ## Ticks desde que se coloco la camara (al entrar a la sala o al reaparecer) en que entrar a una ZonaCamara la coloca
 ## al instante en vez de suavizar: medio segundo, el startLockedTimer de Hollow Knight. Cubre la llegada por una
@@ -123,7 +123,7 @@ func salir_zona(zona: ZonaCamara) -> void:
 
 
 ## Lo que la camara puede mostrar ahora: los limites de la sala recortados por los de la zona que manda
-## (classes/class_rect2.rst:437). Una zona que ya no existe deja de mandar.
+## (classes/class_rect2.rst). Una zona que ya no existe deja de mandar.
 func limites_vista() -> Rect2:
 	var zona: ZonaCamara = _zona_que_manda()
 	if zona == null:
@@ -170,7 +170,7 @@ func detener_temblor() -> void:
 
 # Centro de la camara al que se quiere llegar: sobre el jugador, recortado para que la vista no salga
 # de limites_vista() (la sala y la zona que manda). Si la vista es mayor que ese rectangulo en un eje, se centra en
-# ese eje, como hace Camera2D con sus limites (medido el 07-oct-2026); si no, el recorte con los bordes invertidos
+# ese eje, como hace Camera2D con sus limites; si no, el recorte con los bordes invertidos
 # daria otro punto.
 func _objetivo(pies: Vector2, mirando: float) -> Vector2:
 	var limites: Rect2 = limites_vista()

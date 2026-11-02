@@ -21,7 +21,7 @@ func _ready() -> void:
 
 ## Si ya se tomo en esta partida. Por omision, la marca de su id en el estado de su sala.
 func ya_recogido() -> bool:
-	return Partida.estado_de(Sala.clave_de(self), id) != null
+	return Sala.recordado(self, id)
 
 
 ## Si lo recuerda la sala por su id (el validador lo exige unico); false si lo recuerda otra cosa de la partida.

@@ -11,8 +11,8 @@ extends Area2D
 ## Pieza que aplasta contra esta zona fija, en el extremo de su recorrido: solo dana al que esta en el suelo mientras la
 ## pieza viene hacia aca y lo alcanza (como los Hero Squasher de Silksong). Vacio: dana siempre.
 @export var aplastador: Vaiven = null
-## Px de los pies del jugador al origen de aplastador en los que empieza a danar: su grosor mas el alto del jugador (180),
-## y un margen para que el peligro llegue antes de que el cuerpo solido lo hunda en el suelo.
+## Px de los pies del jugador al origen de aplastador en los que empieza a danar: 160 de alto (Jugador.TAMANO.y)
+## mas 30 entre el grosor de la pieza y el margen, hasta 190, para danar antes de que el solido lo hunda en el suelo.
 @export var alcance_aplastar: float = 190.0
 
 

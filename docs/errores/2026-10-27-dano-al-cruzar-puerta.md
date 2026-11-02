@@ -11,4 +11,4 @@
   hacer nada (también ante un peligro) y `puede_interactuar` es falso. Se mueve con `move_and_slide` y tiene un tope
   de ticks para no quedarse así si el cambio falla. Morir o reaparecer cortan la transición.
 - **Lo cubre:** `herramientas/guiones/nucleo/transicion.guion` (`prueba_transicion.gd`: sin el `en_transicion` de
-  `recibir_dano`, fallan 3 casos) y `nucleo/bus_eventos.guion` (`jugador_danado` 0 en la ida y vuelta).
+  `recibir_dano`, fallan 3 casos) y `herramientas/guiones/nucleo/bus_eventos.guion` (`jugador_danado` 0 en la ida y vuelta).

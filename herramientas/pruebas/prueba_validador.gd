@@ -421,6 +421,15 @@ func _probar_habilidades() -> void:
 	objeto.habilidad = &"volar"
 	_da("habilidades: objeto con una habilidad que no existe falla", _correr(_revisar_habilidades.bind(RUTA, raiz)), "Objeto: 'volar' no es una habilidad")
 	objeto.habilidad = Habilidades.IMPULSO
+	var raiz_amuleto: Node2D = Node2D.new()
+	var suelto: ObjetoAmuleto = _agregar(raiz_amuleto, ObjetoAmuleto.new(), "Suelto") as ObjetoAmuleto
+	suelto.amuleto = &"equipo_inexistente"
+	_da("equipo: ObjetoAmuleto fuera del catalogo falla", _correr(_revisar_habilidades.bind(RUTA, raiz_amuleto)),
+			"%s ('equipo_inexistente' no es un amuleto de CatalogoEquipo)" % RUTA)
+	suelto.amuleto = &"amuleto_prueba"
+	_da("equipo: ObjetoAmuleto solo de pruebas falla fuera de herramientas", _correr(_revisar_habilidades.bind(RUTA, raiz_amuleto)),
+			"%s ('amuleto_prueba' solo esta en el catalogo de pruebas)" % RUTA)
+	raiz_amuleto.free()
 	var tienda: Tienda = _agregar(raiz, Tienda.new(), "Puesto") as Tienda
 	var articulo: ArticuloTienda = _articulo("pluma", 10, true)
 	articulo.recompensa.tipo = Recompensa.Tipo.HABILIDAD
@@ -532,6 +541,11 @@ func _probar_sala() -> void:
 	sala.inspiracion_maxima_de_prueba = 66
 	_da("sala: inspiracion_maxima_de_prueba en una sala del juego falla", _correr(_revisar_sala.bind("res://contenido/salas/prueba/prueba_90.tscn", sala)), "inspiracion_maxima_de_prueba es solo para salas de prueba")
 	sala.inspiracion_maxima_de_prueba = 0
+	var con_banco: Node2D = _hijo_de_sala(sala, Node2D.new(), "ConBanco") as Node2D
+	var banco_de_pieza: Banco = _agregar(con_banco, Banco.new(), "Banco") as Banco
+	banco_de_pieza.id = "banco_otro"
+	_da("sala: banco dentro de una pieza con id ajeno falla", _correr(_revisar_sala.bind(RUTA_SALA, sala)), "el banco banco_otro debe tener id banco_prueba_90")
+	con_banco.free()
 	_suelo(sala, "SueloSinId", "")
 	_da("sala: suelo fragil sin id falla", _correr(_revisar_sala.bind(RUTA_SALA, sala)), "SueloSinId se recuerda en la partida y necesita id")
 	sala.free()
@@ -583,7 +597,7 @@ func _probar_fichas_zona() -> void:
 	_da("zona: sala de contenido sin ficha falla", _correr(_revisar_sala.bind(ruta, sala)), "sala de contenido sin ficha_zona")
 	_sin_fallos("zona: sala de herramientas sin ficha no falla", _correr(_revisar_sala.bind(RUTA_SALA, sala)))
 	var ficha: FichaZona = FichaZona.new()
-	# Rutas solo en memoria, sin guardar archivos ni modificar fichas cargadas (class_resource.rst:235).
+	# Rutas solo en memoria, sin guardar archivos ni modificar fichas cargadas (class_resource.rst).
 	ficha.resource_path = "user://prueba_validador_zona_a.tres"
 	sala.ficha_zona = ficha
 	_sin_fallos("zona: sala de contenido con ficha no falla", _correr(_revisar_sala.bind(ruta, sala)))

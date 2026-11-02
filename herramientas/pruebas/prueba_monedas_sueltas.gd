@@ -93,6 +93,4 @@ func _monedas(sala: Sala, id: String) -> MonedasSueltas:
 
 
 func _borrar() -> void:
-	for ruta: String in [RUTA, RUTA + ".tmp"]:
-		if FileAccess.file_exists(ruta):
-			DirAccess.remove_absolute(ruta)
+	_borrar_archivos(RUTA)

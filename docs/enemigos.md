@@ -88,7 +88,7 @@ ataca es un script que la ficha referencia (`comportamiento`), en `contenido/ene
     hace nada; con `false` vuelve al modo de la ficha.
 - `nucleo/ataque_enemigo.gd` (`class_name AtaqueEnemigo`, hereda de `DanoContacto`): el ataque, separado del cuerpo;
   daña mientras dura (`ticks`; 0, hasta que lo quiten) y no corre durante el congelado. No se dibuja (su área se
-  ve con «Ver hitbox»; decidido por la persona el 25-oct-2026). Con `se_puede_parar` al empezar deja el mismo trazo
+  ve con «Ver hitbox»). Con `se_puede_parar` al empezar deja el mismo trazo
   blanco que el golpe del jugador
   (`TrazoAtaque`, hijo `Trazo`, de lado y hacia donde está su forma; un `ProyectilEnemigo` no, `con_trazo`). `parado` es pública.
 - `nucleo/trazo_ataque.gd` (`class_name TrazoAtaque`, `Sprite2D`): la media luna blanca de un golpe (`nucleo/arte/trazo_ataque.png`, que genera `herramientas/generar_trazo.gd`). `mostrar(centro_area, direccion, mirando)` la coloca con `TrazoAtaque.pose()` (función pura: `DESDE_AREA` girado hacia donde pega, espejado a la izquierda; arriba −90° y abajo +90°); sus tiempos y su escala son constantes del script. Cuenta ticks de física (quieta en la pausa y el congelado) y va sin luz (`LIGHT_MODE_UNSHADED`, el material compartido de `EfectoCuadros.material_sin_luz()`): ni la oscuridad de la sala ni el brillo la apagan.
@@ -98,14 +98,14 @@ ataca es un script que la ficha referencia (`comportamiento`), en `contenido/ene
   dos, hasta un sólido (rayo que cubre el paso del tick) o 180 ticks. `velocidad_para(objetivo, grados, gravedad,
   tope)` da la velocidad inicial con ángulo fijo y rapidez calculada (como Silksong), sin pasar de `tope`.
 - Parry: el ataque normal del jugador (en cualquier dirección) que toca un `AtaqueEnemigo` con `se_puede_parar` lo para: el ataque desaparece sin dañar, el jugador queda `ticks_invulnerable_parry` ticks sin daño de enemigos (los peligros sí dañan), congelado común de `ticks_congelado_parry` con un destello de luz en la punta de la espada (`docs/jugador.md`, «Dibujo»), después el jugador sale empujado hacia atrás (`ticks_retroceso_parry`) y su carrera o voltereta se corta, el enemigo dueño del ataque recibe el golpe (su `Golpeable` lo empuja) (con su Inspiración) y se emite `parry`. Lo resuelve quien se procese primero: el jugador en su ataque o el `AtaqueEnemigo` antes de dañar (`Jugador.intentar_parar`). `paradas` del jugador las cuenta.
-- Un `ProyectilEnemigo` con `se_puede_parar` no se para: se desvía (decidido por la persona el 25-oct-2026, como la
+- Un `ProyectilEnemigo` con `se_puede_parar` no se para: se desvía (como la
   versión ligera del choque de Silksong, `noClashFreeze`). Desaparece con una chispa (el destello del parry a la mitad, `ESCALA_CHISPA`), sin
   congelado, cuerpo en blanco, retroceso, invulnerabilidad ni Inspiración, y se emite `objeto_golpeado` (suena y vibra como
   pegarle a un objeto), no `parry`. `desviados` del jugador los cuenta.
 - Débil: reaparece solo, porque la sala se instancia de nuevo cada vez que se entra. Fuerte: al vencerlo,
   `Partida.vencer(clave())` lo anota y, mientras siga anotado, no aparece al entrar a su sala. La lista se borra
   al descansar en un banco y al morir el jugador (como los semipersistentes de Hollow Knight).
-- Enemigos nuevos (decisión del 14-oct-2026): con estas mismas piezas (`Golpeable`, `DanoContacto`, comportamiento en
+- Enemigos nuevos: con estas mismas piezas (`Golpeable`, `DanoContacto`, comportamiento en
   la ficha); sus estados, con un `enum` mientras sean pocos; las zonas de golpe, formas invisibles aparte del dibujo;
   la animación, con `AnimatedSprite2D`.
 

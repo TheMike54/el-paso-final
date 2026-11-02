@@ -2,7 +2,7 @@
 
 **Para qué sirve:** sumar un efecto de jugador o de evento, o el tema de una sala o de un tramo de sala, y dejarlo
 declarado.
-**Antes de empezar:** leer `docs/audio.md` («Audio», «Efectos de sonido» y «Música»), `docs/componentes.md` («Componentes», fila `RegionMusica`), `docs/contrato.md` («Sala», propiedades `tema_musica` y `volumen_musica_db`) y `docs/uso-de-ia.md`.
+**Antes de empezar:** leer `docs/audio.md` («Audio», «Efectos de sonido» y «Música»), `docs/componentes.md` («Componentes», fila `RegionMusica`), `docs/sala.md` (propiedades `tema_musica` y `volumen_musica_db`) y `docs/uso-de-ia.md`.
 
 ## Efecto de jugador o de evento
 1. Producir el sonido como WAV (formato de efectos, `docs/audio.md`, «Audio», viñeta «Formatos»). La

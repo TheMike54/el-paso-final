@@ -13,7 +13,7 @@ const TEMA_MENU: AudioStream = preload("res://nucleo/sonidos/musica_menu.ogg")
 const SILENCIO: AudioStream = preload("res://nucleo/sonidos/silencio.tres")
 ## Volumen de region normal, en dB: el snapshot «Normal» de Hollow Knight.
 const DB_NORMAL: float = 0.0
-## El snapshot «Silent» de Hollow Knight: -60 dB, en la practica callado (tutorials/audio/audio_buses.rst:40-42).
+## El snapshot «Silent» de Hollow Knight: -60 dB, en la practica callado (tutorials/audio/audio_buses.rst).
 const DB_SILENCIO: float = -60.0
 ## Segundos del fundido de un tema a otro al entrar a una sala.
 const FUNDIDO: float = 2.0
@@ -162,7 +162,7 @@ func _entrar(tema: AudioStream) -> int:
 	if entra >= 0:
 		return entra
 	entra = 0 if _volumenes[0] <= _volumenes[1] else 1
-	# Asignar el stream corta lo que ese reproductor tocaba (classes/class_audiostreamplayer.rst:301): solo pasa con un
+	# Asignar el stream corta lo que ese reproductor tocaba (classes/class_audiostreamplayer.rst): solo pasa con un
 	# tercer tema dentro de un fundido, y es el mas callado de los dos.
 	if _fundidos[entra] != null:
 		_fundidos[entra].kill()
@@ -185,7 +185,7 @@ func _fundir(cual: int, destino: float, segundos: float, rehacer: bool) -> void:
 	if _fundidos[cual] != null:
 		_fundidos[cual].kill()
 	_destinos[cual] = destino
-	# En ticks de fisica, como el resto de la logica (classes/class_tween.rst:274).
+	# En ticks de fisica, como el resto de la logica (classes/class_tween.rst).
 	var tween: Tween = create_tween().set_process_mode(Tween.TWEEN_PROCESS_PHYSICS)
 	tween.tween_method(_poner_volumen.bind(cual), _volumenes[cual], destino, maxf(segundos, 0.01))
 	if is_zero_approx(destino):

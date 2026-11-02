@@ -5,7 +5,7 @@ Validador, puerto de depuración, guiones, revisión del entorno y hooks: lo que
 ## Piezas: lo que no se deduce del código
 | Pieza | Contrato |
 |---|---|
-| `validar.ps1` + `validar.tscn` | La lógica vive en `validar.gd`; el `.ps1` y el CI solo corren la escena y revisan la salida. Carga cada `.gd`, `.tscn` y `.tres` y revisa cada `funciones.json`: campos `id`, `que`, `comprobacion` y `pasa`, ids sin repetir y, con `"pasa": true`, que exista cada archivo de la comprobación (varias rutas separadas por `;`) salvo que empiece con `manual:`. Pasa solo si aparece `VALIDACION archivos=N fallos=0` y ninguna línea `SCRIPT ERROR`, `ERROR:` o `FALLO`. Los `AVISO` no hacen fallar: `docs/contrato.md`, «Avisos del validador» |
+| `validar.ps1` + `validar.tscn` | La lógica vive en `validar.gd`; el `.ps1` y el CI solo corren la escena y revisan la salida. Carga cada `.gd`, `.tscn` y `.tres` y revisa cada `funciones.json`: campos `id`, `que`, `comprobacion` y `pasa`, ids sin repetir y, con `"pasa": true`, que exista cada archivo de la comprobación (varias rutas separadas por `;`) salvo que empiece con `manual:`. Pasa solo si aparece `VALIDACION archivos=N fallos=0` y ninguna línea `SCRIPT ERROR`, `ERROR:` o `FALLO`. Los `AVISO` no hacen fallar: `docs/validador.md`, «Avisos del validador» |
 | `puerto_depuracion.gd` | No es autoload: lo carga el arranque del núcleo solo en builds de depuración. Modo guion (`--guion=`): compara el resultado con el `.esperado`, imprime `GUION OK` o `GUION FALLA` y sale con 0 o 1. Sin ese argumento no hace nada |
 | `guiones/<bloque>/<nombre>.guion` y `.esperado` | Entradas por cuadro y estado esperado al final, más, con líneas `en <cuadro>`, en cuadros intermedios. Formato, claves y condiciones de fallo en `docs/guiones.md` |
 | `correr-guiones.ps1` | Mismo criterio que el paso «Input scripts» del CI; en serie, porque las pruebas comparten archivos de `user://`. Si cambia el criterio del CI, cambia este en el mismo PR |
@@ -20,8 +20,8 @@ Validador, puerto de depuración, guiones, revisión del entorno y hooks: lo que
   solo de una lista fija y escribiendo solo dentro de `user://`.
 - Los guiones siguen `docs/guiones.md`: comprueban lo que importa, con tolerancia.
 - Un error puesto a propósito en un `.gd` debe hacer fallar `validar.ps1`; si no falla, el validador está mal.
-- Las reglas del validador sobre escenas viven en `docs/validador.md` (la lista completa), `docs/contrato.md`
-  («Sala», «Paquete de publicación»), `docs/arte-y-rendimiento.md` («Recursos») y `mapa/CLAUDE.md` (índice de
+- Las reglas del validador sobre escenas viven en `docs/validador.md` (la lista completa), `docs/sala.md`,
+  `docs/contrato.md` («Paquete de publicación»), `docs/arte-y-rendimiento.md` («Recursos») y `mapa/CLAUDE.md` (índice de
   salas). Cada una tiene su entrada en `funciones.json` (casi todas `validador-*`): se busca por el id. Una regla
   nueva va a `docs/validador.md` y a su entrada, no aquí.
 - Los `.ps1`, además de lo que dice el raíz: sin `$ErrorActionPreference = 'Stop'` alrededor de un ejecutable.

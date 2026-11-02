@@ -5,7 +5,7 @@ Las salas viven en `herramientas/salas/`; el menú las agrupa según `GRUPOS` de
 (las de `enemigos/`, una por comportamiento de enemigo, se agregan solas al final de «Enemigos»; otra que no esté
 ahí ni en `OCULTAS` sale sola en «Otras»). Las pruebas de código, sin jugador, están aparte, en
 `herramientas/pruebas/` (ver «Fuera del menú»). Al agregar, quitar o cambiar una sala, se actualiza su
-fila aquí en el mismo cambio. Inventario del 15-oct-2026; siete categorías desde el 17-oct-2026.
+fila aquí en el mismo cambio. El inventario se organiza en siete categorías.
 
 ## Cómo se entra
 
@@ -18,9 +18,9 @@ fila aquí en el mismo cambio. Inventario del 15-oct-2026; siete categorías des
 
 ## Suelo
 
-Igual que en las salas del juego (`docs/contrato.md`, «Sala», cámara): bajo los pies se ven 40 px de suelo, y 120 en
+Igual que en las salas del juego (`docs/sala.md`, cámara): bajo los pies se ven 40 px de suelo, y 120 en
 las salas de caída larga (Caída). Los sólidos se dibujan de `Color(0.3, 0.3, 0.32)`. Dos salas muestran más a
-propósito: Peligro (el foso de pinchos) e Impulso (los bloques altos). Igualado el 17-oct-2026.
+propósito: Peligro (el foso de pinchos) e Impulso (los bloques altos).
 
 ## Movimiento
 
@@ -84,7 +84,7 @@ propósito: Peligro (el foso de pinchos) e Impulso (los bloques altos). Igualado
 | Reto | 1600×720: «Sinodal», 3 preguntas, meta 2, premio 50 PejeCoins | ninguna | Reto de preguntas |
 | Lo perdido | 2400×720: da 120 PejeCoins al entrar sin monedas ni mochila y deja una vida; pinchos a la derecha | pluma | Morir con monedas, volver por la mochila y recuperarla con el reto de la bolsa de prueba (6 preguntas, 3 por intento, meta 2) |
 | Tienda | 2000×720: da 300 PejeCoins la primera vez; el impulso a la izquierda y la tienda a la derecha, con cuatro artículos: pluma del mapa (50), vida máxima (500, no alcanza), doble salto (100, solo con el impulso) y un amuleto (120) | pluma | Comprar: el precio, lo gris, confirmar con Sí / No con el pulgar y con el control, y que lo comprado no vuelva |
-| Equipo | 3600×720: una entrega junto a la entrada da una sola vez los cinco amuletos de prueba (prueba, velocidad, escudo, Inspiración, botín) y la brújula; un banco cerca; suelo largo y despejado; al fondo, un caminante en una plataforma con 6 de vida y 10 PejeCoins de botín | pluma | Las páginas Amuletos y Útiles sentado, la carga, la brújula en el mapa y cada efecto: caminar, recibir un golpe, golpear y vencer con botín |
+| Equipo | 3600×720: una entrega junto a la entrada da una sola vez los cinco amuletos de prueba (prueba, velocidad, escudo, Inspiración, botín), Patas de Cucaracha y la brújula; un banco cerca; suelo largo y despejado; al fondo, un caminante en una plataforma con 6 de vida y 10 PejeCoins de botín | pluma | Las páginas Amuletos y Útiles sentado, la carga, la brújula en el mapa y cada efecto: caminar, recibir un golpe, golpear y vencer con botín |
 | Jefe | 2400×720: jefe de caja gris con 12 de vida y umbral en 6, dos portones abiertos al entrar; dentro se cierran y despierta; fase 0 camina, fase 1 acelera y embiste tras una pausa; premio impulso | pluma | Cerrar al entrar, reconocer la segunda fase y su aviso, abrir al vencer y recibir impulso una sola vez; volver sin jefe y morir sin premio |
 
 ## Rendimiento
@@ -112,6 +112,6 @@ Salas con id, unidas por puertas, como en el juego real. Todas dan `pluma`, salv
 
 - `OCULTAS` solo lleva la propia zona y Puerta B: son de `herramientas/salas/` y se juegan, pero no se listan.
 - Las pruebas de código (`sala_*.tscn` con su `prueba_*.gd` y `prueba_base.gd`) viven en `herramientas/pruebas/`
-  desde el 17-oct-2026. No tienen jugador para jugar ni salen en el menú: solo las corre su guion de
+  separadas de las salas jugables. No tienen jugador para jugar ni salen en el menú: solo las corre su guion de
   `herramientas/guiones/` (`sala_guardado` → `guardado.guion`, `sala_tactil` → `controles_tactiles.guion`, etc.). No
   viajan en el paquete de publicación (`docs/contrato.md`, «Paquete de publicación»).

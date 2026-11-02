@@ -1,10 +1,9 @@
 class_name Niebla
 extends Node2D
-# Niebla que se desliza: sus hijos (franjas translucidas) avanzan en x a velocidad px/s con tiempo propio y
-# vuelven al llegar a recorrido, asi se queda quieta en la pausa y en el congelado comun. En modo bajo de
-# recursos no se mueve. No colisiona ni tapa avisos de peligro: va en una capa de fondo o de frente con z_index.
-# Solo se ve con el ajuste niebla (apagado por omision: cuesta 2 a 4 FPS en el S50) y lo obedece al momento. Una
-# franja con material nucleo/arte/niebla_banda.gdshader se desvanece arriba y abajo: banda sin orillas.
+# Desliza franjas hijas en x y las devuelve al completar recorrido; usa tiempo propio para parar con pausa y congelado.
+# Queda inmovil en recursos bajos; el ajuste niebla responde al momento y empieza apagado por costar 2 a 4 FPS en S50.
+# Va al fondo o al frente con z_index, sin colision ni tapar avisos de peligro.
+# El material nucleo/arte/niebla_banda.gdshader desvanece arriba y abajo para evitar orillas visibles en la franja.
 
 ## Grupo de las nieblas de la sala: el panel de pruebas las apaga juntas.
 const GRUPO: StringName = &"nieblas_sala"

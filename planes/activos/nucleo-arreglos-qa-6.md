@@ -36,7 +36,7 @@ persona»).
   entrega el volumen como `InputEventKey`, porque no viene de un control (`GodotInputHandler.java`, rama 4.5, leído
   por resumen; la 4.7.2 no se comprobó). En la tienda y la pausa el ícono volvió a ser de Xbox con el siguiente botón
   del control; en la zona se capturó justo después.
-- **Antes de cambiar código:** que Vic repita la fila 7 con el APK de este PR, sin capturar: en la zona, pulsar LB o
+- **Hecho por D1(a); la repetición de Vic sigue pendiente.** Que Vic repita la fila 7 con el APK de este PR, sin capturar: en la zona, pulsar LB o
   RB y ver si junto a «Categoría» aparece LB/RB.
 - **Arreglo propuesto (decisión D1):** que las teclas de volumen (`KEY_VOLUMEUP`, `KEY_VOLUMEDOWN`, `KEY_VOLUMEMUTE`,
   `classes/class_@globalscope.rst:1466-1482`) no cambien el dispositivo. Atrás sigue marcando `TECLADO`. Aunque la
@@ -106,7 +106,7 @@ persona»).
     teléfono».
   - Se midió en el S21, no en el S20: es el que estaba conectado.
 
-## Decisiones (para la persona; lo recomendado va primero)
+## Decisiones (resueltas; ver «Decidido por la persona»)
 
 1. **D1, el volumen:** (a) que el volumen no cambie los íconos ni el foco, recomendado; (b) dejarlo como está y
    solo pedir a Vic la prueba sin captura.

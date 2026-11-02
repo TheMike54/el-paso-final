@@ -4,7 +4,7 @@ extends Area2D
 # pantalla de los utiles). Asi se prueba el mapa con y sin el marcador del jugador.
 
 const BRUJULA: StringName = &"brujula"
-## Aviso sobre el interruptor (provisional, 12-oct-2026): en el telefono no se notaba si se puso o se quito.
+## Aviso sobre el interruptor: en el telefono no se notaba si se puso o se quito.
 const TICKS_AVISO: int = 120
 const ALTO_AVISO: float = 220.0
 

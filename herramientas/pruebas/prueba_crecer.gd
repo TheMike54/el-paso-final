@@ -1,8 +1,7 @@
-# Comprueba que los Modulos de RAM y las muescas amplian la capacidad sin superar los topes.
-# Usa recompensas reales y un archivo aislado para probar el autoguardado y la lectura de JSON.
-# Cubre partidas sin el campo nuevo, los avisos al HUD y el maximo que muestra el inventario.
-# Hereda la cuenta de casos y la limpieza para que crecer.guion detecte cualquier fallo.
 extends "res://herramientas/pruebas/prueba_base.gd"
+# Comprueba la ampliacion de Inspiracion y carga con recompensas reales y guardado aislado de la partida habitual.
+# Lee el archivo autoguardado para comprobar persistencia, capacidades intermedias y compatibilidad sin el campo nuevo.
+# Cubre topes y avisos al HUD e inventario; expone casos y fallos para que el guion compruebe el resultado.
 
 const RUTA: String = "user://prueba_crecer.json"
 
@@ -124,8 +123,7 @@ func _ready() -> void:
 	_caso("la carga tiene su forma de tienda", IconoArticulo.forma_de(articulo) == IconoArticulo.Forma.CARGA)
 	var icono_carga: IconoArticulo = IconoArticulo.crear(IconoArticulo.forma_de(articulo), 64.0, false)
 	add_child(icono_carga)
-	await get_tree().process_frame
-	await get_tree().process_frame
+	await _esperar_cuadros(2)
 	icono_ram.free()
 	icono_carga.free()
 	hud.free()

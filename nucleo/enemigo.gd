@@ -1,11 +1,9 @@
 class_name Enemigo
 extends CharacterBody2D
-# Enemigo del nucleo: su ficha dice que es y que script lo mueve (ComportamientoEnemigo, que se agrega como
-# hijo sin que el nucleo sepa cual es; sin script, quieto). Es un cuerpo que choca con el escenario (el jugador
-# lo atraviesa); el que vuela flota, sin suelo. Pierde vida con cada golpe que recibe su Golpeable y dana al
-# jugador por contacto. Vencido, emite Eventos.enemigo_vencido y desaparece; si es fuerte, Partida lo recuerda
-# hasta el proximo descanso y no vuelve a aparecer en su sala. Con un AnimatedSprite2D (animacion) se ve con arte en
-# vez de la caja gris: el tipo de enemigo con arte es una escena heredada de enemigo.tscn, como el Npc.
+# Enemigo definido por ficha; agrega su ComportamientoEnemigo sin conocer el tipo y queda quieto si no tiene script.
+# Choca con el escenario, no con el jugador; el volador flota. Golpeable recibe golpes y el contacto dana al jugador.
+# Al vencerlo emite enemigo_vencido y desaparece; Partida recuerda los fuertes hasta descansar o morir.
+# El arte reemplaza la caja gris con un AnimatedSprite2D en una escena heredada de enemigo.tscn, como el Npc.
 
 ## Cada umbral cruzado avisa una vez, en orden, antes de comprobar la muerte.
 signal fase_cambiada(fase: int)
@@ -45,7 +43,7 @@ var flotando: bool = false:
 	set(valor):
 		flotando = valor
 		if ficha != null:
-			motion_mode = MOTION_MODE_FLOATING if flotando or ficha.gravedad <= 0.0 else MOTION_MODE_GROUNDED
+			_poner_modo()
 ## Hacia donde mira: -1 izquierda, 1 derecha. Lo cambia su comportamiento (girar); el dibujo se refleja solo.
 var mirando: float = -1.0:
 	set(valor):
@@ -76,7 +74,7 @@ func _ready() -> void:
 	_poner_forma(_golpeable)
 	_poner_forma(_contacto)
 	_poner_cuerpo()
-	motion_mode = MOTION_MODE_FLOATING if ficha.gravedad <= 0.0 else MOTION_MODE_GROUNDED
+	_poner_modo()
 	_golpeable.golpeado.connect(_al_ser_golpeado)
 	if animacion != null:
 		_voltear()
@@ -94,15 +92,13 @@ func _ready() -> void:
 			add_child(comportamiento)
 
 
-## "<sala>#<id>" (la sala por su id o, si es de prueba suelta, por su ruta): lo que Partida recuerda de un
-## enemigo fuerte vencido.
+## "<sala>#<id>" (Sala.clave_de: tambien dentro de una pieza instanciada): lo que Partida recuerda de un enemigo
+## fuerte vencido.
 func clave() -> String:
-	var sala: Sala = owner as Sala
-	var nombre: String = sala.clave() if sala != null else (owner.scene_file_path if owner != null else "")
-	return "%s#%s" % [nombre, id]
+	return "%s#%s" % [Sala.clave_de(self), id]
 
 
-## Toca la animacion nombre si su SpriteFrames la tiene y no es la que ya corre (classes/class_spriteframes.rst:280);
+## Toca la animacion nombre si su SpriteFrames la tiene y no es la que ya corre (classes/class_spriteframes.rst);
 ## sin dibujo, nada. Para su comportamiento: se puede llamar cada tick.
 func animar(nombre: StringName) -> void:
 	if animacion != null and _tiene(nombre) and animacion.animation != nombre:
@@ -137,6 +133,11 @@ func _datos_para(comportamiento: ComportamientoEnemigo) -> DatosComportamiento:
 			continue
 		return elegido
 	return propios
+
+
+# Flota sin gravedad en la ficha o mientras flotando; si no, camina sobre el suelo.
+func _poner_modo() -> void:
+	motion_mode = MOTION_MODE_FLOATING if flotando or ficha.gravedad <= 0.0 else MOTION_MODE_GROUNDED
 
 
 # Las formas se crean aqui con el tamano de la ficha: una forma de la escena seria la misma para
@@ -189,11 +190,11 @@ func _al_ser_golpeado(_atacante: Node2D, dano: int) -> void:
 # Las PejeCoins de la ficha, como un MonedasSueltas hijo de la sala que salta desde su centro y cae al suelo de abajo.
 # Si las de este ejemplar ya se tomaron (su marca en la sala), nada. El golpe puede llegar dentro de una senal de
 # fisica (la bola, por area_entered): ahi no se puede agregar un Area2D, asi que se agrega con call_deferred y el
-# Tween, de la sala y atado al monton (classes/class_tween.rst:481), lo mueve desde el tick siguiente.
+# Tween, de la sala y atado al monton (classes/class_tween.rst), lo mueve desde el tick siguiente.
 func _soltar_botin() -> void:
 	var sala: Node2D = get_parent() as Node2D
 	var id_botin: String = PREFIJO_BOTIN + String(id)
-	if ficha.botin <= 0 or sala == null or Partida.estado_de(Sala.clave_de(self), id_botin) != null:
+	if ficha.botin <= 0 or sala == null or Sala.recordado(self, id_botin):
 		return
 	var inicio: Vector2 = global_position + Vector2(0.0, -ficha.tamano.y / 2.0)
 	var suelo: Dictionary = Capas.rayo_a_escenario(self, inicio, inicio + Vector2(0.0, ALCANCE_SUELO))
@@ -204,7 +205,7 @@ func _soltar_botin() -> void:
 	monedas.cantidad = roundi(ficha.botin * Partida.efectos_amuletos().botin_factor)
 	monedas.position = sala.to_local(inicio)
 	sala.add_child.call_deferred(monedas)
-	# En ticks de fisica y por subpropiedad, en coordenadas de la sala (classes/class_tween.rst:274, :792 y :851). Atado
+	# En ticks de fisica y por subpropiedad, en coordenadas de la sala (classes/class_tween.rst). Atado
 	# al monton: tomarlo a medio salto detiene el Tween sin error.
 	var salto: Tween = sala.create_tween().bind_node(monedas).set_process_mode(Tween.TWEEN_PROCESS_PHYSICS)
 	salto.tween_property(monedas, ^"position:y", monedas.position.y - SALTO_BOTIN, SUBIDA_BOTIN) \

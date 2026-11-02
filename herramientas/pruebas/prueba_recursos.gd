@@ -60,9 +60,7 @@ func _ready() -> void:
 	Ajustes.guardar(RUTA)
 	Ajustes.cargar(RUTA)
 	_caso("el ajuste se guarda y se lee", Ajustes.recursos == Recursos.ALTO)
-	var archivo: FileAccess = FileAccess.open(RUTA, FileAccess.WRITE)
-	archivo.store_string('{"version": 1, "ajustes": {"recursos": "maximo"}}')
-	archivo.close()
+	_escribir(RUTA, '{"version": 1, "ajustes": {"recursos": "maximo"}}')
 	Ajustes.cargar(RUTA)
 	_caso("un valor raro vuelve a auto", Ajustes.recursos == Recursos.AUTO)
 

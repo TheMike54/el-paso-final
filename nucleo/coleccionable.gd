@@ -9,7 +9,7 @@ extends Recogible
 const COLOR: Color = Color(0.95, 0.8, 0.3)
 
 ## Aclarado del arte (self_modulate): 1 lo deja como es. Sin HDR 2D, un modulate «overbright» no tiene efecto visible
-## segun la documentacion (upgrading_to_godot_4.rst:70-71); que aclare algo en el telefono no esta comprobado.
+## segun la documentacion (upgrading_to_godot_4.rst); que aclare algo en el telefono no esta comprobado.
 @export_range(1.0, 1.5, 0.05) var brillo: float = 1.0
 ## Flotacion del arte y su halo: px hacia arriba y abajo y segundos de una vuelta.
 @export var flota_px: float = 6.0

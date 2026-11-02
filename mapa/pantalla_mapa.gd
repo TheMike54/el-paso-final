@@ -124,12 +124,9 @@ func _seguir_jugador() -> void:
 		return
 	if not _con_brujula:
 		return
-	var sala: Sala = get_parent() as Sala
-	if sala == null:
-		return
-	var jugador: Node2D = get_tree().get_first_node_in_group(Jugador.GRUPO) as Node2D
-	if jugador != null and _indice.rectangulos.has(sala.id):
-		lienzo.mover_marcador(_indice.rectangulos[sala.id].position + jugador.position)
+	var posicion: Variant = _posicion_jugador(get_parent() as Sala)
+	if posicion != null:
+		lienzo.mover_marcador(posicion as Vector2)
 
 
 # Descansar dibuja salas nuevas en el mapa: si se ve, se rehace despues de que Partida las anote con la misma senal.
@@ -153,11 +150,21 @@ func _mostrar() -> void:
 	var zonas: Dictionary[String, Array] = DatosMapa.por_zona(_indice, mapeadas)
 	var marcador: Vector2 = Vector2.ZERO
 	var con_marcador: bool = false
-	if sala != null and _indice.rectangulos.has(sala.id) and Partida.util_equipado(BRUJULA):
-		var jugador: Node2D = get_tree().get_first_node_in_group(Jugador.GRUPO) as Node2D
-		if jugador != null:
-			marcador = _indice.rectangulos[sala.id].position + jugador.position
+	if _con_brujula:
+		var posicion: Variant = _posicion_jugador(sala)
+		if posicion != null:
+			marcador = posicion as Vector2
 			con_marcador = true
 	var sala_mochila: String = str(Partida.mochila.get("sala", ""))
 	var punto_mochila: Vector2 = Partida.punto_de_mochila()
 	lienzo.dibujar(_indice, zonas, zona_actual, acercado or rapido, con_marcador, marcador, sala_mochila, punto_mochila)
+
+
+# Posicion en el mapa del mundo; null si no hay sala indexada o jugador.
+func _posicion_jugador(sala: Sala) -> Variant:
+	if sala == null or not _indice.rectangulos.has(sala.id):
+		return null
+	var jugador: Node2D = get_tree().get_first_node_in_group(Jugador.GRUPO) as Node2D
+	if jugador == null:
+		return null
+	return _indice.rectangulos[sala.id].position + jugador.position

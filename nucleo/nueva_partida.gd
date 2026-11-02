@@ -9,7 +9,7 @@ signal confirmada(personaje: String, nombre: String)
 signal cerrado()
 
 const PERSONAJES: PackedStringArray = ["hombre", "mujer"]
-## Con false la fila de personajes no se ve y la partida empieza con el primero: solo el hombre tiene arte (25-oct-2026).
+## Con false la fila de personajes no se ve y la partida empieza con el primero: solo el hombre tiene arte.
 const ELEGIR_PERSONAJE: bool = false
 const LARGO_NOMBRE: int = 12
 ## Nombre si se deja vacio, segun el personaje.
@@ -113,7 +113,7 @@ func _acomodar() -> void:
 	_subida = 0.0
 
 
-# El teclado del telefono tapaba el campo del nombre (S50, 13-oct-2026): mientras esta abierto, todo sube lo justo
+# El teclado del telefono tapaba el campo del nombre: mientras esta abierto, todo sube lo justo
 # para que el campo quede encima de el.
 func _process(_delta: float) -> void:
 	var subida: float = 0.0

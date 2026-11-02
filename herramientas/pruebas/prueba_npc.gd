@@ -72,8 +72,3 @@ func _cuadros() -> SpriteFrames:
 		cuadros.add_frame(nombre, textura)
 	cuadros.set_animation_loop(Npc.ANIM_ENTREGAR, false)
 	return cuadros
-
-
-func _poner(jugador: Jugador, punto: Vector2) -> void:
-	jugador.global_position = punto
-	jugador.velocity = Vector2.ZERO

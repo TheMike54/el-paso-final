@@ -14,6 +14,6 @@
   quien salta por encima la choca y cae dentro del área. Va en las nueve salas de prueba con puertas en el borde
   que no tenían nada sólido detrás: las dos de puertas, la de combate, las cuatro de la zona de prueba y las dos
   de la zona del mapa (las de enemigos ya tenían paredes). La sala A lleva además una pared izquierda y tres
-  columnas oscuras de referencia. La regla para las salas nuevas está en el contrato («Cambio de sala»).
+  columnas oscuras de referencia. La regla para las salas nuevas está en `docs/sala.md`, «Cambio de sala».
 - **Lo cubre:** `herramientas/guiones/nucleo/puerta_salto_a.guion`, `puerta_salto_b.guion` y
   `sala_puerta_a_pared.guion` (los tres fallan sin el arreglo).

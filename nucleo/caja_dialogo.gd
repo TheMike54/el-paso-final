@@ -1,10 +1,9 @@
 class_name CajaDialogo
 extends CanvasLayer
-# Caja de una conversacion, abajo de la pantalla: el texto aparece letra por letra (en ticks, igual en un guion) y
-# interactuar, saltar, atacar o tocar la caja lo completan y despues pasan a la linea siguiente. Las opciones de una
-# pregunta van en fila: izquierda y derecha las recorren y se toman con las mismas acciones, o tocandolas (tocar la
-# caja entonces no elige). La crea un Npc o un RetoPreguntas al hablar y la libera al terminar; corre con el juego,
-# asi la pausa y el marco de menus la detienen.
+# Conversacion al pie de pantalla; revela letras en ticks para mantener el mismo ritmo en juego y guiones.
+# Interactuar, saltar, atacar o tocar completan el texto y luego avanzan; izquierda y derecha recorren opciones.
+# Las mismas acciones o tocar una opcion la eligen; tocar la caja con opciones no elige ninguna.
+# Npc o RetoPreguntas la crea y libera; corre con el juego para detenerse con la pausa y el marco de menus.
 
 ## terminada(true): se termino contando (ultima linea o FIN); terminada(false): CANCELAR.
 signal terminada(contar: bool)

@@ -24,10 +24,11 @@ en su propia ranura y lo lee una pieza concreta, como la brújula), y darlo en u
    ```
 
    Lo más seguro es editarlo en el editor: doble clic en `contenido/equipo.tres` en el panel FileSystem y, en el
-   inspector, la lista `Amuletos`. A mano: el primer amuleto del juego necesita además, arriba del archivo, el
-   `ext_resource` del script (copiar la línea `2_amuleto` de `equipo_prueba.tres`, con su `uid`) y la lista
-   `amuletos = Array[ExtResource("2_amuleto")]([...])` en `[resource]`, como en ese archivo; la cabecera y cada
-   `ext_resource` llevan `uid` (`docs/contrato.md`, «Sala», viñeta «uid»).
+   inspector, la lista `Amuletos`. A mano: añadir un `sub_resource` con id único que use el script ya declarado
+   como `ExtResource("3_amuleto")` en `contenido/equipo.tres`, y agregar su `SubResource` a la lista `amuletos`
+   existente en `[resource]`, conservando los amuletos que ya contiene. El ejemplo anterior usa `2_amuleto`
+   porque es el id del script en el catálogo de pruebas. Conservar el `uid` de la cabecera y los ids y `uid`
+   de los `ext_resource` existentes (`docs/validador.md`, «uid de escenas y recursos»).
 3. Validar enseguida: `.\herramientas\validar.ps1` tiene que imprimir `OK  VALIDACION ... fallos=0`.
 4. Los efectos que hay son los cuatro de la ficha. Un efecto nuevo (alcance, curar más rápido) no es una ficha: es
    un campo nuevo en `nucleo/ficha_amuleto.gd`, su suma en `Partida.efectos_amuletos()` y quien lo aplica; es un
@@ -48,8 +49,10 @@ en su propia ranura y lo lee una pieza concreta, como la brújula), y darlo en u
 - Como recompensa de una entrega, un reto, un NPC o un artículo de tienda: una `Recompensa` con `tipo` `AMULETO` o
   `UTIL` e `id` el de la ficha (tabla de `Recompensa` en `docs/componentes.md`). Modelo de tienda:
   `herramientas/salas/sala_tienda.tscn`. Cómo se pone cada una de esas piezas en una sala: `docs/guias/armar-una-sala.md`.
+- Suelto en la sala, para recogerlo al tocarlo: instancia de `nucleo/objeto_amuleto.tscn` con `amuleto` igual al id. Si la
+  partida ya lo tiene, no aparece.
 - `.\herramientas\validar.ps1` falla si el id no está en un catálogo, o si una sala de `contenido/` usa uno que solo
-  está en el de pruebas (`validador-equipo`): así se atrapa un id mal escrito antes de jugar.
+  está en el de pruebas (`validador-equipo`, `validador-objeto-amuleto`): así se atrapa un id mal escrito antes de jugar.
 - Probarlo: la sala «Equipo» de la zona de pruebas (categoría Partida) da los amuletos de prueba; uno del juego se
   prueba en su sala. La fila «Amuletos y útiles en el banco» de `docs/pruebas.md` dice qué mirar en el teléfono.
 

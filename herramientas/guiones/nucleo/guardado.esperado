@@ -1,4 +1,4 @@
-# Los 72 casos de herramientas/pruebas/prueba_guardado.gd corrieron y ninguno fallo. Cada caso
+# Los 89 casos de herramientas/pruebas/prueba_guardado.gd corrieron y ninguno fallo. Cada caso
 # que falla imprime una linea "FALLO guardado: <caso>".
-valor . casos 72
+valor . casos 89
 valor . fallos 0

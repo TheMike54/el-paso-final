@@ -25,7 +25,7 @@ func _init(cuerpo: Jugador) -> void:
 	jugador = cuerpo
 
 
-func _soltar_destello(punto: Vector2, escala: float, corre_congelado: bool) -> void:
+func soltar_destello(punto: Vector2, escala: float, corre_congelado: bool) -> void:
 	var efecto: EfectoCuadros = EfectoCuadros.crear(HOJA_PARRY, CUADROS_PARRY, 1, true, true, corre_congelado)
 	efecto.scale = Vector2.ONE * escala
 	efecto.z_index = jugador.z_index + 1
@@ -33,7 +33,7 @@ func _soltar_destello(punto: Vector2, escala: float, corre_congelado: bool) -> v
 	efecto.global_position = punto
 
 
-func _crear_aura() -> void:
+func crear_aura() -> void:
 	_aura = EfectoCuadros.crear(HOJA_CURAR, CUADROS_CURAR, 1, false, false, false)
 	_aura.name = &"Aura"
 	_aura.show_behind_parent = true
@@ -55,7 +55,7 @@ func _crear_aura() -> void:
 	jugador.move_child(_aura, 0)
 
 
-func _mostrar_curacion() -> void:
+func mostrar_curacion() -> void:
 	if jugador.curando != _aura.visible:
 		for nodo: Node2D in [_aura, _aura_frente, _luz_curar]:
 			nodo.visible = jugador.curando
@@ -68,5 +68,5 @@ func _mostrar_curacion() -> void:
 		_luz_curar.modulate.a = minf(1.0, 0.35 + t / 0.6) * (0.32 + 0.04 * sin(t * 30.0))
 
 
-func _renovar_efectos() -> void:
+func renovar_efectos() -> void:
 	amuletos = Partida.efectos_amuletos()

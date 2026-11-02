@@ -15,7 +15,7 @@ const PROPORCION_BASE: float = BASE.x / BASE.y
 ## cuadrada; con la proporcion de la ventana recortada a [minima, maxima].
 static func calcular(ventana: Vector2, minima: float, maxima: float) -> Vector2:
 	var proporcion: float = clampf(ventana.x / maxf(ventana.y, 1.0), minima, maxima)
-	if proporcion >= BASE.x / BASE.y:
+	if proporcion >= PROPORCION_BASE:
 		return Vector2(roundf(BASE.y * proporcion), BASE.y)
 	return Vector2(BASE.x, roundf(BASE.x / proporcion))
 

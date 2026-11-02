@@ -1,6 +1,6 @@
 class_name PanelPruebas
 extends CanvasLayer
-# Panel de pruebas de la sala (maqueta aprobada el 25-oct-2026), solo con el modo desarrollador y el ajuste
+# Panel de pruebas de la sala, solo con el modo desarrollador y el ajuste
 # panel_pruebas: oculto es una pestana «‹ Pruebas» a media altura a la derecha (lejos de Pausa y Mapa, arriba, y de
 # saltar y atacar, abajo); abierto, una tarjeta con «Ocultar ›» y un boton por grupo de la sala que lo apaga y lo
 # enciende. Encuentra las piezas por su grupo o su clase: una sala nueva tiene sus interruptores sin codigo.

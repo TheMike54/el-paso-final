@@ -13,7 +13,7 @@ const RUTA: String = "res://nucleo/arte/trazo_ataque.png"
 
 
 func _initialize() -> void:
-	var imagen: Image = Image.create(LADO, LADO, false, Image.FORMAT_RGBA8)
+	var imagen: Image = Image.create_empty(LADO, LADO, false, Image.FORMAT_RGBA8)
 	var centro: Vector2 = Vector2(LADO / 2.0, LADO / 2.0)
 	var hueco: Vector2 = centro - Vector2(CORRIMIENTO, 0.0)
 	for y: int in range(LADO):

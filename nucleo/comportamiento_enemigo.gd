@@ -1,14 +1,14 @@
 class_name ComportamientoEnemigo
 extends Node
-# Base del comportamiento de un enemigo: el script que su ficha referencia (FichaEnemigo.comportamiento) y
-# que nucleo/enemigo.gd agrega como hijo sin saber cual es. Cada tipo hereda de aqui (los del juego en
-# contenido/enemigos/, los de prueba en herramientas/) y escribe su logica en actuar(), que no corre durante
-# el congelado comun. El cuerpo sigue danando por contacto; los ataques van aparte (atacar, disparar). Las
-# ayudas de movimiento (caer, mover, pared_delante, orilla_delante, ve_al_jugador) dejan la fisica aqui y no en
-# cada comportamiento.
+# Base que Enemigo agrega desde FichaEnemigo.comportamiento sin conocer el tipo concreto.
+# Los tipos de contenido/enemigos/ y herramientas/ heredan actuar(), detenido durante el congelado comun.
+# Centraliza las ayudas de movimiento y deteccion para no repetir la fisica en cada comportamiento.
+# El cuerpo dana por contacto; atacar y disparar crean ataques separados del cuerpo.
 
 ## Largo de los rayos de pared y de orilla, mas alla del borde del cuerpo, en px.
 const ALCANCE_RAYO: float = 12.0
+## Destello del cuerpo que avisa de un ataque.
+const COLOR_AVISO: Color = Color(1.7, 1.7, 1.7)
 
 ## El enemigo que lo lleva; lo fija nucleo/enemigo.gd antes de agregarlo.
 var enemigo: Enemigo = null
@@ -29,6 +29,7 @@ func actuar() -> void:
 
 
 ## Gancho al cruzar cada umbral de vida, incluso si un golpe cruza varios. Fase inicial: 0.
+## No crear ataques ni disparos aqui: puede llegar desde una senal de fisica. Hacerlo en actuar() segun enemigo.fase.
 func al_cambiar_fase(_fase: int) -> void:
 	pass
 
@@ -64,7 +65,7 @@ func jugador_lo_mira() -> bool:
 
 
 ## Apaga o vuelve a poner la gravedad (trepar, enterrarse): flotando, caer() no hace nada y el cuerpo usa
-## MOTION_MODE_FLOATING (sin suelo: todo choque cuenta como pared; classes/class_characterbody2d.rst:148 y :156).
+## MOTION_MODE_FLOATING (sin suelo: todo choque cuenta como pared; classes/class_characterbody2d.rst).
 ## Con false vuelve al modo que da la ficha.
 func flotar(si: bool) -> void:
 	enemigo.flotando = si
@@ -96,8 +97,8 @@ func en_suelo() -> bool:
 ## Si hay un solido justo delante, a media altura, hacia sentido (-1 o 1).
 func pared_delante(sentido: float) -> bool:
 	var mitad: float = enemigo.ficha.tamano.x / 2.0
-	var centro: Vector2 = enemigo.global_position + Vector2(0.0, -enemigo.ficha.tamano.y / 2.0)
-	return _choca(centro, centro + Vector2(sentido * (mitad + ALCANCE_RAYO), 0.0))
+	var desde: Vector2 = centro()
+	return _choca(desde, desde + Vector2(sentido * (mitad + ALCANCE_RAYO), 0.0))
 
 
 ## Si delante, hacia sentido, se acaba el suelo: el rayo baja desde la punta del pie de ese lado.

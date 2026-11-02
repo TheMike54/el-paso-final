@@ -1,10 +1,7 @@
 extends SceneTree
-# Genera las hojas de cuadros de los efectos del jugador en nucleo/arte/: el destello del parry, la bola de fuego y
-# el aura de curar (detras y delante del jugador); ademas, el ruido de la niebla y el monton de PejeCoins sueltas. Cada
-# cuadro se calcula pixel por pixel como una sola mancha de luz y se difumina, para que las partes no se vean armadas
-# por separado. Se corre una vez y despues se reimporta; con --solo=<nombre> (bola, parry, curar, niebla o monedas)
-# escribe solo esa imagen:
-# & $env:GODOT_PATH --headless --path . --script res://herramientas/generar_efectos.gd -- --solo=monedas
+# Genera en nucleo/arte/ parry, bola de fuego, aura de curar, niebla y PejeCoins sueltas.
+# Calcula y difumina cada cuadro como una sola mancha de luz para evitar partes visualmente separadas.
+# Se corre una vez y se reimporta; --solo=<nombre> limita la salida a bola, parry, curar, niebla o monedas.
 
 enum Modo { LUZ, FUEGO, AURA }
 
@@ -102,7 +99,7 @@ func _initialize() -> void:
 
 
 # El ruido de la niebla: sin costura, con el borde de mezcla 0,1 y normalizado, los valores por omision de
-# NoiseTexture2D (classes/class_noise.rst:159), y blanco con el alfa del ruido, como su rampa de blanco transparente a
+# NoiseTexture2D (classes/class_noise.rst), y blanco con el alfa del ruido, como su rampa de blanco transparente a
 # blanco opaco. Estatica para poder hornearla sola a otra ruta y compararla.
 static func hornear_niebla(ruta: String) -> Error:
 	var ruido: FastNoiseLite = FastNoiseLite.new()
@@ -188,8 +185,7 @@ static func _color_moneda(punto: Vector2, d: float, piezas: Array, letra: Array[
 
 
 # Contornos de una letra de la fuente, en px desde su punto de la linea base, con las curvas hechas tramos rectos
-# (classes/class_textserver.rst:2007-2029: puntos con su etiqueta; dos conicas seguidas llevan un punto implicito en
-# medio).
+# (classes/class_textserver.rst): puntos con su etiqueta; dos conicas seguidas llevan un punto implicito en medio.
 static func _contornos_glifo(fuente: Font, tamano: int, letra: String) -> Array[PackedVector2Array]:
 	var servidor: TextServer = TextServerManager.get_primary_interface()
 	var rid: RID = fuente.get_rids()[0]

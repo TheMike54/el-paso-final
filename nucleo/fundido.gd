@@ -1,11 +1,9 @@
 class_name Fundido
 extends CanvasLayer
-# Fundido a negro (como Hollow Knight): un rectangulo negro sobre el juego, los botones y la interfaz, y
-# debajo de la pausa. La sala lo crea; oscurece, se queda en negro y aclara cuando alguien emite
-# Eventos.fundido_pedido (un peligro) y cada sala empieza en negro y aclara. Es ademas el unico dueno del cambio de
-# sala (como GameManager.BeginSceneTransition): puerta, estacion y muerte le piden el cambio con su perfil de tiempos y
-# el, ya en negro, avisa con en_negro, escribe la llegada y cambia de escena. Cuenta ticks de fisica, no tiempo real,
-# para que los guiones den siempre lo mismo.
+# Fundido como Hollow Knight, sobre juego, botones e interfaz y bajo la pausa; cada Sala lo crea y empieza en negro.
+# Atiende fundido_pedido de peligros y centraliza los cambios de sala, como GameManager.BeginSceneTransition.
+# Puerta, estacion y muerte piden su perfil; ya en negro emite en_negro, escribe la llegada y cambia de escena.
+# Cuenta ticks de fisica para que los guiones reproduzcan los mismos tiempos al oscurecer, esperar y aclarar.
 
 ## La pantalla llego al negro de un cambio de sala, justo antes de cambiar de escena (o de no hacerlo, si el jugador
 ## murio mientras oscurecia).
@@ -31,8 +29,7 @@ const TICKS_EN_NEGRO_PELIGRO: int = 18
 const TICKS_OSCURECER_PUERTA: int = 20
 const TICKS_EN_NEGRO_PUERTA: int = 10
 const TICKS_ACLARAR_PUERTA: int = 30
-## Ticks en negro de un viaje de estacion antes de cambiar de sala: 6 = 0,1 s (el tiempo de las puertas hasta el
-## 27-oct-2026, que la estacion conserva).
+## Ticks en negro de un viaje de estacion antes de cambiar de sala: 6 = 0,1 s.
 const TICKS_EN_NEGRO_ESTACION: int = 6
 ## Encima de los controles tactiles (5) y la interfaz (10), que se oscurecen con el juego; debajo de la pausa y las
 ## paginas del marco (20), su barra (21), Configuracion (22) y el editor de botones (23), que se ven aunque se abran
@@ -140,8 +137,8 @@ static func de(nodo: Node) -> Fundido:
 ## Cambia de escena a la sala de ruta, con el jugador en llegada (id de la puerta o la estacion; vacio para la Entrada
 ## o el banco). Escribe la llegada en las estaticas de Sala, que sobreviven al cambio de escena, solo si la escena se
 ## puede cargar, y las vuelve a dejar vacias si el cambio falla; devuelve el Error del cambio
-## (classes/class_scenetree.rst:609). Lo llama el Fundido ya en negro y, sin fundido propio, la Cinematica; los dos
-## en diferido: cambiar de escena saca la actual del arbol en el acto (class_scenetree.rst:584-588).
+## (classes/class_scenetree.rst). Lo llama el Fundido ya en negro y, sin fundido propio, la Cinematica; los dos
+## en diferido: cambiar de escena saca la actual del arbol en el acto (class_scenetree.rst, change_scene_to_file).
 static func ir_a_sala(arbol: SceneTree, ruta: String, llegada: Llegada, id_llegada: String) -> Error:
 	if not ResourceLoader.exists(ruta):
 		push_error("Fundido: la sala '%s' no existe" % ruta)

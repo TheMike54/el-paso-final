@@ -1,12 +1,12 @@
 class_name PlataformaDelgada
 extends StaticBody2D
 # Plataforma de una via: se atraviesa caminando o saltando desde abajo y se pisa al caer sobre ella. Es la unica
-# excepcion a «todo solido» (docs/contrato.md, «Sala»): piezas que cuelgan o se ven delgadas en una ruta escondida,
+# excepcion a «todo solido» (docs/sala.md): piezas que cuelgan o se ven delgadas en una ruta escondida,
 # donde subirse de un salto es parte de descubrirla. Forma, grosor y margen los fija aqui, asi no varian por sala.
 
 ## Grosor de la forma, en px, hacia abajo desde el origen (el origen es la cara de arriba).
 const GROSOR: float = 20.0
-## Margen de la una via, en px (classes/class_collisionshape2d.rst:153). Medido el 27-oct-2026: con 1 px el jugador no
+## Margen de la una via, en px (classes/class_collisionshape2d.rst). Medido: con 1 px el jugador no
 ## la atraviesa ni cayendo a 20 px por tick ni en picada a 30, en 30 fases distintas (el guion
 ## nucleo/plataformas repite 10 de ellas); con mas margen, caminar sube
 ## encima de una cara a menos de ese margen sobre el suelo (32 px subia una cara a 30 px). Por eso el minimo.

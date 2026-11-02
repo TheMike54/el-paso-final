@@ -1,7 +1,7 @@
+extends "res://herramientas/pruebas/prueba_base.gd"
 # Prueba la sala jugable del jefe y su ciclo de BattleScene con guardado aislado.
 # Recorre umbrales, activacion, victoria unica y regreso sin jefe, usando sus piezas reales.
 # Tambien cubre un golpe que salta dos fases y la muerte antes del golpe final del jefe.
-extends "res://herramientas/pruebas/prueba_base.gd"
 
 const ESCENA: PackedScene = preload("res://herramientas/salas/sala_jefe.tscn")
 const ComportamientoJefe = preload("res://herramientas/salas/comportamientos/jefe_prueba.gd")

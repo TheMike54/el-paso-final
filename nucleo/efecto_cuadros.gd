@@ -7,8 +7,8 @@ extends Sprite2D
 
 ## 20 cuadros/s, la velocidad a la que se dibujaron las hojas.
 const TICKS_POR_CUADRO: int = 3
-# Material sin luz con mezcla normal, uno para todo el juego (gpu_optimization.rst:85): el mismo recurso que usan
-# las escenas (resources.rst:30). Privado: desde el codigo se pide con material_sin_luz(), una sola entrada.
+# Material sin luz con mezcla normal, uno para todo el juego (gpu_optimization.rst): el mismo recurso que usan
+# las escenas (resources.rst). Privado: desde el codigo se pide con material_sin_luz(), una sola entrada.
 const _SIN_LUZ: CanvasItemMaterial = preload("res://nucleo/arte/sin_luz.tres")
 
 ## Fila de la hoja que se muestra (la bola usa la segunda al salir).

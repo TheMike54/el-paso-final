@@ -24,7 +24,7 @@ func _ready() -> void:
 
 
 func _process(_delta: float) -> void:
-	# Lo que se mueve cambia cada cuadro: se redibuja siempre mientras esta encendido (custom_drawing_in_2d.rst:122).
+	# Lo que se mueve cambia cada cuadro: se redibuja siempre mientras esta encendido (custom_drawing_in_2d.rst).
 	queue_redraw()
 
 

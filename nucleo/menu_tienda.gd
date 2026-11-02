@@ -39,7 +39,7 @@ func _ready() -> void:
 	add_child(fondo)
 	velo = ColorRect.new()
 	velo.name = "Velo"
-	velo.color = Color(0.0, 0.0, 0.0, Tema.VELO)
+	velo.color = Tema.negro(Tema.VELO)
 	velo.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	fondo.add_child(velo)
 	_area = Control.new()
@@ -113,7 +113,7 @@ func _al_elegir(indice: int) -> void:
 	# Con la confirmacion abierta la lista se oculta, como en las ranuras: si no, con el control el foco se escapa a
 	# las filas de detras.
 	_mostrar_lista(false)
-	# El foco en Si, como el cobro de Silksong (plan nucleo-tienda-gis).
+	# El foco en Si, como el cobro de Silksong.
 	confirmacion.abrir("¿Comprar %s?" % articulo.nombre, "Sí", "No", Confirmacion.Foco.SI, "%d PejeCoins" % articulo.precio)
 
 
@@ -133,8 +133,8 @@ func _al_cancelar() -> void:
 		Tema.dar_foco(lista.filas[_elegido])
 
 
-# La lista y el detalle se ocultan con la confirmacion abierta, y el velo pasa a toda la pantalla: la confirmacion se
-# ve como antes de partir la pantalla (pieza 3 del paso 7).
+# La lista y el detalle se ocultan con la confirmacion abierta, y el velo pasa a toda la pantalla para oscurecer
+# tambien el juego detras de la pregunta.
 func _mostrar_lista(mostrar: bool) -> void:
 	lista.visible = mostrar
 	_acomodar()
@@ -202,7 +202,7 @@ func _acomodar() -> void:
 
 
 # La Confirmacion compartida con el aspecto del cobro de Silksong (el foco en Si lo pone _al_elegir): sin velo propio
-# (lo oscurece el velo del menu, que pasa a toda la pantalla), la pregunta con la letra de 36 que tenia la tienda, el
+# (lo oscurece el velo del menu, que pasa a toda la pantalla), la pregunta con letra de 36, el
 # precio en su linea y Si y No centrados con flechitas de gis.
 func _armar_confirmacion(raiz: Control) -> void:
 	confirmacion = _crear_confirmacion()

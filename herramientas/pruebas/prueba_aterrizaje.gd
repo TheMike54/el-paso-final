@@ -102,12 +102,6 @@ func _jugador_nuevo(anterior: Jugador) -> Jugador:
 	return jugador
 
 
-# Un peligro deja al jugador quieto donde lo toco mientras la pantalla funde a negro y, ya en negro, lo pone en el
-# punto seguro: Fundido.TICKS_OSCURECER + Fundido.TICKS_EN_NEGRO_PELIGRO ticks del jugador.
-func _esperar_fundido() -> void:
-	await _esperar(Fundido.TICKS_OSCURECER + Fundido.TICKS_EN_NEGRO_PELIGRO)
-
-
 # Deja al jugador como en el tick en que toca el suelo tras una caida larga.
 func _preparar_aterrizaje(jugador: Jugador) -> void:
 	jugador._en_suelo_antes = false

@@ -1,15 +1,13 @@
 class_name PantallaAmuletos
 extends PaginaMarco
 # Pagina Amuletos del marco de menus (MarcoMenus), encima del juego detenido. Como en Hollow Knight, solo sentado en
-# un banco se ponen y se quitan; de pie solo se consultan. La regla vive aqui (lee Jugador.descansando): Partida
+# un banco se ponen y se quitan; de pie solo se consultan. PaginaMarco comparte la regla del banco; Partida
 # cuida el catalogo, que se tengan y que quepan en la carga. Cada fila lee su FichaAmuleto (icono, nombre, costo) y la
 # descripcion va al lado. La crea cada sala; el marco la abre y la cierra.
 
 ## Botones de la lista, por id del amuleto; publico para la prueba.
 var botones: Dictionary[StringName, Button] = {}
 
-var _aviso: Label = null
-var _lista: VBoxContainer = null
 var _descripcion: Label = null
 
 
@@ -19,31 +17,8 @@ func _ready() -> void:
 	add_child(panel)
 	# Con muchos amuletos la lista no cabe a lo alto: se desplaza con el foco y con el dedo. Si cabe, el centro llena
 	# la vista y la lista queda centrada como sin desplazamiento.
-	var desplazable: ScrollContainer = ScrollContainer.new()
-	desplazable.name = "Desplazable"
-	desplazable.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	desplazable.offset_top = MarcoMenus.ALTO_BARRA
-	desplazable.anchor_right = 0.7
-	desplazable.follow_focus = true
-	desplazable.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_NEVER
-	panel.add_child(desplazable)
-	var centro: CenterContainer = CenterContainer.new()
-	centro.name = "Centro"
-	centro.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	centro.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	centro.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	desplazable.add_child(centro)
-	var columna: VBoxContainer = VBoxContainer.new()
-	columna.add_theme_constant_override(&"separation", int(Tema.SEPARACION_FILAS))
-	centro.add_child(columna)
-	_aviso = Label.new()
-	_aviso.name = "Aviso"
-	_aviso.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	columna.add_child(_aviso)
-	_lista = VBoxContainer.new()
-	_lista.name = "Lista"
-	_lista.add_theme_constant_override(&"separation", int(Tema.SEPARACION_FILAS))
-	columna.add_child(_lista)
+	var columna: VBoxContainer = _crear_columna_equipo(panel, 0.7)
+	_crear_lista_equipo(columna)
 	_descripcion = Label.new()
 	_descripcion.name = "Descripcion"
 	_descripcion.anchor_left = 0.72
@@ -68,11 +43,6 @@ func titulo_pagina() -> String:
 func mostrar_en_marco() -> void:
 	super()
 	_mostrar()
-
-
-## Sentado en un banco de esta sala.
-func puede_cambiar() -> bool:
-	return Jugador.sentado(get_tree())
 
 
 ## Pone o quita un amuleto, solo sentado. Devuelve si cambio algo.
@@ -139,10 +109,8 @@ func _actualizar() -> void:
 	var sentado: bool = puede_cambiar()
 	if Partida.amuletos_tenidos.is_empty():
 		_aviso.text = "Todavía no tienes amuletos."
-	elif sentado:
-		_aviso.text = "Toca uno para ponerlo o quitarlo (carga %d de %d)." % [Partida.carga_usada(), Partida.carga_maxima]
 	else:
-		_aviso.text = "Siéntate en un banco para cambiarlos (carga %d de %d)." % [Partida.carga_usada(), Partida.carga_maxima]
+		_aviso.text = _aviso_equipo(sentado, "carga", Partida.carga_usada(), Partida.carga_maxima)
 	for amuleto: StringName in botones:
 		var puesto: bool = Partida.esta_equipado(amuleto)
 		var ficha: FichaAmuleto = CatalogoEquipo.amuleto(amuleto)

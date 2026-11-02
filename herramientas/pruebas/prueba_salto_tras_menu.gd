@@ -1,9 +1,8 @@
 extends "res://herramientas/pruebas/prueba_base.gd"
-# Prueba de que A (aceptar y saltar) pulsado y soltado en el mismo cuadro sobre un boton que quita la pausa (Continuar,
-# No del CobroEstacion, Volver del marco) lo cierra sin que el jugador salte (ni en cola ni con el coyote) ni se levante
-# del banco, que saltar pulsado en el tick siguiente si salta, y que A apretado en un cuadro y soltado en el siguiente
-# sin tick de fisica entre los dos (pasa a 120 FPS) tampoco salta. Manda eventos de verdad (Input.parse_input_event): el
-# boton solo se pulsa con un evento. Su guion lee "valor . casos" y "valor . fallos".
+# A cierra Continuar, No del CobroEstacion y Volver del marco sin salto en cola, coyote ni levantarse del banco.
+# Cubre pulsar y soltar en uno o dos cuadros sin tick de fisica entre ellos, como a 120 FPS; en el tick siguiente salta.
+# Usa Input.parse_input_event porque los botones necesitan eventos reales para pulsarse.
+# El guion comprueba el resultado leyendo "valor . casos" y "valor . fallos".
 const SALA: String = "res://herramientas/salas/zonas/prueba/prueba_4.tscn"
 # Ticks que se mira al jugador tras cerrar: un salto sube decenas de px en ese tiempo.
 const TICKS_MIRAR: int = 20
@@ -117,10 +116,7 @@ func _parar_en(punto: Vector2) -> void:
 func _aceptar() -> void:
 	await get_tree().process_frame
 	for apretado: bool in [true, false]:
-		var evento: InputEventJoypadButton = InputEventJoypadButton.new()
-		evento.button_index = JOY_BUTTON_A
-		evento.pressed = apretado
-		Input.parse_input_event(evento)
+		_enviar_aceptar(apretado)
 
 
 # A del control apretado en un cuadro y soltado en el siguiente, sin tick de fisica entre los dos: la bajada se manda en
@@ -137,19 +133,20 @@ func _aceptar_en_dos_cuadros() -> bool:
 		await get_tree().process_frame
 		cuadros += "1" if Engine.get_physics_frames() != tick else "0"
 		tick = Engine.get_physics_frames()
-	var evento: InputEventJoypadButton = InputEventJoypadButton.new()
-	evento.button_index = JOY_BUTTON_A
-	evento.pressed = true
-	Input.parse_input_event(evento)
+	_enviar_aceptar(true)
 	var al_bajar: int = Engine.get_physics_frames()
 	await get_tree().process_frame
 	var al_subir: int = Engine.get_physics_frames()
 	var en_pausa: bool = get_tree().paused
-	var suelta: InputEventJoypadButton = InputEventJoypadButton.new()
-	suelta.button_index = JOY_BUTTON_A
-	suelta.pressed = false
-	Input.parse_input_event(suelta)
+	_enviar_aceptar(false)
 	return al_subir == al_bajar and en_pausa
+
+
+func _enviar_aceptar(apretado: bool) -> void:
+	var evento: InputEventJoypadButton = InputEventJoypadButton.new()
+	evento.button_index = JOY_BUTTON_A
+	evento.pressed = apretado
+	Input.parse_input_event(evento)
 
 
 # Cierra con A y devuelve cuanto subio el jugador en los ticks siguientes, en px.

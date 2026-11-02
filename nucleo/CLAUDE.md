@@ -7,7 +7,7 @@ habilidad nueva del jugador, que sí la toca.
 Leer `funciones.json` de esta carpeta.
 
 ## Qué ofrece a los demás bloques
-Lo que otro bloque puede usar está en `docs/contrato.md` (autoloads, señales del bus, forma de una sala, ficha y
+Lo que otro bloque puede usar está en `docs/contrato.md` (autoloads, señales del bus, ficha y
 guardado) y en sus archivos por tema (tabla al inicio de ese documento). Si un cambio aquí altera el contrato, se actualiza en el mismo cambio y se avisa a la persona. Lo que
 el contrato todavía no define se propone en un plan antes de programarlo.
 

@@ -49,6 +49,12 @@ cantidad = 0
 tipo = 2
 id = &"amuleto_botin"
 
+[sub_resource type="Resource" id="premio_patas"]
+script = ExtResource("4_recompensa")
+cantidad = 0
+tipo = 2
+id = &"patas_cucaracha"
+
 [sub_resource type="Resource" id="premio_brujula"]
 script = ExtResource("4_recompensa")
 cantidad = 0
@@ -108,7 +114,7 @@ color = Color(0.3, 0.3, 0.32, 1)
 [node name="Entrega" type="Area2D" parent="."]
 position = Vector2(450, 680)
 script = ExtResource("3_entrega")
-recompensas = Array[ExtResource("4_recompensa")]([SubResource("premio_prueba"), SubResource("premio_velocidad"), SubResource("premio_escudo"), SubResource("premio_inspiracion"), SubResource("premio_botin"), SubResource("premio_brujula")])
+recompensas = Array[ExtResource("4_recompensa")]([SubResource("premio_prueba"), SubResource("premio_velocidad"), SubResource("premio_escudo"), SubResource("premio_inspiracion"), SubResource("premio_botin"), SubResource("premio_patas"), SubResource("premio_brujula")])
 
 [node name="Forma" type="CollisionShape2D" parent="Entrega"]
 position = Vector2(0, -80)

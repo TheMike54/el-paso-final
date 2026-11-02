@@ -18,8 +18,8 @@ Leer `funciones.json` de esta carpeta y la sección «Mapa» de `docs/interfaz.m
   fusionar ramas con salas nuevas, regenerar el índice:
   `& $env:GODOT_PATH --headless --path . --quit-after 600 res://herramientas/generar_mapa.tscn`. El validador
   falla si no está al día.
-- Encime: dos rectángulos del índice no se pueden cruzar, sean de zonas distintas o de la misma; cada zona tiene su
-  franja (`docs/contrato.md`, `posicion_mapa`). Lo revisa el validador (`validador-mapa-zonas`,
+- Encime: dos rectángulos del índice no se pueden cruzar, sean de zonas distintas o de la misma; el origen de cada
+  zona se elige a mano (`docs/sala.md`, `posicion_mapa`). Lo revisa el validador (`validador-mapa-zonas`,
   `validador-mapa-misma-zona`).
 - Nada del núcleo depende de esta carpeta: el marco encuentra la página por el grupo `pagina_marco`, no por su clase.
 

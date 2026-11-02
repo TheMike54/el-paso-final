@@ -11,10 +11,12 @@ const INSPIRACION_INICIAL: int = 33
 const INSPIRACION_TOPE: int = 99
 ## Limite de carga como las muescas de amuleto de Hollow Knight, que van de 3 a 11.
 const CARGA_TOPE: int = 11
+## Lo que se le dice a quien juega cuando no se pudo guardar.
+const TEXTO_GUARDADO_FALLIDO: String = "No se pudo guardar"
 ## Inspiracion que da un golpe por omision y lo que vale un bloque de la barra del HUD.
 const INSPIRACION_POR_GOLPE: int = 11
 ## Carga con la que se empieza: los amuletos puestos no pueden costar mas que carga_maxima (Hollow Knight empieza
-## con 3 muescas, PlayerData.cs:7416 de la referencia).
+## con 3 muescas).
 const CARGA_INICIAL: int = 3
 ## Utiles puestos a la vez: una ranura por ahora.
 const MAX_UTILES: int = 1
@@ -97,6 +99,9 @@ var ruta_guardado: String = RUTA_PRUEBAS
 var enemigos_vencidos: Array[String] = []
 ## Autoguardados hechos desde que arranco el juego; publico para los guiones.
 var autoguardados: int = 0
+## El ultimo guardado fallo: el Hud y el menu lo leen al entrar, porque el aviso del Hud no sobrevive a un cambio de
+## escena (salir al menu, reaparecer).
+var ultimo_guardado_fallo: bool = false
 
 
 func _ready() -> void:
@@ -143,6 +148,7 @@ func reiniciar() -> void:
 	mapas.clear()
 	salas_visitadas.clear()
 	salas_mapeadas.clear()
+	ultimo_guardado_fallo = false
 	estaciones.clear()
 	botones_ensenados.clear()
 	salas.clear()
@@ -458,14 +464,12 @@ func _al_vencer_jefe(jefe: StringName) -> void:
 	autoguardar()
 
 
-## Guarda lo obtenido sin cambiar el banco: al reabrir se aparece en el ultimo banco. Lo avisa con
-## Eventos.partida_guardada, como el banco.
+## Guarda lo obtenido sin cambiar el banco: al reabrir se aparece en el ultimo banco. Lo avisa como el banco
+## (guardar).
 func autoguardar() -> Error:
 	var error: Error = guardar(ruta_guardado)
 	if error == OK:
 		autoguardados += 1
-	else:
-		push_error("Partida: no se pudo autoguardar (error %d)" % error)
 	return error
 
 
@@ -535,11 +539,16 @@ func desde_diccionario(partida: Dictionary) -> void:
 	tiempo_jugado = partida["tiempo_jugado"] as float
 
 
-## Guarda la partida; si salio bien, lo avisa con Eventos.partida_guardada.
+## Guarda la partida y lo avisa con Eventos.partida_guardada o, si fallo, con Eventos.guardado_fallido: quien juega
+## debe enterarse de que su progreso no quedo guardado.
 func guardar(ruta: String) -> Error:
 	var error: Error = Guardado.guardar(a_diccionario(), ruta)
+	ultimo_guardado_fallo = error != OK
 	if error == OK:
 		Eventos.partida_guardada.emit()
+	else:
+		push_warning("Partida: no se pudo guardar en %s (error %d)" % [ruta, error])
+		Eventos.guardado_fallido.emit(error)
 	return error
 
 

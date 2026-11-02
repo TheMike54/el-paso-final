@@ -1,4 +1,4 @@
-# Los 31 casos de herramientas/pruebas/prueba_muros.gd corrieron y ninguno fallo. Cada caso que falla imprime una
+# Los 35 casos de herramientas/pruebas/prueba_muros.gd corrieron y ninguno fallo. Cada caso que falla imprime una
 # linea "FALLO muros: <caso>".
-valor . casos 31
+valor . casos 35
 valor . fallos 0

@@ -17,12 +17,12 @@ var _terminada: bool = false
 func _ready() -> void:
 	Capas.poner(self, Capas.INTERACCION, Capas.JUGADOR)
 	# Un jefe ya vencido se apaga antes de cualquier espera: sin esto existiria, chocaria y se veria hasta que
-	# llegue su queue_free (apagado, sus cuerpos y areas salen de la fisica: classes/class_collisionobject2d.rst:208).
+	# llegue su queue_free (apagado, sus cuerpos y areas salen de la fisica: classes/class_collisionobject2d.rst).
 	if Partida.jefes.has(id_jefe) and is_instance_valid(jefe):
 		jefe.process_mode = Node.PROCESS_MODE_DISABLED
 		jefe.hide()
 	# Los hermanos pueden estar escritos en cualquier orden: esperar ready no consume ticks.
-	# classes/class_node.rst:2575, :3073 (Godot 4.7).
+	# classes/class_node.rst (Godot 4.7).
 	for porton: Porton in portones:
 		if is_instance_valid(porton) and not porton.is_node_ready():
 			await porton.ready

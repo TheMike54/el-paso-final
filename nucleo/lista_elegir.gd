@@ -1,6 +1,6 @@
 class_name ListaElegir
 extends VBoxContainer
-# Lista con foco que comparten el menu de la tienda y el de las estaciones del viaje rapido (decision del 17-oct-2026):
+# Lista con foco que comparten el menu de la tienda y el de las estaciones del viaje rapido:
 # arriba Volver y el titulo, un encabezado, las filas (nombre y un dato a la derecha, como el precio) y un pie (la
 # descripcion de la fila con foco). Una fila apagada se ve en gris y toma el foco, pero no se elige. Se arma en codigo
 # porque sus filas cambian; va bajo un Control con Tema.crear() y se acomoda con Tema.ajustar.

@@ -1,18 +1,15 @@
 class_name Tema
 extends RefCounted
-# Tema de los menus (menu principal, Configuracion, pausa y zona de pruebas), en gis: letra Cabin Sketch (gruesa en
-# los titulos), opciones sin caja de 108 px de alto, que en el telefono mas chico probado (Senwa S50, densidad 240)
-# son los 48 dp que pide Android, y el foco como flechita y subrayado de gis (EstiloGis, visible tras usar control o
-# teclado, Tema.dar_foco). Se arma en codigo y se asigna solo a las raices de los menus, asi no toca el HUD. Da tambien
-# las columnas segun el ancho de la vista, el area util dentro del area segura y las piezas que repiten los menus
-# (boton, encabezado con Volver, titulo y raya).
+# Arma el tema de gis de los menus con Cabin Sketch y opciones de 108 px: 48 dp en el Senwa S50 (densidad 240).
+# Solo se asigna a las raices de los menus para que no afecte al HUD; el foco aparece con control o teclado.
+# Se arma en codigo para compartir medidas, estilos y piezas entre los menus sin repetirlos en cada escena.
+# Calcula columnas y area util dentro del area segura, y construye botones y encabezados con Volver, titulo y raya.
 
 ## Alto minimo de todo lo que se toca, en px de la vista.
 const ALTO_TOQUE: float = 108.0
 ## Celda de las cuadriculas de opciones y separacion entre columnas y entre filas.
 const CELDA: Vector2 = Vector2(420.0, ALTO_TOQUE)
-# 16 y no 24: con 24 tres columnas de Configuracion median 1308 de los 1312 px del S50 y la izquierda se cortaba
-# (captura del 12-oct-2026).
+# 16 y no 24: con 24 tres columnas de Configuracion miden 1308 de los 1312 px del S50 y la izquierda se corta.
 const SEPARACION: float = 16.0
 const SEPARACION_FILAS: float = 12.0
 ## Margen minimo alrededor del menu, dentro del area segura: nada pegado a las orillas.
@@ -26,7 +23,7 @@ const SEPARACION_ARRIBA: int = 32
 const LETRA: int = 36
 const LETRA_CHICA: int = 33
 const LETRA_TITULO: int = 48
-## Alto de una linea con LETRA en Cabin Sketch (get_height, medido el 17-oct-2026; con la fuente por omision era 50).
+## Alto de una linea con LETRA en Cabin Sketch (get_height).
 const ALTO_LETRA: float = 43.0
 ## Margen izquierdo de cada opcion: ahi va la flechita del foco (EstiloGis), y el texto empieza despues.
 const MARGEN_OPCION: float = 52.0
@@ -36,7 +33,7 @@ const COLUMNA_MINIMA: float = 128.0
 
 ## Letra de los menus: Cabin Sketch (SIL Open Font License, nucleo/fuentes/ofl.txt). Se carga con load() al armar el
 ## tema y no con preload: en un clon limpio, la primera importacion compila este script antes de importar las fuentes
-## y el preload fallaba (copia del 17-oct-2026).
+## y el preload falla.
 const RUTA_FUENTE: String = "res://nucleo/fuentes/cabin_sketch.ttf"
 const RUTA_FUENTE_GRUESA: String = "res://nucleo/fuentes/cabin_sketch_bold.ttf"
 ## Gis blanco (texto con foco o elegido, titulos) y gis gastado (las demas opciones, rayas de fondo).
@@ -72,6 +69,8 @@ const POMO: int = 72
 const FILA_APAGADA: StringName = &"FilaApagada"
 const DATO_APAGADO: StringName = &"DatoApagado"
 const GRIS_APAGADO: Color = Color(0.45, 0.47, 0.45, 1.0)
+## Cuadritos del rastro de una ficha de partida.
+const RASTRO: Color = Color(0.62, 0.68, 0.8, 1.0)
 ## Titulos mas grandes que TITULO, variaciones de el (Label): el nombre del juego en el menu principal y el de la pausa.
 const TITULO_JUEGO: StringName = &"TituloJuego"
 const LETRA_TITULO_JUEGO: int = 96
@@ -89,7 +88,7 @@ const GIS_TENUE: Color = Color(GIS, 0.7)
 const OPCION_CHICA: StringName = &"OpcionChica"
 ## Boton de un solo simbolo (Button, de TARJETA): + y - del mapa, en Cabin Sketch. La caja lo separa de lo dibujado
 ## debajo. Letra de 96 sin margenes de arriba y abajo: el + mide 35 px de ancho y el boton 113 de alto (a la letra de
-## los botones el + media unos 12 px; capturas del 20-oct-2026).
+## los botones el + mide unos 12 px).
 const SIMBOLO: StringName = &"Simbolo"
 const LETRA_SIMBOLO: int = 96
 const MARGEN_SIMBOLO: float = 0.0
@@ -127,9 +126,9 @@ static func crear() -> Theme:
 	var tema: Theme = Theme.new()
 	tema.default_font = load(RUTA_FUENTE) as Font
 	tema.default_font_size = LETRA
-	var vacia: StyleBoxEmpty = TemaEstilos._vacia(MARGEN_OPCION)
-	var elegida: EstiloGis = TemaEstilos._gis(EstiloGis.Forma.SUBRAYADO, GIS, MARGEN_OPCION)
-	var foco: EstiloGis = TemaEstilos._gis(EstiloGis.Forma.MARCA, GIS, MARGEN_OPCION)
+	var vacia: StyleBoxEmpty = TemaEstilos.estilo_vacio(MARGEN_OPCION)
+	var elegida: EstiloGis = TemaEstilos.estilo_gis(EstiloGis.Forma.SUBRAYADO, GIS, MARGEN_OPCION)
+	var foco: EstiloGis = TemaEstilos.estilo_gis(EstiloGis.Forma.MARCA, GIS, MARGEN_OPCION)
 	# Sin caja: el texto en gis gastado y, con el foco, encima o presionado (encendido: la categoria o el personaje
 	# elegidos), en gis blanco; lo presionado ademas subrayado.
 	tema.set_stylebox(&"normal", &"Button", vacia)
@@ -148,25 +147,24 @@ static func crear() -> Theme:
 	tema.set_type_variation(TITULO, &"Label")
 	tema.set_font(&"font", TITULO, load(RUTA_FUENTE_GRUESA) as Font)
 	tema.set_font_size(&"font_size", TITULO, LETRA_TITULO)
-	TemaEstilos._volver(tema)
-	TemaEstilos._tarjeta(tema)
-	TemaEstilos._simbolo(tema)
-	TemaEstilos._pestana(tema)
-	TemaEstilos._con_detalle(tema)
-	var caja_foco: EstiloGis = TemaEstilos._gis(EstiloGis.Forma.CAJA, GIS, 0.0)
+	TemaEstilos.volver(tema)
+	TemaEstilos.tarjeta(tema)
+	TemaEstilos.simbolo(tema)
+	TemaEstilos.pestana(tema)
+	TemaEstilos.con_detalle(tema)
+	var caja_foco: EstiloGis = TemaEstilos.estilo_gis(EstiloGis.Forma.CAJA, GIS, 0.0)
 	tema.set_stylebox(&"focus", &"HSlider", caja_foco)
-	TemaEstilos._barra_ancha(tema, caja_foco)
+	TemaEstilos.barra_ancha(tema, caja_foco)
 	tema.set_type_variation(FILA_APAGADA, &"Button")
 	for estado: StringName in [&"normal", &"hover", &"pressed", &"hover_pressed"]:
 		tema.set_stylebox(estado, FILA_APAGADA, vacia)
-	for color: StringName in [&"font_color", &"font_hover_color", &"font_pressed_color", &"font_focus_color", &"font_hover_pressed_color"]:
-		tema.set_color(color, FILA_APAGADA, GRIS_APAGADO)
+	TemaEstilos.apagar_letra(tema, FILA_APAGADA)
 	tema.set_type_variation(DATO_APAGADO, &"Label")
 	tema.set_color(&"font_color", DATO_APAGADO, GRIS_APAGADO)
 	_etiquetas(tema)
-	TemaEstilos._opcion_centrada(tema)
-	TemaEstilos._adornos(tema)
-	TemaEstilos._fila_tienda(tema)
+	TemaEstilos.opcion_centrada(tema)
+	TemaEstilos.adornos(tema)
+	TemaEstilos.fila_tienda(tema)
 	# Cada opcion de un menu emergente (copiar y pegar del campo del nombre) tambien mide ALTO_TOQUE: letra mas
 	# separacion.
 	tema.set_font_size(&"font_size", &"PopupMenu", LETRA)
@@ -188,7 +186,7 @@ static func area_util(vista: Vector2) -> Rect2:
 
 ## Pone el foco en un control de un menu. Si lo ultimo que se uso fue el dedo no lo dibuja (grab_focus con
 ## hide_focus): con el dedo no hace falta la marca, y la primera flecha o el primer movimiento del control la
-## muestra (`classes/class_control.rst:38`). Si fue un control o el teclado, se ve desde que se abre el menu.
+## muestra (`classes/class_control.rst`). Si fue un control o el teclado, se ve desde que se abre el menu.
 static func dar_foco(control: Control) -> void:
 	control.grab_focus(not UltimaEntrada.con_control())
 
@@ -207,12 +205,17 @@ static func area_menu(vista: Vector2, reservado_abajo: float) -> Rect2:
 	return area
 
 
+## Negro con alfa: los velos sobre el juego o el video.
+static func negro(alfa: float) -> Color:
+	return Color(0.0, 0.0, 0.0, alfa)
+
+
 ## Fondo de un menu armado en codigo, sin agregar: negro con alfa (VELO por omision) a pantalla completa, llamado Fondo
 ## y con el tema de los menus, para ser la raiz de su rama de UI. Detiene los toques (mouse_filter por omision).
 static func fondo_menu(alfa: float = VELO) -> ColorRect:
 	var fondo: ColorRect = ColorRect.new()
 	fondo.name = "Fondo"
-	fondo.color = Color(0.0, 0.0, 0.0, alfa)
+	fondo.color = negro(alfa)
 	fondo.theme = crear()
 	fondo.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	return fondo
@@ -292,7 +295,7 @@ static func raya_abajo(control: Control) -> void:
 
 ## Acomoda un Control de pantalla completa al area util de su vista, ahora, cada vez que la ventana cambia y cada vez
 ## que cambia su minimo: una etiqueta con ajuste de linea lo infla un momento al armarse y, sin esto, se quedaba
-## alto de mas (1298 px en una vista de 720, 12-oct-2026). Se llama una vez, en el _ready del control; se
+## alto de mas (1298 px en una vista de 720). Se llama una vez, en el _ready del control; se
 ## desconecta solo al salir del arbol.
 static func ajustar(control: Control) -> void:
 	# Una funcion propia por control: un metodo estatico con bind no distingue un control de otro al conectar.
@@ -312,7 +315,7 @@ static func _ajustar_ya(control: Control) -> void:
 
 
 # Variaciones de etiqueta y la opcion chica: solo cambian letra o color; TITULO_JUEGO y TITULO_PAUSA heredan de TITULO
-# el gis grueso (una variacion puede salir de otra, classes/class_theme.rst:1173).
+# el gis grueso (una variacion puede salir de otra, classes/class_theme.rst).
 static func _etiquetas(tema: Theme) -> void:
 	tema.set_type_variation(TITULO_JUEGO, TITULO)
 	tema.set_font_size(&"font_size", TITULO_JUEGO, LETRA_TITULO_JUEGO)

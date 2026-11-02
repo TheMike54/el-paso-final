@@ -1174,4 +1174,65 @@
     "que": "El golpe de aplastar se siente justo al tocar la pieza y el jugador reaparece de pie fuera de ella, en la sala Plataformas y en la raiz de La Celda",
     "comprobacion": "manual: fila Aplastar de docs/pruebas.md, en el telefono",
     "pasa": true
-  }]
+  },
+  {
+    "id": "guardado-fallido-aviso",
+    "que": "Un guardado que falla (disco lleno, temporal distinto de lo escrito) no toca la partida, emite guardado_fallido y el aviso se ve en el HUD, en un Hud nuevo y en el menu",
+    "comprobacion": "herramientas/guiones/nucleo/guardado.guion;herramientas/guiones/nucleo/ranuras.guion",
+    "pasa": true
+  },
+  {
+    "id": "objeto-amuleto",
+    "que": "ObjetoAmuleto: pieza de sala que da un amuleto al tocarla y no aparece si la partida ya lo tiene",
+    "comprobacion": "herramientas/guiones/nucleo/amuletos.guion;herramientas/guiones/nucleo/capas_fisica.guion",
+    "pasa": true
+  },
+  {
+    "id": "banco-en-pieza",
+    "que": "Un banco dentro de una pieza guarda la clave de su sala y se puede volver a el",
+    "comprobacion": "herramientas/guiones/nucleo/muro_rompible.guion",
+    "pasa": true
+  },
+  {
+    "id": "cinematica-sala-mala",
+    "que": "Una cinematica cuya sala de destino no carga vuelve al menu",
+    "comprobacion": "herramientas/guiones/nucleo/cinematica_sala_mala.guion",
+    "pasa": true
+  },
+  {
+    "id": "guardado-ilegible",
+    "que": "Una partida intacta que no se puede abrir da ILEGIBLE: no se abre, no se borra ni se restaura y la ficha lo dice",
+    "comprobacion": "herramientas/guiones/nucleo/guardado.guion;herramientas/guiones/nucleo/ranuras.guion",
+    "pasa": true
+  },
+  {
+    "id": "guardado-rangos",
+    "que": "Una partida con vidas, monedas, tiempo o monto de mochila por debajo de su minimo da DANADA",
+    "comprobacion": "herramientas/guiones/nucleo/guardado.guion",
+    "pasa": true
+  },
+  {
+    "id": "respaldo-fallido",
+    "que": "Si la copia de la sesion falla, Restaurar no ofrece la de una sesion anterior",
+    "comprobacion": "herramientas/guiones/nucleo/ranuras.guion",
+    "pasa": true
+  },
+  {
+    "id": "ranuras-avisa-fallo",
+    "que": "Si Borrar o Restaurar fallan, las ranuras lo dicen con una linea encima de las fichas",
+    "comprobacion": "herramientas/guiones/nucleo/ranuras.guion",
+    "pasa": true
+  },
+  {
+    "id": "enemigo-en-pieza",
+    "que": "Un enemigo dentro de una pieza se recuerda con la clave de su sala",
+    "comprobacion": "herramientas/guiones/nucleo/enemigo_botin.guion",
+    "pasa": true
+  },
+  {
+    "id": "arranque-sin-logo",
+    "que": "El juego arranca sin el logo de Godot: negro mientras carga y después el menú",
+    "comprobacion": "manual: en el S50, abrir el juego; no sale el logo de Godot y se llega al menú",
+    "pasa": false
+  }
+]

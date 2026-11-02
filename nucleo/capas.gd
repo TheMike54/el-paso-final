@@ -20,7 +20,6 @@ const ATAQUE_JUGADOR: int = 1 << 5
 const CUERPO_ENEMIGO: int = 1 << 6
 
 
-## Pone la capa y la mascara de un objeto de fisica.
 static func poner(objeto: CollisionObject2D, capa: int, mascara: int) -> void:
 	objeto.collision_layer = capa
 	objeto.collision_mask = mascara
@@ -28,7 +27,7 @@ static func poner(objeto: CollisionObject2D, capa: int, mascara: int) -> void:
 
 ## Rayo de desde a hasta (globales) contra los solidos de ESCENARIO, sin areas: el Dictionary de intersect_ray,
 ## vacio si no choca. Solo dentro del tick (_physics_process o lo que este llama).
-## excluir: los RID de los cuerpos que el rayo atraviesa (classes/class_physicsrayqueryparameters2d.rst:131).
+## excluir: los RID de los cuerpos que el rayo atraviesa (classes/class_physicsrayqueryparameters2d.rst).
 static func rayo_a_escenario(quien: Node2D, desde: Vector2, hasta: Vector2, excluir: Array[RID] = []) -> Dictionary:
 	var consulta: PhysicsRayQueryParameters2D = PhysicsRayQueryParameters2D.create(desde, hasta)
 	consulta.exclude = excluir

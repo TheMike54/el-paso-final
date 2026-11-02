@@ -34,7 +34,7 @@ el `contenido/CLAUDE.md`. Antes de escribir el `.gd`, las skills `gdscript4` y `
 4. Crear la ficha: un `.tres` de tipo `FichaEnemigo` (`nucleo/ficha_enemigo.gd`) cuyos campos, con su tipo y su
    sentido, están en la tabla de «Enemigos» y en `nucleo/ficha_enemigo.gd`. Modelo: `herramientas/salas/fichas/caminante.tres`. Una ficha es de solo lectura al
    correr: la vida que le queda a cada ejemplar vive en su `Enemigo`. Fuera de `herramientas/`, la cabecera y cada
-   `ext_resource` de la ficha llevan `uid` (`docs/contrato.md`, «Sala», viñeta «uid»): se importa antes para que el
+   `ext_resource` de la ficha llevan `uid` (`docs/validador.md`, «uid de escenas y recursos»): se importa antes para que el
    script tenga su `.gd.uid`.
 5. Elegir la reaparición: `AL_VOLVER_A_ENTRAR` (débil) o `AL_DESCANSAR` (fuerte: queda vencido hasta descansar en un
    banco o morir). Ejemplos: `enemigo_debil.tres` y `enemigo_fuerte.tres` en `herramientas/salas/fichas/`.
@@ -77,16 +77,14 @@ el `contenido/CLAUDE.md`. Antes de escribir el `.gd`, las skills `gdscript4` y `
    Arte nuevo: `docs/arte-y-rendimiento.md`, «Arte de zona»; animación con `AnimatedSprite2D` (viñeta «Enemigos nuevos»).
 10. Entregar el bloque de commit como indica `docs/guias/como-trabajamos.md`.
 
-## Lo que hoy no hace vencer a un enemigo
+## Portones al vencer a un enemigo
 
-Comprobado en `nucleo/enemigo.gd`: al llegar a vida 0, el enemigo solo anota su vencimiento si es fuerte
-(`Partida.vencer`), pide el congelado común, emite `Eventos.enemigo_vencido(ficha.id)`, suelta las PejeCoins de
-`botin` si su ficha tiene (una vez por ejemplar; `docs/enemigos.md`, «Enemigos», viñeta «Botín») y desaparece.
-Ningún script ni escena del repo escucha esa señal fuera de las pruebas. Por eso, hoy vencer a un enemigo no abre
-portones. Un `Porton` lo abren una `Palanca`
-o código que llame `abrir()` (`nucleo/porton.gd`). Que una arena lo abra al vencer a un jefe es un diseño previsto
-que aún no existe: los jefes no tienen base común (`docs/enemigos.md`, «Enemigos», viñeta «Jefes»). Abrir un portón desde un enemigo es una funcionalidad
-nueva, con su plan (`docs/guias/como-trabajamos.md`).
+Un enemigo común no abre portones automáticamente; un jefe asociado a `ArenaJefe` sí los abre al ser vencido.
+La arena cierra los portones al entrar, los abre al vencer y entrega la recompensa una sola vez
+(`docs/enemigos.md`, sección «Jefes»). El armado y el comportamiento se describen en
+`docs/guias/comportamiento-de-enemigo.md`, «Un jefe con fases y arena»; ejemplo:
+`herramientas/salas/sala_jefe.tscn`.
+Un `Porton` también puede abrirse con una `Palanca` o con código que llame a `abrir()` (`nucleo/porton.gd`).
 
 ## Si algo falla
 

@@ -8,6 +8,8 @@ const PARTIDA: Dictionary = {"banco": {"sala": "raices_1", "id": "banco_raices_1
 		"mochila": {}, "mapas": ["raices"], "salas_visitadas": ["raices_1"], "salas_mapeadas": [],
 		"estaciones": ["estacion_raices_1"], "botones_ensenados": ["saltar"], "salas": {"raices_1": {"examenes_1": true, "ascensor": 2}}, "personaje": "", "nombre": "", "tiempo_jugado": 12.5,
 		"carga_maxima": 3, "inspiracion_maxima": 33, "utiles_tenidos": [], "utiles_equipados": []}
+# Carpeta que no existe: guardar ahi falla al abrir el temporal, sin depender de llenar el disco.
+const RUTA_MALA: String = "user://carpeta_que_no_existe/partida.json"
 # Valores de prueba de los campos objeto del recorrido completo: su contenido se lee por clave (banco, mochila,
 # salas), asi que no hay un objeto generico que sirva para todos. Un campo objeto nuevo sin su forma aqui hace
 # fallar el recorrido.
@@ -85,6 +87,25 @@ func _ready() -> void:
 	var banco_roto: Dictionary = PARTIDA.duplicate(true)
 	banco_roto["banco"] = {"sala": "raices_1"}
 	_danada("banco sin id", JSON.stringify({"version": Guardado.VERSION, "partida": banco_roto}))
+	_fuera_de_rango("vidas_maximas", 0)
+	_fuera_de_rango("vidas_maximas", -2)
+	_fuera_de_rango("monedas", -1)
+	_fuera_de_rango("tiempo_jugado", -0.5)
+	var mochila_negativa: Dictionary = PARTIDA.duplicate(true)
+	mochila_negativa["mochila"] = {"sala": "raices_1", "x": 1.0, "y": 2.0, "monto": -5}
+	_danada("mochila con monto negativo", JSON.stringify({"version": Guardado.VERSION, "partida": mochila_negativa}))
+	mochila_negativa["mochila"]["monto"] = -0.5
+	_danada("mochila con monto negativo menor que uno", JSON.stringify({"version": Guardado.VERSION, "partida": mochila_negativa}))
+
+	# Un archivo que existe y no se abre no esta danado. El caso real (bloqueado por otro proceso) se probo a mano:
+	# FileAccess da ERR_FILE_CANT_OPEN; aqui se finge porque no se monta igual en todos los sistemas.
+	Guardado.guardar(PARTIDA, RUTA)
+	Guardado.fingir_fallo(RUTA, ERR_FILE_CANT_OPEN)
+	_caso("un archivo intacto que no se puede abrir da ILEGIBLE y no DANADA", Guardado.cargar(RUTA).estado == Guardado.Estado.ILEGIBLE)
+	Guardado.olvidar_fallos()
+	_caso("al volver a poder abrirse sigue VALIDA", Guardado.cargar(RUTA).estado == Guardado.Estado.VALIDA)
+	var no_abre: FileAccess = FileAccess.open("user://carpeta_que_no_existe/nada.json", FileAccess.READ)
+	_caso("un error de abrir otro archivo no vuelve ILEGIBLE una partida buena", no_abre == null and Guardado.cargar(RUTA).estado == Guardado.Estado.VALIDA)
 
 	# Campos nuevos con valor por omision (Guardado.NUEVOS), con una lista de prueba.
 	var nuevos: Dictionary[String, Variant] = {"cuenta": 0.0, "lista": []}
@@ -229,7 +250,7 @@ func _ready() -> void:
 	# El jugador carga los ajustes al entrar (lee user://ajustes.json, sin escribirlo), sin esperar a
 	# que la pausa o la vibracion lo hagan antes.
 	# _cargados es la bandera de cargar_una_vez y no tiene reinicio publico: se pone a mano para ver que el
-	# jugador la enciende. Agregar uno solo para esta prueba es lo que se decidio no hacer (H20).
+	# jugador la enciende; no vale la pena agregar uno solo para esta prueba.
 	Ajustes._cargados = false
 	var jugador: Node = (load("res://nucleo/jugador.tscn") as PackedScene).instantiate()
 	add_child(jugador)
@@ -252,7 +273,49 @@ func _ready() -> void:
 	Ajustes.vibracion = Ajustes.POR_OMISION["vibracion"]
 
 	_borrar()
+	_guardado_fallido()
 	_resumen()
+
+
+# Quien juega se entera de que no se guardo: la senal sale una vez, el disquete de exito no, y el Hud muestra su texto
+# hasta que un guardado sale bien. El disco lleno de verdad no se monta aqui: se probo con un tmpfs (docs/errores).
+func _guardado_fallido() -> void:
+	var hud: Hud = (load("res://interfaz/interfaz.tscn") as PackedScene).instantiate().find_child("Hud", true, false) as Hud
+	var raiz: Node = hud.owner
+	add_child(raiz)
+	var fallidos: Array[int] = [0]
+	var guardados: Array[int] = [0]
+	var al_fallar: Callable = func(_error: int) -> void: fallidos[0] += 1
+	var al_guardar: Callable = func() -> void: guardados[0] += 1
+	Eventos.guardado_fallido.connect(al_fallar)
+	Eventos.partida_guardada.connect(al_guardar)
+	Partida.reiniciar()
+	var ruta: String = Partida.ruta_guardado
+	Partida.ruta_guardado = RUTA_MALA
+	var antes: int = Partida.autoguardados
+	_caso("autoguardar en una ruta imposible devuelve el error", Partida.autoguardar() != OK and Partida.autoguardados == antes)
+	Partida.ruta_guardado = ruta
+	_caso("guardar fallido avisa una vez y no avisa exito", fallidos[0] == 1 and guardados[0] == 0)
+	_caso("el Hud muestra el fallo y no el disquete de exito", hud.aviso_fallo_visible and not hud.aviso_visible)
+	_caso("un guardado bueno quita el aviso de fallo", Partida.guardar(RUTA) == OK and not hud.aviso_fallo_visible and hud.aviso_visible)
+	# La marca de orden al inicio se escribe y al releer desaparece: es una forma fija de que lo escrito no sea lo
+	# leido, como un temporal vacio por disco lleno. Con el archivo viejo esto renombraba y devolvia OK.
+	_escribir(RUTA, "partida buena")
+	_caso("si lo escrito no se relee igual, da error", Archivo.escribir_atomico(RUTA, char(0xFEFF) + "ab") != OK)
+	_caso("y la partida anterior queda intacta, sin temporal", FileAccess.get_file_as_string(RUTA) == "partida buena" and not FileAccess.file_exists(RUTA + ".tmp"))
+	var nuevo: Hud = (load("res://interfaz/interfaz.tscn") as PackedScene).instantiate().find_child("Hud", true, false) as Hud
+	var raiz_nueva: Node = nuevo.owner
+	Partida.ultimo_guardado_fallo = true
+	add_child(raiz_nueva)
+	_caso("un Hud nuevo repite el aviso de un guardado fallido", nuevo.aviso_fallo_visible)
+	raiz_nueva.free()
+	Partida.reiniciar()
+	_caso("empezar partida olvida el guardado fallido", not Partida.ultimo_guardado_fallo)
+	Eventos.guardado_fallido.disconnect(al_fallar)
+	Eventos.partida_guardada.disconnect(al_guardar)
+	raiz.free()
+	Partida.reiniciar()
+	_borrar()
 
 
 # Campos que se guardan con su tipo despues del JSON: los de Guardado.ESQUEMA y los de Guardado.NUEVOS (el tipo de
@@ -345,6 +408,12 @@ func _normalizado(valor: Variant) -> String:
 	return JSON.stringify(JSON.parse_string(JSON.stringify(valor)), "", true)
 
 
+func _fuera_de_rango(campo: String, valor: float) -> void:
+	var partida: Dictionary = PARTIDA.duplicate(true)
+	partida[campo] = valor
+	_danada("%s en %s" % [campo, str(valor)], JSON.stringify({"version": Guardado.VERSION, "partida": partida}))
+
+
 func _danada(nombre: String, contenido: String) -> void:
 	_escribir(RUTA, contenido)
 	_caso(nombre + " da DANADA", Guardado.cargar(RUTA).estado == Guardado.Estado.DANADA)
@@ -358,9 +427,7 @@ func _igual(a: Dictionary, b: Dictionary) -> bool:
 
 
 func _borrar() -> void:
-	for ruta: String in [RUTA, RUTA + ".tmp"]:
-		if FileAccess.file_exists(ruta):
-			DirAccess.remove_absolute(ruta)
+	_borrar_archivos(RUTA)
 
 
 # Compara un Variant sin pasarlo directo a _caso (el tipado estricto no lo deja). 3.0 del JSON vale 3.

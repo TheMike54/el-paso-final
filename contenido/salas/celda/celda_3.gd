@@ -32,7 +32,7 @@ func _al_terminar_conversacion(etapa: int) -> void:
 
 
 # Duracion absoluta de la animacion = suma de las duraciones relativas / (fps de la animacion * speed_scale)
-# (classes/class_spriteframes.rst:252-256), en ticks de fisica. Sin la animacion, oscurece sin esperar.
+# (classes/class_spriteframes.rst), en ticks de fisica. Sin la animacion, oscurece sin esperar.
 # Vale porque Npc reproduce con play(nombre), velocidad propia 1; si un dia pasa otra, usar get_playing_speed().
 func _duracion_entrega() -> int:
 	var dibujo: AnimatedSprite2D = _eterno.animacion

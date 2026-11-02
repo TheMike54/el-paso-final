@@ -1,10 +1,10 @@
 extends "res://herramientas/pruebas/prueba_base.gd"
-# Prueba del AvisoAccion sobre la sala Pizarrones: fuera no se ve; dentro espera TICKS_ESPERA y aparece en
-# TICKS_APARECER; con el control, el IconoBoton y, tras un toque, el boton de la pantalla, que late. Hecha la accion se
-# va tras TICKS_MINIMO, se marca y no vuelve; hecha antes no sale; curar cuenta al curar; sentado no sale; SIEMPRE
-# vuelve hecha y POR_VISITA no lee la marca. ControlesTactiles: late solo el resaltado, nunca sin su habilidad ni
-# hablando. Su guion lee "valor . casos" y "valor . fallos".
+# Comprueba el AvisoAccion en la sala Pizarrones y su coordinacion con los controles tactiles.
+# Verifica las acciones y el estado para detectar avisos o botones que no se muestran cuando corresponde.
+# El guion lee casos y fallos para detectar regresiones.
 const SALA: String = "res://herramientas/salas/sala_pizarrones.tscn"
+# Entrada en el area, espera y aparicion completa del aviso.
+const TICKS_AVISO_COMPLETO: int = 4 + AvisoAccion.TICKS_ESPERA + AvisoAccion.TICKS_APARECER
 
 
 # botones_ocultos esconde igual que botones_por_ensenar, y la base de La Celda esconde curar: toda sala de la zona lo hereda.
@@ -65,7 +65,7 @@ func _ready() -> void:
 
 	# Hacer la accion con el dibujo a la vista: sigue hasta TICKS_MINIMO, se va aunque siga dentro y deja la marca.
 	_poner(jugador, Vector2(1000.0, 680.0))
-	await _esperar(4 + AvisoAccion.TICKS_ESPERA + AvisoAccion.TICKS_APARECER)
+	await _esperar(TICKS_AVISO_COMPLETO)
 	await _presionar(&"saltar")
 	_caso("saltar lo da por hecho y lo marca", saltar.hecha and Partida.estado_de(sala.clave(), "aviso_saltar") != null)
 	_caso("hecho sigue a la vista y deja de latir", saltar.alfa == 1.0 and ControlesTactiles.resaltada == &"")
@@ -78,7 +78,7 @@ func _ready() -> void:
 	await _esperar(2)
 	await _presionar(&"atacar")
 	_poner(jugador, Vector2(1600.0, 680.0))
-	await _esperar(4 + AvisoAccion.TICKS_ESPERA + AvisoAccion.TICKS_APARECER)
+	await _esperar(TICKS_AVISO_COMPLETO)
 	_caso("hecho antes de entrar no aparece", atacar.dentro and atacar.hecha and atacar.alfa == 0.0)
 
 	# Pulsar con una conversacion abierta (la avanza o la cierra) no cuenta: interactuar no da por hecho Sentarse.
@@ -91,7 +91,7 @@ func _ready() -> void:
 	# Curar: un toque no cura y no lo apaga; curar una vida si. La nota va con el boton.
 	var curar: AvisoAccion = sala.get_node(^"AvisoCurar") as AvisoAccion
 	_poner(jugador, Vector2(2850.0, 680.0))
-	await _esperar(4 + AvisoAccion.TICKS_ESPERA + AvisoAccion.TICKS_APARECER)
+	await _esperar(TICKS_AVISO_COMPLETO)
 	_caso("al aparecer su pizarron el boton de curar ya se ve", not controles.por_ensenar(&"curar"))
 	await _presionar(&"curar")
 	_caso("un toque de curar no lo apaga", curar.alfa == 1.0 and not curar.hecha)
@@ -105,7 +105,7 @@ func _ready() -> void:
 
 	# Sentarse va con el joystick arriba: se ve, sin caja ni latido, y la palabra es la suya.
 	_poner(jugador, Vector2(3200.0, 680.0))
-	await _esperar(4 + AvisoAccion.TICKS_ESPERA + AvisoAccion.TICKS_APARECER)
+	await _esperar(TICKS_AVISO_COMPLETO)
 	_caso("sentarse se ve con su palabra y no hace latir ningun boton", sentarse.alfa == 1.0
 			and sentarse.palabra() == "Sentarse" and ControlesTactiles.resaltada == &"" and not controles.latiendo)
 	# Sentado no se ve (quedaba encima del jugador) y al pararse vuelve: la regla es que el jugador pueda atender.
@@ -139,7 +139,7 @@ func _ready() -> void:
 	jugador = sala.get_node(^"Jugador") as Jugador
 	saltar = sala.get_node(^"AvisoSaltar") as AvisoAccion
 	_poner(jugador, Vector2(1000.0, 680.0))
-	await _esperar(4 + AvisoAccion.TICKS_ESPERA + AvisoAccion.TICKS_APARECER)
+	await _esperar(TICKS_AVISO_COMPLETO)
 	_caso("con la marca, al volver no aparece", saltar.hecha and saltar.dentro and saltar.alfa == 0.0)
 
 	# SIEMPRE: el pizarron vuelve al entrar aunque la accion este hecha, sin hacer latir el boton.
@@ -147,7 +147,7 @@ func _ready() -> void:
 	_poner(jugador, Vector2(700.0, 680.0))
 	await _esperar(AvisoAccion.TICKS_APARECER + 2)
 	_poner(jugador, Vector2(1000.0, 680.0))
-	await _esperar(4 + AvisoAccion.TICKS_ESPERA + AvisoAccion.TICKS_APARECER)
+	await _esperar(TICKS_AVISO_COMPLETO)
 	_caso("SIEMPRE: hecha, sale otra vez al entrar sin hacer latir el boton", saltar.hecha and saltar.alfa == 1.0
 			and ControlesTactiles.resaltada == &"")
 	await _esperar(AvisoAccion.TICKS_MINIMO + 2)
@@ -159,7 +159,7 @@ func _ready() -> void:
 	jugador = sala.get_node(^"Jugador") as Jugador
 	saltar = sala.get_node(^"AvisoSaltar") as AvisoAccion
 	_poner(jugador, Vector2(1000.0, 680.0))
-	await _esperar(4 + AvisoAccion.TICKS_ESPERA + AvisoAccion.TICKS_APARECER)
+	await _esperar(TICKS_AVISO_COMPLETO)
 	_caso("POR_VISITA: con la marca en la partida, sale igual", not saltar.hecha and saltar.alfa == 1.0)
 
 	# Al salir del arbol con el jugador dentro, el aviso suelta el resalto.
@@ -168,7 +168,7 @@ func _ready() -> void:
 	sala = await _abrir_sala()
 	jugador = sala.get_node(^"Jugador") as Jugador
 	_poner(jugador, Vector2(1000.0, 680.0))
-	await _esperar(4 + AvisoAccion.TICKS_ESPERA + AvisoAccion.TICKS_APARECER)
+	await _esperar(TICKS_AVISO_COMPLETO)
 	var resaltaba: bool = ControlesTactiles.resaltada == &"saltar"
 	sala.free()
 	_caso("al quitar la sala se suelta el resalto", resaltaba and ControlesTactiles.resaltada == &"")
@@ -184,8 +184,3 @@ func _abrir_sala(modo_saltar: int = -1) -> Sala:
 	add_child(sala)
 	await _esperar(3)
 	return sala
-
-
-func _poner(jugador: Jugador, punto: Vector2) -> void:
-	jugador.global_position = punto
-	jugador.velocity = Vector2.ZERO

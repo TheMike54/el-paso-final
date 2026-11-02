@@ -1,10 +1,8 @@
 extends Sala
-# Sala de arte y rendimiento: capas Parallax2D con imagenes generadas con IA (docs/uso-de-ia.md), variantes
-# alternadas y espejadas, adornos sembrados al azar, animaciones y particulas, para medir FPS en alto y en bajo
-# (Recursos.bajos()) en cada telefono y ver como evitar que el fondo se repita. Los FPS los da ContadorFps y las
-# particulas y la niebla se apagan con el panel de pruebas; los botones de arriba apagan el frente y las animaciones.
-# La decoracion se arma en _ready, asi que el presupuesto del validador no la cuenta: es a proposito, es una sala de
-# medicion.
+# Sala para medir FPS por telefono en alto y bajo y probar fondos sin repeticion con arte de docs/uso-de-ia.md.
+# Combina variantes alternadas y espejadas, adornos al azar, animaciones y particulas; ContadorFps muestra el costo.
+# El panel apaga particulas y niebla; los botones superiores apagan frente y animaciones para medirlos por separado.
+# Crea decoracion en _ready para dejarla fuera del presupuesto del validador a proposito: es una sala de medicion.
 
 const T: String = "res://herramientas/salas/arte/"
 const ANCHO: float = 6400.0

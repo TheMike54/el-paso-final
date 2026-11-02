@@ -14,18 +14,14 @@ enum Transicion { NINGUNA, SALE_CAMINANDO, SALE_POR_PUERTA, SALE_VERTICAL, LLEGA
 ## get_first_node_in_group(GRUPO).
 const GRUPO: StringName = &"jugador"
 const TAMANO: Vector2 = Vector2(80.0, 160.0)
-## Cuerpo: el nodo Dibujo (AnimatedSprite2D) con nucleo/arte/jugador_hombre/jugador_hombre.tres; la animacion la
-## elige AnimacionJugador. Invulnerable parpadea (alfa PARPADEO cada TICKS_PARPADEO ticks, como el
-## InvulnerablePulse de Hollow Knight); unos ticks tras un parry se pone blanco con el shader
-## nucleo/arte/destello.gdshader (Compatibility satura el color en 1: un modulate mayor no aclara).
+## Invulnerable parpadea a este alfa cada TICKS_PARPADEO ticks, como el InvulnerablePulse de Hollow Knight.
 const PARPADEO: float = 0.35
 const TICKS_PARPADEO: int = 4
-## El golpe se ve solo con su trazo blanco (TrazoAtaque; el area, con «Ver hitbox»: decidido por la persona el
-## 25-oct-2026). El parry deja un destello de luz (EfectoCuadros con nucleo/arte/efecto_parry.png, 0,2 s, que corre
-## durante el congelado) en la punta de la espada, como Hollow Knight y Silksong; el cuerpo queda en blanco
-## TICKS_DESTELLO_PARRY ticks (0,1 s, contados tambien congelado).
+## Destello de luz del parry en la punta de la espada (EfectoCuadros, 0,2 s, corre durante el congelado).
 const HOJA_PARRY: Texture2D = EfectosJugador.HOJA_PARRY
 const CUADROS_PARRY: int = EfectosJugador.CUADROS_PARRY
+## Ticks que el cuerpo queda en blanco tras un parry (0,1 s, contados tambien congelado), con el shader
+## nucleo/arte/destello.gdshader: Compatibility satura el color en 1 y un modulate mayor no aclara.
 const TICKS_DESTELLO_PARRY: int = 6
 ## Punta de la espada en el cuadro que golpea de lado, respecto de los pies y mirando a la derecha (medida en el atlas
 ## del jugador). Arriba y abajo la espada del dibujo no llega al punto del golpe: ahi el destello va entre el area de
@@ -49,12 +45,14 @@ const LUZ_CURAR_TINTE: Color = EfectosJugador.LUZ_CURAR_TINTE
 ## Ticks de una vuelta completa de la voltereta (el sprite gira; ver AnimacionJugador.giro_voltereta).
 const TICKS_VUELTA: int = 24
 const NUNCA: int = 1000000
+# Valor de _ticks_poder sin pulsacion de curar en curso.
+const SIN_PULSACION: int = -1
 # Acciones que levantan al jugador del banco (_seguir_descansando).
 const ACCIONES_LEVANTARSE: Array[StringName] = [&"mover_izquierda", &"mover_derecha", &"mover_abajo", &"saltar", &"atacar"]
 ## Cuanto mas alla del borde del cuerpo busca la pared el rayo de altura_agarre_pared, en px.
 const ALCANCE_AGARRE: float = 4.0
 # Rayo que comprueba el suelo bajo un punto seguro: empieza estos px sobre los pies (fuera del solido, que el rayo no
-# ve desde dentro) y baja estos px bajo ellos (classes/class_physicsrayqueryparameters2d.rst:160, hit_from_inside).
+# ve desde dentro) y baja estos px bajo ellos (classes/class_physicsrayqueryparameters2d.rst, hit_from_inside).
 const RAYO_SUELO_ARRIBA: float = 8.0
 const RAYO_SUELO_ABAJO: float = 40.0
 # Donde baja ese rayo, en x desde los pies: el centro y 1 px dentro de cada orilla del cuerpo (TAMANO).
@@ -77,7 +75,7 @@ const ESCENA_PROYECTIL: PackedScene = preload("res://nucleo/proyectil.tscn")
 ## Ticks de subida antes de que soltar saltar corte el salto: un toque corto da un salto bajo, no nulo.
 @export var ticks_minimos_salto: int = 4
 ## Ticks despues de salir de una orilla en que saltar todavia funciona. Silksong da 4 pasos (~0,08 s, 5 ticks);
-## 4 para que no quede tan facil (probado en el telefono el 15-oct-2026).
+## 4 para que no quede tan facil.
 @export var ticks_coyote: int = 4
 ## Ticks antes de aterrizar en que presionar saltar hace saltar al tocar el suelo.
 @export var ticks_salto_en_cola: int = 3
@@ -189,10 +187,10 @@ const ESCENA_PROYECTIL: PackedScene = preload("res://nucleo/proyectil.tscn")
 ## es soltar. Mientras, sigue a velocidad completa hacia donde iba.
 @export var ticks_soltar_carrera: int = 4
 ## Ataque en carrera: mientras dura, el jugador sale empujado hacia adelante a esta velocidad. Provisional: por encima
-## de velocidad_impulso; la persona la pidio mas larga cuatro veces tras probarla en el S50 (12-oct-2026).
+## de velocidad_impulso; ajustada probando en el telefono.
 @export var velocidad_ataque_carrera: float = 2000.0
 ## Ticks desde un ataque en carrera hasta poder hacer otro sin dejar de correr; lo pedido antes se pierde. Provisional:
-## en Silksong sale uno cada 0,65-0,85 s aunque se presione mas rapido (video del 12-oct-2026).
+## en Silksong sale uno cada 0,65-0,85 s aunque se presione mas rapido.
 @export var ticks_entre_ataques_carrera: int = 42
 ## Si el ataque en carrera golpea algo, voltereta (Silksong, blason de cazadora): la carrera se corta y el jugador
 ## sale hacia arriba esta altura, en px, y hacia adelante a esta velocidad, en px/s, para pasar por encima.
@@ -213,7 +211,7 @@ const ESCENA_PROYECTIL: PackedScene = preload("res://nucleo/proyectil.tscn")
 ## Ticks despues de dejar de tocar la pared en que saltar todavia es un salto en pared.
 @export var ticks_coyote_pared: int = 3
 ## Fraccion de la altura del cuerpo, contada desde los pies, a la que tiene que haber pared para sostenerse y
-## saltar de ella. 0: basta cualquier contacto (asi se juega hoy, decidido el 14-oct-2026); con 0,5 deja de
+## saltar de ella. 0: basta cualquier contacto; con 0,5 deja de
 ## agarrarse con mas de medio cuerpo por encima de la esquina de arriba.
 @export_range(0.0, 1.0) var altura_agarre_pared: float = 0.0
 
@@ -223,7 +221,7 @@ const ESCENA_PROYECTIL: PackedScene = preload("res://nucleo/proyectil.tscn")
 ## hoy, unos 794 px; con distancia_caida_inicial en 0, unos 650. La caida en picada tiembla siempre.
 @export var ticks_caida_dura: int = 18
 ## Amplitud vertical inicial del temblor, en px; baja en linea recta hasta 0. Provisional y sin
-## fuente: con 8 px casi no se veia en el telefono (07-oct-2026).
+## fuente: con 8 px casi no se veia en el telefono.
 @export var temblor_px: float = 20.0
 ## Ticks que dura el temblor (0,3 s). Provisional y sin fuente, como temblor_px.
 @export var temblor_ticks: int = 18
@@ -294,10 +292,9 @@ var atacando: bool:
 ## y su carga) y justo despues.
 var invulnerable: bool:
 	get:
-		return _ticks_sin_dano > 0 or en_picada or _preparando_picada or en_transicion
+		return ticks_sin_dano > 0 or en_picada or _preparando_picada or en_transicion
 ## Puede usar interactuar (banco, Npc, reto, entrega, puerta): en el suelo, vivo, de pie, sin aterrizaje duro, sin
-## conversacion y sin cruzar una puerta. Una sola regla para todos: la entrega olvidaba sentado y aterrizando (auditoria
-## del 13-oct-2026).
+## conversacion y sin cruzar una puerta. Una sola regla para todos.
 var puede_interactuar: bool:
 	get:
 		return (is_on_floor() and not muerto and not descansando and not aterrizando and not hablando
@@ -323,7 +320,7 @@ var _ticks_atacando: int = 0
 var _ticks_hasta_ataque: int = 0
 var _ticks_hasta_ataque_carrera: int = 0
 var _golpeados: Array[Golpeable] = []
-var _ticks_sin_dano: int = 0
+var ticks_sin_dano: int = 0
 # Foto de los amuletos: solo se recalcula al entrar o cuando cambia el equipo.
 var _efectos: FichaAmuleto:
 	get:
@@ -337,7 +334,7 @@ var _velocidad_rebote: float = 0.0
 var _sentido_voltereta: float = 1.0
 var _ticks_voltereta: int = 0
 # Ticks con control desde la ultima vuelta por un peligro; NUNCA si no hubo o si ya actuo el anti-bucle.
-var _ticks_desde_peligro: int = NUNCA
+var ticks_desde_peligro: int = NUNCA
 # Quieto tras reaparecer por un peligro: ningun peligro cuenta. DanoContacto revisa el contacto con la lista
 # del tick anterior y, sin esto, volveria a avisar del mismo peligro ya con el jugador en otro lugar.
 var _reapareciendo: bool = false
@@ -358,7 +355,7 @@ var _doble_salto_disponible: bool = true
 var _ticks_despegando: int = 0
 var _sentido_despegue: float = 0.0
 # Ticks que lleva presionado curar; -1 si no hay una pulsacion que cuente.
-var _ticks_poder: int = -1
+var _ticks_poder: int = SIN_PULSACION
 # Ataque hacia abajo (pogo) o hacia arriba en curso, y si ya reboto en este ataque.
 var _atacando_abajo: bool = false
 var _atacando_arriba: bool = false
@@ -392,7 +389,7 @@ var _velocidad_caida: float = 0.0
 var _ticks_a_tope: int = 0
 var _ticks_aterrizando: int = 0
 # Limites de la sala (la camara guarda su copia): la salida por abajo los usa.
-var _limites: Rect2 = Rect2(-10000000.0, -10000000.0, 20000000.0, 20000000.0)
+var limites_sala: Rect2 = Rect2(-10000000.0, -10000000.0, 20000000.0, 20000000.0)
 # Dibujo: la foto del estado para AnimacionJugador (una sola, se rellena cada tick) y el ultimo valor del destello
 # puesto en el material (se cambia solo si cambia).
 var _estado_dibujo: AnimacionJugador.Estado = AnimacionJugador.Estado.new()
@@ -445,13 +442,13 @@ func _ready() -> void:
 	_trazo.name = &"Trazo"
 	add_child(_trazo)
 	_crear_aura()
-	_punto_seguro._puntos_seguros = [global_position]
-	_punto_seguro._punto_llegada = global_position
+	_punto_seguro.puntos_seguros = [global_position]
+	_punto_seguro.punto_llegada = global_position
 	_leer_clips()
 
 
 func _renovar_efectos() -> void:
-	_efectos_visuales._renovar_efectos()
+	_efectos_visuales.renovar_efectos()
 
 
 func _physics_process(delta: float) -> void:
@@ -467,16 +464,16 @@ func _physics_process(delta: float) -> void:
 	_animar()
 
 
-# Un Button se pulsa con ui_accept al despachar el evento, antes del tick y fuera de la fisica: si ese boton quita la
-# pausa, la prioridad de fisica de los menus no alcanza y el jugador leeria en su tick el mismo A como saltar. Un menu
-# que se cierra leyendo una accion en su _physics_process lo hace dentro del tick y no pasa por aqui. No se mira si
-# saltar esta recien pulsado aqui: a 120 FPS A puede bajar un cuadro y subir el siguiente sin tick entre medio, y aqui
-# ya no cuenta como recien pulsado aunque el tick siguiente si lo lea asi.
 # Dejar la sala a medio curar (salir al menu) corta la curacion: Sonido vive fuera de las salas y seguiria sonando.
 func _exit_tree() -> void:
 	_cortar_curacion()
 
 
+# Un Button se pulsa con ui_accept al despachar el evento, antes del tick y fuera de la fisica: si ese boton quita la
+# pausa, la prioridad de fisica de los menus no alcanza y el jugador leeria en su tick el mismo A como saltar. Un menu
+# que se cierra leyendo una accion en su _physics_process lo hace dentro del tick y no pasa por aqui. No se mira si
+# saltar esta recien pulsado aqui: a 120 FPS A puede bajar un cuadro y subir el siguiente sin tick entre medio, y aqui
+# ya no cuenta como recien pulsado aunque el tick siguiente si lo lea asi.
 func _notification(que: int) -> void:
 	if que == NOTIFICATION_UNPAUSED and not Engine.is_in_physics_frame():
 		_saltar_del_menu = true
@@ -521,10 +518,10 @@ func _animar() -> void:
 	_dibujo.rotation = AnimacionJugador.giro_voltereta(e) * _mirando if nombre == AnimacionJugador.VOLTERETA else 0.0
 	_mostrar_curacion()
 	var color: Color = Color.WHITE
-	if _ticks_sin_dano > 0 and not muerto and posmod(Engine.get_physics_frames(), 2 * TICKS_PARPADEO) >= TICKS_PARPADEO:
+	if ticks_sin_dano > 0 and not muerto and posmod(Engine.get_physics_frames(), 2 * TICKS_PARPADEO) >= TICKS_PARPADEO:
 		color.a = PARPADEO
 	_dibujo.modulate = color
-	# Blanco solo en el parry: el golpe recibido se lee por su parpadeo, como en Hollow Knight (decidido el 21-oct-2026).
+	# Blanco solo en el parry: el golpe recibido se lee por su parpadeo, como en Hollow Knight.
 	var cantidad: float = 1.0 if not muerto and _ticks_destello > 0 else 0.0
 	if cantidad != _cantidad_destello:
 		_cantidad_destello = cantidad
@@ -546,7 +543,7 @@ func _leer_clips() -> void:
 	_separacion_pared = AnimacionJugador.separacion_pared(cuadros, -_dibujo.offset.x, TAMANO.x / 2.0)
 	_cuadros_paso = cuadros.get_meta(&"pasos", {}) as Dictionary
 	# Los bucles de caminar y de la carrera los avanza el sprite, no el tick: el paso sale del cambio de cuadro
-	# (classes/class_animatedsprite2d.rst:100-102 y :138-140). Al empezar a caminar, play() puede dejar el mismo
+	# (classes/class_animatedsprite2d.rst). Al empezar a caminar, play() puede dejar el mismo
 	# indice de cuadro y solo cambia la animacion: por eso tambien animation_changed.
 	_dibujo.frame_changed.connect(_al_cambiar_cuadro)
 	_dibujo.animation_changed.connect(_al_cambiar_cuadro)
@@ -619,7 +616,7 @@ func _llenar_estado_dibujo() -> AnimacionJugador.Estado:
 # Salir por abajo de los limites de la sala es un peligro, igual que un pincho: quita una vida y
 # vuelve al ultimo suelo firme. Sin sala, los limites son enormes y esto nunca ocurre.
 func _revisar_salida_por_abajo() -> void:
-	if global_position.y > _limites.end.y + margen_fuera_de_sala:
+	if global_position.y > limites_sala.end.y + margen_fuera_de_sala:
 		recibir_dano(1, global_position.x, true)
 
 
@@ -651,7 +648,7 @@ func _mover(delta: float) -> void:
 		_ticks_congelado -= 1
 		return
 	_reapareciendo = false
-	_ticks_desde_peligro = _envejecer(_ticks_desde_peligro)
+	ticks_desde_peligro = _envejecer(ticks_desde_peligro)
 	if en_transicion:
 		_seguir_transicion(en_suelo, delta)
 		return
@@ -713,7 +710,7 @@ func _avanzar_contadores(en_suelo: bool) -> void:
 		_ticks_desde_atacar = 0
 	else:
 		_ticks_desde_atacar = _envejecer(_ticks_desde_atacar)
-	_ticks_sin_dano = maxi(_ticks_sin_dano - 1, 0)
+	ticks_sin_dano = maxi(ticks_sin_dano - 1, 0)
 	_ticks_hasta_impulso = maxi(_ticks_hasta_impulso - 1, 0)
 	_ticks_hasta_bola = maxi(_ticks_hasta_bola - 1, 0)
 	if en_suelo:
@@ -775,7 +772,7 @@ func _empezar_aterrizaje_duro() -> void:
 	_cortar_empujes()
 	_cortar_ataque()
 	_cortar_curacion()
-	_ticks_poder = -1
+	_ticks_poder = SIN_PULSACION
 	velocity.x = 0.0
 	_ticks_aterrizando = ticks_aterrizaje_duro
 
@@ -787,7 +784,7 @@ func _seguir_aterrizando() -> void:
 	_ticks_aterrizando -= 1
 	_ticks_desde_pulsar = NUNCA
 	_ticks_desde_atacar = NUNCA
-	_ticks_poder = -1
+	_ticks_poder = SIN_PULSACION
 	velocity.x = 0.0
 	move_and_slide()
 
@@ -987,11 +984,11 @@ func _impulsar(eje: float) -> void:
 func _boton_poderes(en_suelo: bool) -> bool:
 	var mantiene: bool = Input.is_action_pressed(&"curar")
 	if Input.is_action_just_pressed(&"curar"):
-		_ticks_poder = 0 if _ticks_retrocediendo == 0 and _ticks_impulsando == 0 else -1
+		_ticks_poder = 0 if _ticks_retrocediendo == 0 and _ticks_impulsando == 0 else SIN_PULSACION
 		# Con abajo, la caida en picada sale en el tick de la pulsacion, sin esperar al toque: en el
 		# aire baja enseguida; en el suelo, primero un saltito.
 		if _ticks_poder == 0 and Input.is_action_pressed(&"mover_abajo") and _puede_picar():
-			_ticks_poder = -1
+			_ticks_poder = SIN_PULSACION
 			Partida.inspiracion -= costo_poder
 			if en_suelo:
 				_preparar_picada()
@@ -1000,13 +997,13 @@ func _boton_poderes(en_suelo: bool) -> bool:
 			return true
 	elif _ticks_poder >= 0:
 		if not mantiene:
-			_ticks_poder = -1
+			_ticks_poder = SIN_PULSACION
 			toques_poder += 1
 			_lanzar_poder()
 		else:
 			_ticks_poder += 1
 			if _ticks_poder >= ticks_mantener_poder:
-				_ticks_poder = -1
+				_ticks_poder = SIN_PULSACION
 				_empezar_curacion(en_suelo)
 	return curando and _seguir_curando(en_suelo, mantiene)
 
@@ -1086,7 +1083,7 @@ func _seguir_picada() -> void:
 		# La picada tiembla siempre al aterrizar, sin importar la altura, y no deja sin control.
 		temblar(temblor_ticks, temblor_px)
 		velocity = Vector2.ZERO
-		_ticks_sin_dano = maxi(_ticks_sin_dano, ticks_invulnerable_picada)
+		ticks_sin_dano = maxi(ticks_sin_dano, ticks_invulnerable_picada)
 		# Antes de la onda: si la onda golpea, la vibracion del aterrizaje (la fuerte) llega primero.
 		Eventos.jugador_aterrizo.emit(velocidad_picada, false, true)
 		# Ya quedo en el suelo tras el move_and_slide de este tick: asi el _aterrizar del siguiente no lo cuenta
@@ -1328,7 +1325,7 @@ func _parar(ataque: AtaqueEnemigo) -> void:
 	var centro_ataque: Vector2 = ataque.centro()
 	ataque.parar()
 	paradas += 1
-	_ticks_sin_dano = maxi(_ticks_sin_dano, ticks_invulnerable_parry)
+	ticks_sin_dano = maxi(ticks_sin_dano, ticks_invulnerable_parry)
 	Congelado.pedir(ticks_congelado_parry)
 	_ticks_destello = TICKS_DESTELLO_PARRY
 	_golpe_parado = true
@@ -1351,8 +1348,7 @@ func _parar(ataque: AtaqueEnemigo) -> void:
 			Partida.ganar_inspiracion(inspiracion_por_golpe + _efectos.inspiracion_extra)
 
 
-# Disparo desviado con el ataque (decidido por la persona el 25-oct-2026, como la version ligera del choque de
-# Silksong, noClashFreeze): desaparece con una chispa chica, sin congelado, destello, retroceso, invulnerabilidad ni
+# Disparo desviado con el ataque (como la version ligera del choque de Silksong, noClashFreeze): desaparece con una chispa chica, sin congelado, destello, retroceso, invulnerabilidad ni
 # Inspiracion (no hay enemigo al que pegarle). Suena y vibra como pegarle a un objeto.
 func _desviar(disparo: AtaqueEnemigo) -> void:
 	_soltar_destello(disparo.centro(), ESCALA_CHISPA, false)
@@ -1383,14 +1379,14 @@ func recibir_dano(dano: int, origen_x: float, peligro: bool = false) -> void:
 	# mas cuenta, ni un peligro.
 	if muerto or en_transicion or _ticks_hasta_reaparecer > 0 or (peligro and _reapareciendo):
 		return
-	if peligro and _ticks_desde_peligro < ticks_anti_bucle:
+	if peligro and ticks_desde_peligro < ticks_anti_bucle:
 		var llegada: Vector2 = _llegada_con_suelo()
 		_cortar_curacion()
-		_reaparecer(llegada)
+		reaparecer(llegada)
 		# El punto seguro pasa a ser la llegada, y el siguiente peligro ya cuesta una vida: si la llegada
 		# tambien fuera peligrosa, el bucle termina en vez de seguir sin fin.
-		_punto_seguro._puntos_seguros = [llegada]
-		_ticks_desde_peligro = NUNCA
+		_punto_seguro.puntos_seguros = [llegada]
+		ticks_desde_peligro = NUNCA
 		return
 	if invulnerable and not peligro:
 		return
@@ -1398,7 +1394,7 @@ func recibir_dano(dano: int, origen_x: float, peligro: bool = false) -> void:
 	_ticks_aterrizando = 0
 	_cortar_curacion()
 	# Un golpe tambien pierde la pulsacion de curar a medias (ni toque ni curacion) y levanta del banco.
-	_ticks_poder = -1
+	_ticks_poder = SIN_PULSACION
 	descansando = false
 	hablando = false
 	# El ataque a medias no se corta: sigue tras el congelado del golpe.
@@ -1407,7 +1403,7 @@ func recibir_dano(dano: int, origen_x: float, peligro: bool = false) -> void:
 	if vidas == 0:
 		_morir()
 		return
-	_ticks_sin_dano = ticks_invulnerable + _efectos.invulnerable_extra
+	ticks_sin_dano = ticks_invulnerable + _efectos.invulnerable_extra
 	if peligro:
 		_volver_al_punto_seguro()
 		return
@@ -1424,7 +1420,7 @@ func _morir() -> void:
 	_terminar_transicion()
 	_ticks_aterrizando = 0
 	_ticks_atacando = 0
-	_ticks_sin_dano = 0
+	ticks_sin_dano = 0
 	_ataque.set_deferred(&"monitoring", false)
 	# Las PejeCoins quedan en la mochila antes de avisar: asi el autoguardado de Partida al oir la muerte ya la lleva,
 	# sin depender del orden de las conexiones ni de que Partida busque al jugador.
@@ -1437,14 +1433,14 @@ func _morir() -> void:
 # la mas vieja de las ultimas ticks_atras_punto_seguro: un poco antes de la orilla, no en ella. Sobre algo que se
 # mueve (plataforma, elevador, porton) no cuenta: al volver ya no estaria ahi (docs/errores). Bajo lo que aplasta
 # tampoco (no_recordar_punto_seguro). El suelo lo dice un rayo bajo los pies y no los choques de move_and_slide, que no siempre registra uno estando quieto
-# (tutorials/physics/using_character_body_2d.rst:160).
+# (tutorials/physics/using_character_body_2d.rst).
 func _recordar_punto_seguro(en_suelo: bool) -> void:
-	_punto_seguro._recordar_punto_seguro(en_suelo)
+	_punto_seguro.recordar_punto_seguro(en_suelo)
 
 
 ## Para quien tenga al jugador donde no debe volver (la zona de DanoContacto.aplastador): vuelve a contar el suelo firme.
 func no_recordar_punto_seguro() -> void:
-	_punto_seguro._ticks_en_suelo = 0
+	_punto_seguro.ticks_en_suelo = 0
 
 
 ## Donde volveria tras un peligro: nunca sobre pinchos ni en el aire. Ahi queda la mochila al morir. Comprueba el suelo
@@ -1461,17 +1457,17 @@ func ultimo_punto_seguro() -> Vector2:
 # atravesando lo que se mueve (un elevador bajo la llegada). Solo si bajo la llegada no hay ningun solido fijo dentro de
 # la sala devuelve la llegada tal cual. Destino del anti-bucle y respaldo de ultimo_punto_seguro.
 func _llegada_con_suelo() -> Vector2:
-	return _punto_seguro._llegada_con_suelo()
+	return _punto_seguro.llegada_con_suelo()
 
 
 # El primer solido de ESCENARIO que no se mueve entre desde y hasta: repite el rayo excluyendo cada pieza que
-# Vaiven.movil_de da por movil (classes/class_physicsdirectspacestate2d.rst:164, el rid del choque). Vacio si no hay.
+# Vaiven.movil_de da por movil (classes/class_physicsdirectspacestate2d.rst, el rid del choque). Vacio si no hay.
 func _suelo_fijo_bajo(desde: Vector2, hasta: Vector2) -> Dictionary:
-	return _punto_seguro._suelo_fijo_bajo(desde, hasta)
+	return _punto_seguro.suelo_fijo_bajo(desde, hasta)
 
 
 func _volver_al_punto_seguro() -> void:
-	_punto_seguro._volver_al_punto_seguro()
+	_punto_seguro.volver_al_punto_seguro()
 
 
 # Si bajo el punto (los pies) hay un solido de ESCENARIO a menos de RAYO_SUELO_ABAJO px que no se mueve. Un rayo en el
@@ -1480,13 +1476,13 @@ func _volver_al_punto_seguro() -> void:
 # _suelo_fijo_bajo): una plataforma sobre los pinchos tiene suelo a menos de RAYO_SUELO_ABAJO px bajo ella, y ese
 # punto quedaria sobre los pinchos. A cambio, un punto con un elevador posado en el suelo se descarta y se usa otro.
 func _hay_suelo_fijo(punto: Vector2) -> bool:
-	return _punto_seguro._hay_suelo_fijo(punto)
+	return _punto_seguro.hay_suelo_fijo(punto)
 
 
 # Tras un peligro (como Hollow Knight): quieto donde lo toco mientras la pantalla funde a negro
 # (Fundido.TICKS_OSCURECER); ya en negro, pasa al punto y espera Fundido.TICKS_EN_NEGRO_PELIGRO; la imagen
 # aclara mientras sigue quieto.
-func _reaparecer(punto: Vector2) -> void:
+func reaparecer(punto: Vector2) -> void:
 	_terminar_transicion()
 	_reapareciendo = true
 	velocity = Vector2.ZERO
@@ -1510,11 +1506,11 @@ func _colocar_tras_peligro(punto: Vector2) -> void:
 	descansando = false
 	hablando = false
 	# Ni una pulsacion de curar a medias: soltarla congelado contaria como toque.
-	_ticks_poder = -1
+	_ticks_poder = SIN_PULSACION
 	_ticks_retrocediendo = 0
-	# _reaparecer ya corto el ataque y la carrera; desde ahi _mover no avanzo, asi que siguen cortados.
+	# reaparecer ya los corto y _mover no avanzo desde entonces; se repite para no depender de ese orden.
 	_cortar_empujes()
-	_punto_seguro._ticks_en_suelo = 0
+	_punto_seguro.ticks_en_suelo = 0
 	# Una pulsacion de saltar o atacar justo antes del peligro no debe contar al reaparecer.
 	_ticks_desde_pulsar = NUNCA
 	_ticks_desde_atacar = NUNCA
@@ -1560,7 +1556,7 @@ func _quedar_quieto() -> void:
 	_cortar_empujes()
 	_cortar_ataque()
 	_cortar_curacion()
-	_ticks_poder = -1
+	_ticks_poder = SIN_PULSACION
 	_ticks_retrocediendo = 0
 	_ticks_aterrizando = 0
 
@@ -1619,7 +1615,7 @@ func camara() -> CamaraJugador:
 
 ## La sala le pasa sus limites: la camara sigue al jugador sin mostrar nada fuera de ellos.
 func fijar_limites(limites: Rect2) -> void:
-	_limites = limites
+	limites_sala = limites
 	_camara.fijar_limites(limites, global_position, _mirando)
 
 
@@ -1656,7 +1652,7 @@ func salir_de_sala(tipo: Puerta.Tipo, lado: float, x_puerta: float, tope: int) -
 ## TICKS_LLEGAR_CAMINANDO ticks; PUERTA sale de espaldas (salir_puerta) y queda mirando hacia lado; ARRIBA y ABAJO entran
 ## con el control. punto_seguro: el de la puerta (Puerta.punto_seguro), en globales; INF si no tiene.
 func entrar_a_sala(tipo: Puerta.Tipo, lado: float, punto_seguro: Vector2 = Vector2.INF) -> void:
-	_punto_seguro._punto_seguro_puerta = punto_seguro
+	_punto_seguro.punto_seguro_puerta = punto_seguro
 	if tipo == Puerta.Tipo.LADO and lado != 0.0:
 		_empezar_transicion()
 		transicion = Transicion.LLEGA_CAMINANDO
@@ -1714,15 +1710,15 @@ func _saliendo() -> bool:
 # Destello del parry o chispa de un disparo desviado en un punto de la sala: hijo de la sala, queda fijo aunque el
 # jugador salga empujado, va encima de el y se libera solo al acabar.
 func _soltar_destello(punto: Vector2, escala: float, corre_congelado: bool) -> void:
-	_efectos_visuales._soltar_destello(punto, escala, corre_congelado)
+	_efectos_visuales.soltar_destello(punto, escala, corre_congelado)
 
 
 # El aura de curar detras del cuerpo, sus rayas delante y la luz; ocultas hasta curar. Detras sin bajar z_index (con
 # z -1 quedaba bajo el fondo de la sala): como el Dibujo, show_behind_parent, y primera de los hijos, antes que el.
 func _crear_aura() -> void:
-	_efectos_visuales._crear_aura()
+	_efectos_visuales.crear_aura()
 
 
 # Muestra el aura y su luz mientras cura (el aura empieza en su primer cuadro); la luz crece con lo curado y titila.
 func _mostrar_curacion() -> void:
-	_efectos_visuales._mostrar_curacion()
+	_efectos_visuales.mostrar_curacion()

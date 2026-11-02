@@ -1,7 +1,7 @@
+extends EntregaRecompensas
 # Entrega gratuita del lote de equipo para la sala jugable de pruebas.
 # Conserva la interaccion de EntregaRecompensas, pero recuerda el lote completo
-# con una sola marca: sus seis premios no dependen de coleccionables.
-extends EntregaRecompensas
+# con una sola marca: sus siete premios no dependen de coleccionables.
 
 const MARCA: String = "equipo_entregado"
 

@@ -123,7 +123,7 @@ static func elegir(e: Estado) -> StringName:
 	if e.atacando_en_carrera:
 		return ESTOCADA
 	if e.ticks_atacando > 0 or (e.ticks_hasta_ataque > 0 and not e.cola_ataque_cortada):
-		# Pegado a la pared tambien sale al lado, hacia donde mira: ahi sale el area (decidido el 21-oct-2026).
+		# Pegado a la pared tambien sale al lado, hacia donde mira: ahi sale el area.
 		if e.atacando_abajo:
 			return ATAQUE_ABAJO
 		if e.atacando_arriba:
@@ -243,7 +243,7 @@ static func cuadro(nombre: StringName, e: Estado, duraciones: PackedFloat32Array
 
 
 ## Ticks de un clip (o de sus primeros hasta cuadros, si hasta >= 0) con la fisica a 60 ticks (decision cerrada): suma
-## de sus duraciones relativas entre los fps del clip (classes/class_spriteframes.rst:252-256), redondeada al tick.
+## de sus duraciones relativas entre los fps del clip (classes/class_spriteframes.rst), redondeada al tick.
 static func ticks_de(cuadros: SpriteFrames, nombre: StringName, hasta: int = -1) -> int:
 	var total: int = cuadros.get_frame_count(nombre) if hasta < 0 else mini(hasta, cuadros.get_frame_count(nombre))
 	var suma: float = 0.0
@@ -256,7 +256,7 @@ static func ticks_de(cuadros: SpriteFrames, nombre: StringName, hasta: int = -1)
 ## Giro del sprite en la voltereta, en radianes, mirando a la derecha: una vuelta cada ticks_vuelta. El cuadro 5 de
 ## la hoja ya esta a un cuarto de vuelta y el 6 a media, asi que el giro les resta lo que ya traen (escena HTML).
 static func giro_voltereta(e: Estado) -> float:
-	var grados: float = fmod(360.0 * float(e.ticks_voltereta) / float(e.ticks_vuelta), 360.0)
+	var grados: float = _grados_voltereta(e)
 	return deg_to_rad(grados - 90.0 if _cuarto_de_vuelta(e) else grados - 180.0)
 
 
@@ -278,5 +278,10 @@ static func repartir(transcurrido: int, total: int, duraciones: PackedFloat32Arr
 
 
 static func _cuarto_de_vuelta(e: Estado) -> bool:
-	var grados: float = fmod(360.0 * float(e.ticks_voltereta) / float(e.ticks_vuelta), 360.0)
+	var grados: float = _grados_voltereta(e)
 	return (grados >= 45.0 and grados < 135.0) or (grados >= 225.0 and grados < 315.0)
+
+
+# Grados girados dentro de la vuelta actual, de 0 a 360.
+static func _grados_voltereta(e: Estado) -> float:
+	return fmod(360.0 * float(e.ticks_voltereta) / float(e.ticks_vuelta), 360.0)

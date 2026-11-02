@@ -12,8 +12,6 @@ const CERCA_PILA: float = 70.0
 ## Ticks entre dos voladas de la misma pila (1,2 s).
 const ESPERA_PAPELES: int = 72
 
-var _papeles: Array[CPUParticles2D] = []
-var _espera_papeles: Array[int] = []
 var _jugador: Jugador = null
 var _en_suelo_antes: bool = true
 # Ticks que faltan para el rebote de las piedritas; -1 sin rebote pendiente.
@@ -23,18 +21,18 @@ var _rebote_en: int = -1
 @onready var _aterrizaje: CPUParticles2D = $Particulas/PolvoAterrizaje as CPUParticles2D
 @onready var _piedritas: EmisorRafaga = $Particulas/Piedritas as EmisorRafaga
 @onready var _rebote: CPUParticles2D = $Particulas/Rebote as CPUParticles2D
+@onready var _papeles_1: CPUParticles2D = $Particulas/Papeles1 as CPUParticles2D
+@onready var _papeles_2: CPUParticles2D = $Particulas/Papeles2 as CPUParticles2D
+@onready var _espera_papeles: Dictionary[CPUParticles2D, int] = {_papeles_1: 0, _papeles_2: 0}
 
 
 func _ready() -> void:
-	super._ready()
-	for nombre: String in ["Papeles1", "Papeles2"]:
-		_papeles.append(get_node(NodePath("Particulas/" + nombre)) as CPUParticles2D)
-		_espera_papeles.append(0)
+	super()
 	_piedritas.disparado.connect(_al_caer_piedritas)
 
 
 func _physics_process(delta: float) -> void:
-	super._physics_process(delta)
+	super(delta)
 	if Congelado.activo():
 		return
 	if _rebote_en > 0:
@@ -54,11 +52,11 @@ func _physics_process(delta: float) -> void:
 	_en_suelo_antes = en_suelo
 	_rastro.global_position = pies
 	_rastro.emitting = en_suelo and vx > CORRE_POLVO
-	for i: int in range(_papeles.size()):
-		_espera_papeles[i] = maxi(0, _espera_papeles[i] - 1)
-		if _espera_papeles[i] == 0 and vx > CORRE_PAPELES and absf(pies.x - _papeles[i].global_position.x) < CERCA_PILA:
-			_espera_papeles[i] = ESPERA_PAPELES
-			_papeles[i].restart()
+	for papeles: CPUParticles2D in _espera_papeles:
+		_espera_papeles[papeles] = maxi(0, _espera_papeles[papeles] - 1)
+		if _espera_papeles[papeles] == 0 and vx > CORRE_PAPELES and absf(pies.x - papeles.global_position.x) < CERCA_PILA:
+			_espera_papeles[papeles] = ESPERA_PAPELES
+			papeles.restart()
 
 
 # Las piedritas llegan al suelo al acabar su vida: entonces rebotan.

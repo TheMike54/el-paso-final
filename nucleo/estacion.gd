@@ -1,10 +1,9 @@
 class_name Estacion
 extends Interactuable
-# Estacion del viaje rapido, como las del Ciervo de Hollow Knight: se paga una vez (costo en PejeCoins, con el juego
-# detenido en su CobroEstacion) y queda abierta en Partida.estaciones; abierta, interactuar abre el menu de destinos
-# (MenuEstaciones) y elegir otra le pide al Fundido el cambio a su sala, donde el jugador aparece en su llegada. No
-# cura, no guarda ni cambia el banco. Va como hija directa de una sala con id. Capa, cerca, disparador y caja: de
-# Interactuable.
+# Viaje rapido como el Ciervo de Hollow Knight: CobroEstacion detiene el juego y cobra PejeCoins una sola vez.
+# Partida.estaciones conserva la apertura; MenuEstaciones pide a Fundido viajar a la llegada del destino elegido.
+# Viajar no cura, guarda ni cambia el banco, para mantener separado el viaje del descanso.
+# Hija directa de una sala con id; hereda capa, cercania, disparador y caja de Interactuable.
 
 const PREFIJO: String = "estacion_"
 # Caja gris de ANCHO x ALTO hasta que tenga arte (un CanvasItem hijo la apaga).
@@ -143,8 +142,8 @@ func _al_fallar_viaje() -> void:
 		_jugador.dejar_de_hablar()
 
 
-# Si en el cobro (ya cerrado, con el juego andando): cobra y dice en la caja de dialogo si se abrio o no alcanzo, como
-# lo decia antes la segunda linea de la caja que preguntaba; interactuar la cierra.
+# Si en el cobro (ya cerrado, con el juego andando): cobra y dice en la caja si se abrio o no alcanzo;
+# interactuar la cierra.
 func _al_pagar() -> void:
 	var texto: String = TEXTO_ABIERTA if pagar() else TEXTO_NO_ALCANZA
 	if not is_instance_valid(_jugador) or _jugador.muerto:

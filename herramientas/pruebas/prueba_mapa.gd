@@ -138,7 +138,7 @@ func _fichas_zona() -> void:
 	lienzo.size = Vector2(1000.0, 600.0)
 	var zonas: Dictionary[String, Array] = DatosMapa.por_zona(indice, [sala.id] as Array[String])
 	lienzo.dibujar(indice, zonas, "prueba", false, false, Vector2.ZERO)
-	# Object.get permite inspeccionar el dibujo preparado sin publicar sus caches (class_object.rst:1089).
+	# Object.get permite inspeccionar el dibujo preparado sin publicar sus caches (class_object.rst).
 	var nombres: PackedStringArray = lienzo.get(&"_nombres_zona")
 	var colores: Dictionary[String, Color] = lienzo.get(&"_colores_zona")
 	_caso("el lienzo prepara el nombre de la ficha para dibujar", nombres == PackedStringArray(["La Prueba"]))
@@ -175,7 +175,7 @@ func _origen_del_marcador(mapa: PantallaMapa, sala: Sala, jugador: Node2D) -> vo
 	var posicion: Vector2 = jugador.position
 	Partida.salas_mapeadas = [sala.id]
 	jugador.position = sala.limites.get_center()
-	# La pantalla recibe un indice en memoria solo para esta prueba (class_object.rst:1605).
+	# La pantalla recibe un indice en memoria solo para esta prueba (class_object.rst).
 	mapa.set(&"_indice", indice)
 	mapa.acercar()
 	_caso("al abrir, el marcador incluye el origen de zona", mapa.lienzo.marcador_en_pantalla.is_equal_approx(mapa.lienzo.size / 2.0))

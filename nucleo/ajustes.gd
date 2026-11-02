@@ -16,6 +16,8 @@ const POR_OMISION: Dictionary[String, bool] = {
 ## Ajustes que se aplican al momento (Eventos.ajuste_cambiado con la clave): los escuchan LuzSala,
 ## Niebla, ContadorFps, PanelPruebas y VerHitbox. MODO_DESARROLLADOR tambien se avisa: muestra o quita el panel, ver
 ## hitbox y el monitor.
+const VIBRACION: StringName = &"vibracion"
+const TEMBLOR: StringName = &"temblor"
 const MODO_DESARROLLADOR: StringName = &"modo_desarrollador"
 const LUCES_AVANZADAS: StringName = &"luces_avanzadas"
 const NIEBLA: StringName = &"niebla"
@@ -25,7 +27,7 @@ const VER_HITBOX: StringName = &"ver_hitbox"
 ## Claves de si o no: se reinician, se leen y se guardan en un bucle. Una nueva se agrega aqui, en POR_OMISION y en
 ## si_no y poner_si_no, sin tocar cargar, _leer ni guardar.
 const CLAVES_SI_NO: Array[StringName] = [
-	&"vibracion", &"temblor", MODO_DESARROLLADOR, LUCES_AVANZADAS, NIEBLA, MOSTRAR_FPS, PANEL_PRUEBAS, VER_HITBOX,
+	VIBRACION, TEMBLOR, MODO_DESARROLLADOR, LUCES_AVANZADAS, NIEBLA, MOSTRAR_FPS, PANEL_PRUEBAS, VER_HITBOX,
 ]
 const VOLUMEN_POR_OMISION: float = 1.0
 ## Bus de cada volumen (default_bus_layout.tres): general, musica y efectos.
@@ -48,7 +50,7 @@ static var temblor: bool = POR_OMISION["temblor"]
 ## el panel de pruebas y Ver hitbox.
 static var modo_desarrollador: bool = POR_OMISION["modo_desarrollador"]
 ## Luces 2D (PointLight2D de LuzSala): solo valen con Recursos en alto (luces_avanzadas_activas). Apagadas por
-## omision (27-oct-2026): en alto, el S50 cae a 6-14 FPS con ellas en La Celda, y el halo aditivo ya da el efecto.
+## omision: en alto, el S50 cae a 6-14 FPS con ellas en La Celda, y el halo aditivo ya da el efecto.
 static var luces_avanzadas: bool = POR_OMISION["luces_avanzadas"]
 ## Niebla de las salas: apagada por omision, cuesta 2 a 4 FPS en el S50 donde se ve.
 static var niebla: bool = POR_OMISION["niebla"]
@@ -171,7 +173,7 @@ static func aplicar_brillo() -> void:
 
 ## Limite de FPS para Engine.max_fps: 0 (sin limite: V-Sync lo deja en el refresco de la pantalla) solo con 120
 ## elegidos, Recursos en alto, una pantalla rapida y fuera de un menu; si no, 60. Un refresco desconocido (-1)
-## cuenta como 60 Hz. En un menu, 60 siempre: mas no se nota y gasta bateria (decision del 25-oct-2026).
+## cuenta como 60 Hz. En un menu, 60 siempre: mas no se nota y gasta bateria.
 static func limite_fps(elegidos: int, recursos_altos: bool, refresco: float, en_menu: bool = false) -> int:
 	return 0 if elegidos == 120 and fps_disponible(recursos_altos, refresco) and not en_menu else 60
 
@@ -198,9 +200,9 @@ static func aplicar_fps(en_menu: bool = false) -> void:
 ## Valor de una clave de si o no (CLAVES_SI_NO).
 static func si_no(clave: StringName) -> bool:
 	match clave:
-		&"vibracion":
+		VIBRACION:
 			return vibracion
-		&"temblor":
+		TEMBLOR:
 			return temblor
 		MODO_DESARROLLADOR:
 			return modo_desarrollador
@@ -220,9 +222,9 @@ static func si_no(clave: StringName) -> bool:
 
 static func poner_si_no(clave: StringName, valor: bool) -> void:
 	match clave:
-		&"vibracion":
+		VIBRACION:
 			vibracion = valor
-		&"temblor":
+		TEMBLOR:
 			temblor = valor
 		MODO_DESARROLLADOR:
 			modo_desarrollador = valor

@@ -1,4 +1,4 @@
 # Los casos de herramientas/pruebas/prueba_ranuras.gd corrieron y ninguno fallo. Cada caso que falla imprime una
 # linea "FALLO ranuras: <caso>".
-valor . casos 67
+valor . casos 80
 valor . fallos 0

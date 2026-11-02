@@ -1,9 +1,8 @@
 extends Control
-# Zona de pruebas: las salas de prueba de esta carpeta agrupadas por categoria (GRUPOS), con una fila de categorias
-# arriba que cambia la cuadricula de abajo, y Volver fijo arriba a la izquierda. Lista la carpeta al entrar: una
-# sala que no esta en GRUPOS ni en OCULTAS aparece sola en «Otras». Se llega desde el menu principal con el modo
-# desarrollador encendido, en depuracion y en publicacion; Volver, Atras, pausa y volver (B) regresan a ese menu, y
-# L1 / R1 cambian de categoria.
+# Selector de salas por categoria; descubre las no incluidas en GRUPOS ni OCULTAS y las agrega a Otras.
+# Accesible desde el menu con modo desarrollador, tanto en depuracion como en publicacion, para probar en telefono.
+# Mantiene Volver arriba a la izquierda; Volver, Atras, pausa y volver (B) regresan al menu principal.
+# La fila superior y L1 / R1 cambian la categoria de la cuadricula de salas.
 const CARPETA: String = "res://herramientas/salas/"
 ## Salas de cada categoria, en el orden en que se muestran (rutas desde CARPETA). validar.gd falla si una no existe.
 ## Nombres cortos: las siete caben en la fila en la vista del S21 (1600 px); en el S50 y en la de 1280 la fila se
@@ -116,8 +115,8 @@ func _ready() -> void:
 		_botones_categoria[categoria] = boton
 	_volver.pressed.connect(volver)
 	Tema.encabezado(_volver.get_parent() as Control)
-	# L1 y R1 con «Categoria» a la derecha de la barra de arriba: en la fila no caben sin desplazarla (1280x720,
-	# 16-oct-2026). Tras un toque no se ven.
+	# L1 y R1 con «Categoria» a la derecha de la barra de arriba: en la fila no caben sin desplazarla (1280x720).
+	# Tras un toque no se ven.
 	var arriba: HBoxContainer = _volver.get_parent() as HBoxContainer
 	var l1: IconoBoton = IconoBoton.new()
 	l1.accion = &"pagina_anterior"
@@ -222,7 +221,7 @@ func _leer_salas() -> void:
 
 func _mostrar(categoria: String) -> void:
 	_ultima = categoria
-	# set_pressed_no_signal no desmarca a las demas del grupo (class_basebutton.rst:466): con L1 / R1 quedaban varias.
+	# set_pressed_no_signal no desmarca a las demas del grupo (class_basebutton.rst): con L1 / R1 quedaban varias.
 	for nombre: String in _botones_categoria:
 		_botones_categoria[nombre].set_pressed_no_signal(nombre == categoria)
 	for hijo: Node in _lista.get_children():

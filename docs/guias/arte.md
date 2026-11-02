@@ -25,8 +25,8 @@ hasta que la sala la usa y queda declarada.
      (viñeta «Bordes»);
    - hueco, losa o pared que se rompe: su orilla rota, la tira de degradado y su arte de estado roto, según
      «Huecos y roturas» y «Lo que se ve por un hueco».
-   Una escena escrita a mano conserva los `uid` y lleva el `uid` de cada `ext_resource` (`docs/contrato.md`, «Sala»,
-   viñeta «uid»); las escenas no se duplican copiando el archivo, se heredan (`CLAUDE.md`, «Entorno y trampas»).
+   Una escena escrita a mano conserva los `uid` y lleva el `uid` de cada `ext_resource` (`docs/validador.md`,
+   «uid de escenas y recursos»); las escenas no se duplican copiando el archivo, se heredan (`CLAUDE.md`, «Entorno y trampas»).
 8. Declarar la herramienta en `docs/uso-de-ia.md`: una fila por herramienta, no por archivo; la fila existente se
    amplía con la carpeta nueva. Un recurso ajeno va en «De terceros», con autor y licencia.
 9. Validar: `.\herramientas\validar.ps1` debe imprimir `OK  VALIDACION ... fallos=0`. Si la sala suma capas
@@ -37,7 +37,7 @@ hasta que la sala la usa y queda declarada.
     parte.
 
 ## Si algo falla
-- `validar.ps1` con fallos de tamaño, importación o `uid`: la regla está en «Recursos» (`docs/arte-y-rendimiento.md`) y en «Sala» (`docs/contrato.md`, la lista del validador en `docs/validador.md`); el recorrido, en `docs/guias/cuando-algo-falla.md`. Una imagen sin uso no es un fallo: sale
-  como `AVISO` y no cuenta en `fallos` (`docs/contrato.md`, «Sala», viñeta «Avisos del validador»).
+- `validar.ps1` con fallos de tamaño, importación o `uid`: la regla está en «Recursos» (`docs/arte-y-rendimiento.md`) y en `docs/validador.md`; el recorrido, en `docs/guias/cuando-algo-falla.md`. Una imagen sin uso no es un fallo: sale
+  como `AVISO` y no cuenta en `fallos` (`docs/validador.md`, «Avisos del validador»).
 - Un fallo parecido a uno anterior: buscarlo en `docs/errores/` (por ejemplo
   `docs/errores/2026-10-27-hueco-niebla.md`, el hueco de una capa que se repite).

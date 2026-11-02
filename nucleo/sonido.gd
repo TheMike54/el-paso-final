@@ -9,7 +9,7 @@ extends Node
 const FICHA: String = "res://nucleo/sonidos/sonidos_jugador.tres"
 
 ## Efectos a la vez. Con todas ocupadas play_stream descarta el nuevo y no corta uno viejo
-## (classes/class_audiostreamplaybackpolyphonic.rst:94): se cuenta en descartados.
+## (classes/class_audiostreamplaybackpolyphonic.rst): se cuenta en descartados.
 @export var voces: int = 8
 ## Ticks minimos entre dos veces el mismo evento (la onda de la picada golpea a varios en un tick).
 @export var ticks_entre_iguales: int = 3
@@ -54,12 +54,12 @@ func _ready() -> void:
 	_reproductor.stream = polifonico
 	add_child(_reproductor)
 	if not mudo:
-		# El playback solo existe con el stream puesto y tras play() (classes/class_audiostreampolyphonic.rst:24,
-		# classes/class_audiostreamplayer.rst:391).
+		# El playback solo existe con el stream puesto y tras play() (classes/class_audiostreampolyphonic.rst,
+		# classes/class_audiostreamplayer.rst).
 		_reproductor.play()
 		_voces = _reproductor.get_stream_playback() as AudioStreamPlaybackPolyphonic
 	# Una conexion por senal: unbind quita los argumentos de la senal y bind agrega el evento
-	# (classes/class_callable.rst:231, :520-530). El aterrizaje elige su efecto por el argumento picada.
+	# (classes/class_callable.rst). El aterrizaje elige su efecto por el argumento picada.
 	Eventos.jugador_salto.connect(tocar.bind(&"salto"))
 	Eventos.enemigo_golpeado.connect(_al_enemigo_golpeado)
 	Eventos.objeto_golpeado.connect(tocar.bind(&"golpe").unbind(1))
@@ -76,16 +76,15 @@ func _ready() -> void:
 	Eventos.jugador_aterrizo.connect(_al_aterrizar)
 
 
-# Al cerrar el juego con efectos sonando, sus reproducciones seguian vivas a la salida (ERROR resources still in use,
-# medido con ventana el 27-oct-2026): se callan antes.
+# Al cerrar el juego con efectos sonando, se callan antes de salir para no dejar reproducciones vivas
+# (ERROR resources still in use).
 func _exit_tree() -> void:
 	_reproductor.stop()
 
 
 ## Toca el primer efecto del evento en propia, ficha_sala o ficha si no sono hace menos de ticks_entre_iguales.
-## Devuelve el id de
-## la voz (AudioStreamPlaybackPolyphonic.INVALID_ID si no sono). Avisa con un WARNING si el evento no es campo de
-## FichaSonidos: nunca sonaria.
+## Devuelve el id de la voz (AudioStreamPlaybackPolyphonic.INVALID_ID si no sono).
+## Avisa con un WARNING si el evento no es campo de FichaSonidos: nunca sonaria.
 func tocar(evento: StringName, propia: FichaSonidos = null) -> int:
 	pedidos += 1
 	var primera: FichaSonidos = propia if propia != null else (ficha_sala if ficha_sala != null else ficha)
@@ -112,7 +111,7 @@ func tocar(evento: StringName, propia: FichaSonidos = null) -> int:
 	if mudo or _voces == null:
 		return AudioStreamPlaybackPolyphonic.INVALID_ID
 	# El bus va explicito: por omision play_stream usa Master y se saltaria la barra de Efectos
-	# (classes/class_audiostreamplaybackpolyphonic.rst:35, :86).
+	# (classes/class_audiostreamplaybackpolyphonic.rst).
 	var voz: int = _voces.play_stream(stream, 0.0, 0.0, 1.0, AudioServer.PLAYBACK_TYPE_DEFAULT, Ajustes.BUS_EFECTOS)
 	if voz == AudioStreamPlaybackPolyphonic.INVALID_ID:
 		descartados += 1
@@ -133,7 +132,7 @@ func _al_empezar_curacion() -> void:
 	voz_curar = tocar(&"curar")
 
 
-# La voz se calla sola si ya acabo: su id deja de ser valido (classes/class_audiostreamplaybackpolyphonic.rst:92).
+# La voz se calla sola si ya acabo: su id deja de ser valido (classes/class_audiostreamplaybackpolyphonic.rst).
 func _al_cortar_curacion() -> void:
 	if sonando(voz_curar):
 		_voces.stop_stream(voz_curar)

@@ -11,79 +11,80 @@ Sobre lo que se mueve (un `AnimatableBody2D` con `Vaiven`), `move_and_slide()` l
 plataforma y no hereda su bajada, así el salto rinde igual en cualquier momento del ciclo
 (`classes/class_characterbody2d.rst:182-184`). Medido en headless (27-oct-2026): desde un elevador que baja a 2,7 px
 por tick sube 233,6 px, contra 238,9 desde el suelo; con el valor por omisión (`ADD_VELOCITY`), 170,2.
-Todos los valores son propiedades exportadas del jugador y se ajustan en la zona de pruebas; las cuatro de la cámara
+Todos los valores son propiedades exportadas del jugador y se ajustan en la zona de pruebas; el valor inicial de cada
+una es el de su `@export` en `nucleo/jugador.gd` y aquí no se copia. Las cuatro de la cámara
 (`temblor_fraccion_x`, `suavizado_camara_x`, `adelanto_camara` y `tiempo_camara_y`) son del script de su nodo `Camara`
 (`nucleo/camara_jugador.gd`, `class_name CamaraJugador`):
 
-| Propiedad | Inicial | Qué es |
-|---|---|---|
-| `velocidad` | 360 px/s | Velocidad al caminar, sin aceleración; se multiplica por el `velocidad_factor` de los amuletos puestos (no la carrera ni el impulso) |
-| `gravedad` | 2400 px/s² | Gravedad |
-| `altura_salto` | 230 px | Altura máxima manteniendo `saltar`; el impulso se calcula a partir de ella |
-| `corte_salto` | 0,4 | Factor de la velocidad vertical al soltar `saltar` mientras sube |
-| `ticks_minimos_salto` | 4 | Ticks de subida antes de que soltar corte el salto |
-| `ticks_coyote` | 4 | Ticks después de salir de una orilla en que `saltar` todavía funciona. Silksong da 4 pasos (~0,08 s, 5 ticks; Hollow Knight 2); en 5 se sintió fácil (S21, 15-oct-2026) |
-| `ticks_salto_en_cola` | 3 | Ticks antes de aterrizar en que presionar `saltar` hace saltar al tocar el suelo |
-| `velocidad_caida_max` | 1200 px/s | Tope de la velocidad de caída, pasados los primeros `distancia_caida_inicial` px |
-| `velocidad_caida_inicial` | 700 px/s | Tope al empezar a caer: al principio se cae más lento |
-| `distancia_caida_inicial` | 240 px | Caída (desde la cima del salto o desde la orilla) con el tope inicial |
-| `ticks_ataque` | 8 | Ticks del ataque tras presionar `atacar`. El primero solo enciende el área: golpea en los 7 siguientes |
-| `ticks_entre_ataques` | 20 | Ticks entre un ataque y el siguiente, contados desde que empieza |
-| `ticks_ataque_en_cola` | 6 | Cola del ataque: `atacar` presionada hasta estos ticks antes de poder atacar otra vez ataca en cuanto se puede |
-| `posicion_ataque_arriba` | (0, -210) px | Centro del área de ataque hacia arriba, relativo a los pies |
-| `dano_ataque` | 1 | Daño de cada golpe del ataque a un `Golpeable` |
-| `posicion_pogo` | (0, 50) px | Centro del área de ataque hacia abajo (pogo), relativo a los pies |
-| `altura_pogo` | 120 px | Altura del rebote del pogo |
-| `ticks_invulnerable` | 60 | Ticks sin recibir daño después de un golpe; los amuletos puestos suman su `invulnerable_extra` |
-| `ticks_retroceso` | 10 | Ticks en que el retroceso manda sobre el movimiento horizontal |
-| `retroceso` | (420, 420) px/s | Velocidad del retroceso: `x` alejándose del origen del daño, `y` hacia arriba |
-| `ticks_suelo_firme` | 6 | Ticks seguidos en el suelo para que una posición cuente como punto seguro |
-| `ticks_atras_punto_seguro` | 15 | Cuántas posiciones firmes atrás se reaparece tras un peligro: lejos de la orilla |
-| `ticks_reaparicion_peligro` | 20 | Ticks quieto tras volver al punto seguro |
-| `ticks_anti_bucle` | 30 | Ticks con control tras volver de un peligro durante los que otro peligro lleva al punto de llegada sin quitar vida |
-| `margen_fuera_de_sala` | 160 px | Px que los pies pasan del borde de abajo de `limites` para que salir por abajo cuente como peligro (el alto del cuerpo) |
-| `ticks_hit_stop` | 10 | Ticks de congelado común al recibir daño, antes del retroceso (ver `Congelado`) |
-| `ticks_invulnerable_parry`, `ticks_congelado_parry` | 15, 20 | Parry: ticks sin daño de enemigos y de congelado común (ver «Enemigos» en `docs/enemigos.md`). 20 = 0,33 s: Hollow Knight 0,36 s (`NailClashEffect`), Silksong 0,2-0,3 s (medido en video) |
-| `ticks_retroceso_parry`, `velocidad_retroceso_parry` | 8, 600 px/s | Parry: empuje del jugador hacia atrás, lejos del ataque, después del congelado |
-| `ticks_rebote_al_golpear` | 4 | Ticks en que el jugador sale empujado hacia atrás al golpear algo |
-| `velocidad_rebote_al_golpear` | 240 px/s | Velocidad de ese empuje |
-| `costo_curacion` | 33 | Inspiración que cuesta curar una vida |
-| `ticks_curacion` | 60 | Ticks de curación para recuperar una vida, contados desde `ticks_mantener_poder` |
-| `ticks_devolver_curacion` | 27 | Soltar `curar` antes de estos ticks de curación devuelve toda la Inspiración gastada |
-| `inspiracion_por_golpe` | 11 (`Partida.INSPIRACION_POR_GOLPE`, que también mide los bloques del HUD) | Inspiración que gana cada golpe del ataque a un enemigo (`Golpeable` con `es_enemigo`); los amuletos puestos suman su `inspiracion_extra` |
-| `ticks_mantener_poder` | 10 | Ticks manteniendo `curar` a partir de los cuales es mantener (curar) y no un toque (poder) |
-| `costo_poder` | 33 | Inspiración que cuesta cada poder |
-| `salida_proyectil` | (60, −90) px | Dónde sale la bola, relativo a los pies del jugador mirando a la derecha |
-| `ticks_recarga_bola` | 18 | Ticks desde que sale una bola hasta poder lanzar otra (un amuleto podría reducirlo) |
-| `velocidad_impulso` | 1200 px/s | Velocidad horizontal del impulso |
-| `ticks_impulso` | 10 | Ticks que dura el impulso, sin gravedad (200 px) |
-| `ticks_recarga_impulso` | 36 | Ticks desde que empieza un impulso hasta poder hacer otro |
-| `velocidad_carrera` | 756 px/s | Carrera (sprint), 2,1 veces `velocidad` (Silksong: «112 % más rápido»). Sin fuente para el valor exacto |
-| `ticks_giro_carrera` | 8 | Giro en carrera: la velocidad pasa de un sentido al otro, por 0, sin apagarla |
-| `ticks_soltar_carrera` | 4 | Ticks sin dirección que la carrera aguanta a velocidad completa: cruzar el centro del joystick (zona muerta 0,2) al girar no es soltar. Valor nuestro, en el rango de 4 a 6 |
-| `velocidad_ataque_carrera` | 2000 px/s | Ataque en carrera: empuje hacia adelante mientras dura el ataque, por encima de `velocidad_impulso` (1200): la persona la pidió más larga cuatro veces tras probarla en el S50 (12-oct-2026). Provisional |
-| `ticks_entre_ataques_carrera` | 42 | Desde un ataque en carrera hasta poder hacer otro sin dejar de correr; lo pedido antes se pierde. Provisional (Silksong: uno cada 0,65-0,85 s, video del 12-oct-2026) |
-| `altura_voltereta`, `velocidad_voltereta` | 160 px, 480 px/s | Voltereta tras un ataque en carrera que golpea: altura del salto y velocidad hacia adelante (o hacia el joystick). Provisional |
-| `ticks_rebote_pared`, `velocidad_rebote_pared`, `altura_rebote_pared` | 8, 300 px/s, 30 px | Chocar corriendo con una pared: rebote hacia atrás y saltito. Provisional |
-| `velocidad_deslizar_pared` | 150 px/s | Caída máxima sostenido en una pared |
-| `velocidad_despegue_pared` | 420 px/s | Velocidad horizontal con que el salto en pared despega de ella |
-| `ticks_despegue_pared` | 8 | Ticks tras el salto en pared en que la entrada horizontal no manda |
-| `ticks_coyote_pared` | 3 | Ticks después de dejar la pared en que `saltar` todavía es un salto en pared |
-| `altura_agarre_pared` | 0 | Fracción de la altura del cuerpo, desde los pies, a la que tiene que haber pared para sostenerse y saltar de ella (un rayo a esa altura). En 0 basta cualquier contacto, aunque el 70 % del cuerpo quede por encima de la esquina; la dificultad de la esquina se queda así (decisión del 14-oct-2026). En 0,5 deja de agarrarse con más de medio cuerpo por encima. Hollow Knight (código decompilado) cuenta la pared con un rayo desde el centro o desde los pies: con los pies en la pared sigue agarrado, como aquí en 0. Silksong sube sola a la cornisa al llegar al borde |
-| `velocidad_picada` | 1800 px/s | Velocidad de la caída en picada, sin el tope de `velocidad_caida_max` |
-| `dano_picada` | 3 | Daño de la onda al aterrizar de la picada a cada `Golpeable` que toca |
-| `onda_picada` | (320, 120) px | Tamaño de esa onda, centrada a lo ancho en los pies |
-| `ticks_invulnerable_picada` | 24 | Ticks sin recibir daño después de aterrizar de la picada |
-| `altura_saltito_picada` | 40 px | Picada desde el suelo: altura del saltito |
-| `ticks_carga_picada` | 15 | Picada desde el suelo: ticks quieto en la cima del saltito antes de bajar |
-| `ticks_caida_dura` | 18 | Aterrizaje duro, como en Hollow Knight: aterrizar tras 18 ticks seguidos (0,3 s) cayendo a `velocidad_caida_max` (unos 794 px; 650 con `distancia_caida_inicial` en 0). Pared, pogo, impulso o retroceso reinician la cuenta. La picada tiembla siempre al aterrizar (no al romper un `SueloFragil`). Sin fuente |
-| `temblor_px` | 20 px | Amplitud vertical inicial del temblor del aterrizaje duro y de la picada: el `offset` de la cámara, signo alterno cada 2 ticks, baja en línea recta a 0; aterrizar otra vez lo reinicia (salvo que el que queda sea más fuerte, ver `temblar`). `temblor_y` y `temblor_x` (públicas) son los valores de cada tick aunque el ajuste esté apagado. Provisional, sin fuente |
-| `temblor_fraccion_x` | 1/3 | En `CamaraJugador`. Amplitud horizontal en fracción de `temblor_px`, signo alterno cada 3 ticks: con periodos distintos no da vueltas en círculo |
-| `temblor_ticks` | 18 | Ticks que dura el temblor (0,3 s). Provisional, sin fuente |
-| `ticks_aterrizaje_duro` | 21 | Ticks sin control tras un aterrizaje duro (0,35 s; no tras la picada). Sin fuente: el de Hollow Knight está en sus recursos |
-| `suavizado_camara_x` | 8 | En `CamaraJugador`. Seguimiento horizontal de la cámara: fracción por segundo de lo que le falta (el cálculo de `position_smoothing_speed`) |
-| `adelanto_camara` | 43 px | En `CamaraJugador`. La cámara se adelanta hacia donde mira el jugador; `suavizado_camara_x` hace el paso al voltear |
-| `tiempo_camara_y` | 0,15 s | En `CamaraJugador`. Seguimiento vertical de la cámara, amortiguado crítico (como `SmoothDamp`): cayendo a 1200 px/s va 180 px por detrás. Con menos de 0,15 s el frenado en el límite inferior se siente como un jalón (medido el 07-oct-2026) |
+| Propiedad | Qué es |
+|---|---|
+| `velocidad` | Velocidad al caminar, sin aceleración; se multiplica por el `velocidad_factor` de los amuletos puestos (no la carrera ni el impulso) |
+| `gravedad` | Gravedad |
+| `altura_salto` | Altura máxima manteniendo `saltar`; el impulso se calcula a partir de ella |
+| `corte_salto` | Factor de la velocidad vertical al soltar `saltar` mientras sube |
+| `ticks_minimos_salto` | Ticks de subida antes de que soltar corte el salto |
+| `ticks_coyote` | Ticks después de salir de una orilla en que `saltar` todavía funciona. Silksong da 4 pasos (~0,08 s, 5 ticks; Hollow Knight 2); en 5 se sintió fácil (S21, 15-oct-2026) |
+| `ticks_salto_en_cola` | Ticks antes de aterrizar en que presionar `saltar` hace saltar al tocar el suelo |
+| `velocidad_caida_max` | Tope de la velocidad de caída, pasados los primeros `distancia_caida_inicial` px |
+| `velocidad_caida_inicial` | Tope al empezar a caer: al principio se cae más lento |
+| `distancia_caida_inicial` | Caída (desde la cima del salto o desde la orilla) con el tope inicial |
+| `ticks_ataque` | Ticks del ataque tras presionar `atacar`. El primero solo enciende el área: golpea en los 7 siguientes |
+| `ticks_entre_ataques` | Ticks entre un ataque y el siguiente, contados desde que empieza |
+| `ticks_ataque_en_cola` | Cola del ataque: `atacar` presionada hasta estos ticks antes de poder atacar otra vez ataca en cuanto se puede |
+| `posicion_ataque_arriba` | Centro del área de ataque hacia arriba, relativo a los pies |
+| `dano_ataque` | Daño de cada golpe del ataque a un `Golpeable` |
+| `posicion_pogo` | Centro del área de ataque hacia abajo (pogo), relativo a los pies |
+| `altura_pogo` | Altura del rebote del pogo |
+| `ticks_invulnerable` | Ticks sin recibir daño después de un golpe; los amuletos puestos suman su `invulnerable_extra` |
+| `ticks_retroceso` | Ticks en que el retroceso manda sobre el movimiento horizontal |
+| `retroceso` | Velocidad del retroceso: `x` alejándose del origen del daño, `y` hacia arriba |
+| `ticks_suelo_firme` | Ticks seguidos en el suelo para que una posición cuente como punto seguro |
+| `ticks_atras_punto_seguro` | Cuántas posiciones firmes atrás se reaparece tras un peligro: lejos de la orilla |
+| `ticks_reaparicion_peligro` | Ticks quieto tras volver al punto seguro |
+| `ticks_anti_bucle` | Ticks con control tras volver de un peligro durante los que otro peligro lleva al punto de llegada sin quitar vida |
+| `margen_fuera_de_sala` | Px que los pies pasan del borde de abajo de `limites` para que salir por abajo cuente como peligro (el alto del cuerpo) |
+| `ticks_hit_stop` | Ticks de congelado común al recibir daño, antes del retroceso (ver `Congelado`) |
+| `ticks_invulnerable_parry`, `ticks_congelado_parry` | Parry: ticks sin daño de enemigos y de congelado común (ver «Enemigos» en `docs/enemigos.md`). 20 = 0,33 s: Hollow Knight 0,36 s (`NailClashEffect`), Silksong 0,2-0,3 s (medido en video) |
+| `ticks_retroceso_parry`, `velocidad_retroceso_parry` | Parry: empuje del jugador hacia atrás, lejos del ataque, después del congelado |
+| `ticks_rebote_al_golpear` | Ticks en que el jugador sale empujado hacia atrás al golpear algo |
+| `velocidad_rebote_al_golpear` | Velocidad de ese empuje |
+| `costo_curacion` | Inspiración que cuesta curar una vida |
+| `ticks_curacion` | Ticks de curación para recuperar una vida, contados desde `ticks_mantener_poder` |
+| `ticks_devolver_curacion` | Soltar `curar` antes de estos ticks de curación devuelve toda la Inspiración gastada |
+| `inspiracion_por_golpe` | Inspiración que gana cada golpe del ataque a un enemigo (`Golpeable` con `es_enemigo`); los amuletos puestos suman su `inspiracion_extra`. Su valor sale de `Partida.INSPIRACION_POR_GOLPE`, que también mide los bloques del HUD |
+| `ticks_mantener_poder` | Ticks manteniendo `curar` a partir de los cuales es mantener (curar) y no un toque (poder) |
+| `costo_poder` | Inspiración que cuesta cada poder |
+| `salida_proyectil` | Dónde sale la bola, relativo a los pies del jugador mirando a la derecha |
+| `ticks_recarga_bola` | Ticks desde que sale una bola hasta poder lanzar otra (un amuleto podría reducirlo) |
+| `velocidad_impulso` | Velocidad horizontal del impulso |
+| `ticks_impulso` | Ticks que dura el impulso, sin gravedad (200 px) |
+| `ticks_recarga_impulso` | Ticks desde que empieza un impulso hasta poder hacer otro |
+| `velocidad_carrera` | Carrera (sprint), 2,1 veces `velocidad` (Silksong: «112 % más rápido»). Sin fuente para el valor exacto |
+| `ticks_giro_carrera` | Giro en carrera: la velocidad pasa de un sentido al otro, por 0, sin apagarla |
+| `ticks_soltar_carrera` | Ticks sin dirección que la carrera aguanta a velocidad completa: cruzar el centro del joystick (zona muerta 0,2) al girar no es soltar. Valor nuestro, en el rango de 4 a 6 |
+| `velocidad_ataque_carrera` | Ataque en carrera: empuje hacia adelante mientras dura el ataque, por encima de `velocidad_impulso` (1200): la persona la pidió más larga cuatro veces tras probarla en el S50 (12-oct-2026). Provisional |
+| `ticks_entre_ataques_carrera` | Desde un ataque en carrera hasta poder hacer otro sin dejar de correr; lo pedido antes se pierde. Provisional (Silksong: uno cada 0,65-0,85 s, video del 12-oct-2026) |
+| `altura_voltereta`, `velocidad_voltereta` | Voltereta tras un ataque en carrera que golpea: altura del salto y velocidad hacia adelante (o hacia el joystick). Provisional |
+| `ticks_rebote_pared`, `velocidad_rebote_pared`, `altura_rebote_pared` | Chocar corriendo con una pared: rebote hacia atrás y saltito. Provisional |
+| `velocidad_deslizar_pared` | Caída máxima sostenido en una pared |
+| `velocidad_despegue_pared` | Velocidad horizontal con que el salto en pared despega de ella |
+| `ticks_despegue_pared` | Ticks tras el salto en pared en que la entrada horizontal no manda |
+| `ticks_coyote_pared` | Ticks después de dejar la pared en que `saltar` todavía es un salto en pared |
+| `altura_agarre_pared` | Fracción de la altura del cuerpo, desde los pies, a la que tiene que haber pared para sostenerse y saltar de ella (un rayo a esa altura). En 0 basta cualquier contacto, aunque el 70 % del cuerpo quede por encima de la esquina; la dificultad de la esquina se queda así (decisión del 14-oct-2026). En 0,5 deja de agarrarse con más de medio cuerpo por encima. Hollow Knight (código decompilado) cuenta la pared con un rayo desde el centro o desde los pies: con los pies en la pared sigue agarrado, como aquí en 0. Silksong sube sola a la cornisa al llegar al borde |
+| `velocidad_picada` | Velocidad de la caída en picada, sin el tope de `velocidad_caida_max` |
+| `dano_picada` | Daño de la onda al aterrizar de la picada a cada `Golpeable` que toca |
+| `onda_picada` | Tamaño de esa onda, centrada a lo ancho en los pies |
+| `ticks_invulnerable_picada` | Ticks sin recibir daño después de aterrizar de la picada |
+| `altura_saltito_picada` | Picada desde el suelo: altura del saltito |
+| `ticks_carga_picada` | Picada desde el suelo: ticks quieto en la cima del saltito antes de bajar |
+| `ticks_caida_dura` | Aterrizaje duro, como en Hollow Knight: aterrizar tras 18 ticks seguidos (0,3 s) cayendo a `velocidad_caida_max` (unos 794 px; 650 con `distancia_caida_inicial` en 0). Pared, pogo, impulso o retroceso reinician la cuenta. La picada tiembla siempre al aterrizar (no al romper un `SueloFragil`). Sin fuente |
+| `temblor_px` | Amplitud vertical inicial del temblor del aterrizaje duro y de la picada: el `offset` de la cámara, signo alterno cada 2 ticks, baja en línea recta a 0; aterrizar otra vez lo reinicia (salvo que el que queda sea más fuerte, ver `temblar`). `temblor_y` y `temblor_x` (públicas) son los valores de cada tick aunque el ajuste esté apagado. Provisional, sin fuente |
+| `temblor_fraccion_x` | En `CamaraJugador`. Amplitud horizontal en fracción de `temblor_px`, signo alterno cada 3 ticks: con periodos distintos no da vueltas en círculo |
+| `temblor_ticks` | Ticks que dura el temblor (0,3 s). Provisional, sin fuente |
+| `ticks_aterrizaje_duro` | Ticks sin control tras un aterrizaje duro (0,35 s; no tras la picada). Sin fuente: el de Hollow Knight está en sus recursos |
+| `suavizado_camara_x` | En `CamaraJugador`. Seguimiento horizontal de la cámara: fracción por segundo de lo que le falta (el cálculo de `position_smoothing_speed`) |
+| `adelanto_camara` | En `CamaraJugador`. La cámara se adelanta hacia donde mira el jugador; `suavizado_camara_x` hace el paso al voltear |
+| `tiempo_camara_y` | En `CamaraJugador`. Seguimiento vertical de la cámara, amortiguado crítico (como `SmoothDamp`): cayendo a 1200 px/s va 180 px por detrás. Con menos de 0,15 s el frenado en el límite inferior se siente como un jalón (medido el 07-oct-2026) |
 
 Combate:
 
@@ -99,7 +100,7 @@ Combate:
 - Peligro (pinchos, ácido, fosas): quita una vida aunque el jugador sea invulnerable (como Hollow Knight) y el
   jugador vuelve a su punto seguro, sin retroceso, quieto `ticks_reaparicion_peligro` e invulnerable. Antes, como en
   Hollow Knight, se queda quieto donde lo tocó mientras la pantalla funde a negro y pasa al punto en el tick en que el
-  negro tapa todo; la imagen aclara con el jugador ya quieto en el punto (duraciones en la viñeta «Fundido a negro» de «Sala», en `docs/contrato.md`). Durante el fundido nada lo daña. La salida por abajo se revisa antes de mover al
+  negro tapa todo; la imagen aclara con el jugador ya quieto en el punto (duraciones en la viñeta «Fundido a negro» de `docs/sala.md`). Durante el fundido nada lo daña. La salida por abajo se revisa antes de mover al
   jugador, como un `DanoContacto`, para contar los ticks a la par del fundido. Mientras está quieto tras reaparecer, ningún peligro cuenta (el contacto de un `DanoContacto` se revisa con la lista del tick
   anterior). Anti-bucle (como Silksong): si otro peligro lo toca antes de `ticks_anti_bucle` ticks con control (30 =
   0,5 s), vuelve al punto por el que entró a la sala (puerta, banco o `Entrada`) sin perder vida; ese punto pasa a
@@ -133,7 +134,7 @@ Combate:
   `puede_interactuar` es falso. Siempre se mueve con `move_and_slide` (la pared de detrás de una puerta `LADO` lo
   para), con gravedad salvo al salir por `ARRIBA` o `ABAJO`. Si la sala no cambia en el tope que le da la puerta,
   recupera el control con un `ERROR:`. Morir o reaparecer la cortan. Detalle de tipos y tiempos: «Cambio de sala» en
-  `docs/contrato.md`; prueba: guion `nucleo/transicion`.
+  `docs/sala.md`; prueba: guion `nucleo/transicion`.
 - Pogo: `atacar` con `mover_abajo` mantenida en el aire pone el área de ataque debajo del jugador (`posicion_pogo`).
   Si toca un `Golpeable` (que recibe el golpe y, si es enemigo, da Inspiración) o un peligro, el jugador rebota hacia arriba
   `altura_pogo` sin recibir daño, una vez por ataque, y recupera el doble salto y el impulso en el aire. Soltar
@@ -210,6 +211,8 @@ Habilidades (solo si `Partida.tiene(<id>)`; los ids son las constantes de `nucle
 - `nucleo/objeto_habilidad.tscn` (`class_name ObjetoHabilidad`): al tocarlo, llama a `Partida.obtener_habilidad` con su
   `habilidad` (suma, emite `Eventos.habilidad_obtenida` y rechaza un id fuera de `Habilidades.TODAS`) y desaparece; si
   la partida ya la tiene, no aparece.
+- `nucleo/objeto_amuleto.tscn` (`class_name ObjetoAmuleto`): lo mismo con un amuleto (`Partida.obtener_amuleto`), para
+  un premio puesto en una sala.
 - Prioridad del movimiento horizontal: antes que todo, el cruce de una puerta (`en_transicion`: sin control, camina
   solo hacia el lado de la puerta al salir por `LADO` y al llegar por `LADO`, quieto en una `PUERTA` y sin avance en
   `ARRIBA` y `ABAJO`); después, retroceso del golpe recibido, impulso, despegue de la pared, rebote (al golpear, al

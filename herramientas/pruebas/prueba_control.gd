@@ -1,10 +1,7 @@
-extends Node
+extends "res://herramientas/pruebas/prueba_base.gd"
 # Prueba del mapeo del control (Xbox / PlayStation) sin control conectado: para cada fila de la
 # tabla de docs/ajustes-y-entrada.md arma el evento de boton o de eje y revisa que el InputMap lo
 # traduzca a su accion, y solo a esa. Deja en "casos" y "fallos" el resultado para el guion.
-
-var casos: int = 0
-var fallos: int = 0
 
 
 func _ready() -> void:
@@ -30,22 +27,16 @@ func _ready() -> void:
 	var aceptar: InputEventJoypadButton = InputEventJoypadButton.new()
 	aceptar.button_index = JOY_BUTTON_A
 	aceptar.pressed = true
-	casos += 1
-	if not aceptar.is_action_pressed(&"ui_accept"):
-		fallos += 1
-		print("FALLO control: boton %d no acepta en los menus (ui_accept)" % JOY_BUTTON_A)
-	print("PRUEBAS control casos=%d fallos=%d" % [casos, fallos])
+	_caso("boton %d no acepta en los menus (ui_accept)" % JOY_BUTTON_A, aceptar.is_action_pressed(&"ui_accept"))
+	_resumen()
 
 
 # Un boton debe disparar solo su accion; con accion vacia, ninguna (boton libre).
 func _boton(boton: JoyButton, accion: StringName) -> void:
-	var evento: InputEventJoypadButton = InputEventJoypadButton.new()
-	evento.button_index = boton
-	evento.pressed = true
 	var esperadas: Array[StringName] = []
 	if not accion.is_empty():
 		esperadas.append(accion)
-	_revisar("boton %d" % boton, evento, esperadas)
+	_botones(boton, esperadas)
 
 
 func _botones(boton: JoyButton, esperadas: Array[StringName]) -> void:
@@ -67,10 +58,7 @@ func _revisar(nombre: String, evento: InputEvent, esperadas: Array[StringName]) 
 	for accion: StringName in InputMap.get_actions():
 		if not String(accion).begins_with("ui_") and evento.is_action_pressed(accion):
 			obtenidas.append(accion)
-	casos += 1
 	var bien: bool = obtenidas.size() == esperadas.size()
 	for accion: StringName in esperadas:
 		bien = bien and obtenidas.has(accion)
-	if not bien:
-		fallos += 1
-		print("FALLO control: %s da %s, se esperaba %s" % [nombre, obtenidas, esperadas])
+	_caso("%s da %s, se esperaba %s" % [nombre, obtenidas, esperadas], bien)

@@ -1,11 +1,9 @@
 class_name AtaqueEnemigo
 extends DanoContacto
-# Ataque de un enemigo, separado de su cuerpo: un area que dana al jugador mientras dura. Con
-# se_puede_parar, el ataque normal del jugador lo para (parry): el golpe no dana y
-# el ataque desaparece. Lo crea el comportamiento del enemigo (ComportamientoEnemigo.atacar); el cuerpo
-# del enemigo es un DanoContacto aparte y nunca se para. Uno que se puede parar deja al empezar el mismo trazo
-# blanco que el golpe del jugador (TrazoAtaque): asi se reconoce el golpe que se puede parar. El area no se dibuja: se ve
-# con «Ver hitbox» (decidido por la persona el 25-oct-2026).
+# Area temporal creada por ComportamientoEnemigo.atacar, separada del dano del cuerpo, que nunca se puede parar.
+# Con se_puede_parar, el ataque normal del jugador hace parry: evita el dano y elimina el ataque enemigo.
+# Usa el trazo blanco del golpe del jugador para reconocer los ataques que se pueden parar.
+# El area solo se ve con Ver hitbox; el trazo comunica el parry sin mostrar la forma de colision.
 
 ## El ataque normal del jugador lo para.
 @export var se_puede_parar: bool = true

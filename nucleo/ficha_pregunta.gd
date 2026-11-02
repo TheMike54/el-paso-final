@@ -1,7 +1,8 @@
 class_name FichaPregunta
 extends Resource
 # Una pregunta de opcion multiple de un RetoPreguntas: el texto, sus opciones y cual es la correcta. Es dato: se
-# escribe sin tocar el nucleo. Caben 3 opciones porque se muestran en la fila de opciones de CajaDialogo.
+# escribe sin tocar el nucleo, para agregar preguntas como recursos.
+# Las opciones se muestran en la fila de CajaDialogo y respetan el limite de LineaDialogo.MAX_OPCIONES.
 
 const MIN_OPCIONES: int = 2
 ## Lo que se dice tras acertar y tras fallar (%s es la respuesta correcta), si quien pregunta no pone otro.
@@ -10,7 +11,7 @@ const TEXTO_INCORRECTO: String = "No. Era: %s."
 
 ## El texto de la pregunta.
 @export_multiline var pregunta: String = ""
-## Entre MIN_OPCIONES y 3 respuestas, en el orden en que se muestran.
+## Entre MIN_OPCIONES y LineaDialogo.MAX_OPCIONES respuestas, en el orden en que se muestran.
 @export var opciones: Array[String] = []
 ## Indice de la opcion correcta dentro de opciones.
 @export var correcta: int = 0

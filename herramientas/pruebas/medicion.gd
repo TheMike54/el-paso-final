@@ -30,7 +30,7 @@ func _ready() -> void:
 	# Nadie oye la medicion: la musica de una sala no debe sonar mientras se mide.
 	AudioServer.set_bus_mute(AudioServer.get_bus_index(&"Master"), true)
 	if not Ajustes.sin_ventana():
-		# Sin V-Sync los FPS no se topan en el refresco (class_displayserver.rst:7553); Android puede ignorarlo, por
+		# Sin V-Sync los FPS no se topan en el refresco (class_displayserver.rst); Android puede ignorarlo, por
 		# eso se imprime el modo que quedo.
 		DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
 	_empezar.call_deferred()
@@ -161,7 +161,7 @@ static func _pasos(desde: float, hasta: float, paso: float) -> Array[float]:
 
 
 # Calienta _calentar s, luego cuenta cuadros durante _muestra s sin tope de FPS. fps es el promedio y peor_ms el
-# cuadro mas largo; draw_calls, objetos y primitivas, el maximo de un cuadro (class_performance.rst:167-183); la
+# cuadro mas largo; draw_calls, objetos y primitivas, el maximo de un cuadro (class_performance.rst); la
 # memoria de texturas y de video y los nodos, al final (:149, :191-195).
 func _muestrear(id: String, punto: Vector2, variante: String) -> void:
 	# Ajustes.aplicar_fps (ContadorFps, al entrar a la sala) lo vuelve a 60: se quita el tope en cada muestra.

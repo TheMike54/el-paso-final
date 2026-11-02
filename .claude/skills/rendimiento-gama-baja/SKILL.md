@@ -42,7 +42,7 @@ Dibujo y GPU (Compatibility: costo base bajo, pero cada efecto extra cuesta much
 | En el mundo no se dibuja con `FigurasVector` ni con `_draw` lo que se repite: se hornea a PNG con `herramientas/generar_efectos.gd`. Ningún `queue_redraw()` en `_process` sin una guarda que lo haga solo cuando algo cambió | `tutorials/2d/custom_drawing_in_2d.rst:60-66` (`_draw` se guarda y solo se repite con `queue_redraw`); el costo se midió: `docs/componentes.md`, fila de `MonedasSueltas` | `validar.ps1` avisa (`AVISO`) del `queue_redraw` sin guarda; medir A/B en el S50 |
 | Shaders mínimos, con las menos lecturas de textura posibles | `tutorials/performance/gpu_optimization.rst:187` | Leer el shader; medir en el S50 |
 | No contar con MSAA 2D, glow HDR ni estelas de partículas: Compatibility no los tiene | `tutorials/rendering/renderers.rst:298` | Grep de `msaa`, `hdr_2d`, `trail` |
-| Brillos y chispas con `CanvasItemMaterial` en modo Add, no con luces 2D | `tutorials/2d/2d_lights_and_shadows.rst:372` | `validar.ps1` (falla con `Light2D`) |
+| Brillos y chispas con `CanvasItemMaterial` en modo Add, no con luces 2D en la escena; la única excepción es la `PointLight2D` que `LuzSala` crea en código con `luces_avanzadas` | `tutorials/2d/2d_lights_and_shadows.rst:372` | `validar.ps1` (falla con `Light2D`) |
 
 Texturas (memoria por tamaño: tabla en `tutorials/assets_pipeline/importing_images.rst:241`):
 

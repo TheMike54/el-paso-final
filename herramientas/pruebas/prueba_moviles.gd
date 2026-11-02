@@ -163,5 +163,4 @@ func _comportamiento(enemigo: Enemigo) -> Node:
 
 
 func _poner_jugador(punto: Vector2) -> void:
-	_jugador.global_position = punto
-	_jugador.velocity = Vector2.ZERO
+	_poner(_jugador, punto)

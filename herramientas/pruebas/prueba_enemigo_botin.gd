@@ -78,12 +78,28 @@ func _ready() -> void:
 	_caso("vencido por la bola, el botin aparece y cae al suelo de abajo", not is_instance_valid(volador)
 			and del_volador != null and is_equal_approx(del_volador.global_position.y, SUELO_Y))
 
+	# Dentro de una pieza instanciada su owner es la pieza: lo recordado debe llevar la clave de la sala, no la ruta de
+	# la pieza, o dos salas con la misma pieza compartirian lo vencido. El orden importa: el owner se pone antes de
+	# entrar a la sala, como al instanciar una escena.
+	var pieza: Node2D = Node2D.new()
+	pieza.scene_file_path = "res://pieza_de_prueba.tscn"
+	var en_pieza: Enemigo = (load(ENEMIGO) as PackedScene).instantiate() as Enemigo
+	en_pieza.ficha = load("res://herramientas/salas/fichas/enemigo_fuerte.tres") as FichaEnemigo
+	en_pieza.id = &"en_pieza"
+	pieza.add_child(en_pieza)
+	en_pieza.owner = pieza
+	sala.add_child(pieza)
+	_caso("dentro de una pieza su clave es la de la sala", en_pieza.clave() == "%s#en_pieza" % clave)
+	en_pieza.golpeable.recibir_golpe(jugador, en_pieza.vida)
+	_caso("y queda vencido en la sala, no en la pieza", Partida.fue_vencido("%s#en_pieza" % clave)
+			and not Partida.fue_vencido("res://pieza_de_prueba.tscn#en_pieza"))
+
 	sala.queue_free()
 	_restaurar_partida()
 	_resumen()
 
 
-# Crea la sala de enemigos como hija (borrando la anterior), con la ficha con botin en el debil, y espera al jugador.
+# Crea la sala de enemigos como hija (borrando la anterior), con la ficha con botin en el debil, y espera 3 ticks a que la sala arranque.
 func _crear_sala() -> Sala:
 	for hijo: Node in get_children():
 		if hijo is Sala:

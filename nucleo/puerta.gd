@@ -27,7 +27,7 @@ const COLOR_PROVISIONAL: Color = Color(0.6, 0.45, 0.2, 0.6)
 ## Donde aparece el jugador al llegar por esta puerta, relativo a ella. Si no es PUERTA, fuera de su area (con el
 ## cuerpo del jugador), para no rebotar; dentro de los limites de la sala (lo revisa el validador).
 @export var llegada: Vector2 = Vector2(160.0, 0.0)
-## Como se cruza; lo decide su arte (docs/contrato.md, «Cambio de sala»).
+## Como se cruza; lo decide su arte (docs/sala.md, «Cambio de sala»).
 @export var tipo: Tipo = Tipo.LADO
 ## Punto seguro de esta llegada, relativo a la puerta, para cuando la llegada no tiene suelo debajo (un hueco del techo):
 ## Jugador.ultimo_punto_seguro lo prueba antes que la llegada. (0, 0): no tiene, se usa la llegada.
@@ -42,7 +42,7 @@ func _ready() -> void:
 	super()
 	if tipo != Tipo.PUERTA:
 		body_entered.connect(_al_entrar)
-		# Sin acciones que vigilar: el disparador y el aviso de la base no corren (classes/class_node.rst:1605).
+		# Sin acciones que vigilar: el disparador y el aviso de la base no corren (classes/class_node.rst).
 		set_physics_process(false)
 
 

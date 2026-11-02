@@ -48,7 +48,7 @@ func a_la_venta() -> Array[ArticuloTienda]:
 
 
 func comprado(articulo: ArticuloTienda) -> bool:
-	return Partida.estado_de(Sala.clave_de(self), marca_de(articulo)) != null
+	return Sala.recordado(self, marca_de(articulo))
 
 
 ## Como queda marcado un articulo comprado en el estado de la sala.

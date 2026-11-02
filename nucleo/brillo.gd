@@ -1,10 +1,9 @@
 class_name Brillo
 extends CanvasModulate
-# Ajuste de brillo de la sala: multiplica el color de todo el mundo (no el HUD, los controles ni los menus, que van en
-# su CanvasLayer), como Hollow Knight, que lo aplica solo a la camara del juego. Antes era un rectangulo encima de la
-# pantalla: en el Senwa S50 costaba ~6 ms por cuadro con cualquier brillo distinto de 1; multiplicar no dibuja nada mas.
-# Lo crea cada Sala; Ajustes.aplicar_brillo() le pasa el valor. Tambien lleva la oscuridad propia de la sala
-# (Sala.oscuridad): solo vale un CanvasModulate por canvas (classes/class_canvasmodulate.rst:25), asi que es este.
+# Multiplica el brillo del mundo; HUD, controles y menus quedan aparte en sus CanvasLayer, como en Hollow Knight.
+# Evita el rectangulo de pantalla que costaba ~6 ms por cuadro en el Senwa S50 con brillo distinto de 1.
+# Cada Sala lo crea y Ajustes.aplicar_brillo() lo actualiza sin agregar otro dibujo.
+# Integra Sala.oscuridad porque solo vale un CanvasModulate por canvas (classes/class_canvasmodulate.rst).
 
 ## El de la sala viva, o null fuera de una sala (menu principal, ranuras).
 static var instancia: Brillo = null

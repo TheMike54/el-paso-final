@@ -1,0 +1,3 @@
+# La escena comprueba que una cinematica con una sala de destino que no carga vuelve al menu.
+escena res://herramientas/pruebas/sala_cinematica.tscn
+fin 90

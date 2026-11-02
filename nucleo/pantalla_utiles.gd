@@ -7,45 +7,21 @@ extends PaginaMarco
 ## Botones por id del util, publicos para las pruebas.
 var botones: Dictionary[StringName, Button] = {}
 
-var _aviso: Label = null
 var _descripcion: Label = null
-var _lista: VBoxContainer = null
 
 
 func _ready() -> void:
 	super()
 	var panel: ColorRect = Tema.fondo_menu()
 	add_child(panel)
-	var desplazable: ScrollContainer = ScrollContainer.new()
-	desplazable.name = "Desplazable"
-	desplazable.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	desplazable.offset_top = MarcoMenus.ALTO_BARRA
-	desplazable.follow_focus = true
-	desplazable.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_NEVER
-	panel.add_child(desplazable)
-	var centro: CenterContainer = CenterContainer.new()
-	centro.name = "Centro"
-	centro.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	centro.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	centro.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	desplazable.add_child(centro)
-	var columna: VBoxContainer = VBoxContainer.new()
-	columna.add_theme_constant_override(&"separation", int(Tema.SEPARACION_FILAS))
-	centro.add_child(columna)
-	_aviso = Label.new()
-	_aviso.name = "Aviso"
-	_aviso.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	columna.add_child(_aviso)
+	var columna: VBoxContainer = _crear_columna_equipo(panel)
 	_descripcion = Label.new()
 	_descripcion.name = "Descripcion"
 	_descripcion.custom_minimum_size.x = Tema.CELDA.x
 	_descripcion.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_descripcion.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	columna.add_child(_descripcion)
-	_lista = VBoxContainer.new()
-	_lista.name = "Lista"
-	_lista.add_theme_constant_override(&"separation", int(Tema.SEPARACION_FILAS))
-	columna.add_child(_lista)
+	_crear_lista_equipo(columna)
 
 
 func id_pagina() -> StringName:
@@ -59,11 +35,6 @@ func titulo_pagina() -> String:
 func mostrar_en_marco() -> void:
 	super()
 	_mostrar()
-
-
-## La misma regla del banco que la pagina Amuletos.
-func puede_cambiar() -> bool:
-	return Jugador.sentado(get_tree())
 
 
 ## Pone o quita solo sentado; Partida comprueba catalogo, posesion y ranura.
@@ -105,6 +76,7 @@ func _mostrar() -> void:
 		boton.pressed.connect(alternar.bind(util))
 		boton.focus_entered.connect(_describir.bind(util))
 		boton.mouse_entered.connect(_describir.bind(util))
+		boton.gui_input.connect(_al_tocar.bind(util))
 		fila.add_child(boton)
 		botones[util] = boton
 	_actualizar()
@@ -117,10 +89,8 @@ func _actualizar() -> void:
 	var sentado: bool = puede_cambiar()
 	if Partida.utiles_tenidos.is_empty():
 		_aviso.text = "Todavía no tienes útiles."
-	elif sentado:
-		_aviso.text = "Toca uno para ponerlo o quitarlo (ranuras %d de %d)." % [Partida.utiles_equipados.size(), Partida.MAX_UTILES]
 	else:
-		_aviso.text = "Siéntate en un banco para cambiarlos (ranuras %d de %d)." % [Partida.utiles_equipados.size(), Partida.MAX_UTILES]
+		_aviso.text = _aviso_equipo(sentado, "ranuras", Partida.utiles_equipados.size(), Partida.MAX_UTILES)
 	for util: StringName in botones:
 		var ficha: FichaUtil = CatalogoEquipo.util(util)
 		var nombre: String = ficha.nombre if ficha != null else String(util).capitalize()
@@ -132,3 +102,10 @@ func _actualizar() -> void:
 func _describir(util: StringName) -> void:
 	var ficha: FichaUtil = CatalogoEquipo.util(util)
 	_descripcion.text = ficha.descripcion if ficha != null else ""
+
+
+# Tambien permite consultar una fila deshabilitada (de pie o sin ranura) al tocarla.
+func _al_tocar(evento: InputEvent, util: StringName) -> void:
+	if ((evento is InputEventScreenTouch and (evento as InputEventScreenTouch).pressed)
+			or (evento is InputEventMouseButton and (evento as InputEventMouseButton).pressed)):
+		_describir(util)

@@ -3,7 +3,7 @@
 - **Síntoma:** en la sala Música de la zona de pruebas, acercarse al banco y alejarse deja el tema a -60 dB (sonando,
   pero callado); al volver a la lista de la zona, que pide `Musica.SILENCIO` con `DB_NORMAL` en 1 s, el tema subía
   hasta -12 dB y después se iba. Lo mismo con un tema nuevo pedido a `Musica.DB_SILENCIO` desde otro a volumen normal:
-  el que entraba llegaba a -12 dB en vez de quedar callado, contra lo que promete el contrato («Sala»,
+  el que entraba llegaba a -12 dB en vez de quedar callado, contra lo que promete `docs/sala.md` (propiedades,
   `volumen_musica_db`: callado hasta llegar a una `RegionMusica`). Medido sin pantalla leyendo `volume_db` de los
   reproductores cada tick: pico de -12,0 dB en los dos casos.
 - **Causa:** `Musica` llevaba dos tweens a la vez y los multiplicaba: la mezcla de cada reproductor (1 → 0 para el
