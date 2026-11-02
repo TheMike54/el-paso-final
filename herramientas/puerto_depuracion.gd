@@ -8,6 +8,7 @@ const TOLERANCIA: float = 0.5
 var _ruta: String = ""
 var _escena: String = ""
 var _habilidades: Array[StringName] = []
+var _amuletos: Array[StringName] = []
 var _cambio_lanzado: bool = false
 var _cuadro: int = 0
 var _fin: int = 0
@@ -45,6 +46,10 @@ func _physics_process(_delta: float) -> void:
 	if not _escena_lista():
 		return
 	_dar_habilidades()
+	var fallo_amuleto: String = _dar_amuletos()
+	if not fallo_amuleto.is_empty():
+		_terminar(false, fallo_amuleto)
+		return
 	_cuadro += 1
 	if _cuadro == 1:
 		var motivo: String = _conectar_senales()
@@ -88,6 +93,14 @@ func _cargar() -> String:
 			if not Habilidades.TODAS.has(habilidad):
 				return "la habilidad '%s' no esta en Habilidades.TODAS" % habilidad
 			_habilidades.append(habilidad)
+		elif partes.size() == 2 and partes[0] == "amuleto":
+			if not _cuadros.is_empty():
+				return "la linea 'amuleto' debe ir antes de las entradas por cuadro"
+			var amuleto: StringName = StringName(partes[1])
+			if CatalogoEquipo.amuleto(amuleto) == null:
+				return "el amuleto '%s' no esta en CatalogoEquipo" % amuleto
+			if not _amuletos.has(amuleto):
+				_amuletos.append(amuleto)
 		elif partes.size() == 3 and partes[0].is_valid_int() and (partes[2] == "press" or partes[2] == "release"):
 			if not InputMap.has_action(partes[1]):
 				return "la accion '%s' no esta en el InputMap" % partes[1]
@@ -134,6 +147,19 @@ func _dar_habilidades() -> void:
 	for habilidad: StringName in _habilidades:
 		if not Partida.tiene(habilidad):
 			Partida.habilidades.append(habilidad)
+
+
+# Da la posesion sin emitir amuleto_obtenido; equipar conserva las reglas de carga,
+# equipo_cambiado y autoguardado de Partida. Reponer tras reiniciar no duplica el equipo.
+func _dar_amuletos() -> String:
+	if get_tree().get_first_node_in_group(Jugador.GRUPO) == null:
+		return ""
+	for amuleto: StringName in _amuletos:
+		if not Partida.amuletos_tenidos.has(amuleto):
+			Partida.amuletos_tenidos.append(amuleto)
+		if not Partida.esta_equipado(amuleto) and not Partida.equipar(amuleto):
+			return "no se pudo equipar el amuleto '%s': carga insuficiente" % amuleto
+	return ""
 
 
 func _linea_esperada_valida(partes: PackedStringArray) -> bool:

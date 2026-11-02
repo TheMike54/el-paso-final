@@ -3,6 +3,8 @@
 ## Términos
 
 - **Código** (scripts, escenas, configuración y herramientas): licencia MIT, archivo `LICENSE`.
+- **Documentación y manual**: licencia MIT, salvo `docs/manual/diseno.md` y `docs/manual/recorrido.md`, que cuentan la
+  historia y tienen todos los derechos reservados.
 - **Arte, música y textos del juego**: son del equipo, con todos los derechos reservados; los generados con IA
   también. No están cubiertos por la licencia MIT.
 - Ninguna textura mide más de 2048 px por lado.

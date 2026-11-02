@@ -20,7 +20,7 @@ func _ready() -> void:
 			continue
 		var lineas: PackedStringArray = FileAccess.get_file_as_string(ruta).split("\n")
 		if not lineas[0].contains(" uid=\""):
-			lineas[0] = lineas[0].trim_suffix("]") + " uid=\"%s\"]" % ResourceUID.id_to_text(ResourceUID.create_id())
+			lineas[0] = lineas[0].trim_suffix("\r").trim_suffix("]") + " uid=\"%s\"]" % ResourceUID.id_to_text(ResourceUID.create_id())
 		var viejo: String = FileAccess.get_file_as_string(ruta)
 		var nuevo: String = preload("res://herramientas/validar.gd").con_uids("\n".join(lineas))
 		if nuevo == viejo:

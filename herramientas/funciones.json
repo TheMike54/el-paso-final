@@ -382,5 +382,29 @@
     "que": "La regla banco_<id> alcanza a los bancos dentro de una pieza",
     "comprobacion": "herramientas/guiones/herramientas/validador.guion",
     "pasa": true
+  },
+  {
+    "id": "guion-amuleto",
+    "que": "La linea amuleto da y equipa mediante Partida.equipar sin duplicados",
+    "comprobacion": "herramientas/guiones/herramientas/amuleto_por_guion.guion",
+    "pasa": true
+  },
+  {
+    "id": "revisar-enlaces",
+    "que": "Revisa enlaces relativos y rutas de archivo en Markdown, omite plantillas y falla si hay rotos",
+    "comprobacion": "manual: corrida el 2-nov-2026 en PowerShell 5.1 y 7, rotos=0 en el repo y exit 1 con un enlace roto puesto a proposito",
+    "pasa": true
+  },
+  {
+    "id": "generar-tablas",
+    "que": "Genera tablas deterministas de escenas, autoloads y senales desde el proyecto real",
+    "comprobacion": "manual: corrida el 2-nov-2026 en PowerShell 5.1 y 7, salida identica en byte, escenas=54 autoloads=3 senales=39",
+    "pasa": true
+  },
+  {
+    "id": "reporte-entrega",
+    "que": "Genera entrega-2.md con todos los PR fusionados usando gh de solo lectura y sin correos",
+    "comprobacion": "manual: corrida el 2-nov-2026 en PowerShell 5.1 y 7, salida identica en byte, prs=3 igual a la consulta directa; con un repo inexistente no reemplaza el reporte",
+    "pasa": true
   }
 ]

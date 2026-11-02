@@ -75,6 +75,11 @@ Los comandos son de PowerShell.
    & $env:GODOT_PATH --path . --editor
    ```
 
+## Documentación
+
+- `docs/manual/README.md`: cómo está hecho el juego y cómo continuarlo sin contexto previo.
+- `docs/guias/README.md`: recetas para construir contenido.
+
 ## Licencia
 
 El código se publica bajo la licencia MIT (archivo `LICENSE`). El arte, la música y los textos del juego no

@@ -36,6 +36,21 @@ hasta que la sala la usa y queda declarada.
     `funcionalidad`, paso «Entregar» (`CLAUDE.md`, «Reglas de este proyecto»). El PR declara la herramienta y la
     parte.
 
+## Iconos de amuleto o útil
+
+1. Guardar el PNG RGBA de 112 × 112 en `contenido/objetos/equipo/`. Se muestra a 56 px: constante
+   `LADO_ICONO_FILA` de `nucleo/tema.gd`.
+2. En consola importar con `& $env:GODOT_PATH --headless --path . --import`. Con el editor abierto,
+   seleccionar el PNG en FileSystem, activar Mipmaps → Generate en Import y pulsar Reimport.
+3. Asignar la textura al campo `icono` de su ficha en `contenido/equipo.tres`, en el inspector; ver
+   `docs/guias/agregar-un-amuleto-o-un-util.md`. Un PNG que ninguna escena, recurso ni script nombra pasa con
+   `AVISO`, no fallo (`_avisar_imagenes_sin_uso` en `herramientas/validar.gd`); una ficha debe referenciarlo.
+4. En consola ejecutar `.\herramientas\validar.ps1` y comprobar `fallos=0`; revisar el icono en el juego.
+
+Excepción: un icono adelantado, que llega antes que el efecto de su amuleto, no lleva ficha. Se salta el paso 3, conserva
+los mipmaps del paso 2, pasa con `AVISO` y se revisa con la vista a 56 px sobre fondo oscuro, fuera del juego, porque sin
+ficha el menú no lo dibuja.
+
 ## Si algo falla
 - `validar.ps1` con fallos de tamaño, importación o `uid`: la regla está en «Recursos» (`docs/arte-y-rendimiento.md`) y en `docs/validador.md`; el recorrido, en `docs/guias/cuando-algo-falla.md`. Una imagen sin uso no es un fallo: sale
   como `AVISO` y no cuenta en `fallos` (`docs/validador.md`, «Avisos del validador»).

@@ -30,8 +30,8 @@ ese mismo banco con las mismas vidas y las mismas habilidades.
 | Inicio | Elegir personaje (mujer u hombre) y escribir su nombre; menú con cuatro ranuras de partida (nueva o continuar), con estados vacío, dañado y de otra versión |
 | Historia | Intro en video (la cinemática antes de La Celda) y escena de los sinodales |
 | Zonas | Las dos primeras, completas: tres enemigos y raíces con espinas, sin jefe: la primera zona todavía enseña a jugar |
-| Progresión | La habilidad de impulso, el arma base y un amuleto |
-| Sistemas | Cuatro vidas, curación, bancos y guardado, lo perdido al morir (mochila), y un reto de preguntas para recuperar lo perdido al morir; una tienda de PejeCoins |
+| Progresión | La habilidad de impulso, el arma base y dos amuletos en Las Raíces: Patas de Cucaracha y Caparazón de Cucaracha |
+| Sistemas | Cuatro vidas, curación, bancos y guardado, lo perdido al morir (mochila), y un reto de preguntas para recuperar lo perdido al morir; una tienda de PejeCoins, que vende la brújula |
 | Personajes | Un personaje guía que entrega el arma y el mapa de la primera zona |
 | Teléfono | Controles táctiles personalizables y modo de bajo detalle para gama baja |
 | Idioma | Solo español |

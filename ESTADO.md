@@ -1,13 +1,13 @@
 # Estado (se sobrescribe; ver `CLAUDE.md`)
 
-## Ahora (1-nov-2026)
+## Ahora (2-nov-2026)
 
-- Rama `feature/nucleo-cierre-auditoria`, solo en local, sale de `9f67615`. Último commit `8a8196a` (bloque 56). Sin
-  commit: el bloque 57 (arte aprobado, preset con AAB, plan) y el 58 (todos los arreglos de la auditoría). El 58 va después del 57.
+- Rama `feature/nucleo-cierre-auditoria`, solo en local, sale de `9f67615`. Último commit `790ea37` (bloque 58). Sin
+  commit: la documentación del 2-nov (bloques 59 y 60, sin correr).
 - PR #11 (`feature/contenido-celda`): abierto, CI en verde, sin conflictos, 0 aprobaciones: lo bloquea el ruleset. Issue
   #10: ya reportó, falta responder (lista abajo). Issue #9 (tablet): sin reporte.
 - Auditoría final (`planes/activos/nucleo-auditoria-final.md`): reporte aprobado y pasos 7 y 9 hechos (todos los hallazgos); ver «Avance» del plan.
-- Sigue, en orden: (1) correr los bloques 57 y 58; (2) al terminar la tanda, subir todo a la rama del #11 (avance rápido), ponerle `Closes #13`, conseguir una aprobación y fusionar; (3) pulir la metodología de equipo y turnos de Ian y Vic, unos 4 días por persona; (4) AAB firmado y
+- Sigue, en orden: (1) correr los bloques de la documentación (`planes/cerrados/herramientas-tanda-documentacion.md`); (2) subir todo a la rama del #11 (avance rápido), ponerle `Closes #13`, quitarle `Closes #9`, conseguir una aprobación y fusionar; (3) AAB firmado y
   prueba cerrada en Play. La cuenta de Play espera la revisión de identidad de Google.
 - Ruleset `main`: solo por PR, 1 aprobación, `validar` en verde, Squash and merge. Un push nuevo quita la aprobación.
 
@@ -31,7 +31,8 @@ Se citan y se arreglan en el PR siguiente (decisión de la persona). Falta publi
 - 30-oct, tras probar en el S50: decisiones y porqués en el plan, «Tras las pruebas en el S50». Barra de Inspiración sin
   cambios; el pizarrón de curar va en Las Raíces, antes del primer enemigo, y sus salas previas llevan `botones_ocultos`.
 - 1-nov: decisiones de la persona en `planes/activos/nucleo-auditoria-final.md`. Patas de Cucaracha cuesta 1 y da 1,25.
-- 1-nov, menús: 5 útiles con 4 cupos, solo poner o quitar; Gato de la Suerte pasa de amuleto a útil. Plan: `nucleo-menus-pausa`, por aprobar. El arte de los 8 amuletos que faltan lo hace un integrante del equipo. 2-nov: 4 días por persona (turnos: fuera del repo); el diseño del juego será público, con el manual en `docs/manual/`. Antes del manual: guías completas de todo lo construido, con el método que funcionó, cinemáticas incluidas.
+- 1-nov, menús: 5 útiles con 4 cupos, solo poner o quitar; Gato de la Suerte pasa de amuleto a útil. Plan: `nucleo-menus-pausa`, por aprobar. El arte de 7 amuletos va en el tablero (Caché no se pinta). 2-nov: el diseño del juego será público, con el manual en `docs/manual/`. Antes del manual: guías completas de todo lo construido, con el método que funcionó, cinemáticas incluidas.
+- 2-nov, Las Raíces: 2 amuletos, Patas (`raices_4`) y Caparazón (oculto de `raices_6`, junto a un coleccionable; costo 2 y valor 30 para probar; su ficha entra con #25); Caché fuera de la v1; Suela, Log y Cartera no se consiguen en la v1 y se definen después de publicar; la tienda de `raices_3` vende la brújula. Espinas turquesa, firme. Sin banco donde está el Eterno en La Celda: el único está en `celda_1`.
 
 ## Pruebas manuales pendientes
 
@@ -55,5 +56,5 @@ Se citan y se arreglan en el PR siguiente (decisión de la persona). Falta publi
 
 ## Decisiones abiertas (la persona)
 
-- Borradores de Las Raíces y del reparto (fuera del repo). Lo pendiente de `nucleo-menus-pausa`, en el plan. Arranque sin logo: unos 12 s en negro en el S50 antes del menú; decidir si se pone la máscara. Sesión de arte: animación del coleccionable;
+- Lo pendiente de `nucleo-menus-pausa`, en el plan. Arranque sin logo: unos 12 s en negro en el S50 antes del menú; máscara en el arranque decidida el 2-nov-2026, sin construir. Sesión de arte: animación del coleccionable;
   la junta de `pared_bajada_*`; un borde de `boquete_raices_b`; máscara de `hueco_techo` y `hueco_piso`. Ver la cinemática de la Pluma.

@@ -1,4 +1,4 @@
-ACTIVO (escrito el 1-nov-2026; por aprobar, sin empezar)
+ACTIVO (escrito el 1-nov-2026; por aprobar, sin empezar; comprobado contra ESTADO.md el 2-nov-2026)
 
 # Menús de pausa según los mockups aprobados
 
@@ -16,24 +16,25 @@ se comporta; su HTML no se copia. Sus 10 reglas de UX son criterio de aceptació
 5. Útiles: 4 cupos, solo poner o quitar, sin colores ni tipos. La mochila se dibuja con código, en línea de gis y sin relleno.
 6. Son 5 útiles: Brújula, Gato de la Suerte (deja de ser amuleto), Log de Errores, Cartera de Emergencia y Suela Antiderrapante.
 7. Entran los íconos aprobados de los 5 útiles y de Caparazón de Cucaracha. Los otros 8 amuletos conservan la forma de gis;
-   su arte lo hace un integrante del equipo.
+   el arte de 7 lo hace un integrante del equipo, y Caché no se pinta.
 
-## Falta decidir (la persona)
+## Decisiones cerradas (la persona, 2-nov-2026)
 
-| Tema | Propuesta |
-|---|---|
-| Amuletos que entran ahora | Patas, Caparazón y Caché, que no piden código. Los otros 7 van en un plan aparte, después de publicar |
-| Costos | Caparazón 2, Caché 1. Los demás se deciden con su plan |
-| Valores de esos dos | Caparazón `invulnerable_extra` 30 (0,5 s). Caché `inspiracion_extra` 6: el medio bloque no existe con enteros, y 5 no acorta la curación |
-| Dónde se consiguen | Brújula: el Eterno, como dice el diseño. Suela: Las Raíces. Log: La Ciudad Perdida. Cartera: tienda del Barrio Otaku. Mientras esas zonas no existan, solo se prueban en la sala «Equipo» |
-| Mecánicas nuevas | Ninguna en este plan: casi todas dependen de zonas o jefes que no existen. Van en su propio plan |
-| Imagen de la katana | No tiene estado de aprobada y no estaba en la lista de arte: hace falta el visto bueno para que entre al repo |
+1. En Las Raíces se consiguen 2 amuletos: Patas de Cucaracha (`raices_4`) y Caparazón de Cucaracha (oculto de `raices_6`). Los
+   otros 8 van en un plan aparte, después de publicar. Caché queda fuera de la v1.
+2. La tienda de `raices_3` vende la Brújula.
+3. Los menús tienen estado sin amuletos y con amuletos.
+4. Ninguna mecánica nueva en este plan: casi todas dependen de zonas o jefes que no existen. Van en su propio plan.
+5. La ficha de Caparazón entra con #25, no con este plan: costo 2 y `invulnerable_extra` 30 (0,5 s) para probar; se ajusta jugando.
+6. Suela, Log de Errores y Cartera de Emergencia no se consiguen en la v1. Su efecto se implementa en este plan (`utiles-efectos`) y
+   solo se prueba en la sala «Equipo». Su definición final y dónde se consiguen quedan para después de publicar.
+7. La imagen de la katana está aprobada: puede entrar al repo.
 
 ## Choques con el código
 
-1. **Bloques 57 y 58 sin correr.** Este plan toca archivos que esos bloques agregan (`docs/contrato.md`, `nucleo/partida.gd`,
-   ESTADO y otros): si se empieza antes, el 58 se llevaría cambios de menús. Se corren primero. Rama propia:
-   `feature/nucleo-menus-pausa`, con su propio PR.
+1. **Bloques 59 y 60 sin correr** (documentación del 2-nov; `nucleo/partida.gd` ya lleva el 58 en `790ea37`). Este plan
+   toca archivos que esos bloques cambian (`docs/contrato.md`, ESTADO y otros): si se empieza antes, el 60 se llevaría
+   cambios de menús. Se corren primero. Rama propia: `feature/nucleo-menus-pausa`, con su propio PR.
 2. **Log de Errores y las aspas.** `recibir_dano` no sabe de dónde viene el golpe, y las aspas son `DanoContacto` sin
    `peligro`: darían Inspiración. `DanoContacto` debe decir si viene de un enemigo.
 3. **Gato de la Suerte.** `botin_factor` vive en `FichaAmuleto` y en `efectos_amuletos()`, y ningún amuleto del diseño lo usa.
@@ -45,7 +46,8 @@ se comporta; su HTML no se copia. Sus 10 reglas de UX son criterio de aceptació
    pantalla los útiles hablan de cupos («Cupos llenos: quita uno primero»), y la Cartera dice «la otra mitad se queda donde
    caíste». La clase nueva no puede llamarse `Mochila`: ya existe la pieza.
 6. **En el juego no se consigue ningún útil ni amuleto.** Ni La Celda ni otra sala de `contenido/` los da; la Brújula tampoco
-   se vende aún. Las páginas solo se llenan en la sala «Equipo», que tendrá que dar los 5 útiles y los amuletos.
+   se vende aún. Hasta que existan `raices_3`, `raices_4` y `raices_6`, las páginas solo se llenan en la sala «Equipo», que
+   tendrá que dar los 5 útiles y los amuletos.
 7. **Las filas dejan de estar `disabled`,** porque ahora se tocan para leer. Sale `_al_tocar`, y los guiones que pulsan una
    fila para poner un amuleto cambian a propósito: `prueba_amuletos`, `prueba_utiles`, `prueba_efectos_amuletos`,
    `prueba_sala_equipo`, `prueba_marco`, `prueba_mapa` y sus `.esperado`.
@@ -87,7 +89,7 @@ Cada una entra al final de su `funciones.json`, con `validar.ps1`, su guion y su
 | 2 | `utiles-cuatro-cupos` | `MAX_UTILES` 4, clase `Utiles` con los ids, fichas e íconos, sala «Equipo» | `nucleo/partida.gd`, `ficha_util.gd`, `contenido/equipo.tres`, `herramientas/salas/`, `docs/uso-de-ia.md` | `nucleo/utiles`: el quinto no entra; se guarda y se lee | Sí, guardado |
 | 3 | `utiles-efectos` | Gato, Log, Cartera y Suela; `DanoContacto` sabe si es de enemigo; sale `botin_factor` | `nucleo/enemigo.gd`, `jugador.gd`, `partida.gd`, `dano_contacto.gd`, `ficha_amuleto.gd` | Un caso por útil, con y sin él; aspas sin Inspiración; Cartera con 0, 1 y número impar | Sí, jugador y guardado |
 | 4 | `detalle-de-menu` | Panel común: nombre, imagen, texto, motivo y botón. Tres páginas lo usan | Nuevo en `nucleo/`, `pagina_marco.gd` | Se prueba con las dos siguientes | No |
-| 5 | `pagina-amuletos-d` | Lista en 2 columnas, carga en círculos, lo puesto arriba, elegir y actuar por separado | `nucleo/pantalla_amuletos.gd`, `contenido/equipo.tres` | `nucleo/amuletos`: tocar no cambia nada; explica por qué no cabe | No |
+| 5 | `pagina-amuletos-d` | Lista en 2 columnas, carga en círculos, lo puesto arriba, elegir y actuar por separado | `nucleo/pantalla_amuletos.gd`, `contenido/equipo.tres` | `nucleo/amuletos`: sin amuletos y con amuletos; tocar no cambia nada; explica por qué no cabe | No |
 | 6 | `pagina-utiles-d` | Mochila de gis con 4 cupos tocables y lista | `nucleo/pantalla_utiles.gd`, clase nueva | `nucleo/utiles`: llena, vacía, de pie, quitar desde un cupo | No |
 | 7 | `pagina-inventario-d` | Estado, Arma, Lo perdido, 6 símbolos con detalle, Mapas y Azulitos. Nombres escritos; ficha de habilidad | `nucleo/pagina_inventario.gd`, clase de símbolos y datos nuevos | Guion nuevo: nombre de zona en Lo perdido, sin ids, inicio vacío | No |
 | 8 | `mapa-boton-vista` | Un solo botón de vista | `mapa/pantalla_mapa.gd` | `mapa`: dice la vista y alterna | No |
@@ -96,13 +98,14 @@ Cada una entra al final de su `funciones.json`, con `validar.ps1`, su guion y su
 Pruebas que solo puede hacer la persona: leer letra 28 en el teléfono; flechas cómodas y sin toques por error; cómo se ven
 mochila, Inventario y Mapa; todo con el dedo y con el control. El S21 no está disponible, así que el S50 es la referencia.
 
-Reparto: `jugador.gd`, `partida.gd`, guardado y contrato los escribe Claude; Sol puede construir la clase de símbolos y
-los guiones en un worktree.
 
 ## Fuera de este plan
 
-Los otros 7 amuletos, el arte de los 8 sin ícono, las mecánicas nuevas, el sonido de toque, mover Volver (hallazgo 8)
-y dar útiles en salas de zonas que aún no existen.
+Los otros 8 amuletos, el arte de 7 de ellos (Caché no se pinta), las mecánicas nuevas, el sonido de toque, mover Volver
+(hallazgo 8) y dar útiles en salas de zonas que aún no existen.
+
+Esos 7 íconos entran antes que este plan como PNG sueltos, sin ficha: cada ficha llega con su efecto. Mientras tanto
+`validar.ps1` da 7 `AVISO` de imagen sin uso, esperados y que no cuentan como fallos.
 
 ## Avance
 

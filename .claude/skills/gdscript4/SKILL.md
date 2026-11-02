@@ -34,13 +34,14 @@ antes de darlo por bueno; no se supone.
 
 ## `as` y `$Nodo`: dos formas, dos fallos
 
-| Forma | Si el nodo es de otro tipo o se renombró |
+| Forma | Si el nodo existe, pero es de otro tipo |
 |---|---|
 | `@onready var h: Node2D = $Hijo as Node2D` (la del repo) | `h` queda `null` sin error; el fallo sale después o nunca |
 | `@onready var h: Node2D = $Hijo` (también compila aquí) | Falla al correr en esa línea: «Trying to assign value of type 'Node' to a variable of type 'Node2D'» |
 
 - `as` devuelve `null` en silencio (`tutorials/scripting/gdscript/static_typing.rst:317`); sin `as` falla antes
   (`static_typing.rst:394`). `validar.ps1` no ejecuta `_ready`: el `null` lo atrapa un guion que pase por ahí.
+- Si la ruta `$Hijo` no existe o fue renombrada, la búsqueda del nodo también produce un error, con o sin `as`.
 - Fuera de `@onready`, `as` solo cuando el `null` es posible, y se comprueba: `Banco.descansar()` en `nucleo/banco.gd`.
   O se pregunta antes con `is`.
 

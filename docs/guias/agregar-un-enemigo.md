@@ -16,8 +16,9 @@ el `contenido/CLAUDE.md`. Antes de escribir el `.gd`, las skills `gdscript4` y `
    lista y contrato en `docs/enemigos.md`, «Enemigos»). Sus números de ajuste (radio, esperas) van como `@export` en un
    `datos_<comportamiento>.gd` que el comportamiento lee de `datos` (`docs/guias/comportamiento-de-enemigo.md`). Modelos:
    `herramientas/salas/comportamientos/caminante.gd` (camina), `volador.gd`, `escupidor.gd`, `muneco_que_ataca.gd`.
-   Empieza con 3 o 4 líneas de comentario: qué hace y por qué (`CLAUDE.md`, «Cómo se trabaja»). Mínimo, con las
-   ayudas de `caminante.gd`:
+   Si se parte de un modelo, copiar solo su texto a archivos nuevos en `contenido/enemigos/<id>/`, nunca su `.uid`; importar para generar los UID nuevos. Ningún archivo de `contenido/` debe referenciar `herramientas/`.
+   Empieza con 3 o 4 líneas de comentario: qué hace y por qué (`CLAUDE.md`, «Cómo se trabaja»). Versión mínima,
+   resumida de `caminante.gd`:
 
    ```
    extends ComportamientoEnemigo
@@ -37,16 +38,16 @@ el `contenido/CLAUDE.md`. Antes de escribir el `.gd`, las skills `gdscript4` y `
    `ext_resource` de la ficha llevan `uid` (`docs/validador.md`, «uid de escenas y recursos»): se importa antes para que el
    script tenga su `.gd.uid`.
 5. Elegir la reaparición: `AL_VOLVER_A_ENTRAR` (débil) o `AL_DESCANSAR` (fuerte: queda vencido hasta descansar en un
-   banco o morir). Ejemplos: `enemigo_debil.tres` y `enemigo_fuerte.tres` en `herramientas/salas/fichas/`.
+   banco o morir). Elegir según cuándo debe volver: al entrar de nuevo para uno común; al descansar o morir para uno fuerte. Ejemplos: `enemigo_debil.tres` y `enemigo_fuerte.tres` en `herramientas/salas/fichas/`.
 6. Ponerlo en la sala: una instancia de `nucleo/enemigo.tscn`, hija directa de la raíz, con `ficha` e `id`
-   asignados (modelo: nodos `Debil` y `Fuerte` de `herramientas/salas/sala_enemigos.tscn`). Sin ficha o sin id, el
+   asignados (modelo: nodos `Debil` y `Fuerte` de `herramientas/salas/sala_enemigos.tscn`; `Debil` hereda la escena con arte, `enemigo_debil_arte.tscn`). Sin ficha o sin id, el
    enemigo imprime un `push_error` al aparecer. Sin comportamiento, se queda quieto. Nodo, de `sala_enemigos.tscn`:
 
    ```
-   [node name="Debil" parent="." instance=ExtResource("6_enemigo")]
-   position = Vector2(700, 680)
-   ficha = ExtResource("7_debil")
-   id = &"debil"
+   [node name="Fuerte" parent="." instance=ExtResource("6_enemigo")]
+   position = Vector2(1100, 680)
+   ficha = ExtResource("8_fuerte")
+   id = &"fuerte"
    ```
 
    Y la ficha, de `herramientas/salas/fichas/caminante.tres` (la parte `[resource]`):

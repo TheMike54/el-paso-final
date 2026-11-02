@@ -1,6 +1,6 @@
 # Validador
 
-Parte del contrato (`docs/contrato.md`): lo que revisa `herramientas/validar.gd` en las salas, las escenas y las fichas, y que `validar.ps1` corre antes de dar algo por terminado. Cada regla tiene una entrada `validador-*` en `herramientas/funciones.json`; una regla nueva entra a este archivo y a su entrada en el mismo cambio. Los avisos (que no cuentan como fallo) están en `docs/validador.md`, «Avisos del validador».
+Parte del contrato (`docs/contrato.md`): lo que revisa `herramientas/validar.gd` en las salas, las escenas y las fichas, y que `validar.ps1` corre antes de dar algo por terminado. Cada regla tiene una entrada `validador-*` en `herramientas/funciones.json`; una regla nueva entra a este archivo y a su entrada en el mismo cambio. Los avisos (que no cuentan como fallo) están más abajo, en «Avisos del validador».
 
 ## Salas y escenas
 - En cualquier escena, cada `Enemigo` tiene ficha; la raíz de una escena base puede dejarla vacía para que
@@ -68,7 +68,7 @@ Parte del contrato (`docs/contrato.md`): lo que revisa `herramientas/validar.gd`
 - Ninguna imagen supera 2048 px por lado. Las reglas de presupuesto e importación del arte del mundo
   (mipmaps y compresión VRAM con sus excepciones) están en `docs/arte-y-rendimiento.md`, «Recursos».
 - La cabecera de cada escena o recurso y cada `ext_resource` de los bloques del juego llevan el uid
-  correspondiente (`_revisar_uids`; `docs/validador.md`, «uid de escenas y recursos»).
+  correspondiente (`_revisar_uids`; ver «uid de escenas y recursos» más abajo).
 - El índice del mapa coincide con las salas con id y sus rectángulos no se enciman
   (`_revisar_indice_mapa`, `_revisar_encimes`; `docs/sala.md`, propiedad `posicion_mapa`).
 - Las referencias desde fuera de `herramientas/pruebas/` no dependen de esa carpeta excluida de publicación

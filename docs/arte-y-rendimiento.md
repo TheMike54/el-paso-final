@@ -65,9 +65,7 @@ que se decide mirando.
   dos ejes (`classes/class_parallax2d.rst:22`). Las capas de fondo se exportan reducidas («Recursos», receta del
   arte).
 - Color: lo que lastima tiene puntas y es cálido; el turquesa queda para lo vivo (hongos, raíces que no dañan).
-  Excepción: en la bajada hacia Las Raíces, los peligros toman el color de la zona a la que llevan: las
-  espinas de la sala 4 de La Celda, cuando entren (hoy no tienen un uso claro y no están en la sala), llevan
-  puntas turquesa (`#5fe0c8`, brillo `#b8fff0`), como sus hongos. Un
+  Excepción: las espinas de Las Raíces llevan puntas turquesa (`#5fe0c8`, brillo `#b8fff0`), como sus hongos. Un
   peligro se distingue del fondo por valor y color, siempre tiene una señal que se ve entre una ráfaga y otra (una
   `LuzSala` chica o el dibujo encendido, no solo chispas), y su forma de daño sigue al
   dibujo, un poco más chica.

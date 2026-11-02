@@ -30,9 +30,16 @@ con 0 solo si `MALOS=0`. Un guion está bien con el criterio del CI: su salida t
   señal `habilidad_obtenida` ni autoguardado. No duplica habilidades y las mantiene tras cambiar de sala;
   también las repone si la partida se reinicia dentro del mismo guion. Sirve para guiones de cualquier bloque,
   incluido `contenido/`, sin modificar la escena ni su `habilidades_de_prueba`.
-- Medido el 06-oct-2026: una acción que el jugador lee como sostenida (caminar) se nota en el estado del cuadro
+- Línea opcional `amuleto <id>`, antes de las entradas por cuadro: el id debe existir en
+  `CatalogoEquipo`. En cuanto hay jugador, el puerto lo agrega a `Partida.amuletos_tenidos`
+  sin emitir `amuleto_obtenido` y llama a `Partida.equipar`: respeta la carga disponible,
+  emite `equipo_cambiado` y usa el autoguardado normal de equipar. Si no cabe, falla el guion.
+  Un id desconocido o una línea posterior a las entradas falla al cargar. No duplica posesión
+  ni equipo; repone ambos si se reinicia la partida durante el guion. Ejemplo comprobable:
+  `herramientas/guiones/herramientas/amuleto_por_guion.guion`.
+- Medido: una acción que el jugador lee como sostenida (caminar) se nota en el estado del cuadro
   N+1; una que lee como recién presionada (`saltar`), en el del cuadro N+2. Los cuadros de un guion se miden con
-  una corrida, no se calculan.
+  una corrida, no se calculan. Para que un `AvisoAccion` cuente la acción, el pulso se mantiene dos cuadros y se comprueba `hecha`, no solo el ataque (medido: con un cuadro, `hecha` queda en `false`).
 - `<nombre>.esperado`, junto al guion: líneas `<clave> <valor> [tolerancia]`.
 
   | Clave | Valor | Se compara |
@@ -51,7 +58,7 @@ con 0 solo si `MALOS=0`. Un guion está bien con el criterio del CI: su salida t
 - Línea opcional `en <cuadro> <línea>` en el `.esperado`: `<línea>` es cualquiera de las de la tabla, con su
   tolerancia si la tiene, y se compara al empezar ese cuadro en lugar de en `fin`, antes de las entradas de ese
   cuadro (como `fin`). Sirve para ver un estado intermedio que el final no distingue: en
-  `nucleo/jugador_curar_atacar.esperado`, el ataque encendido justo antes de empezar la curación. El cuadro va de 1
+  `herramientas/guiones/nucleo/jugador_curar_atacar.esperado`, el ataque encendido justo antes de empezar la curación. El cuadro va de 1
   a `fin` menos 1; fuera de eso, o con una `<línea>` que no se entiende, el guion falla al cargar. Si no coincide,
   el guion termina en ese cuadro y el motivo lleva delante el cuadro:
   `GUION FALLA <ruta>: en 172 valor Jugador curando esperado=true obtenido=false`. Una `senal` en una línea `en`

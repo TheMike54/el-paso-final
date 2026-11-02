@@ -20,16 +20,22 @@ y recursos») y, en `docs/arte-y-rendimiento.md`, «Arte de zona». Modelo real:
    En el editor: Escena → Nueva escena heredada…, elegir la base y guardar en la carpeta de destino. Heredar de la de
    La Celda trae su oscuridad (`oscuridad = 0.58`), su tema de música (`silencio.tres`), el material `sin_luz.tres` del
    `Frente` y los contenedores `Juego`, `SueloPintado`, `Terreno`, `Peligros`, `Encima`, `Luces` y `Frente`: una zona
-   con otra luz o música cambia esos valores en su base (`docs/arte-y-rendimiento.md`, «Arte de zona»). Cada PNG nuevo se
-   importa con mipmaps a mano (`project.godot` no tiene un preset de importación para `contenido/`).
+   con otra luz o música cambia esos valores en su base (`docs/arte-y-rendimiento.md`, «Arte de zona»). Cada PNG de arte nuevo de `contenido/` se
+   selecciona en el panel Import del editor, activa Generate en Mipmaps y pulsa Reimport (`project.godot` no tiene un preset de importación para `contenido/`).
 3. Crear la sala como escena heredada de la base (no copiar un `.tscn` con `cp`: duplica el UID; `CLAUDE.md`,
    «Entorno y trampas»). Modelo: `contenido/salas/celda/celda_1.tscn`. La raíz es la `Sala`: se le pone `id`.
 4. Darle `uid` a la cabecera de la escena nueva: el validador falla una escena de `contenido/` sin él (mensaje en
    `herramientas/validar.gd`). Guardarla en el editor lo genera solo. Si la escena se escribió como texto, se corre
-   `.\herramientas\arreglar-uids.ps1 -Rutas res://contenido/salas/celda/celda_6.tscn`: importa, pone el uid de la
-   cabecera si falta y el `uid=` de cada `ext_resource` desde el disco (nunca inventado; `docs/validador.md`,
-   «uid de escenas y recursos»). Repara primero los recursos nuevos referenciados y después las escenas que los usan; vuelve a
-   importar para registrar sus UID. Una sala mínima que hereda de la base:
+   primero dos llamadas en consola, separadas por dependencias, con las rutas reales de los archivos nuevos:
+
+   ```powershell
+   .\herramientas\arreglar-uids.ps1 -Rutas res://contenido/zonas/celda/recurso_nuevo.tres
+   .\herramientas\arreglar-uids.ps1 -Rutas res://contenido/salas/celda/celda_6.tscn
+   ```
+
+   Sustituir la primera ruta por los recursos nuevos y la segunda por las escenas que los usan. Cada llamada
+   importa antes; comprobar `UIDS ... errores=0` en ambas. El orden registra los UID de los recursos antes de
+   reparar las referencias de las escenas (`docs/validador.md`, «uid de escenas y recursos»). Una sala mínima que hereda de la base:
 
    ```
    [gd_scene format=3 uid="uid://<lo pone arreglar-uids.ps1>"]
@@ -65,7 +71,7 @@ y recursos») y, en `docs/arte-y-rendimiento.md`, «Arte de zona». Modelo real:
    acomoda con `position` negativa para centrarlo sobre ellos.
 9. Puertas: instancias de `nucleo/puerta.tscn` (o una escena heredada con arte, en `contenido/objetos/<zona>/`),
    hijas directas de la raíz. Se llenan `id`, `sala_destino` (id de sala), `puerta_destino`, `llegada` y `tipo`
-   (tabla de «Cambio de sala»). El destino debe existir y la puerta de vuelta apunta a esta, salvo una `ABAJO`.
+   (tabla de «Cambio de sala»). El destino debe existir y la puerta de vuelta apunta a esta, salvo una `ABAJO` de ida sola: apunta a la sala y puerta de destino, pero esta no necesita apuntar de vuelta. Diseñar la llegada y el recorrido de regreso por otra ruta (`docs/sala.md`, «Cambio de sala»).
    Ejemplo, de `celda_2.tscn` (`llegada` es relativa a la puerta; el cuerpo del jugador, de 80 × 160, no puede tocar
    el área de la puerta, de 40 × 160, al llegar, así que se aleja de ella en el sentido en que entra):
 
@@ -107,7 +113,7 @@ y recursos») y, en `docs/arte-y-rendimiento.md`, «Arte de zona». Modelo real:
     `.\herramientas\correr-guiones.ps1 -Guiones contenido/<id>_puertas`. Un guion que cruza una puerta atrapa el
     `ERROR:` de una llegada que no existe, que el validador no ve (`docs/sala.md`, «Cambio de sala»).
 17. Agregar la entrada de la sala en `contenido/funciones.json` apuntando a ese guion, con `"pasa": false` (la
-    escribe quien hace la sala; el asistente solo cambia `pasa` a `true`, con la evidencia a la vista). Forma:
+    agrega quien hace la funcionalidad y cambia `pasa` a `true` con la evidencia a la vista). Forma:
 
     ```
     {

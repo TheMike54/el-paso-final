@@ -123,7 +123,7 @@ PowerShell, desde la raíz del repo. `GODOT_PATH` es la ruta al ejecutable de co
 - Commits y PR en inglés (`feat: …`, `fix: …`). El título del PR es el mensaje que queda en `main` (Squash and
   merge). El cuerpo sigue `.github/pull_request_template.md`. La documentación va en español.
 - Nada de lo que se sube lleva texto dirigido a una persona, datos de una persona ni avisos de trabajo sin
-  terminar, salvo `ESTADO.md`, `funciones.json` y los planes. Lo que no es de este repo (notas personales,
+  terminar, salvo `ESTADO.md`, `funciones.json`, los planes y los estados de `docs/manual/`. Lo que no es de este repo (notas personales,
   reparto, credenciales) no se guarda dentro de él, ni en una carpeta ignorada.
 - Herramienta de IA nueva para generar recursos: su línea en `docs/uso-de-ia.md`. Recurso de otra persona (fuente,
   sonido o imagen ajena): su autor y licencia en «De terceros» del mismo archivo; sin eso no entra.
@@ -148,6 +148,7 @@ PowerShell, desde la raíz del repo. `GODOT_PATH` es la ruta al ejecutable de co
 | Casos de prueba y QA manual | `docs/pruebas.md` | Antes de pedir revisión de un PR |
 | Errores encontrados, su causa y su arreglo | `docs/errores/` | Antes de arreglar un fallo que se parezca a uno anterior |
 | Uso de IA y recursos de terceros | `docs/uso-de-ia.md` | Al usar una herramienta nueva o un recurso ajeno |
+| Cómo está hecho el juego, estado de cada mecánica, decisiones y límites (para quien continúa sin contexto) | `docs/manual/README.md` | Si el cambio altera una mecánica, una decisión o un límite: se actualiza en el mismo cambio; ante una diferencia manda el código |
 | Instalación desde clon limpio | `README.md` | Si falla el arranque |
 
 ## Al compactar

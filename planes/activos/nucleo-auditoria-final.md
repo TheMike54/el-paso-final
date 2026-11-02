@@ -28,13 +28,13 @@ Tras leer el reporte (1-nov-2026):
 
 | Dimensión | Pregunta |
 |---|---|
-| Ejemplo para el equipo | ¿Sol, solo con `docs/guias/`, llega a una sala y un enemigo correctos? Se ensaya en un worktree desechable |
+| Ejemplo para el equipo | ¿Solo con `docs/guias/` se llega a una sala y un enemigo correctos? |
 | Redundancia | Literales repetidos, `Color(` fuera de `Tema`, funciones largas sin motivo, patrones que ya tienen pieza común |
 | Comentarios | Regla de abajo |
 | Android y robustez | Errores de archivos, lambdas que capturan nodos, señales de nodos que sobreviven, salidas de un `paused` |
 | Rendimiento | Trabajo por cuadro en los archivos con `_process` y `_physics_process` |
 | Paquete de publicación | AAB, filtros del preset, `Cargar.si_existe` sin `herramientas/pruebas/` |
-| Documentación | Largos, caducos, contradicciones y estándar: `docs/`, guías, `CLAUDE.md`, `.claude/`, planes y la carpeta privada de arte |
+| Documentación | Largos, caducos, contradicciones y estándar: `docs/`, guías, `CLAUDE.md`, `.claude/` y planes |
 
 Fuera: J2 (sin máquina de estados del jugador ni partir `Partida`), J16, M5, M8, M9, P3, P4, P6, P7 y el código muerto
 (barrido del 1-nov: 0 hallazgos).
@@ -67,10 +67,11 @@ densidad del código vecino.
 | 2 | AAB: plantilla Gradle, preset y versión | AAB de depuración exportado, tamaño y alineación medidos |
 | 3 | Detectar y verificar, por lotes | Lista de hallazgos confirmados en «Avance» |
 | 4 | Ensayo de sala y enemigo con Sol | Lista de tropiezos de las guías |
-| 5 | Mockups, reparto y guía de Las Raíces (fuera del repo) | Archivos entregados a la persona |
+| 5 | Mockups de menús | Archivos entregados a la persona |
 | 6 | Estudio de factibilidad y plan de solución, en un reporte para la persona: qué se propone y por qué, cada decisión con su porqué y qué hace cada modelo de Anthropic y de Codex | Reporte entregado |
 | 7 | Arreglar por grupos, solo tras aprobar el reporte | `validar.ps1`, `correr-guiones.ps1`, `revisor` en lo crítico |
 | 8 | Cierre | Batería completa, `revisor`, APK en el S50, bloques de commit |
+| 9 | Los 51 hallazgos de «tras publicar» y S07 a S10 | `validar.ps1`, `correr-guiones.ps1`, revisión de Sol |
 
 Decidido por la persona el 1-nov-2026: los hallazgos no se arreglan en la tanda de esa noche; primero el reporte. El S21 no está
 disponible; descargar herramientas queda autorizado.

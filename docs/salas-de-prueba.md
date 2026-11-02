@@ -51,15 +51,15 @@ propósito: Peligro (el foso de pinchos) e Impulso (los bloques altos).
 
 | Botón | Qué hay | Habilidades | Para probar |
 |---|---|---|---|
-| Enemigos | 2400×720: enemigo débil con arte provisional (`fichas/enemigo_debil_arte.tscn`, ficha `enemigo_debil.tres`, vida 2) y fuerte en caja gris (`enemigo_fuerte.tres`, vida 3); puerta a «Enemigos Banco» | pluma | Pelear contra enemigos con retroceso, congelado al vencer; el dibujo del débil se refleja hacia donde mira y se detiene en el congelado |
+| Enemigos | 2400×720: enemigo débil con arte provisional (`herramientas/salas/fichas/enemigo_debil_arte.tscn`, ficha `enemigo_debil.tres`, vida 2) y fuerte en caja gris (`enemigo_fuerte.tres`, vida 3); puerta a «Enemigos Banco» | pluma | Pelear contra enemigos con retroceso, congelado al vencer; el dibujo del débil se refleja hacia donde mira y se detiene en el congelado |
 | Enemigos banco | 1600×720: banco `banco_enemigos` y puerta de vuelta | pluma | Descansar y volver: los enemigos reaparecen |
 | Peligro | 2000×940: dos suelos con pinchos en el hueco | pluma | Caer en un peligro y volver al punto seguro |
 | Peligro móvil | 2000×720: sierra que va y viene y pinchos fijos | pluma | Peligro que se mueve |
 | Enemigos móviles | 3600×1080: un caminante sobre una plataforma de 600 px y otro en el suelo junto a un tope; un volador junto a un pilar que tapa la vista, con dos escalones a su izquierda para subirlo (de ida: de vuelta no se sube); un escupidor al fondo a la derecha | pluma | Enemigos que caminan, vuelan y lanzan en arco; FPS con los tres a la vez |
-| Caminante | `enemigos/sala_caminante.tscn`: 1600×720, un caminante sobre una plataforma de 600 px con pared a la izquierda y orilla a la derecha; suelo abajo | pluma | Caminar, pausar y girar ante la pared y la orilla sin caer |
-| Volador | `enemigos/sala_volador.tscn`: 1600×720, un volador en el aire y suelo despejado | pluma | Detectar al jugador y perseguirlo por el aire |
-| Escupidor | `enemigos/sala_escupidor.tscn`: 1600×720, un escupidor en una repisa 120 px sobre el suelo, a 700 px de la entrada | pluma | Aviso y disparo en arco desde una altura hacia el jugador |
-| Muñeco que ataca | `enemigos/sala_muneco_que_ataca.tscn`: 1600×720, un muñeco y suelo libre para acercarse a su frente | pluma | Aviso y golpe al acercarse; parry y disparo al esperar un ciclo |
+| Caminante | `herramientas/salas/enemigos/sala_caminante.tscn`: 1600×720, un caminante sobre una plataforma de 600 px con pared a la izquierda y orilla a la derecha; suelo abajo | pluma | Caminar, pausar y girar ante la pared y la orilla sin caer |
+| Volador | `herramientas/salas/enemigos/sala_volador.tscn`: 1600×720, un volador en el aire y suelo despejado | pluma | Detectar al jugador y perseguirlo por el aire |
+| Escupidor | `herramientas/salas/enemigos/sala_escupidor.tscn`: 1600×720, un escupidor en una repisa 120 px sobre el suelo, a 700 px de la entrada | pluma | Aviso y disparo en arco desde una altura hacia el jugador |
+| Muñeco que ataca | `herramientas/salas/enemigos/sala_muneco_que_ataca.tscn`: 1600×720, un muñeco y suelo libre para acercarse a su frente | pluma | Aviso y golpe al acercarse; parry y disparo al esperar un ciclo |
 
 ## Mundo
 

@@ -1,6 +1,6 @@
-# Guías para el equipo
+# Guías de construcción
 
-Recetas cortas para quien llega nuevo. Cada una remite a `docs/` por archivo y sección; no copia reglas ni cifras,
+Recetas cortas para construir contenido. Los pasos de escenas y fichas se hacen en el editor o escribiendo el `.tscn` según `docs/sala.md`; el panel Import pide el editor; los comandos se ejecutan en PowerShell desde la raíz. Las pruebas de juego requieren ejecutar el juego. Cada una remite a `docs/` por archivo y sección; no copia reglas ni cifras,
 así que ante una diferencia manda el documento al que remite.
 
 | Guía | Cuándo leerla |
@@ -11,6 +11,14 @@ así que ante una diferencia manda el documento al que remite.
 | `agregar-un-enemigo.md` | Para crear la ficha y el comportamiento de un enemigo |
 | `comportamiento-de-enemigo.md` | Para escribir la mecánica de un enemigo (escudo, trepar, embestir) con las piezas del núcleo |
 | `agregar-un-amuleto-o-un-util.md` | Para sumar un amuleto o un útil al catálogo y darlo en una sala |
+| `cinematicas.md` | Para integrar y comprobar una cinemática |
+| `pizarrones.md` | Para enseñar acciones en una sala |
+| `zona-nueva.md` | Para crear la base y el mapa de una zona |
+| `npc-y-dialogo.md` | Para añadir un NPC y sus conversaciones |
+| `tienda.md` | Para vender artículos |
+| `retos.md` | Para crear un reto de preguntas |
+| `jefes.md` | Para armar una arena de jefe |
+| `publicar.md` | Para exportar y probar una versión Android |
 | `arte.md` | Para incorporar al juego una pieza de arte ya aprobada |
 | `sonido-y-musica.md` | Para agregar un sonido, un tema de sala o una región de música |
 | `medir-en-el-telefono.md` | Para exportar el APK de desarrollo y medir en el teléfono |
@@ -28,10 +36,10 @@ Piezas y términos que las guías nombran sin explicar:
 | `ZonaCamara` | Área que, mientras el jugador está dentro, limita lo que muestra la cámara además de los límites de la sala (`nucleo/zona_camara.gd`) |
 | `Terreno`, `Peligros`, `Encima`, `Luces`, `Frente` | Nodos contenedores de la base de una zona, no grupos de Godot |
 | Ficha | Recurso `.tres` de solo lectura con datos (`FichaEnemigo`, `FichaDialogo`, `FichaSonidos`, `FichaAmuleto`, `FichaUtil`) |
-| Carga, ranura | La carga es cuánto pueden costar juntos los amuletos puestos (3 al empezar, como las muescas de Hollow Knight); un útil ocupa una ranura y no gasta carga (`docs/contrato.md`, «Amuletos y útiles») |
+| Carga, ranura | La carga es cuánto pueden costar juntos los amuletos puestos (3 al empezar); un útil ocupa una ranura y no gasta carga (`docs/contrato.md`, «Amuletos y útiles») |
 | Guion | Entradas por cuadro y estado esperado para correr el juego sin ventana (`docs/guiones.md`); no es un script de GDScript |
 
 Los fragmentos de código de las guías son copias de archivos reales del repo: ante una diferencia manda el archivo.
 
-Fuera de estas guías, la referencia está en `docs/contrato.md` (qué ofrece cada bloque; al inicio, la tabla de sus archivos por tema), `docs/jugador.md`,
+Para entender el juego sin contexto previo: `docs/manual/README.md`. Fuera de estas guías, la referencia está en `docs/contrato.md` (qué ofrece cada bloque; al inicio, la tabla de sus archivos por tema), `docs/jugador.md`,
 `docs/guiones.md`, `docs/pruebas.md` y `docs/errores/`.

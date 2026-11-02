@@ -140,7 +140,7 @@ sus `Porton`. Se usa el mismo `Enemigo`, sin otra base de jefe. La ficha lleva `
   intento carga el jefe con toda la vida, fase 0 y portones abiertos.
 
 Modelo jugable: `herramientas/salas/sala_jefe.tscn`, categoría Partida → Jefe, con caja gris de 12 de vida,
-umbral 6, dos portones y premio impulso. `comportamientos/jefe_prueba.gd` camina en fase 0; en fase 1 acelera y
+umbral 6, dos portones y premio impulso. `herramientas/salas/comportamientos/jefe_prueba.gd` camina en fase 0; en fase 1 acelera y
 alterna caminar, parar como aviso y embestir hacia el jugador. Sus tiempos y rapideces están en
 `datos_jefe_prueba.gd`, de solo lectura. El guion `herramientas/guiones/nucleo/sala_jefe.guion` recorre la sala real,
 el salto de dos umbrales y morir sin premio; la sensación se comprueba en la fila Jefe de `docs/pruebas.md`.
