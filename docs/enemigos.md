@@ -69,8 +69,9 @@ ataca es un script que la ficha referencia (`comportamiento`), en `contenido/ene
   `atacar(rectangulo, ticks, dano, se_puede_parar)` (un `AtaqueEnemigo` hijo del enemigo, relativo a sus pies) y
   `disparar(desplazamiento, direccion, dano, se_puede_parar)` (un `ProyectilEnemigo` en la sala). Para moverse:
   `caer()` (la gravedad de la ficha con su tope), `mover()` (`move_and_slide`), `en_suelo()`, `pared_delante(sentido)`
-  y `orilla_delante(sentido)` (rayos contra `escenario` a media altura y desde la punta del pie, 12 px más allá del
-  cuerpo), `ve_al_jugador(radio)` (distancia entre centros y ningún sólido en medio), `centro()` y `girar()`.
+  y `orilla_delante(sentido)` (rayos contra `escenario`: el de la pared sale del centro y llega 12 px más allá del
+  cuerpo; el de la orilla sale 2 px fuera del cuerpo y 4 px sobre la posición del enemigo, y baja 16 px),
+  `ve_al_jugador(radio)` (distancia entre centros y ningún sólido en medio), `centro()` y `girar()`.
   `lanzar_en_arco(desplazamiento, objetivo, grados, gravedad, tope, dano, se_puede_parar)`: un `ProyectilEnemigo` en
   arco que cae en `objetivo`.
 - El empuje de su `Golpeable` no saca de una orilla a un enemigo que camina y está en el suelo.

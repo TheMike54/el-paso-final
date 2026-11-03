@@ -32,9 +32,9 @@ se comporta; su HTML no se copia. Sus 10 reglas de UX son criterio de aceptació
 
 ## Choques con el código
 
-1. **Bloques 59 y 60 sin correr** (documentación del 2-nov; `nucleo/partida.gd` ya lleva el 58 en `790ea37`). Este plan
-   toca archivos que esos bloques cambian (`docs/contrato.md`, ESTADO y otros): si se empieza antes, el 60 se llevaría
-   cambios de menús. Se corren primero. Rama propia: `feature/nucleo-menus-pausa`, con su propio PR.
+1. **Bloques 59 y 60 ya corridos** (resuelto el 2-nov-2026). El 58 está en `790ea37`, la documentación del 59 en
+   `e681fec` y el 60, que es de otro repo, en `afd4f1f`; ese bloqueo ya no existe. Rama propia:
+   `feature/nucleo-menus-pausa`, con su propio PR.
 2. **Log de Errores y las aspas.** `recibir_dano` no sabe de dónde viene el golpe, y las aspas son `DanoContacto` sin
    `peligro`: darían Inspiración. `DanoContacto` debe decir si viene de un enemigo.
 3. **Gato de la Suerte.** `botin_factor` vive en `FichaAmuleto` y en `efectos_amuletos()`, y ningún amuleto del diseño lo usa.
@@ -58,7 +58,7 @@ se comporta; su HTML no se copia. Sus 10 reglas de UX son criterio de aceptació
 10. **No hay sonido de toque en los menús.** Regla 8 y hallazgo 11: la respuesta es visual (la selección cambia en el acto).
     El sonido necesita un archivo y queda fuera.
 11. **Íconos.** Los recortes miden de 849 a 991 px y pesan cerca de 1 MB. Entran reducidos a 112 px, el tamaño de Patas,
-    sin mipmaps, y se revisan a 56 px y en el detalle.
+    con mipmaps, y se revisan a 56 px y en el detalle.
 
 ## Hallazgos del estudio de UX
 

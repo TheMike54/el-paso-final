@@ -406,5 +406,11 @@
     "que": "Genera entrega-2.md con todos los PR fusionados usando gh de solo lectura y sin correos",
     "comprobacion": "manual: corrida el 2-nov-2026 en PowerShell 5.1 y 7, salida identica en byte, prs=3 igual a la consulta directa; con un repo inexistente no reemplaza el reporte",
     "pasa": true
+  },
+  {
+    "id": "auditoria-final-documentos",
+    "que": "Auditoria final de la documentacion contra el codigo, con cada hallazgo verificado por otro modelo antes de aplicarse",
+    "comprobacion": "manual: herramientas/revisar-enlaces.ps1 con rotos=0 y validar.ps1 con fallos=0 sobre la documentacion corregida; plan en planes/activos/herramientas-auditoria-arranque.md",
+    "pasa": true
   }
 ]

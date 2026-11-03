@@ -186,7 +186,7 @@ Curar y sensación del golpe:
   cola), se queda quieto y gasta la Inspiración
   poco a poco mientras mantiene `curar`. Al empezar emite `curacion_empezada`, si no termina `curacion_cortada`. A los `ticks_curacion` ticks recupera una vida y emite `jugador_curado`. Soltar, dejar el suelo o recibir daño antes lo
   corta y lo gastado se pierde, salvo al soltar antes de `ticks_devolver_curacion`: la Inspiración vuelve al valor
-  de antes de empezar, nunca a más. Cada golpe a un `Golpeable` con `es_enemigo` da `inspiracion_por_golpe` (tope 99); a un muro o una palanca, nada.
+  de antes de empezar, nunca a más. Cada golpe a un `Golpeable` con `es_enemigo` da `inspiracion_por_golpe` (hasta `Partida.inspiracion_maxima`, que va de 33 a 99); a un muro o una palanca, nada.
 - Sensación: al golpear, el jugador sale empujado hacia atrás y lo golpeado hacia el otro lado
   (`Golpeable.velocidad_retroceso`, `ticks_retroceso`). Al recibir daño (no de un peligro), el jugador se detiene
   `ticks_hit_stop` ticks antes del retroceso.

@@ -17,7 +17,7 @@ Parte del contrato (`docs/contrato.md`): lo que revisa `herramientas/validar.gd`
   que es de ida sola: basta que P exista en B (la sala de abajo la usa como llegada). Exigir la vuelta obligaría a poner
   abajo una puerta `ARRIBA` a la que no se llega, con su llegada sobre el hueco, que devolvería al jugador a la caída; y
   una puerta de caída provisional puede llegar a una puerta que ya existe sin un nodo de más; cada `FondoTapado` deja ver
-  algo (`fin_pared`, en coordenadas de la sala, antes de `limites.end.x`); bancos con id
+  algo (`fin_pared`, en coordenadas de la sala: con `lado = IZQUIERDA` queda antes de `limites.end.x`; con `lado = DERECHA`, después de `limites.position.x`); bancos con id
   `banco_<id>`, también dentro de una pieza; la raíz de cada escena de esas carpetas es una `Sala`; suelos frágiles, muros rompibles, palancas, portones,
   recogibles que se recuerdan por id (`Coleccionable`, `MonedasSueltas`), `Npc`, `RetoPreguntas` y `Tienda` con id (sin él, falla) único en la sala, también
   dentro de una pieza instanciada; en `contenido/`, `habilidades_de_prueba` vacío e `inspiracion_maxima_de_prueba`

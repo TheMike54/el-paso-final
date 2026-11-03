@@ -12,7 +12,7 @@ fila aquí en el mismo cambio. El inventario se organiza en siete categorías.
 - Menú principal → «Zona de pruebas» (aparece con Configuración → Avanzado → Desarrollador en «Sí») → categoría → sala.
 - Cada sala lleva su nombre y, debajo, para qué sirve (`SALAS` de `zona_pruebas.gd`); una de «Otras» lleva el
   nombre del archivo sin `sala_`. Puerta B no se lista: se llega por la puerta de Puerta A.
-- Al entrar se reinicia la partida (`Partida.reiniciar()`) y se guarda en el archivo de pruebas. Las habilidades de
+- Al entrar se reinicia la partida (`Partida.reiniciar()`) y se fija `Partida.ruta_guardado` en `Partida.RUTA_PRUEBAS`; entrar no guarda por sí mismo. Las habilidades de
   `habilidades_de_prueba` (`nucleo/sala.gd`) se dan en silencio; las de un objeto, al tocarlo.
 - Casi todas dan `pluma` (el arma). Pausa → «Salir al menú» vuelve al menú principal.
 

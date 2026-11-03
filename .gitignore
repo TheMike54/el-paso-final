@@ -20,3 +20,4 @@ export_credentials.cfg
 # Configuracion local de cada persona
 CLAUDE.local.md
 .claude/settings.local.json
+.claude/scheduled_tasks.lock

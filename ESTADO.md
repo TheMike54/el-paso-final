@@ -2,12 +2,12 @@
 
 ## Ahora (2-nov-2026)
 
-- Rama `feature/nucleo-cierre-auditoria`, solo en local, sale de `9f67615`. Último commit `790ea37` (bloque 58). Sin
-  commit: la documentación del 2-nov (bloques 59 y 60, sin correr).
-- PR #11 (`feature/contenido-celda`): abierto, CI en verde, sin conflictos, 0 aprobaciones: lo bloquea el ruleset. Issue
+- Rama `feature/nucleo-cierre-auditoria`, solo en local, sale de `9f67615`. Último commit con la auditoría final de
+  documentación (`planes/activos/herramientas-auditoria-arranque.md`): 209 de 209 guiones, `fallos=0`, `rotos=0`.
+- PR #11 (`feature/contenido-celda`): abierto y aprobado sobre `9f67615`; el push de esta rama le quita la aprobación. Issue
   #10: ya reportó, falta responder (lista abajo). Issue #9 (tablet): sin reporte.
 - Auditoría final (`planes/activos/nucleo-auditoria-final.md`): reporte aprobado y pasos 7 y 9 hechos (todos los hallazgos); ver «Avance» del plan.
-- Sigue, en orden: (1) correr los bloques de la documentación (`planes/cerrados/herramientas-tanda-documentacion.md`); (2) subir todo a la rama del #11 (avance rápido), ponerle `Closes #13`, quitarle `Closes #9`, conseguir una aprobación y fusionar; (3) AAB firmado y
+- Sigue, en orden: (1) subir todo a la rama del #11 (avance rápido), ponerle `Closes #13`, quitarle `Closes #9`, conseguir de nuevo la aprobación y fusionar; (2) AAB firmado y
   prueba cerrada en Play. La cuenta de Play espera la revisión de identidad de Google.
 - Ruleset `main`: solo por PR, 1 aprobación, `validar` en verde, Squash and merge. Un push nuevo quita la aprobación.
 
@@ -28,7 +28,7 @@ Se citan y se arreglan en el PR siguiente (decisión de la persona). Falta publi
   coleccionable es Azulito, a unos 64 px; su animación sigue pendiente. El parry suena (falta el archivo;
   `FichaSonidos.parry` ya lo toca). Espinas de la sala 4 a Las Raíces. Los guiones `celda_*` se reducen a uno de ruta por
   sala más los de `docs/errores/`. El color del foco va con el pulido de las páginas. `chore/android-export` se borra.
-- 30-oct, tras probar en el S50: decisiones y porqués en el plan, «Tras las pruebas en el S50». Barra de Inspiración sin
+- 30-oct, tras probar en el S50: decisiones y porqués en `planes/activos/nucleo-cierre-auditoria.md`, «Tras las pruebas en el S50». Barra de Inspiración sin
   cambios; el pizarrón de curar va en Las Raíces, antes del primer enemigo, y sus salas previas llevan `botones_ocultos`.
 - 1-nov: decisiones de la persona en `planes/activos/nucleo-auditoria-final.md`. Patas de Cucaracha cuesta 1 y da 1,25.
 - 1-nov, menús: 5 útiles con 4 cupos, solo poner o quitar; Gato de la Suerte pasa de amuleto a útil. Plan: `nucleo-menus-pausa`, por aprobar. El arte de 7 amuletos va en el tablero (Caché no se pinta). 2-nov: el diseño del juego será público, con el manual en `docs/manual/`. Antes del manual: guías completas de todo lo construido, con el método que funcionó, cinemáticas incluidas.
@@ -45,7 +45,7 @@ Se citan y se arreglan en el PR siguiente (decisión de la persona). Falta publi
 ## Planes activos
 
 - `nucleo-auditoria-final`: el plan en curso. `nucleo-cierre-auditoria`: hecho; lo cierra el PR. `nucleo-arreglos-qa-6`: lo
-  cierra la prueba del QA de las issues del #11. `herramientas-utilidad-pruebas`: el paso 13 de la auditoría del 17-oct, después de Play. `nucleo-menus-pausa`: por aprobar.
+  cierra la prueba del QA de las issues del #11. `herramientas-utilidad-pruebas`: el paso 13 de la auditoría del 17-oct, después de Play. `nucleo-menus-pausa`: por aprobar. `herramientas-auditoria-arranque`: hecho; lo cierra el PR.
 
 ## Conocido, sin arreglar
 

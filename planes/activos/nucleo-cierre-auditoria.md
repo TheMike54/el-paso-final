@@ -33,10 +33,11 @@ La tabla conserva las preguntas y recomendaciones; el alcance de D3 figura en el
   un solo PR, para cerrar la auditoría antes de preparar la publicación en la Play Store. Lo que el QA del #11
   encuentre se arregla en este mismo PR y se cita en su issue.
 - Rama: `feature/nucleo-cierre-auditoria` (antes `feature/nucleo-enemigos-base`). Sale de `feature/contenido-celda`
-  (`9f67615`); al fusionarse el #11 (Squash and merge), la persona la mueve encima de `main`:
+  (`9f67615`); se sube a la rama del #11 por avance rápido (sin rebase) y el #11 lo lleva a `main`. Después de
+  fusionarse el #11 (Squash and merge), la persona la mueve encima de `main`:
   `git rebase --onto main 9f67615 feature/nucleo-cierre-auditoria`.
-- Un commit por grupo y un issue de prueba por grupo con lo que se prueba en el teléfono. El PR se abre al terminar
-  el grupo 4, con los cinco issues (`Closes #n`): un push nuevo quita la aprobación.
+- Un commit por grupo. Issue de cierre: #13 (`Closes #13`); no hay un issue de prueba por grupo. Un push nuevo a la
+  rama del #11 quita la aprobación.
 - Consecuencia aceptada: la base de enemigos no llega a `main` hasta cerrar los cinco grupos.
 
 ## Cómo se ejecuta cada grupo
@@ -306,11 +307,15 @@ El QA de la issue #10 (3.3) reportó que el elevador deja encima al que aplasta.
 | Salas | Sala Plataformas y `celda_4` la llevan. `celda_2` no: quedan 240 px bajo el elevador |
 | Reaparecer | En la zona no se recuerda punto seguro (`Jugador.no_recordar_punto_seguro`, reinicia los ticks de suelo firme: no depende del orden de los nodos). El `revisor` midió por qué: con el punto bajo la pieza, la física lo dejaba encima (la misma queja de la 3.3), hasta 59 px dentro del piso o fuera de la sala por `PuertaAbajo`. Silksong no lo sufre porque reaparece en marcas fijas |
 ## Fuera de este plan
-Decidido por la persona el 29-oct-2026, tras probar las páginas en el S50 (funcionan; el diseño se rehace): el
+Vigencia (2-nov-2026): el párrafo siguiente quedó sin efecto. Según la lista de decisiones del 2-nov (fila 18) y el
+tablero, el rediseño de las páginas del marco pasó a `planes/activos/nucleo-menus-pausa.md` (#24, a cargo de Miguel);
+a Vic solo le toca el arte de los íconos (#23).
+
+~~Decidido por la persona el 29-oct-2026, tras probar las páginas en el S50 (funcionan; el diseño se rehace): el
 pulido visual de las páginas del marco (Amuletos y Útiles; Mapa e Inventario) va a los otros dos integrantes, uno
 cada par, con un mockup en HTML hecho en otra sesión a partir de lo que ya existe, en su issue con capturas a
 1280×720. Solo tocan la presentación; los guiones `amuletos`, `utiles`, `marco` y `mapa_cuentas` cuidan las reglas.
-Empiezan con este PR ya en `main` (el grupo 4 cambia cómo la sala crea las páginas).
+Empiezan con este PR ya en `main` (el grupo 4 cambia cómo la sala crea las páginas).~~
 
 F-088 (espera el arte de la mujer), F-047 (cuando el CI pase de 10 min), la tabla de conversión de F-010 (cuando las
 partidas se conserven, al terminar el juego) y F-063 a F-065 (con la segunda zona).

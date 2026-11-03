@@ -57,7 +57,10 @@ el `contenido/CLAUDE.md`. Antes de escribir el `.gd`, las skills `gdscript4` y `
    script = ExtResource("1_ficha")
    id = &"caminante"
    vida = 3
+   dano_contacto = 1
    tamano = Vector2(100, 70)
+   color = Color(0.7, 0.55, 0.35, 1)
+   reaparicion = 0
    comportamiento = ExtResource("2_comportamiento")
    velocidad = 175.0
    gravedad = 3000.0

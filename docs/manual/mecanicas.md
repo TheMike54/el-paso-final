@@ -20,7 +20,7 @@
 | Coleccionables | Objeto recogible y registro persistente por sala; existe vitrina para consultarlos. | `nucleo/coleccionable.gd`, `nucleo/vitrina_coleccionables.gd` | `docs/componentes.md`, `docs/interfaz.md` |
 | Salas | Escenas con entrada, límites, puertas, llegada y transición; existen cinco escenas de La Celda y salas de prueba. | `nucleo/sala.gd`, `contenido/salas/celda/celda_1.tscn` | `docs/sala.md`, `docs/guias/armar-una-sala.md` |
 | Muerte y mochila | Al morir se registra una mochila con monedas; puede recuperarse y se autoguarda el cambio. | `nucleo/partida.gd`, `nucleo/mochila.gd` | `docs/componentes.md`, `docs/contrato.md` |
-| Viaje entre estaciones | Hay lógica de estaciones y menú de destinos; su presencia en las zonas depende del contenido. | `nucleo/estacion.gd`, `nucleo/menu_estaciones.gd` | `docs/componentes.md`, `docs/interfaz.md` |
+| Viaje entre estaciones | Hay lógica de estaciones y menú de destinos; la primera versión no coloca ninguna en sus zonas. | `nucleo/estacion.gd`, `nucleo/menu_estaciones.gd` | `docs/componentes.md`, `docs/interfaz.md` |
 
 ## Diseñado sin construir
 
@@ -38,4 +38,4 @@ Estos elementos figuran en el alcance como aplazados; no se presenta como termin
 |---|---|---|---|
 | Primera versión de las zonas | El alcance pide dos zonas completas con tres enemigos; en `contenido/salas/` se identificaron escenas de La Celda. Falta construir y comprobar el resto del alcance. | `contenido/salas/celda/` | `docs/idea.md`, `docs/guias/armar-una-sala.md` |
 | Habilidades de la campaña | Hay lógica y pruebas, pero la incorporación de las habilidades posteriores se aplaza en el alcance. | `nucleo/habilidades.gd` | `docs/idea.md`, `docs/jugador.md` |
-| Viaje rápido en las zonas iniciales | Sistema construido; su colocación en las zonas iniciales queda condicionada al contenido. | `nucleo/estacion.gd` | `docs/idea.md`, `docs/componentes.md` |
+| Viaje rápido en las zonas iniciales | Sistema construido; sin estaciones en la primera versión. | `nucleo/estacion.gd` | `docs/idea.md`, `docs/componentes.md` |

@@ -27,7 +27,7 @@ ese mismo banco con las mismas vidas y las mismas habilidades.
 
 | Área | Entra |
 |---|---|
-| Inicio | Elegir personaje (mujer u hombre) y escribir su nombre; menú con cuatro ranuras de partida (nueva o continuar), con estados vacío, dañado y de otra versión |
+| Inicio | Escribir su nombre (el personaje es el hombre; la elección de mujer u hombre existe pero está oculta hasta tener el arte de la mujer); menú con cuatro ranuras de partida (nueva o continuar), con estados vacío, dañado y de otra versión |
 | Historia | Intro en video (la cinemática antes de La Celda) y escena de los sinodales |
 | Zonas | Las dos primeras, completas: tres enemigos y raíces con espinas, sin jefe: la primera zona todavía enseña a jugar |
 | Progresión | La habilidad de impulso, el arma base y dos amuletos en Las Raíces: Patas de Cucaracha y Caparazón de Cucaracha |
@@ -40,8 +40,8 @@ ese mismo banco con las mismas vidas y las mismas habilidades.
 ## Qué se aplaza a propósito
 
 Las zonas restantes y el final con los sinodales; las demás habilidades; el minijuego de apuestas;
-las mejoras del arma; el viaje rápido entre estaciones en las zonas (el núcleo lo deja programado; las zonas 1
-y 2 lo llevan solo si alcanza el tiempo de contenido); los personajes secundarios restantes; la música
+las mejoras del arma; el viaje rápido entre estaciones en las zonas (el núcleo lo deja programado; no habrá
+estaciones en la primera versión); los personajes secundarios restantes; la música
 completa. Fuera de la v1: inventario de objetos, «sobrecarga»
 de amuletos y logros; el dash hacia abajo se descartó (le quitaría su papel a la caída en picada).
 

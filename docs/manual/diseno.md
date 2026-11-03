@@ -63,7 +63,7 @@ Las zonas usan enemigos con referencia real reconocible, para que el arte salga 
 | Impulso fantasma | El Metro | Previsto; no está en `nucleo/habilidades.gd` |
 | Nadar en aguas negras | El Metro | Previsto; no está en `nucleo/habilidades.gd` |
 | La bola (proyectil) | Por decidir | Hecho en el núcleo; lugar y sentido por decidir |
-| Pluma de mapa | Por decidir | Hecho en el núcleo; lugar por decidir |
+| Pluma de mapa | El Eterno en raices_3, junto con el mapa raices | Hecho en el núcleo; entrega sin colocar |
 
 **Uso obligado.** El tramo donde se obtiene una habilidad no tiene salida que no la requiera: la geometría enseña, sin texto. Es el espejo de los secretos visibles e inalcanzables del inicio.
 
@@ -111,7 +111,7 @@ Táctil, teclado y control se traducen a las mismas acciones con nombre. En el t
 
 ## Primera versión
 
-Entran: inicio con nombre y personaje, cinemáticas, La Celda y Las Raíces completas sin jefe, impulso, Pluma y dos amuletos, vidas, curación, bancos, mochila con reto, tienda de PejeCoins, el Eterno, controles táctiles y zona de pruebas. Se aplazan: las zonas restantes y el final, las demás habilidades, el pachislot, las mejoras de la Pluma, la Línea Fantasma y la música completa. La lista vigente está en `docs/idea.md`.
+Entran: inicio con nombre, cinemáticas, La Celda y Las Raíces completas sin jefe, impulso, Pluma y dos amuletos, vidas, curación, bancos, mochila con reto, tienda de PejeCoins, el Eterno, controles táctiles y zona de pruebas. Se aplazan: las zonas restantes y el final, las demás habilidades, el pachislot, las mejoras de la Pluma, la Línea Fantasma y la música completa. La lista vigente está en `docs/idea.md`.
 
 ## Diferencias con el diseño original
 
@@ -119,6 +119,7 @@ Entran: inicio con nombre y personaje, cinemáticas, La Celda y Las Raíces comp
 |---|---|---|
 | Jefes de Las Raíces | Reina Cucaracha y mini jefe | Sin jefes, por decisión del 1-nov-2026 |
 | Fallar el reto de la mochila | Recuperar la mitad | Se pierde todo: una sola oportunidad (17-oct-2026) |
+| Reto de la mochila | Una pregunta con examen | Tres preguntas por intento; se recupera con al menos dos aciertos |
 | Curación | Con café | Con Inspiración |
 | Menú | Continuar y Nueva partida | Jugar y cuatro ranuras |
 | Modos de recursos | Bajo, Medio y Alto | Automático, Bajo y Alto |

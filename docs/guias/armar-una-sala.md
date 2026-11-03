@@ -117,9 +117,9 @@ y recursos») y, en `docs/arte-y-rendimiento.md`, «Arte de zona». Modelo real:
 
     ```
     {
-      "id": "sala-celda-1",
-      "que": "La Celda (celda_1) es la primera sala del juego: ...",
-      "comprobacion": "herramientas/guiones/contenido/celda_salto.guion;herramientas/guiones/contenido/celda_hueco.guion",
+      "id": "sala-<id>",
+      "que": "...",
+      "comprobacion": "herramientas/guiones/contenido/<id>_puertas.guion",
       "pasa": false
     }
     ```
@@ -129,6 +129,11 @@ y recursos») y, en `docs/arte-y-rendimiento.md`, «Arte de zona». Modelo real:
     ```
     escena res://contenido/salas/celda/celda_1.tscn
     2 mover_derecha press
+    208 saltar press
+    240 saltar release
+    562 saltar press
+    594 saltar release
+    676 mover_derecha release
     690 interactuar press
     692 interactuar release
     fin 830

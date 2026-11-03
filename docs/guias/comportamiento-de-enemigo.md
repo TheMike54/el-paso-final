@@ -39,7 +39,7 @@ Además:
 En `herramientas/salas/comportamientos/volador.gd`, el script de datos se precarga y `_ready()` convierte
 `datos` al tipo propio. El núcleo ya eligió y asignó ese recurso antes de agregar el comportamiento.
 Si ni el ejemplar ni la ficha aportan datos, `datos_por_omision()` devuelve una instancia con los valores
-por omisión de `datos_volador.gd`:
+por omisión de `datos_volador.gd` (extracto: se omiten las demás variables y el resto de `actuar()`):
 
 ```gdscript
 extends ComportamientoEnemigo

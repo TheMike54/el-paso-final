@@ -31,7 +31,7 @@ Consecuencia práctica: quien publique un juego derivado del código debe reempl
 Hay casos sin definir:
 
 - Los textos de diálogo viven dentro de fichas `.tres`, y las imágenes se nombran desde escenas `.tscn`: el formato es de código, pero el texto y el arte siguen fuera de MIT.
-- `docs/uso-de-ia.md` no dice bajo qué términos están la documentación y este manual. Sin comprobar: si les aplica MIT.
+- La documentación y el manual tienen licencia MIT, salvo `docs/manual/diseno.md` y `docs/manual/recorrido.md`, que tienen todos los derechos reservados (`docs/uso-de-ia.md`).
 - El nombre del juego no aparece en la licencia. Sin comprobar: si tiene alguna protección.
 
 ## Recursos de terceros

@@ -24,7 +24,7 @@ Las herramientas que sí vienen: `herramientas/generar_efectos.gd` (hojas de efe
 
 ## Atlas del jugador
 
-**Hecho.** En el repo están el atlas (`nucleo/arte/jugador_hombre/atlas_0.png`) y su `SpriteFrames` (`nucleo/arte/jugador_hombre/jugador_hombre.tres`), y funcionan. Corregir o agregar animaciones no se puede hacer desde un clon con las herramientas del repo, porque el script que empaca el atlas lee las hojas originales.
+**Hecho.** En el repo están el atlas (`nucleo/arte/jugador_hombre/atlas_0.png`) y su `SpriteFrames` (`nucleo/arte/jugador_hombre/jugador_hombre.tres`), y funcionan. Reempacar el atlas desde las hojas originales no se puede hacer desde un clon: el script que lo empaca lee esas hojas y no está en el repo. Sí se pueden modificar animaciones en el `SpriteFrames` del editor y agregar cuadros de otra imagen; `generar_sprites.gd` también permite fijar velocidad, bucle y duración desde un JSON propio.
 
 **Qué sí se puede hacer.** `herramientas/generar_sprites.gd` escribe el `.tres` desde un JSON externo, con `--atlas=<json>`. El JSON no se versiona, pero su forma se lee en ese script:
 

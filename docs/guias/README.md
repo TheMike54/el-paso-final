@@ -39,7 +39,7 @@ Piezas y términos que las guías nombran sin explicar:
 | Carga, ranura | La carga es cuánto pueden costar juntos los amuletos puestos (3 al empezar); un útil ocupa una ranura y no gasta carga (`docs/contrato.md`, «Amuletos y útiles») |
 | Guion | Entradas por cuadro y estado esperado para correr el juego sin ventana (`docs/guiones.md`); no es un script de GDScript |
 
-Los fragmentos de código de las guías son copias de archivos reales del repo: ante una diferencia manda el archivo.
+Los fragmentos de código de las guías son copias, extractos o resúmenes de archivos reales del repo (los recortados lo dicen en su texto): ante una diferencia manda el archivo.
 
 Para entender el juego sin contexto previo: `docs/manual/README.md`. Fuera de estas guías, la referencia está en `docs/contrato.md` (qué ofrece cada bloque; al inicio, la tabla de sus archivos por tema), `docs/jugador.md`,
 `docs/guiones.md`, `docs/pruebas.md` y `docs/errores/`.
