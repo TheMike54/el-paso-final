@@ -405,6 +405,10 @@ func _ready() -> void:
 	_caso("Creditos muestra el boton de privacidad con la URL publica", privacidad.is_visible_in_tree()
 		and Configuracion.URL_PRIVACIDAD.begins_with("https://")
 		and Configuracion.URL_PRIVACIDAD.ends_with("/docs/privacidad.md"))
+	config.avisar_sin_navegador()
+	var sin_navegador: Label = config.get_node(^"PanelCreditos/Centro/Columna/SinNavegador") as Label
+	_caso("sin navegador, Creditos muestra la direccion de la politica", sin_navegador.is_visible_in_tree()
+		and sin_navegador.text.contains(Configuracion.URL_PRIVACIDAD))
 	menu.notification(NOTIFICATION_WM_GO_BACK_REQUEST)
 	_caso("Atras en Creditos vuelve a la lista", lista.visible)
 

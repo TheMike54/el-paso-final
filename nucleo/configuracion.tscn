@@ -347,6 +347,9 @@ layout_mode = 2
 text = "El Paso Final
 Desarrollo de Aplicaciones Móviles Nativas, ESCOM-IPN
 
+Desarrollado por (usuarios de GitHub):
+TheMike54, IanRey692 y VictorMoreno-Code
+
 Hecho con Godot Engine (licencia MIT): godotengine.org/license"
 horizontal_alignment = 1
 autowrap_mode = 3
@@ -356,3 +359,10 @@ custom_minimum_size = Vector2(0, 108)
 layout_mode = 2
 size_flags_horizontal = 4
 text = "Política de privacidad"
+
+[node name="SinNavegador" type="Label" parent="PanelCreditos/Centro/Columna"]
+visible = false
+custom_minimum_size = Vector2(800, 0)
+layout_mode = 2
+horizontal_alignment = 1
+autowrap_mode = 3

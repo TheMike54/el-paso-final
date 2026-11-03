@@ -24,6 +24,8 @@ const AVISO_LUCES: String = "Luces 2D pide Recursos en alto."
 const AVISO_LUCES_EN_PARTIDA: String = "Luces 2D pide Recursos en alto, y Recursos se cambia desde el menú principal."
 ## Pagina publica de la politica de privacidad (docs/privacidad.md); Google Play pide enlazarla dentro de la app.
 const URL_PRIVACIDAD: String = "https://github.com/TheMike54/el-paso-final/blob/main/docs/privacidad.md"
+## Aviso si el telefono no tiene navegador (el S50 sin Chrome): la direccion queda a la vista para copiarla.
+const AVISO_SIN_NAVEGADOR: String = "No hay un navegador para abrir el enlace. La política está en:\n%s"
 
 ## Archivo de los ajustes: publico para que la prueba trabaje con el suyo.
 var ruta_ajustes: String = Ajustes.RUTA
@@ -105,6 +107,7 @@ var _boton_de: Dictionary[Seccion, Button] = {}
 @onready var _panel_creditos: Control = $PanelCreditos as Control
 @onready var _volver_creditos: Button = $PanelCreditos/Arriba/Volver as Button
 @onready var _privacidad: Button = $PanelCreditos/Centro/Columna/Privacidad as Button
+@onready var _sin_navegador: Label = $PanelCreditos/Centro/Columna/SinNavegador as Label
 
 
 func _ready() -> void:
@@ -477,12 +480,20 @@ func _mando_por_omision() -> void:
 
 
 func _abrir_creditos() -> void:
+	_sin_navegador.visible = false
 	_mostrar(Seccion.CREDITOS)
 	Tema.dar_foco(_volver_creditos)
 
 
+## Muestra la direccion de la politica cuando no se pudo abrir el navegador. Publico para la prueba.
+func avisar_sin_navegador() -> void:
+	_sin_navegador.text = AVISO_SIN_NAVEGADOR % URL_PRIVACIDAD
+	_sin_navegador.visible = true
+
+
 # Abre la politica en el navegador del sistema (OS.shell_open, implementado en Android); el juego sigue abierto.
+# Sin navegador, Android no resuelve el enlace y devuelve error: entonces se muestra la direccion.
 func _abrir_privacidad() -> void:
 	var error: Error = OS.shell_open(URL_PRIVACIDAD)
 	if error != OK:
-		push_warning("No se pudo abrir la politica de privacidad: %s" % error_string(error))
+		avisar_sin_navegador()

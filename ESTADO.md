@@ -27,7 +27,9 @@
 - 2-nov, Las Raíces: 2 amuletos, Patas (`raices_4`) y Caparazón (oculto de `raices_6`, junto a un coleccionable; costo 2 y valor 30 para probar; su ficha entra con #25); Caché fuera de la v1; Suela, Log y Cartera no se consiguen en la v1 y se definen después de publicar; la tienda de `raices_3` vende la brújula. Espinas turquesa, firme. Sin banco donde está el Eterno en La Celda: el único está en `celda_1`.
 - 2-nov, Google Play: público solo de 18 años en adelante; la ficha habla solo de La Celda (la versión 1 sale sin Las
   Raíces); el gráfico destacado no muestra el letrero de la escuela. La política y su botón van directo a `main` por
-  decisión de la persona, sin cambiar la regla «una rama por PR» del `CLAUDE.md`.
+  decisión de la persona, sin cambiar la regla «una rama por PR» del `CLAUDE.md`. Créditos nombra al equipo por sus
+  usuarios de GitHub, no por nombre (excepción decidida a «sin datos de una persona»); sin navegador, el botón de
+  privacidad muestra la dirección.
 
 ## Pruebas manuales pendientes
 
