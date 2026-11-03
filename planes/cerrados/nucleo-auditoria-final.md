@@ -1,4 +1,4 @@
-ACTIVO (escrito y aprobado por la persona el 1-nov-2026, para la tanda autónoma de esa noche)
+CERRADO (2-nov-2026) (escrito y aprobado por la persona el 1-nov-2026, para la tanda autónoma de esa noche)
 
 # Auditoría final antes de la Play Store
 

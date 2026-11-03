@@ -1,4 +1,4 @@
-ACTIVO (escrito el 2-nov-2026, aprobado por la persona ese día; lo cierra el PR #11)
+CERRADO (2-nov-2026) (escrito el 2-nov-2026, aprobado por la persona ese día; lo cierra el PR #11)
 
 # Auditoría final de documentación antes de abrir Las Raíces
 

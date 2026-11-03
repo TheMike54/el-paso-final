@@ -1,4 +1,4 @@
-ACTIVO (escrito el 29-oct-2026; aprobado por la persona el 29-oct-2026 con D1, D2 y D8 como los recomienda Claude.
+CERRADO (2-nov-2026) (escrito el 29-oct-2026; aprobado por la persona el 29-oct-2026 con D1, D2 y D8 como los recomienda Claude.
 Las demás decisiones, al empezar su grupo)
 
 # Cierre de la auditoría de código: base de enemigos, amuletos, jefes, mapa por zonas y arquitectura

@@ -3,10 +3,10 @@
 ## Ahora (2-nov-2026)
 
 - Rama `feature/nucleo-cierre-auditoria`, solo en local, sale de `9f67615`. Último commit con la auditoría final de
-  documentación (`planes/activos/herramientas-auditoria-arranque.md`): 209 de 209 guiones, `fallos=0`, `rotos=0`.
+  documentación (`planes/cerrados/herramientas-auditoria-arranque.md`): 209 de 209 guiones, `fallos=0`, `rotos=0`.
 - PR #11 (`feature/contenido-celda`): abierto y aprobado sobre `9f67615`; el push de esta rama le quita la aprobación. Issue
   #10: ya reportó, falta responder (lista abajo). Issue #9 (tablet): sin reporte.
-- Auditoría final (`planes/activos/nucleo-auditoria-final.md`): reporte aprobado y pasos 7 y 9 hechos (todos los hallazgos); ver «Avance» del plan.
+- Auditoría final (`planes/cerrados/nucleo-auditoria-final.md`): terminada; ver «Avance» del plan. El AAB firmado sigue en la lista de abajo.
 - Sigue, en orden: (1) subir todo a la rama del #11 (avance rápido), ponerle `Closes #13`, quitarle `Closes #9`, conseguir de nuevo la aprobación y fusionar; (2) AAB firmado y
   prueba cerrada en Play. La cuenta de Play espera la revisión de identidad de Google.
 - Ruleset `main`: solo por PR, 1 aprobación, `validar` en verde, Squash and merge. Un push nuevo quita la aprobación.
@@ -28,9 +28,9 @@ Se citan y se arreglan en el PR siguiente (decisión de la persona). Falta publi
   coleccionable es Azulito, a unos 64 px; su animación sigue pendiente. El parry suena (falta el archivo;
   `FichaSonidos.parry` ya lo toca). Espinas de la sala 4 a Las Raíces. Los guiones `celda_*` se reducen a uno de ruta por
   sala más los de `docs/errores/`. El color del foco va con el pulido de las páginas. `chore/android-export` se borra.
-- 30-oct, tras probar en el S50: decisiones y porqués en `planes/activos/nucleo-cierre-auditoria.md`, «Tras las pruebas en el S50». Barra de Inspiración sin
+- 30-oct, tras probar en el S50: decisiones y porqués en `planes/cerrados/nucleo-cierre-auditoria.md`, «Tras las pruebas en el S50». Barra de Inspiración sin
   cambios; el pizarrón de curar va en Las Raíces, antes del primer enemigo, y sus salas previas llevan `botones_ocultos`.
-- 1-nov: decisiones de la persona en `planes/activos/nucleo-auditoria-final.md`. Patas de Cucaracha cuesta 1 y da 1,25.
+- 1-nov: decisiones de la persona en `planes/cerrados/nucleo-auditoria-final.md`. Patas de Cucaracha cuesta 1 y da 1,25.
 - 1-nov, menús: 5 útiles con 4 cupos, solo poner o quitar; Gato de la Suerte pasa de amuleto a útil. Plan: `nucleo-menus-pausa`, por aprobar. El arte de 7 amuletos va en el tablero (Caché no se pinta). 2-nov: el diseño del juego será público, con el manual en `docs/manual/`. Antes del manual: guías completas de todo lo construido, con el método que funcionó, cinemáticas incluidas.
 - 2-nov, Las Raíces: 2 amuletos, Patas (`raices_4`) y Caparazón (oculto de `raices_6`, junto a un coleccionable; costo 2 y valor 30 para probar; su ficha entra con #25); Caché fuera de la v1; Suela, Log y Cartera no se consiguen en la v1 y se definen después de publicar; la tienda de `raices_3` vende la brújula. Espinas turquesa, firme. Sin banco donde está el Eterno en La Celda: el único está en `celda_1`.
 
@@ -44,8 +44,7 @@ Se citan y se arreglan en el PR siguiente (decisión de la persona). Falta publi
 
 ## Planes activos
 
-- `nucleo-auditoria-final`: el plan en curso. `nucleo-cierre-auditoria`: hecho; lo cierra el PR. `nucleo-arreglos-qa-6`: lo
-  cierra la prueba del QA de las issues del #11. `herramientas-utilidad-pruebas`: el paso 13 de la auditoría del 17-oct, después de Play. `nucleo-menus-pausa`: por aprobar. `herramientas-auditoria-arranque`: hecho; lo cierra el PR.
+- `nucleo-arreglos-qa-6`: lo cierra la prueba del QA de las issues del #11. `herramientas-utilidad-pruebas`: el paso 13 de la auditoría del 17-oct, después de Play. `nucleo-menus-pausa`: por aprobar.
 
 ## Conocido, sin arreglar
 
