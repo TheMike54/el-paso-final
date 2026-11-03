@@ -53,7 +53,6 @@
 - Guiones intermitentes: `habilidad_caida_en_picada_desde_suelo` y `sala_puerta_b_pared`.
 - `prueba_sonido` con ventana falla en «un paso suena por play_stream», también en `e4378ca`; sin ventana y en el CI pasa.
 
-
 ## Decisiones abiertas (la persona)
 
 - Ninguna.

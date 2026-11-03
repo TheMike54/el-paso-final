@@ -54,7 +54,6 @@ Alternativa sin empacador: abrir el `SpriteFrames` en el editor y sumar cuadros 
 
 - La campaña termina en un hueco provisional de `celda_4`, y no hay enemigos en `contenido/`.
 - Solo español y solo Android; la PC sirve para desarrollar.
-- El primer arranque en el teléfono de gama baja pasa unos 12 s en negro. No lleva máscara de carga.
 - Dormido en el banco, el jugador animado se ve sentado en el aire.
 - En la PC, Espacio es `ui_accept` y `atacar`: cerrar un menú con Espacio también ataca.
 - Corazones y barra del HUD siguen en gris, sin arte final.

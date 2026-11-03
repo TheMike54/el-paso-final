@@ -12,7 +12,7 @@ Hoy la campaña es una sola zona, La Celda, con cinco salas y sin enemigos. No t
 
 | Paso | Qué pasa | Dónde |
 |---|---|---|
-| Arranque | Sin logo del motor: negro mientras carga y después el menú. En el teléfono de gama baja son unos 12 s | `nucleo/arranque.gd` |
+| Arranque | Sin logo del motor: negro mientras carga y después el menú | `nucleo/arranque.gd` |
 | Menú | Fondo en video de ESCOM de noche, con Jugar, Configuración y, con el modo desarrollador, Zona de pruebas | `nucleo/menu.tscn` |
 | Ranuras | Cuatro. Una con partida continúa en su último banco; una dañada o de otra versión no se abre | `nucleo/ranuras.gd`, `nucleo/menu.gd` |
 | Partida nueva | Pide un nombre de hasta 12 caracteres, con letras, números y espacios. La elección de personaje está apagada: solo el hombre tiene arte | `nucleo/nueva_partida.gd` |
