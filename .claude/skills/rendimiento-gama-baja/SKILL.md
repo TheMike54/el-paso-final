@@ -24,8 +24,8 @@ viven en `docs/contrato.md` («Configuración del proyecto») y `docs/arte-y-ren
   (`tutorials/performance/general_optimization.rst:39`).
 - Decir si limita la CPU o la GPU: el cuadro dura lo que tarda el más lento, y optimizar el otro no sube nada
   (`tutorials/performance/general_optimization.rst:289`). Aquí se prueba apagando capas una por una en la sala
-  de arte (`herramientas/salas/sala_arte.gd`); así se vio que una niebla translúcida grande costaba ~11 FPS
-  (`docs/pruebas.md`, «Sala de arte (rendimiento)»).
+  de arte (`herramientas/salas/sala_arte.gd`); las mediciones registradas están en
+  `docs/arte-y-rendimiento.md`, «Mediciones».
 - Rendimiento se mide en el S50 y en el S20; lo funcional, en uno
   (`tutorials/performance/general_optimization.rst:74`).
 

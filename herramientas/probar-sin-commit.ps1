@@ -4,6 +4,9 @@
 $hook = Join-Path (Split-Path -Parent $PSScriptRoot) '.claude\hooks\sin-commit.ps1'
 
 $bloquea = @(
+    'git -C "carpeta con espacios" push',
+    'git -c "demo.valor=texto con espacios" merge main',
+    'git -C "carpeta con espacios" tag v1',
     'git commit -m x',
     'git -C . commit --allow-empty -m x',
     'git -c user.name=x commit -m y',

@@ -9,12 +9,12 @@ skill `funcionalidad` (`.claude/skills/funcionalidad/SKILL.md`); esta receta lo 
 1. Leer `ESTADO.md` (rama, PR en curso, bloqueos) y el `CLAUDE.md` y el `funciones.json` del bloque donde se trabaja
    (`nucleo/`, `contenido/`, `interfaz/`, `herramientas/`, `mapa/`).
 2. Crear la rama desde `main`; nunca se edita en `main`. La rama la crea la persona: el asistente da el comando
-   (skill `funcionalidad`, paso 4). Nombres y reglas de ramas, commits y PR: `CLAUDE.md`, «Reglas de este
+   (skill `funcionalidad`, paso 3). Nombres y reglas de ramas, commits y PR: `CLAUDE.md`, «Reglas de este
    proyecto».
 3. Elegir una funcionalidad: la primera entrada con `"pasa": false` del `funciones.json` del bloque, o la que la
    persona nombre; si espera hardware o firma, se anota como bloqueo en `ESTADO.md` y se toma la siguiente (skill
    `funcionalidad`, paso 1). Una a la vez.
-4. Planear. Cambio chico: el plan en pocas líneas, en la conversación (skill `funcionalidad`, paso 3). Más de un
+4. Planear. Cambio chico: el plan en pocas líneas, en la conversación (skill `funcionalidad`, paso 4). Más de un
    archivo o más de una sesión: archivo en `planes/activos/<bloque>-<tema>.md`, con su estado en la primera línea y
    aprobado por la persona antes de programar (`CLAUDE.md`, «Cómo se trabaja»). Al terminar la funcionalidad, en
    el mismo cambio, el plan queda `CERRADO` y pasa a `planes/cerrados/` (skill `funcionalidad`, paso 9).
@@ -56,7 +56,7 @@ skill `funcionalidad` (`.claude/skills/funcionalidad/SKILL.md`); esta receta lo 
 - No se leen ni escriben los archivos de credenciales y claves que lista `CLAUDE.md`, «Reglas de este proyecto».
 - No se mueven ni borran escenas, recursos o imágenes fuera del editor (`CLAUDE.md`, «Entorno y trampas»).
 - No se sube texto dirigido a una persona ni avisos de trabajo sin terminar, salvo en `ESTADO.md`,
-  `funciones.json` y los planes.
+  `funciones.json`, los planes y los estados de `docs/manual/`.
 
 ## Si algo falla
 

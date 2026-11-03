@@ -12,11 +12,11 @@ Una a la vez. No se empieza la siguiente hasta que esta tiene su evidencia y su 
    bloqueo y se toma la siguiente). Decir cuál es y cuál es su `"comprobacion"`.
 2. **Contexto.** Si usa o cambia algo que otro bloque ve (autoloads, señales, forma de una sala, guardado),
    leer `docs/contrato.md` (y el archivo del tema que toque, según su tabla inicial).
-3. **Plan.** Cambio chico: el plan en pocas líneas en la conversación. Más de un archivo o más de una sesión:
+3. **Rama.** `git branch --show-current`. Si es `main`, dar a la persona el comando para crear la rama
+   (`git switch -c feature/<bloque>-<desc>`) y esperar a que la cree.
+4. **Plan.** Cambio chico: el plan en pocas líneas en la conversación. Más de un archivo o más de una sesión:
    `planes/activos/<bloque>-<tema>.md` con `ACTIVO` en la primera línea, hitos que se puedan comprobar con un
    comando, y la aprobación de la persona antes de programar.
-4. **Rama.** `git branch --show-current`. Si es `main`, dar a la persona el comando para crear la rama
-   (`git switch -c feature/<bloque>-<desc>`) y esperar a que la cree.
 5. **Programar.** Antes del primer `.gd`, usar la skill `gdscript4` (incluye la cabecera de cada `.gd` nuevo). Las
    escenas heredan; no se copian archivos con UID.
 6. **Comprobar.** Desde la raíz: `.\herramientas\validar.ps1` (también importa y genera los `.gd.uid`). Después,
@@ -33,7 +33,7 @@ Una a la vez. No se empieza la siguiente hasta que esta tiene su evidencia y su 
    ejecutados: `docs/pruebas.md`. Herramienta de IA nueva o recurso ajeno: `docs/uso-de-ia.md`. `ESTADO.md` solo si cambió la
    rama, el PR, un bloqueo o una decisión abierta. Plan terminado: `CERRADO` y a `planes/cerrados/`.
 10. **Releer.** Cada `.md` tocado, completo: sin texto dirigido a una persona ni avisos de trabajo sin terminar
-    fuera de `ESTADO.md`, `funciones.json` y los planes.
+    fuera de `ESTADO.md`, `funciones.json`, los planes y los estados de `docs/manual/`.
 11. **Entregar.** Con la funcionalidad terminada y probada, el bloque exacto para la persona: `git add` de rutas
     concretas (con los `.gd.uid` y los documentos cambiados desde el último commit, como `ESTADO.md`) y
     `git commit -m "feat: ..."` en inglés, sin líneas de atribución. Si cierra el PR, también el título y la
@@ -41,5 +41,5 @@ Una a la vez. No se empieza la siguiente hasta que esta tiene su evidencia y su 
     qué herramienta de IA se usó y en qué parte. El bloque se da solo al cerrar algo relevante: una funcionalidad
     terminada y probada, un arreglo completo o un plan aprobado. Pocos commits y grandes, nunca varios chicos
     seguidos ni uno solo al final. Los cambios de documentos (`ESTADO.md`, `docs/`, `funciones.json`, planes en
-    curso) no van solos, salvo un plan recién aprobado. En una sesión autónoma, los bloques se dejan numerados en el
-    archivo que indique `CLAUDE.local.md`.
+    curso) no van solos, salvo un plan recién aprobado. En una sesión autónoma, los bloques se dejan numerados al
+    final del archivo que indique `CLAUDE.local.md`; si no hay uno, en el chat.

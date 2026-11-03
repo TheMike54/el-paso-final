@@ -14,8 +14,12 @@ $ghGrupos = @('pr', 'issue', 'release', 'repo', 'label', 'workflow', 'run', 'sec
 $ghLectura = @('view', 'list', 'diff', 'checks', 'status', 'watch')
 
 # Sin comillas y partido por espacios y separadores de shell: basta para ver "git ... <subcomando>".
-$fichas = @(($orden -replace '["'']', ' ') -split '[\s;|&()`{}]+' | Where-Object { $_ })
+$lecturas = @(
+    , @(($orden -replace '["'']', ' ') -split '[\s;|&()`{}]+' | Where-Object { $_ })
+    , @([regex]::Matches($orden, '(?:"[^"]*"|''[^'']*''|[^\s;|&()`{}"''])+') | ForEach-Object { $_.Value -replace '["'']', '' })
+)
 $motivo = $null
+foreach ($fichas in $lecturas) {
 for ($i = 0; $i -lt $fichas.Count -and -not $motivo; $i++) {
     $nombre = (($fichas[$i] -replace '\\', '/').Split('/')[-1]) -replace '\.exe$', ''
     if ($nombre -ne 'git' -and $nombre -ne 'gh') { continue }
@@ -38,8 +42,10 @@ for ($i = 0; $i -lt $fichas.Count -and -not $motivo; $i++) {
         elseif ($sub -eq 'api' -and $orden -match '(?i)(\s-X\s*|--method[= ]\s*)["'']?(POST|PUT|PATCH|DELETE)|\s(-f|-F|--field|--raw-field|--input)\b') { $motivo = 'gh api con escritura' }
     }
 }
+}
 if ($motivo) {
     [Console]::Error.WriteLine("Bloqueado por el repo: '$motivo' lo ejecuta la persona, no el asistente. Entrega el bloque exacto de comandos para que lo corra. Si solo querias escribir o buscar ese texto, usa las herramientas de edicion o de busqueda.")
     exit 2
 }
 exit 0
+
