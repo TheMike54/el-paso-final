@@ -2,13 +2,15 @@
 
 ## Ahora (2-nov-2026)
 
-- `main` en `182e1cb`: PR #11 fusionado; cerró #10 y #13. Issue #9 (tablet): sin reporte, sigue abierta.
-- En `main`, sin rama: política de privacidad (`docs/privacidad.md`) y el botón «Política de privacidad» en Créditos
-  (`creditos-privacidad`, falta la prueba en el teléfono). Guiones 209 de 209, `fallos=0`, `rotos=0`.
-- Google Play: app creada, clasificación de contenido completa, ficha y Data safety llenos; faltan la URL de la
-  política (existe al subir este cambio) y el AAB.
-- Sigue, en orden: (1) probar el botón en el teléfono; (2) AAB firmado de la versión 1 desde `main`, sin Las Raíces, y
-  prueba cerrada en Play; (3) avisar a Ian que ya puede fusionar #18.
+- `main` en `1e2c94c`: política de privacidad y su botón en Créditos (`creditos-privacidad`: falta confirmar en el S50
+  que se ven el equipo y la dirección sin navegador). Issue #9 (tablet): sin reporte, sigue abierta.
+- Google Play: prueba cerrada Alpha publicada el 2-nov-2026 a las 22:59 con el AAB de la versión 1 (`versionCode` 1,
+  `0.1.0`, desde `1e2c94c`), solo México. Testers: 3 de 12; el profesor dará la lista del grupo; los 14 días para pedir
+  producción cuentan desde que haya 12 inscritos. La segunda entrega (9-nov) es una actualización: `versionCode` 2 o más.
+- Rama `chore/play-release`: workflow `Release` manual y CI endurecido (`planes/activos/herramientas-publicar-play.md`).
+  Antes de usarlo: entornos `firma` y `play` y sus secrets (`docs/guias/publicar.md`). Sin subir por la API mientras
+  haya una revisión abierta.
+- Sigue: enlace de la prueba a los testers; avisar a Ian que puede fusionar #18; cerrar #14.
 - Ruleset `main`: PR, 1 aprobación, `validar` en verde, Squash and merge; el administrador del repo puede saltárselo.
 
 ## Decidido

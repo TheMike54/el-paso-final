@@ -1,0 +1,15 @@
+# Opens a weekly PR when a GitHub Action used here has a new version. It never merges or commits to main.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    # A new version waits 7 days before Dependabot proposes it: time for a compromised release to be pulled.
+    cooldown:
+      default-days: 7
+    groups:
+      acciones:
+        patterns: ["*"]
+    commit-message:
+      prefix: "chore"

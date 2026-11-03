@@ -5,6 +5,10 @@ on:
     branches: [main]
   push:
     branches: [main]
+  # Weekly run: catches a runner image or Godot download that breaks without waiting for a PR.
+  schedule:
+    - cron: '0 12 * * 1'
+  workflow_dispatch:
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -18,9 +22,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Commit messages without assistant attribution
         shell: bash
@@ -41,7 +46,17 @@ jobs:
             exit 1
           fi
 
-      - uses: chickensoft-games/setup-godot@v2
+      - name: Document links and generated tables
+        shell: pwsh
+        run: |
+          ./herramientas/revisar-enlaces.ps1
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+          ./herramientas/generar-tablas.ps1
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+          git diff --exit-code -- docs/manual/tablas-generadas.md
+          if ($LASTEXITCODE -ne 0) { Write-Output '::error::docs/manual/tablas-generadas.md is out of date: run herramientas/generar-tablas.ps1'; exit 1 }
+
+      - uses: chickensoft-games/setup-godot@ac93246ea68518a384c1c280a496e5989341f2f6 # v2.4.3
         with:
           version: 4.7.2
           use-dotnet: false

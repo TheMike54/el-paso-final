@@ -29,8 +29,10 @@ Validador, puerto de depuración, guiones, revisión del entorno y hooks: lo que
   nueva va a `docs/validador.md` y a su entrada, no aquí.
 - Los `.ps1`, además de lo que dice el raíz: sin `$ErrorActionPreference = 'Stop'` alrededor de un ejecutable.
 - El detalle de `validar.ps1` va a `.godot/validar.log`.
-- El CI corre la misma validación que `validar.ps1` y además todos los guiones, los mensajes de commit y los
-  archivos locales: si cambia la validación de uno, cambia la del otro en el mismo PR.
+- El CI (`ci.yml`, job `validar`) corre la misma validación que `validar.ps1` y además todos los guiones, los mensajes
+  de commit, los archivos locales, `revisar-enlaces.ps1` y que `generar-tablas.ps1` no cambie su archivo: si cambia la
+  validación de uno, cambia la del otro en el mismo PR. La publicación va aparte, en `release.yml`
+  (`docs/guias/publicar.md`).
 - El hook `.claude/hooks/sin-commit.ps1` es más estricto que la regla escrita: también frena `git revert`,
   `cherry-pick`, `am`, `reset --hard` y `clean` sin `-n`. Si bloquea una de esas órdenes, no es un fallo del hook.
   Su batería de órdenes simuladas es `herramientas/probar-sin-commit.ps1`.
