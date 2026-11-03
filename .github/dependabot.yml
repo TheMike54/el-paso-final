@@ -5,6 +5,9 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    # A new version waits 7 days before Dependabot proposes it: time for a compromised release to be pulled.
+    cooldown:
+      default-days: 7
     groups:
       acciones:
         patterns: ["*"]

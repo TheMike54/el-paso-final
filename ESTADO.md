@@ -4,12 +4,13 @@
 
 - `main` en `1e2c94c`: política de privacidad y su botón en Créditos (`creditos-privacidad`: falta confirmar en el S50
   que se ven el equipo y la dirección sin navegador). Issue #9 (tablet): sin reporte, sigue abierta.
-- Google Play: AAB de la versión 1 (`versionCode` 1, desde `1e2c94c`) en la prueba cerrada, enviada a revisión el
-  2-nov-2026. Testers: 3 de 12; el profesor dará la lista del grupo. La segunda entrega (9-nov) es una actualización.
+- Google Play: prueba cerrada Alpha publicada el 2-nov-2026 a las 22:59 con el AAB de la versión 1 (`versionCode` 1,
+  `0.1.0`, desde `1e2c94c`), solo México. Testers: 3 de 12; el profesor dará la lista del grupo; los 14 días para pedir
+  producción cuentan desde que haya 12 inscritos. La segunda entrega (9-nov) es una actualización: `versionCode` 2 o más.
 - Rama `chore/play-release`: workflow `Release` manual y CI endurecido (`planes/activos/herramientas-publicar-play.md`).
   Antes de usarlo: entornos `firma` y `play` y sus secrets (`docs/guias/publicar.md`). Sin subir por la API mientras
   haya una revisión abierta.
-- Sigue: tras la aprobación de Google, enlace a los testers y avisar a Ian que puede fusionar #18.
+- Sigue: enlace de la prueba a los testers; avisar a Ian que puede fusionar #18; cerrar #14.
 - Ruleset `main`: PR, 1 aprobación, `validar` en verde, Squash and merge; el administrador del repo puede saltárselo.
 
 ## Decidido
