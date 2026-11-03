@@ -1,0 +1,17 @@
+# Pegado a la masa bajo el alero (x=1705, piso del tiro en y=1280). El salto ahi pega en el alero (y=1010): los pies no
+# pasan de y=1172 (sin el alero subirian a 1050) y vuelve al piso sin atorarse. Arriba con la raiz (cara en y=660) y al
+# final en el pasillo (y=560), sin dano ni cambio de sala.
+en 320 x 1705 2
+en 320 y 1280 2
+en 342 y 1172 4
+en 342 en_suelo false
+en 365 y 1280 2
+en 365 en_suelo true
+en 790 y 660 2
+en 790 valor Terreno/RaizMovil position:y 660 1
+x 1429 12
+y 560 2
+en_suelo true
+valor Jugador transicion 0
+senal /root/Eventos cambio_de_sala 0
+senal /root/Eventos jugador_danado 0

@@ -2,17 +2,20 @@ class_name Guardado
 extends RefCounted
 # Guarda y carga la partida como JSON con numero de version. Escribe con Archivo (a un temporal que
 # despues renombra), para que un cierre a la mitad nunca deje la partida danada. Al cargar
-# distingue partida valida, sin partida, archivo danado y version incompatible. Hay 4 ranuras de partida, cada una
-# con su copia de la ultima sesion para Restaurar.
+# distingue partida valida, sin partida, archivo danado, version incompatible y archivo que no se pudo abrir. Hay 4
+# ranuras de partida, cada una con su copia para Restaurar.
 
 enum Estado {
 	VALIDA,
 	VACIA,
 	DANADA,
 	INCOMPATIBLE,
+	ILEGIBLE,
 }
 
-const VERSION: int = 3
+## 4: la brujula paso de amuletos a utiles. Las partidas viejas no se conservan todavia: una de otra
+## version se da por incompatible, sin conversion.
+const VERSION: int = 4
 ## Partida de antes de las ranuras: se pasa una vez a la ranura 1 (migrar). Banco la usa como centinela.
 const RUTA: String = "user://partida.json"
 const RANURAS: int = 4
@@ -39,15 +42,31 @@ const ESQUEMA: Dictionary[String, int] = {
 	"nombre": TYPE_STRING,
 	"tiempo_jugado": TYPE_FLOAT,
 }
+## Campos numericos con su minimo: un valor menor no sale del juego, asi que la partida esta danada.
+const MINIMOS: Dictionary[String, float] = {
+	"vidas_maximas": 1.0,
+	"monedas": 0.0,
+	"tiempo_jugado": 0.0,
+}
 ## Campos agregados despues de la version 3, con su valor por omision como queda al leer el JSON (0.0 y no 0, Array
 ## sin tipo): una partida que no los tiene se rellena al cargar en vez de quedar danada. Cambiar la forma de un campo
-## que ya existe no va aqui: sube VERSION y lleva su funcion de conversion.
+## que ya existe no va aqui: sube VERSION (ver VERSION).
 const NUEVOS: Dictionary[String, Variant] = {
-	# Estaciones del viaje rapido abiertas (17-oct-2026).
+	# Estaciones del viaje rapido abiertas.
 	"estaciones": [],
-	# Botones de la pantalla ya ensenados por los pizarrones (17-oct-2026).
+	# Botones de la pantalla ya ensenados por los pizarrones.
 	"botones_ensenados": [],
+	# Carga para amuletos y utiles tenidos y puestos.
+	"carga_maxima": 3.0,
+	# Capacidad de Inspiracion: tres bloques si la partida no trae el campo.
+	"inspiracion_maxima": 33.0,
+	"utiles_tenidos": [],
+	"utiles_equipados": [],
 }
+
+# Rutas con un fallo de archivo fingido: leerlas o borrarlas da ese error. Solo lo usa la prueba, porque un archivo que
+# existe y no se abre no se puede montar igual en Windows, Linux y Android.
+static var _fallos: Dictionary[String, Error] = {}
 
 
 ## Lo que devuelve cargar(): el estado y, solo si es VALIDA, la partida.
@@ -58,6 +77,10 @@ class Resultado:
 	func _init(estado_leido: Estado, partida_leida: Dictionary = {}) -> void:
 		estado = estado_leido
 		partida = partida_leida
+
+	## Si la ranura no se abre: ni tiene una partida valida ni esta libre.
+	func cerrada() -> bool:
+		return estado != Estado.VALIDA and estado != Estado.VACIA
 
 
 static func guardar(partida: Dictionary, ruta: String) -> Error:
@@ -74,14 +97,24 @@ static func ruta_ranura(numero: int) -> String:
 	return FORMATO_RANURA % numero
 
 
-## Borra la partida, su temporal y su copia; sin archivo no es error.
+## Borra la partida, su temporal y su copia; sin archivo no es error. La partida va primero: si no se puede borrar,
+## su copia sigue ahi. Si la que falla es la copia, devuelve el error aunque la partida ya no este.
 static func borrar(ruta: String = RUTA) -> Error:
 	for archivo: String in [ruta, ruta + ".tmp", ruta + RESPALDO, ruta + RESPALDO + ".tmp"]:
 		if FileAccess.file_exists(archivo):
-			var error: Error = DirAccess.remove_absolute(archivo)
+			var error: Error = _fallos[archivo] if _fallos.has(archivo) else DirAccess.remove_absolute(archivo)
 			if error != OK:
 				return error
 	return OK
+
+
+## Finge que ruta no se puede leer ni borrar; solo para la prueba. olvidar_fallos lo deshace.
+static func fingir_fallo(ruta: String, error: Error) -> void:
+	_fallos[ruta] = error
+
+
+static func olvidar_fallos() -> void:
+	_fallos.clear()
 
 
 ## Pasa la partida de antes de las ranuras a una ranura, una sola vez: sin archivo viejo o con la ranura ya ocupada
@@ -93,7 +126,7 @@ static func migrar(desde: String, hacia: String) -> Error:
 
 
 ## Copia una partida valida al empezar una sesion, para Restaurar. Una danada o de otra version no se copia: asi la
-## copia buena de antes sigue sirviendo.
+## copia buena de antes sigue sirviendo. Si la copia falla, la anterior se queda: una vieja rescata mas que ninguna.
 static func respaldar(ruta: String) -> Error:
 	if cargar(ruta).estado != Estado.VALIDA:
 		return ERR_INVALID_DATA
@@ -115,17 +148,21 @@ static func restaurar(ruta: String) -> Error:
 static func cargar(ruta: String = RUTA) -> Resultado:
 	if not FileAccess.file_exists(ruta):
 		return Resultado.new(Estado.VACIA)
+	var texto: String = FileAccess.get_file_as_string(ruta)
+	# Existe y no se abre (otro proceso lo tiene, permisos): esta intacto y no se ofrece borrarlo.
+	if FileAccess.get_open_error() != OK or _fallos.has(ruta):
+		return Resultado.new(Estado.ILEGIBLE)
 	# JSON.new().parse no imprime errores, a diferencia de JSON.parse_string.
 	var json: JSON = JSON.new()
-	if json.parse(FileAccess.get_file_as_string(ruta)) != OK or typeof(json.data) != TYPE_DICTIONARY:
+	if json.parse(texto) != OK or typeof(json.data) != TYPE_DICTIONARY:
 		return Resultado.new(Estado.DANADA)
 	var sobre: Dictionary = json.data
 	var version: Variant = sobre.get("version")
 	if typeof(version) != TYPE_FLOAT:
 		return Resultado.new(Estado.DANADA)
 	var numero: float = version
-	# Mas nueva que el juego: no se sabe leer. Mas vieja: tambien, mientras no haya su funcion de conversion (hoy
-	# ninguna; la 3 es la primera que llego a la QA).
+	# Mas nueva que el juego: no se sabe leer. Mas vieja: tampoco; hasta terminar el juego no hay conversion (ver
+	# VERSION).
 	if numero != VERSION:
 		return Resultado.new(Estado.INCOMPATIBLE)
 	var contenido: Variant = sobre.get("partida")
@@ -135,7 +172,13 @@ static func cargar(ruta: String = RUTA) -> Resultado:
 	for campo: String in ESQUEMA:
 		if not partida.has(campo) or typeof(partida[campo]) != ESQUEMA[campo]:
 			return Resultado.new(Estado.DANADA)
+	for campo: String in MINIMOS:
+		if (partida[campo] as float) < MINIMOS[campo]:
+			return Resultado.new(Estado.DANADA)
 	if not completar(partida, NUEVOS):
+		return Resultado.new(Estado.DANADA)
+	var monto: Variant = (partida["mochila"] as Dictionary).get("monto")
+	if (monto is int or monto is float) and (monto as float) < 0.0:
 		return Resultado.new(Estado.DANADA)
 	# El banco va vacio (sin descansar) o con su sala y su id.
 	var banco: Dictionary = partida["banco"]

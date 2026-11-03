@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://k7a08bqsbqd0" path="res://nucleo/sala.gd" id="1_sala"]
 [ext_resource type="PackedScene" uid="uid://cantrdqq1cwy8" path="res://nucleo/puerta.tscn" id="2_puerta"]
-[ext_resource type="PackedScene" path="res://nucleo/coleccionable.tscn" id="9_coleccionable"]
+[ext_resource type="PackedScene" uid="uid://cktp3d3amsb88" path="res://nucleo/coleccionable.tscn" id="9_coleccionable"]
 
 [sub_resource type="RectangleShape2D" id="forma_suelo"]
 size = Vector2(2400, 80)

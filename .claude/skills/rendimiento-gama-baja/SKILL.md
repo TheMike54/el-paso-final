@@ -5,10 +5,9 @@ description: Rendimiento en teléfonos de gama baja (S50, S20) con el renderer C
 
 # Rendimiento en gama baja
 
-Cada cita se abrió en la documentación de Godot 4.7 en la línea citada y cada ejemplo se buscó en este repo;
-«Cómo se comprueba aquí» dice cómo revisarlo en adelante, no que ya se haya corrido. Lo que no esté aquí se busca con Grep en
-`$env:GODOT_DOCS` (ruta `tutorials/...`) antes de suponerlo. El presupuesto por sala y el límite de texturas
-viven en `docs/contrato.md` («Configuración del proyecto» y «Recursos»): esta skill remite a él, no lo repite.
+Citas a `$env:GODOT_DOCS` como `archivo:línea`; «Cómo se comprueba aquí» dice cómo revisar la regla. Lo que no esté
+aquí se busca con Grep ahí (ruta `tutorials/...`) antes de suponerlo. El presupuesto por sala y el límite de texturas
+viven en `docs/contrato.md` («Configuración del proyecto») y `docs/arte-y-rendimiento.md` («Recursos»): esta skill remite a él, no lo repite.
 
 ## Primero: medir en el S50 antes de optimizar
 
@@ -16,29 +15,34 @@ viven en `docs/contrato.md` («Configuración del proyecto» y «Recursos»): es
   quita. `tutorials/performance/cpu_optimization.rst:16`, `tutorials/performance/general_optimization.rst:240`.
 - Cómo: APK del preset «Desarrollo», que arranca con `--print-fps`, y `adb logcat -s godot`
   (`tutorials/scripting/logging.rst:33`). Los pasos y dónde anotar están en `docs/pruebas.md`, filas
-  «Rendimiento en el teléfono», «Recursos (sala de medición)» y «Sala de arte (rendimiento)».
+  «Rendimiento en el teléfono», «Recursos (sala de medición)» y «Sala de arte (rendimiento)», y la sección
+  «Medición de rendimiento» (la herramienta que mide una sala con y sin cada capa).
+- Medir A/B: con y sin lo sospechoso, en la misma sala y el mismo teléfono. No suponer que «el límite es el relleno»:
+  hay mediciones en contra en `docs/componentes.md` (fila de `MonedasSueltas`) y `docs/arte-y-rendimiento.md`
+  («Mediciones», la del 26-oct).
 - Decir qué tipo de lentitud es: FPS bajos constantes, picos (tirones) o carga lenta
   (`tutorials/performance/general_optimization.rst:39`).
 - Decir si limita la CPU o la GPU: el cuadro dura lo que tarda el más lento, y optimizar el otro no sube nada
   (`tutorials/performance/general_optimization.rst:289`). Aquí se prueba apagando capas una por una en la sala
-  de arte (`herramientas/salas/sala_arte.gd`); así se vio que una niebla translúcida grande costaba ~11 FPS
-  (`docs/pruebas.md`, «Sala de arte (rendimiento)»).
+  de arte (`herramientas/salas/sala_arte.gd`); las mediciones registradas están en
+  `docs/arte-y-rendimiento.md`, «Mediciones».
 - Rendimiento se mide en el S50 y en el S20; lo funcional, en uno
   (`tutorials/performance/general_optimization.rst:74`).
 
 ## Convenciones que el repo ya sigue
 
-Dibujo y GPU (Compatibility: costo base bajo, pero cada efecto extra cuesta mucho,
-`tutorials/rendering/renderers.rst:184`):
+Dibujo y GPU (Compatibility: costo base bajo, pero cada efecto extra cuesta mucho; regla y medidas del proyecto en
+`docs/arte-y-rendimiento.md`, «Recursos»):
 
 | Regla | Doc | Cómo se comprueba aquí |
 |---|---|---|
-| Respetar el presupuesto por sala del contrato (emisores, partículas, plantas, sin `Light2D`) | `tutorials/rendering/renderers.rst:184` | `validar.ps1` |
+| Respetar el presupuesto por sala del contrato (emisores, partículas, plantas, sin `Light2D`) | `docs/arte-y-rendimiento.md`, «Recursos» | `validar.ps1` |
 | A lo más 2 capas translúcidas grandes por sala: el sobredibujo es caro en móvil | `tutorials/performance/gpu_optimization.rst:260` | `validar.ps1` (entrada `validador-capas-translucidas`) |
-| Un material compartido por todos los nodos que lo usan, creado una vez y nunca dentro de un bucle (ejemplo: `sala_arte.gd`, el aditivo de los emisores) | `tutorials/performance/gpu_optimization.rst:85` | Grep de `Material.new`: ninguno dentro de un `for` |
+| Un material compartido por todos los nodos que lo usan: `nucleo/arte/sin_luz.tres` y `nucleo/arte/aditivo.tres` (`EfectoCuadros.material_sin_luz()`, `LuzSala.material_aditivo()`), como `ext_resource`, nunca `sub_resource` ni `Material.new()` | `tutorials/performance/gpu_optimization.rst:85` | Grep de `Material.new` y de `CanvasItemMaterial` en `sub_resource`: ninguno en el mundo |
+| En el mundo no se dibuja con `FigurasVector` ni con `_draw` lo que se repite: se hornea a PNG con `herramientas/generar_efectos.gd`. Ningún `queue_redraw()` en `_process` sin una guarda que lo haga solo cuando algo cambió | `tutorials/2d/custom_drawing_in_2d.rst:60-66` (`_draw` se guarda y solo se repite con `queue_redraw`); el costo se midió: `docs/componentes.md`, fila de `MonedasSueltas` | `validar.ps1` avisa (`AVISO`) del `queue_redraw` sin guarda; medir A/B en el S50 |
 | Shaders mínimos, con las menos lecturas de textura posibles | `tutorials/performance/gpu_optimization.rst:187` | Leer el shader; medir en el S50 |
 | No contar con MSAA 2D, glow HDR ni estelas de partículas: Compatibility no los tiene | `tutorials/rendering/renderers.rst:298` | Grep de `msaa`, `hdr_2d`, `trail` |
-| Brillos y chispas con `CanvasItemMaterial` en modo Add, no con luces 2D | `tutorials/2d/2d_lights_and_shadows.rst:372` | `validar.ps1` (falla con `Light2D`) |
+| Brillos y chispas con `CanvasItemMaterial` en modo Add, no con luces 2D en la escena; la única excepción es la `PointLight2D` que `LuzSala` crea en código con `luces_avanzadas` | `tutorials/2d/2d_lights_and_shadows.rst:372` | `validar.ps1` (falla con `Light2D`) |
 
 Texturas (memoria por tamaño: tabla en `tutorials/assets_pipeline/importing_images.rst:241`):
 
@@ -52,7 +56,7 @@ Texturas (memoria por tamaño: tabla en `tutorials/assets_pipeline/importing_ima
 - Sprites y piezas con alfa en Lossless (`compress/mode=0`); VRAM Compressed da artefactos en 2D
   (`tutorials/assets_pipeline/importing_images.rst:187`). `validar.ps1` falla con una imagen
   del arte del mundo con transparencia en VRAM. Excepción decidida con medida: los fondos translúcidos de la sala de
-  arte (`ALFA_EN_VRAM` en `herramientas/validar.gd`; razón y medida en `docs/contrato.md`, «Recursos»). Una excepción
+  arte (`ALFA_EN_VRAM` en `herramientas/validar.gd`; razón y medida en `docs/arte-y-rendimiento.md`, «Recursos» y «Mediciones»). Una excepción
   nueva se mide igual (artefactos y `dumpsys meminfo`) y va en los dos lugares.
 
 Escena y proceso:
@@ -90,14 +94,16 @@ Hechos del proyecto:
 - El bus Master lleva un limitador como último efecto, contra el recorte
   (`tutorials/audio/audio_effects.rst:203`). Guion `nucleo/sonido`; oírlo en el teléfono.
 - Los adornos que sobran en gama baja llevan un hijo `Prescindible`, y lo animado lee `Recursos.bajos()` al
-  entrar a la sala (contrato, «Recursos»). Guion `nucleo/recursos_cuentas`.
+  entrar a la sala (`docs/arte-y-rendimiento.md`, «Recursos»). Guion `nucleo/recursos_cuentas`.
 
 ## Medir en el S50 antes de decidir
 
 Ninguno de estos se cambia sin una medida en el teléfono; la decisión queda escrita en el plan activo o en
 `ESTADO.md`. Ya decididos con medida, en `docs/contrato.md`: la interpolación de física, apagada («Configuración
 del proyecto»; si se reabre, solo `CPUParticles2D` se interpola,
-`tutorials/physics/interpolation/2d_and_3d_physics_interpolation.rst:12`), y Lossless o VRAM por imagen («Recursos»).
+`tutorials/physics/interpolation/2d_and_3d_physics_interpolation.rst:12`; revisar `reset_physics_interpolation()` al
+teletransportar, `tutorials/physics/interpolation/using_physics_interpolation.rst:136`, y la cámara,
+`tutorials/physics/interpolation/advanced_physics_interpolation.rst:48`), y Lossless o VRAM por imagen (`docs/arte-y-rendimiento.md`, «Recursos»).
 
 | Tema | Qué medir | Doc |
 |---|---|---|

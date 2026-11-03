@@ -1,0 +1,11 @@
+# En la repisa toma las 10 PejeCoins (cuadro 100); al final, contra la pared izquierda (x=140), en el piso, con el
+# coleccionable recogido una vez. Sin dano ni cambio de sala: ni el foso ni las aspas lo tocan.
+en 100 valor /root/Partida monedas 10
+escena res://contenido/salas/celda/celda_5.tscn
+x 140 2
+y 554 2
+en_suelo true
+valor /root/Partida monedas 10
+senal /root/Eventos coleccionable_obtenido 1
+senal /root/Eventos jugador_danado 0
+senal /root/Eventos cambio_de_sala 0

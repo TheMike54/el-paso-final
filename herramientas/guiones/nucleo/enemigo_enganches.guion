@@ -1,0 +1,4 @@
+# La escena de prueba golpea de frente y por la espalda a un enemigo con escudo, cambia la mirada del jugador y
+# apaga y vuelve a poner la gravedad del enemigo, y deja la cuenta en sus propiedades.
+escena res://herramientas/pruebas/sala_enemigo_enganches.tscn
+fin 150

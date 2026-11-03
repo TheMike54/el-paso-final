@@ -1,0 +1,3 @@
+# El caso de prueba_cinematica.gd; un fallo imprime FALLO cinematica y el resumen da la cuenta.
+valor . casos 1
+valor . fallos 0

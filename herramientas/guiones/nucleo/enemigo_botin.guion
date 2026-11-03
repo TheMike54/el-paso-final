@@ -1,0 +1,4 @@
+# La escena de prueba vence enemigos de la sala de enemigos con una ficha con botin, toma las PejeCoins, vuelve a crear
+# la sala y deja la cuenta en sus propiedades.
+escena res://herramientas/pruebas/sala_enemigo_botin.tscn
+fin 160

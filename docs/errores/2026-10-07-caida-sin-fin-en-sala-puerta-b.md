@@ -12,7 +12,7 @@ extendido ya no se nota.
 1. `herramientas/salas/sala_puerta_b.tscn`: pared derecha (`ParedDerecha`, 40×720, de x=1240 a 1280).
 2. Regla general en `nucleo/jugador.gd` (`_revisar_salida_por_abajo`): si los pies pasan más de
    `margen_fuera_de_sala` (160 px, el alto del cuerpo) del borde de abajo de `limites`, cuenta como un peligro:
-   `recibir_dano(1, x, true)`, pierde una vida y vuelve al último suelo firme. Solo por abajo (`docs/contrato.md`).
+   `recibir_dano(1, x, true)`, pierde una vida y vuelve al último suelo firme. Solo por abajo (`docs/jugador.md`).
 
 **Guiones que lo cubren**: `herramientas/guiones/nucleo/jugador_salida_abajo.guion` (sala nueva
 `herramientas/salas/sala_salida_abajo.tscn`, piso hasta x=800 y sin pared: sin la regla el jugador acaba en y=2114)

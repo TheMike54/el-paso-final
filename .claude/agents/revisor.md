@@ -2,7 +2,7 @@
 name: revisor
 description: Revisa en un contexto nuevo el diff de una funcionalidad o de una rama contra su plan y su entrada de funciones.json. Se usa solo en los puntos críticos que lista el CLAUDE.md raíz y antes de cada PR. Corre validar.ps1 y los guiones; no edita. Responde «aprobado» o la lista de fallos.
 tools: Read, Grep, Glob, Bash, PowerShell
-model: fable
+model: opus
 ---
 
 Revisas un cambio de El Paso Final que no escribiste. Buscas fallos de corrección y de requisitos; no opinas de
@@ -14,7 +14,7 @@ La rama o el rango a revisar y contra qué: el plan (`planes/activos/<bloque>-<t
 
 ## Pasos
 1. Lee el `CLAUDE.md` raíz y el del bloque tocado. Si el cambio toca autoloads, entrada, guardado o guiones, lee
-   también `docs/contrato.md`.
+   también `docs/contrato.md` y el archivo del tema que toque el diff (tabla al inicio del contrato).
 2. Mira el cambio completo: `git status --short`, `git diff` y `git diff <base>...HEAD`. Lee enteros los archivos
    tocados, no solo las líneas del diff.
 3. Corre `.\herramientas\validar.ps1`. Pasa solo si imprime `OK  VALIDACION ... fallos=0`.
@@ -25,9 +25,14 @@ La rama o el rango a revisar y contra qué: el plan (`planes/activos/<bloque>-<t
 ## Qué es un fallo
 - El código no hace lo que pide el plan o la entrada, o su `"comprobacion"` no demuestra lo que dice.
 - `validar.ps1` o un guion fallan, o un guion pasa sin comprobar lo que importa.
-- El cambio rompe el contrato (`docs/contrato.md`) o lo altera sin actualizarlo.
+- El cambio rompe el contrato (`docs/contrato.md` o sus archivos por tema) o lo altera sin actualizarlo.
 - Una regla del `CLAUDE.md` raíz o del bloque queda incumplida: lógica fuera de `_physics_process`, tecla o toque
   leídos directamente, `preload` de `herramientas/`, declaración sin tipo, un `.ps1` con caracteres fuera de ASCII.
+- Arte del mundo dibujado con `_draw` o `FigurasVector` cuando se repite, un `queue_redraw()` cada cuadro sin guarda,
+  o un material creado por nodo en vez de `sin_luz.tres` o `aditivo.tres` (si el diff trae arte, `_draw`,
+  partículas o materiales, leer `.claude/skills/rendimiento-gama-baja/SKILL.md`).
+- Un `ext_resource` sin `uid` en `contenido/`, `nucleo/`, `mapa/` o `interfaz/` (lo revisa `validar.ps1`), o una
+  pieza nueva que detecta o es detectada sin su caso en `herramientas/pruebas/prueba_capas_fisica.gd`.
 - Un documento afirma algo que el código no cumple.
 
 ## Respuesta

@@ -6,12 +6,10 @@ extends Control
 
 const MARGEN: float = 60.0
 const COLOR_SALA: Color = Color(0.55, 0.5, 0.4, 1.0)
-const COLOR_BORDE: Color = Color(0.9, 0.85, 0.7, 1.0)
-const COLOR_MARCADOR: Color = Color(1.0, 0.85, 0.2, 1.0)
-const COLORES_ZONA: Array[Color] = [Color(0.45, 0.55, 0.65), Color(0.6, 0.5, 0.4), Color(0.45, 0.6, 0.45), Color(0.6, 0.45, 0.6)]
-const RADIO_MARCADOR: float = 10.0
-const COLOR_MOCHILA: Color = Color(0.85, 0.35, 0.3, 1.0)
-const LADO_MOCHILA: float = 22.0
+const COLOR_BORDE: Color = FigurasVector.CLARO
+## Alto en px de los marcadores (FigurasVector): la mascara del jugador, con la brujula, y la mochila.
+const ALTO_MASCARA: float = 36.0
+const ALTO_MOCHILA: float = 38.0
 
 ## Lo que quedo dibujado en la ultima llamada a dibujar(): salas, zonas, si hay marcador y si quedo acercado.
 var salas_dibujadas: int = 0
@@ -28,9 +26,10 @@ var _indice: IndiceSalas = IndiceSalas.new()
 var _zonas: Dictionary[String, Array] = {}
 var _ids: Array = []
 var _transformacion: Transform2D = Transform2D.IDENTITY
-# Centro en pantalla y nombre de cada zona de la vista alejada: se calculan en dibujar(), no en cada _draw.
+# Centro en pantalla, nombre y color de cada zona alejada: se calculan en dibujar(), no en cada _draw.
 var _centros_zona: PackedVector2Array = []
 var _nombres_zona: PackedStringArray = []
+var _colores_zona: Dictionary[String, Color] = {}
 # Dibujos de las salas, cargados en dibujar() y retenidos mientras el mapa se ve: cargarlos en _draw los
 # volvia a pedir en cada redibujo. La pantalla los suelta al ocultarse.
 var _texturas: Dictionary[String, Texture2D] = {}
@@ -63,15 +62,19 @@ func dibujar(indice: IndiceSalas, zonas: Dictionary[String, Array], zona_actual:
 	_transformacion = DatosMapa.encajar(DatosMapa.abarca(indice, _ids), Rect2(Vector2.ZERO, size), MARGEN)
 	_centros_zona = []
 	_nombres_zona = []
+	_colores_zona.clear()
 	if quedo_acercado:
 		for valor: Variant in _ids:
 			var id: String = str(valor)
 			if _indice.dibujos.has(id) and not _texturas.has(id):
 				_texturas[id] = load(_indice.dibujos[id]) as Texture2D
 	else:
+		var numero: int = 0
 		for zona: String in zonas:
 			_centros_zona.append(_transformacion * DatosMapa.abarca(indice, zonas[zona]).get_center())
-			_nombres_zona.append(DatosMapa.nombre_de_zona(zona))
+			_nombres_zona.append(DatosMapa.nombre_de_zona(indice, zona))
+			_colores_zona[zona] = DatosMapa.color_de_zona(indice, zona, numero)
+			numero += 1
 	# Todas las salas empiezan sus limites en (0, 0): el punto de la sala en el mundo es la esquina de su rectangulo
 	# mas el punto. Si una sala empezara en otra esquina, el icono se correria lo mismo.
 	mochila_visible = not sala_mochila.is_empty() and _ids.has(sala_mochila)
@@ -114,23 +117,18 @@ func _draw() -> void:
 			draw_rect(rectangulo, COLOR_SALA)
 			draw_rect(rectangulo, COLOR_BORDE, false, 3.0)
 	else:
-		var numero: int = 0
 		for zona: String in _zonas:
-			var color: Color = COLORES_ZONA[numero % COLORES_ZONA.size()]
-			numero += 1
+			var color: Color = _colores_zona[zona]
 			for valor: Variant in _zonas[zona]:
 				draw_rect(_en_pantalla(_indice.rectangulos[str(valor)], escala), color)
 		for i: int in range(_nombres_zona.size()):
 			draw_string(get_theme_default_font(), _centros_zona[i] - Vector2(150.0, -10.0), _nombres_zona[i], HORIZONTAL_ALIGNMENT_CENTER, 300.0, 30)
 	if mochila_visible:
-		# Un rombo, para que no se confunda con el punto redondo del jugador.
-		var m: Vector2 = mochila_en_pantalla
-		var l: float = LADO_MOCHILA / 2.0
-		draw_colored_polygon(PackedVector2Array([m + Vector2(0.0, -l), m + Vector2(l, 0.0), m + Vector2(0.0, l), m + Vector2(-l, 0.0)]), COLOR_MOCHILA)
+		FigurasVector.dibujar(self, FigurasVector.MOCHILA, mochila_en_pantalla, ALTO_MOCHILA)
 
 
 func _dibujar_punto() -> void:
-	_punto.draw_circle(Vector2.ZERO, RADIO_MARCADOR, COLOR_MARCADOR)
+	FigurasVector.dibujar(_punto, FigurasVector.MASCARA, Vector2.ZERO, ALTO_MASCARA)
 
 
 func _en_pantalla(rectangulo: Rect2, escala: float) -> Rect2:

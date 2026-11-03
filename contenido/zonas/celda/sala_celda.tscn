@@ -1,0 +1,38 @@
+[gd_scene format=3 uid="uid://dkg1tgmycc1sr"]
+
+[ext_resource type="Script" uid="uid://k7a08bqsbqd0" path="res://nucleo/sala.gd" id="1_sala"]
+[ext_resource type="AudioStream" uid="uid://cxnwd8q11ot44" path="res://nucleo/sonidos/silencio.tres" id="2_silencio"]
+[ext_resource type="CanvasItemMaterial" uid="uid://cbonitpbsi8a6" path="res://nucleo/arte/sin_luz.tres" id="3_sin_luz"]
+[ext_resource type="Resource" uid="uid://ced813var22ek" path="res://contenido/zonas/celda/zona_celda.tres" id="4_zona"]
+
+[node name="SalaCelda" type="Node2D"]
+script = ExtResource("1_sala")
+ficha_zona = ExtResource("4_zona")
+botones_ocultos = Array[StringName]([&"curar"])
+oscuridad = 0.58
+tema_musica = ExtResource("2_silencio")
+
+[node name="Entrada" type="Marker2D" parent="."]
+position = Vector2(260, 560)
+
+[node name="Juego" type="Node2D" parent="."]
+z_index = -20
+
+[node name="SueloPintado" type="Node2D" parent="."]
+z_index = -5
+
+[node name="Terreno" type="Node2D" parent="."]
+
+[node name="Peligros" type="Node2D" parent="."]
+
+[node name="Encima" type="Node2D" parent="."]
+z_index = 11
+
+[node name="Luces" type="Node2D" parent="."]
+z_index = 13
+
+[node name="Frente" type="Parallax2D" parent="."]
+modulate = Color(0.06, 0.065, 0.085, 1)
+z_index = 20
+material = ExtResource("3_sin_luz")
+scroll_scale = Vector2(1.45, 1)

@@ -1,0 +1,9 @@
+# Cruza la puerta derecha una vez (dos cambios de sala contando la entrada desde celda_5) y aparece en celda_3, en la
+# llegada de su puerta izquierda (x=224), y sigue caminando unos pasos hasta soltar; en el piso, sin dano.
+escena res://contenido/salas/celda/celda_3.tscn
+x 344 10
+y 1080 2
+en_suelo true
+valor Jugador transicion 0
+senal /root/Eventos cambio_de_sala 2
+senal /root/Eventos jugador_danado 0

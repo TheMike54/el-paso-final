@@ -70,13 +70,18 @@ func _ready() -> void:
 			and UltimaEntrada.clasificar(clic, true) == UltimaEntrada.SIN_CAMBIO)
 	_caso("clasificar no anota", UltimaEntrada.dispositivo == Mando.Dispositivo.TOQUE)
 
-	# Las dos reglas de que entrada cuenta (marca_teclado y es_de_juego) no son la misma: Atras y el volumen marcan el
-	# teclado pero no son del juego. W es saltar (Mando.por_omision arriba); Enter solo es ui_accept.
+	# Las dos reglas de que entrada cuenta (marca_teclado y es_de_juego) no son la misma: Atras marca el teclado pero no
+	# es del juego, y el volumen no es ninguna de las dos. W es saltar (Mando.por_omision arriba);
+	# Enter solo es ui_accept.
 	var volumen: InputEventKey = InputEventKey.new()
 	volumen.keycode = KEY_VOLUMEUP
 	volumen.physical_keycode = KEY_VOLUMEUP
 	volumen.pressed = true
-	_caso("el volumen marca el teclado pero no es de juego", UltimaEntrada.marca_teclado(volumen) and not UltimaEntrada.es_de_juego(volumen))
+	_caso("el volumen no marca el teclado ni es de juego", not UltimaEntrada.marca_teclado(volumen) and not UltimaEntrada.es_de_juego(volumen))
+	var bajar: InputEventKey = InputEventKey.new()
+	bajar.keycode = KEY_VOLUMEDOWN
+	bajar.pressed = true
+	_caso("bajar el volumen (la captura) no cambia nada en clasificar", UltimaEntrada.clasificar(bajar) == UltimaEntrada.SIN_CAMBIO)
 	var atras: InputEventKey = InputEventKey.new()
 	atras.keycode = KEY_BACK
 	atras.physical_keycode = KEY_BACK
@@ -114,12 +119,10 @@ func _ready() -> void:
 	_caso("tras un toque el icono no se ve", not icono.visible)
 	UltimaEntrada.anotar(tecla)
 	# Los dos cuadros eran los que pedia el sondeo de antes; con el bus ya no hacen falta (los casos de abajo no esperan).
-	await get_tree().process_frame
-	await get_tree().process_frame
+	await _esperar_cuadros(2)
 	_caso("con el teclado el icono se ve y mide el boton y el texto", icono.visible and icono.custom_minimum_size.x > Tema.ALTO_LETRA and is_equal_approx(icono.custom_minimum_size.y, Tema.ALTO_LETRA))
 	UltimaEntrada.anotar(toque)
-	await get_tree().process_frame
-	await get_tree().process_frame
+	await _esperar_cuadros(2)
 	_caso("al volver a tocar se esconde otra vez", not icono.visible)
 
 	# Por el bus, sin esperar ningun cuadro: el icono cambia en cuanto cambia el dispositivo o un boton.
@@ -157,7 +160,7 @@ func _ready() -> void:
 	UltimaEntrada.anotar(toque)
 	Eventos.dispositivo_cambiado.disconnect(_contar_dispositivo)
 
-	# Una sola tabla de nombres (Mando.BOTONES): contra los textos que se veian antes de unificarla (18-oct-2026), por
+	# Una sola tabla de nombres (Mando.BOTONES): contra los textos de referencia de cada boton, por
 	# indice: el neutro de Configuracion y los de Xbox y PlayStation de IconoBoton (en la cara, letra y simbolo).
 	var esperados: Array[PackedStringArray] = [
 		PackedStringArray(["A / Cruz", "A", "cruz"]),

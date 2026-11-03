@@ -1,9 +1,8 @@
 extends Control
-# Zona de pruebas: las salas de prueba de esta carpeta agrupadas por categoria (GRUPOS), con una fila de categorias
-# arriba que cambia la cuadricula de abajo, y Volver fijo arriba a la izquierda. Lista la carpeta al entrar: una
-# sala que no esta en GRUPOS ni en OCULTAS aparece sola en «Otras». Se llega desde el menu principal con el modo
-# desarrollador encendido, en depuracion y en publicacion; Volver, Atras, pausa y volver (B) regresan a ese menu, y
-# L1 / R1 cambian de categoria.
+# Selector de salas por categoria; descubre las no incluidas en GRUPOS ni OCULTAS y las agrega a Otras.
+# Accesible desde el menu con modo desarrollador, tanto en depuracion como en publicacion, para probar en telefono.
+# Mantiene Volver arriba a la izquierda; Volver, Atras, pausa y volver (B) regresan al menu principal.
+# La fila superior y L1 / R1 cambian la categoria de la cuadricula de salas.
 const CARPETA: String = "res://herramientas/salas/"
 ## Salas de cada categoria, en el orden en que se muestran (rutas desde CARPETA). validar.gd falla si una no existe.
 ## Nombres cortos: las siete caben en la fila en la vista del S21 (1600 px); en el S50 y en la de 1280 la fila se
@@ -12,14 +11,14 @@ const GRUPOS: Dictionary = {
 	"Movimiento": ["sala_movimiento.tscn", "sala_caida.tscn", "sala_salida_abajo.tscn", "sala_doble_salto.tscn", "sala_impulso.tscn", "sala_pared.tscn", "sala_carrera.tscn"],
 	"Combate": ["sala_combate.tscn", "sala_combate_chico.tscn", "sala_golpe.tscn", "sala_parry.tscn", "sala_pogo.tscn", "sala_picada.tscn", "sala_bola.tscn", "sala_curar.tscn"],
 	"Enemigos": ["sala_enemigos.tscn", "sala_enemigos_banco.tscn", "sala_peligro.tscn", "sala_peligro_movil.tscn", "sala_enemigos_moviles.tscn"],
-	"Mundo": ["sala_banco.tscn", "sala_puerta_a.tscn", "sala_camara.tscn", "sala_capas.tscn", "sala_secretos.tscn", "sala_pizarrones.tscn"],
-	"Partida": ["sala_dialogo.tscn", "sala_reto.tscn", "sala_lo_perdido.tscn", "sala_tienda.tscn"],
+	"Mundo": ["sala_banco.tscn", "sala_puerta_a.tscn", "sala_puerta_c.tscn", "sala_camara.tscn", "sala_capas.tscn", "sala_secretos.tscn", "sala_pizarrones.tscn", "sala_plataformas.tscn", "sala_musica.tscn"],
+	"Partida": ["sala_dialogo.tscn", "sala_reto.tscn", "sala_lo_perdido.tscn", "sala_tienda.tscn", "sala_equipo.tscn", "sala_jefe.tscn"],
 	"Rendimiento": ["sala_recursos.tscn", "sala_arte.tscn"],
-	"Zonas": ["zonas/mapa/mapa_1.tscn", "zonas/mapa/mapa_2.tscn", "zonas/prueba/prueba_1.tscn", "zonas/prueba/prueba_2.tscn", "zonas/prueba/prueba_3.tscn", "zonas/prueba/prueba_4.tscn"],
+	"Zonas": ["la_celda.tscn", "zonas/mapa/mapa_1.tscn", "zonas/mapa/mapa_2.tscn", "zonas/prueba/prueba_1.tscn", "zonas/prueba/prueba_2.tscn", "zonas/prueba/prueba_3.tscn", "zonas/prueba/prueba_4.tscn"],
 }
-## Nombre y para que sirve cada sala de GRUPOS, el detalle en una linea corta (cabe en CELDA con Tema.LETRA_DETALLE).
-## validar.gd falla si una sala de GRUPOS no tiene su linea o si una linea nombra una sala que no esta en GRUPOS. Una
-## sala de «Otras» se ve con su nombre de archivo y sin detalle.
+## Nombre y para que sirve cada sala de GRUPOS o de enemigos/, el detalle en una linea corta (cabe en CELDA con Tema.LETRA_DETALLE).
+## validar.gd exige la linea para GRUPOS y solo admite otras lineas para escenas presentes en enemigos/.
+## Sin linea, una sala descubierta se ve con su nombre de archivo y sin detalle.
 const SALAS: Dictionary = {
 	"sala_movimiento.tscn": ["Movimiento", "Caminar y saltar"],
 	"sala_caida.tscn": ["Caída", "Caída larga y cámara"],
@@ -41,18 +40,28 @@ const SALAS: Dictionary = {
 	"sala_peligro.tscn": ["Peligro", "Volver a lo seguro"],
 	"sala_peligro_movil.tscn": ["Peligro móvil", "Sierra que va y viene"],
 	"sala_enemigos_moviles.tscn": ["Enemigos móviles", "Caminan, vuelan, lanzan"],
+	"enemigos/sala_caminante.tscn": ["Caminante", "Pared y orilla"],
+	"enemigos/sala_volador.tscn": ["Volador", "Perseguir en el aire"],
+	"enemigos/sala_escupidor.tscn": ["Escupidor", "Disparar desde arriba"],
+	"enemigos/sala_muneco_que_ataca.tscn": ["Muñeco que ataca", "Aviso, golpe y disparo"],
 	"sala_banco.tscn": ["Banco", "Sentarse y guardar"],
 	"sala_puerta_a.tscn": ["Puerta A", "Cambio de sala"],
+	"sala_puerta_c.tscn": ["Puerta C", "Puertas con interactuar"],
 	"sala_camara.tscn": ["Cámara", "Seguimiento y límites"],
 	"sala_capas.tscn": ["Capas", "Paralaje"],
 	"sala_secretos.tscn": ["Secretos", "Muros y palancas"],
 	"sala_pizarrones.tscn": ["Pizarrones", "Aprender cada acción"],
+	"sala_plataformas.tscn": ["Plataformas", "Llevan y aplastan"],
+	"sala_musica.tscn": ["Música", "Tema de una región"],
 	"sala_dialogo.tscn": ["Diálogo", "Opciones y premios"],
 	"sala_reto.tscn": ["Reto", "Preguntas con premio"],
 	"sala_lo_perdido.tscn": ["Lo perdido", "Volver por la mochila"],
 	"sala_tienda.tscn": ["Tienda", "Comprar con PejeCoins"],
+	"sala_equipo.tscn": ["Equipo", "Probar amuletos y útiles"],
+	"sala_jefe.tscn": ["Jefe", "Probar un jefe con fases y arena"],
 	"sala_recursos.tscn": ["Recursos", "Bajo y alto"],
 	"sala_arte.tscn": ["Arte", "FPS con todo el arte"],
+	"la_celda.tscn": ["La Celda", "Cinemática y sala"],
 	"zonas/mapa/mapa_1.tscn": ["Mapa 1", "Mapa, pluma y brújula"],
 	"zonas/mapa/mapa_2.tscn": ["Mapa 2", "Sala alta en el mapa"],
 	"zonas/prueba/prueba_1.tscn": ["Prueba 1", "Banco y viaje rápido"],
@@ -83,6 +92,13 @@ var _botones_categoria: Dictionary[String, Button] = {}
 
 func _ready() -> void:
 	theme = Tema.crear()
+	# Es un menu: limite de 60 FPS aunque se llegue desde una sala a 120.
+	var contador: ContadorFps = ContadorFps.new()
+	contador.siempre_en_menu = true
+	add_child(contador)
+	# Las salas de prueba dejan su tema vacio (no tocan la musica): sin esto el tema del menu seguiria en todas. Se
+	# callan aqui, como estaba la zona antes de que existiera la musica; una sala que quiera tema lo pide ella.
+	Arranque.musica.poner(Musica.SILENCIO, Musica.DB_NORMAL, Musica.FUNDIDO_CORTO)
 	_leer_salas()
 	var grupo: ButtonGroup = ButtonGroup.new()
 	for categoria: String in _salas:
@@ -99,8 +115,8 @@ func _ready() -> void:
 		_botones_categoria[categoria] = boton
 	_volver.pressed.connect(volver)
 	Tema.encabezado(_volver.get_parent() as Control)
-	# L1 y R1 con «Categoria» a la derecha de la barra de arriba: en la fila no caben sin desplazarla (1280x720,
-	# 16-oct-2026). Tras un toque no se ven.
+	# L1 y R1 con «Categoria» a la derecha de la barra de arriba: en la fila no caben sin desplazarla (1280x720).
+	# Tras un toque no se ven.
 	var arriba: HBoxContainer = _volver.get_parent() as HBoxContainer
 	var l1: IconoBoton = IconoBoton.new()
 	l1.accion = &"pagina_anterior"
@@ -156,6 +172,17 @@ static func columnas_para(ancho: float) -> int:
 	return Tema.columnas(ancho, CELDA.x, Tema.SEPARACION, 2, 4)
 
 
+## Escenas de enemigos/, relativas a CARPETA y ordenadas; tambien lee .remap en publicacion.
+static func salas_enemigos() -> PackedStringArray:
+	var salas: PackedStringArray = []
+	for archivo: String in DirAccess.get_files_at(CARPETA + "enemigos"):
+		var nombre: String = archivo.trim_suffix(".remap")
+		if nombre.ends_with(".tscn") and not salas.has("enemigos/" + nombre):
+			salas.append("enemigos/" + nombre)
+	salas.sort()
+	return salas
+
+
 # Arma _salas con lo que hay en la carpeta (en un paquete exportado las escenas aparecen como <nombre>.tscn.remap).
 func _leer_salas() -> void:
 	var presentes: PackedStringArray = []
@@ -168,9 +195,15 @@ func _leer_salas() -> void:
 			var nombre: String = archivo.trim_suffix(".remap")
 			if nombre.ends_with(".tscn"):
 				presentes.append("zonas/" + zona + "/" + nombre)
+	var enemigos: PackedStringArray = salas_enemigos()
+	presentes.append_array(enemigos)
 	var agrupadas: PackedStringArray = []
 	for categoria: String in GRUPOS:
-		var lista: Array = GRUPOS[categoria]
+		var lista: Array = (GRUPOS[categoria] as Array).duplicate()
+		if categoria == "Enemigos":
+			for sala: String in enemigos:
+				if not lista.has(sala):
+					lista.append(sala)
 		var rutas: PackedStringArray = []
 		for sala: String in lista:
 			agrupadas.append(sala)
@@ -188,7 +221,9 @@ func _leer_salas() -> void:
 
 func _mostrar(categoria: String) -> void:
 	_ultima = categoria
-	_botones_categoria[categoria].set_pressed_no_signal(true)
+	# set_pressed_no_signal no desmarca a las demas del grupo (class_basebutton.rst): con L1 / R1 quedaban varias.
+	for nombre: String in _botones_categoria:
+		_botones_categoria[nombre].set_pressed_no_signal(nombre == categoria)
 	for hijo: Node in _lista.get_children():
 		_lista.remove_child(hijo)
 		hijo.queue_free()

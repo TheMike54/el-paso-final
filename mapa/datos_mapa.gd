@@ -4,6 +4,8 @@ extends RefCounted
 # como se agrupan por zona, el rectangulo que las abarca y la transformacion que lo encaja en la pantalla. No
 # conoce ninguna zona: trabaja con lo que diga el indice.
 
+const COLORES_ZONA: Array[Color] = [Color(0.45, 0.55, 0.65), Color(0.6, 0.5, 0.4), Color(0.45, 0.6, 0.45), Color(0.6, 0.45, 0.6)]
+
 
 ## Salas dibujadas por zona: {zona: [id, ...]}, solo las mapeadas que el indice conoce, en orden de id.
 static func por_zona(indice: IndiceSalas, mapeadas: Array[String]) -> Dictionary[String, Array]:
@@ -45,6 +47,11 @@ static func encajar(mundo: Rect2, pantalla: Rect2, margen: float) -> Transform2D
 	return Transform2D(Vector2(escala, 0.0), Vector2(0.0, escala), origen)
 
 
-## Nombre visible de una zona: el id con mayuscula.
-static func nombre_de_zona(zona: String) -> String:
-	return zona.capitalize()
+## Nombre visible de la ficha, o el id con mayuscula si la zona no tiene ficha.
+static func nombre_de_zona(indice: IndiceSalas, zona: String) -> String:
+	return indice.nombres_zona[zona] if indice.nombres_zona.has(zona) else zona.capitalize()
+
+
+## Color de la ficha, o la paleta alternada para las zonas sin ficha.
+static func color_de_zona(indice: IndiceSalas, zona: String, numero: int) -> Color:
+	return indice.colores_zona[zona] if indice.colores_zona.has(zona) else COLORES_ZONA[numero % COLORES_ZONA.size()]

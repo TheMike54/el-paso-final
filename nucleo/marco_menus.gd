@@ -1,6 +1,6 @@
 class_name MarcoMenus
 extends CanvasLayer
-# Marco de los menus del juego, como el inventario de Hollow Knight: paginas en ciclo (Inventario, Amuletos, Mapa)
+# Marco de los menus del juego, como el inventario de Hollow Knight: paginas en ciclo (Inventario, Amuletos, Utiles, Mapa)
 # encima del juego detenido, con una barra arriba que nombra la actual y sus vecinas. Lo crea cada sala; las
 # paginas extienden PaginaMarco y el marco las busca por el grupo pagina_marco, sin conocer sus clases: asi el
 # nucleo no depende del bloque mapa. Lo abren mapa (en Mapa) e inventario (en Amuletos sentado, si no en Inventario).
@@ -15,8 +15,15 @@ const GRUPO_PAGINAS: StringName = &"pagina_marco"
 const CAPA: int = 21
 ## Alto de la barra de arriba: una pagina deja libre esa franja.
 const ALTO_BARRA: float = Tema.ALTO_TOQUE + 2.0 * Tema.MARGEN_VERTICAL
-## Orden del ciclo por id de pagina; una pagina que no esta aqui va al final.
-const ORDEN: Array[StringName] = [&"inventario", &"amuletos", &"mapa"]
+## Paginas en orden del ciclo: scripts del nucleo y escenas opcionales de otros bloques.
+## Las escenas conservan su nombre de nodo; los scripts reciben el nombre indicado. Los scripts van con preload: el
+## nombre de una clase global no es una expresion constante.
+const PAGINAS: Array[Dictionary] = [
+	{"id": &"inventario", "script": preload("res://nucleo/pagina_inventario.gd"), "nombre": &"Inventario"},
+	{"id": &"amuletos", "script": preload("res://nucleo/pantalla_amuletos.gd"), "nombre": &"Amuletos"},
+	{"id": &"utiles", "script": preload("res://nucleo/pantalla_utiles.gd"), "nombre": &"Utiles"},
+	{"id": &"mapa", "escena": "res://mapa/pantalla_mapa.tscn"},
+]
 
 ## Abierto (juego detenido) y la pagina a la vista. Publicos para los guiones.
 var abierta: bool = false
@@ -84,7 +91,7 @@ func _boton(barra: HBoxContainer, texto: String, al_tocar: Callable) -> Button:
 
 
 # El contrapeso iguala a Volver solo con lo que sobra: en la vista de 1280 la barra con los botones del control no
-# cabe con el entero, y empujaba Siguiente fuera de la pantalla (16-oct-2026).
+# cabe con el entero y empuja Siguiente fuera de la pantalla.
 func _acomodar_contrapeso() -> void:
 	var otros: float = _barra.get_combined_minimum_size().x - _contrapeso.custom_minimum_size.x
 	var ancho: float = _barra.get_viewport_rect().size.x - 2.0 * Tema.MARGEN_LATERAL
@@ -199,8 +206,11 @@ func _buscar_paginas() -> void:
 
 
 func _orden(una: PaginaMarco) -> int:
-	var i: int = ORDEN.find(una.id_pagina())
-	return i if i >= 0 else ORDEN.size()
+	for i: int in range(PAGINAS.size()):
+		var id: StringName = PAGINAS[i]["id"]
+		if id == una.id_pagina():
+			return i
+	return PAGINAS.size()
 
 
 func _indice_de(id: StringName) -> int:
@@ -211,5 +221,4 @@ func _indice_de(id: StringName) -> int:
 
 
 func _sentado() -> bool:
-	var jugador: Jugador = get_tree().get_first_node_in_group(Jugador.GRUPO) as Jugador
-	return jugador != null and jugador.descansando
+	return Jugador.sentado(get_tree())

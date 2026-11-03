@@ -1,0 +1,4 @@
+# La escena de prueba arma un enemigo con dibujo, le cambia mirando, le pide animaciones y lo congela, y deja la
+# cuenta en sus propiedades.
+escena res://herramientas/pruebas/sala_enemigo_arte.tscn
+fin 30

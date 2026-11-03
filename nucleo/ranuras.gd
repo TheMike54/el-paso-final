@@ -1,9 +1,9 @@
 class_name Ranuras
 extends Control
-# Seleccion de partida del menu principal, como la de Silksong: una ficha por ranura. La vacia dice «Nueva partida»;
-# la ocupada lleva el nombre de la partida (si tiene) y dice donde se quedo, las vidas maximas, el tiempo jugado y un rastro de cuadritos por lo obtenido. Borrar
-# y Restaurar piden confirmacion. Se arma en codigo porque las fichas son iguales. Atras y pausa vuelven un nivel a
-# la vez: de la confirmacion a las fichas y de ahi al menu (cerrado).
+# Seleccion de partida del menu principal, como la de Silksong: una ficha por ranura; vacia ofrece "Nueva partida".
+# La ocupada muestra nombre, lugar, vidas maximas, tiempo jugado y un rastro de cuadritos por lo obtenido.
+# Se arma en codigo porque las fichas son iguales. Borrar y Restaurar piden confirmacion.
+# Atras y pausa vuelven un nivel a la vez: de la confirmacion a las fichas y de ahi al menu (cerrado).
 
 signal elegida(numero: int)
 signal cerrado()
@@ -18,10 +18,9 @@ const ANCHO_FICHA: float = 270.0
 ## Alto del boton principal de la ficha: titulo, tres lineas y el rastro.
 const ALTO_PRINCIPAL: float = 250.0
 const SEPARACION_FICHA: float = 8.0
-## Cuadritos del rastro: lado, separacion, color y cuantos caben como mucho.
+## Cuadritos del rastro: lado, separacion y cuantos caben como mucho; su color, Tema.RASTRO.
 const LADO_PASO: float = 14.0
 const SEPARACION_PASO: int = 4
-const COLOR_PASO: Color = Color(0.62, 0.68, 0.8, 1.0)
 const MAX_PASOS: int = 24
 
 ## Formato de la ruta de cada ranura (con su numero); publico para que la prueba use las suyas.
@@ -44,6 +43,8 @@ var _rastros: Array[HFlowContainer] = []
 var _borrar: Array[Button] = []
 var _restaurar: Array[Button] = []
 var _confirmar: Confirmacion = null
+var _boton_volver: Button = null
+var _aviso: Label = null
 var _accion: Accion = Accion.BORRAR
 var _numero_accion: int = 0
 
@@ -68,6 +69,7 @@ func ruta(numero: int) -> String:
 func abrir() -> void:
 	leer()
 	visible = true
+	_aviso.visible = false
 	_volver_a_fichas()
 	_enfocar(1)
 
@@ -75,6 +77,7 @@ func abrir() -> void:
 ## Vuelve a mostrarse, sin releer, con el foco en una ranura (al volver de «Nueva partida»).
 func volver(numero: int) -> void:
 	visible = true
+	_aviso.visible = false
 	_enfocar(numero)
 
 
@@ -101,13 +104,14 @@ func atras() -> void:
 func pedir(accion: Accion, numero: int) -> void:
 	_accion = accion
 	_numero_accion = numero
+	_aviso.visible = false
 	# Con la confirmacion abierta las fichas se ocultan, como el menu en la de salir: si no, con teclado o control el
 	# foco se escapaba a los botones de detras.
 	_marco.visible = false
 	if accion == Accion.BORRAR:
 		_confirmar.abrir("¿Borrar la partida %d? No se puede deshacer." % numero, "Borrar", "Cancelar", Confirmacion.Foco.NO)
 	else:
-		_confirmar.abrir("¿Volver la partida %d al inicio de la última sesión?" % numero, "Restaurar", "Cancelar", Confirmacion.Foco.NO)
+		_confirmar.abrir("¿Volver la partida %d a su última copia?" % numero, "Restaurar", "Cancelar", Confirmacion.Foco.NO)
 
 
 # Cierra la confirmacion (si esta abierta) y vuelve a mostrar las fichas.
@@ -126,9 +130,12 @@ func _al_cancelar() -> void:
 func confirmar() -> void:
 	var destino: String = ruta(_numero_accion)
 	var error: Error = Guardado.borrar(destino) if _accion == Accion.BORRAR else Guardado.restaurar(destino)
-	if error != OK:
-		push_error("Ranuras: no se pudo %s la partida %d (error %d)" % ["borrar" if _accion == Accion.BORRAR else "restaurar", _numero_accion, error])
 	_volver_a_fichas()
+	if error != OK:
+		var verbo: String = "borrar" if _accion == Accion.BORRAR else "restaurar"
+		push_error("Ranuras: no se pudo %s la partida %d (error %d)" % [verbo, _numero_accion, error])
+		_aviso.text = "No se pudo %s la partida %d." % [verbo, _numero_accion]
+		_aviso.visible = true
 	leer()
 	_enfocar(_numero_accion)
 
@@ -156,9 +163,7 @@ static func ubicacion(partida: Dictionary) -> String:
 		sala = str(visitadas.back())
 	if sala.is_empty():
 		return "Inicio"
-	if sala.begins_with("res://"):
-		sala = sala.get_file().get_basename()
-	return sala.capitalize()
+	return Sala.nombre_de(sala)
 
 
 ## «12 min» o «1 h 05 min».
@@ -183,7 +188,7 @@ func _pintar(numero: int) -> void:
 	for cuadrito: Node in rastro.get_children():
 		rastro.remove_child(cuadrito)
 		cuadrito.queue_free()
-	principal.disabled = leida.estado == Guardado.Estado.DANADA or leida.estado == Guardado.Estado.INCOMPATIBLE
+	principal.disabled = leida.cerrada()
 	var nombre: String = str(leida.partida.get("nombre", "")) if leida.estado == Guardado.Estado.VALIDA else ""
 	_titulos[numero - 1].text = nombre if not nombre.is_empty() else "Partida %d" % numero
 	match leida.estado:
@@ -193,24 +198,30 @@ func _pintar(numero: int) -> void:
 			texto.text = "Dañada"
 		Guardado.Estado.INCOMPATIBLE:
 			texto.text = "De otra versión"
+		Guardado.Estado.ILEGIBLE:
+			texto.text = "No se puede leer"
 		Guardado.Estado.VALIDA:
 			texto.text = detalle(leida.partida)
 			for i: int in range(mini(pasos(leida.partida), MAX_PASOS)):
 				var cuadrito: ColorRect = ColorRect.new()
 				cuadrito.custom_minimum_size = Vector2(LADO_PASO, LADO_PASO)
-				cuadrito.color = COLOR_PASO
+				cuadrito.color = Tema.RASTRO
 				cuadrito.mouse_filter = Control.MOUSE_FILTER_IGNORE
 				rastro.add_child(cuadrito)
-	_borrar[numero - 1].visible = leida.estado != Guardado.Estado.VACIA
-	_restaurar[numero - 1].visible = Guardado.tiene_respaldo(ruta(numero))
+	# Un archivo que no se pudo abrir esta intacto: ni se borra ni se pisa con la copia.
+	var ilegible: bool = leida.estado == Guardado.Estado.ILEGIBLE
+	_borrar[numero - 1].visible = leida.estado != Guardado.Estado.VACIA and not ilegible
+	_restaurar[numero - 1].visible = not ilegible and Guardado.tiene_respaldo(ruta(numero))
 
 
 func _enfocar(numero: int) -> void:
 	var principal: Button = _principales[numero - 1]
 	if not principal.disabled:
 		Tema.dar_foco(principal)
-	else:
+	elif _borrar[numero - 1].visible:
 		Tema.dar_foco(_borrar[numero - 1])
+	else:
+		Tema.dar_foco(_boton_volver)
 
 
 # El marco ocupa el area util (Tema) menos la franja reservada abajo.
@@ -229,6 +240,14 @@ func _armar() -> void:
 	add_child(_marco)
 	var arriba: HBoxContainer = Tema.barra_arriba("Elige una partida", atras)
 	_marco.add_child(arriba)
+	_boton_volver = arriba.get_node(^"Volver") as Button
+	_aviso = Label.new()
+	_aviso.name = "Aviso"
+	_aviso.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_aviso.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_aviso.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_aviso.visible = false
+	_marco.add_child(_aviso)
 	# Con el area segura muy recortada las fichas van en 2x2 y pueden no caber a lo alto: se desplazan.
 	var desplazable: ScrollContainer = ScrollContainer.new()
 	desplazable.name = "Desplazable"

@@ -1,0 +1,4 @@
+# La prueba recorre la sala real y aisla su partida.
+# Incluye victoria, salto de dos fases y muerte sin recompensa.
+escena res://herramientas/pruebas/sala_sala_jefe.tscn
+fin 420

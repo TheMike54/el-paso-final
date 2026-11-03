@@ -1,0 +1,6 @@
+# De vuelta en suelo firme a la izquierda del foso (el suelo acaba en x=1571), no en la Entrada (x=260) ni dentro
+# del foso; un solo golpe y quieto en el suelo tras el fundido.
+x 1478 2
+en_suelo true
+senal /root/Eventos jugador_danado 1
+valor Jugador muerto false

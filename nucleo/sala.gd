@@ -1,15 +1,15 @@
 class_name Sala
 extends Node2D
-# Raiz de toda sala: al entrar crea al jugador (en la puerta por la que llega o en Entrada), le
-# pasa los limites para la camara y pone los controles tactiles, la pausa, el marco de menus con sus paginas, la vibracion, el fundido
-# a negro (empieza en negro y aclara), la interfaz y el mapa. Si el jugador muere, funde a negro y lo hace
-# reaparecer en el ultimo banco (o en Entrada) con las vidas llenas.
+# Crea al jugador en su llegada y monta las capas de la sala.
+# Si muere, prepara su reaparicion.
+# La interfaz y el mapa se cargan solo cuando existen.
 const ESCENA_JUGADOR: PackedScene = preload("res://nucleo/jugador.tscn")
 const ESCENA_CONTROLES: PackedScene = preload("res://nucleo/controles_tactiles.tscn")
 const ESCENA_PAUSA: PackedScene = preload("res://nucleo/pausa.tscn")
-## La interfaz y el mapa son de otros bloques: se cargan con load() solo si existen, asi el nucleo corre sin ellos.
+## La interfaz es de otro bloque: se carga solo si existe, asi el nucleo corre sin ella.
 const INTERFAZ: String = "res://interfaz/interfaz.tscn"
-const MAPA: String = "res://mapa/pantalla_mapa.tscn"
+## Nombres visibles de zona, sin depender de la clase del bloque mapa.
+const INDICE_MAPA: String = "res://mapa/indice_salas.tres"
 ## Ticks que el jugador muerto se queda en pantalla (oscuro) antes de reaparecer: 1,5 s.
 const TICKS_PARA_REAPARECER: int = 90
 ## Lo que el Fondo de la sala se extiende fuera de limites, en px. Cubre el rango de la vista (4:3 a
@@ -18,6 +18,11 @@ const TICKS_PARA_REAPARECER: int = 90
 ## de la sala es su fondo, no un borde.
 const MARGEN_FONDO: float = 280.0
 
+## Carpeta de las salas del juego: contenido/salas/<zona>/<id>.tscn.
+const CARPETA_CONTENIDO: String = "res://contenido/salas/"
+## Carpeta de las zonas de prueba, con la misma forma. El juego no depende de ella: solo se usa si existe.
+const CARPETA_PRUEBAS: String = "res://herramientas/salas/zonas/"
+
 ## Id de la puerta por la que llega el jugador a la proxima sala; vacio al empezar una partida.
 ## Es estatica porque sobrevive al cambio de escena sin necesitar un autoload.
 static var puerta_llegada: StringName = &""
@@ -25,15 +30,13 @@ static var puerta_llegada: StringName = &""
 static var llegada_a_banco: bool = false
 ## Id de la Estacion donde aparece el jugador en la proxima sala (viaje rapido); manda sobre puerta_llegada.
 static var estacion_llegada: String = ""
-## Time.get_ticks_msec() cuando una puerta pidio el cambio de escena; -1 si no hay uno en curso. En un build de
-## depuracion, el primer tick de la sala nueva imprime cuanto tardo (decision del 14-oct-2026: se mide en el S50
-## antes de pensar en cargar en segundo plano).
+## Time.get_ticks_msec() cuando el Fundido pidio el cambio de escena; -1 si no hay uno en curso. En un build de
+## depuracion, el primer tick de la sala nueva imprime cuanto tardo: se mide la carga antes de pensar en cargar
+## en segundo plano.
 static var cambio_pedido_ms: int = -1
 
-## Carpeta de las salas del juego: contenido/salas/<zona>/<id>.tscn.
-const CARPETA_CONTENIDO: String = "res://contenido/salas/"
-## Carpeta de las zonas de prueba, con la misma forma. El juego no depende de ella: solo se usa si existe.
-const CARPETA_PRUEBAS: String = "res://herramientas/salas/zonas/"
+static var _indice_nombres: Resource = null
+static var _indice_nombres_cargado: bool = false
 
 ## Id de la sala, `<zona>_<numero>` (celda_1), igual al nombre de su archivo: es lo que guardan la partida y el
 ## mapa. Vacio en las salas de prueba sueltas, que se identifican por su ruta.
@@ -43,12 +46,33 @@ const CARPETA_PRUEBAS: String = "res://herramientas/salas/zonas/"
 ## Solo salas de prueba: habilidades que la sala da en silencio al entrar (sin aviso ni autoguardado), para
 ## probar algo sin conseguirlo antes. Una sala del juego la deja vacia (lo revisa el validador).
 @export var habilidades_de_prueba: Array[StringName] = []
+## Solo salas de prueba: capacidad de Inspiracion con la que se prueba (0, la de la partida). Sube en silencio, como
+## habilidades_de_prueba; una sala del juego la deja en 0 (lo revisa el validador).
+@export var inspiracion_maxima_de_prueba: int = 0
 ## Botones de la pantalla que en esta sala no se ven hasta que un AvisoAccion los ensena (Partida.botones_ensenados):
 ## la sala Pizarrones empieza sin saltar, atacar ni curar. Solo tactil; el validador exige que un aviso de la sala ensene cada uno.
 @export var botones_por_ensenar: Array[StringName] = []
-## Esquina de la sala en el mapa del mundo, en px: el mapa la dibuja en posicion_mapa + limites. Las salas de una
-## zona se acomodan como se recorren (la de la derecha empieza donde acaba la otra).
+## Botones que aqui no se ven porque los ensena un AvisoAccion de una sala posterior, que puede ser de otra zona (la base
+## de La Celda esconde curar hasta Las Raices). A diferencia de botones_por_ensenar, no pide un aviso en esta sala.
+@export var botones_ocultos: Array[StringName] = []
+## Esquina de la sala en px desde ficha_zona.origen_mapa (sin ficha, desde (0, 0)). Las salas de una zona se
+## acomodan como se recorren (la de la derecha empieza donde acaba la otra); el indice suma tambien limites.position.
 @export var posicion_mapa: Vector2 = Vector2.ZERO
+## Datos del mapa compartidos por la zona: se pone una vez en su base y las salas lo heredan.
+@export var ficha_zona: FichaZona = null
+## Oscuridad de la sala, de 0 (sin cambio) a 1 (negro): la aplica el Brillo de la sala, multiplicando, sin dibujar
+## nada encima (una capa oscura encima costaba 2,2 FPS en el S50). Las LuzSala la aclaran con su halo aditivo y, con
+## las luces 2D, con su PointLight2D.
+@export_range(0.0, 1.0, 0.01) var oscuridad: float = 0.0
+## Tema de la sala, como el MusicCue de Hollow Knight: lo pide a Musica al entrar y, si ya suena, sigue sin empezar de
+## nuevo. Vacio no toca la musica (sigue la que suena); Musica.SILENCIO la calla. Las salas de una zona comparten el
+## mismo recurso, puesto en la base de la zona.
+@export var tema_musica: AudioStream = null
+## Efectos propios de la sala o de su zona, puestos en la base de zona; un campo vacio usa el global.
+@export var sonidos: FichaSonidos = null
+## Volumen de region al entrar, en dB; una RegionMusica lo cambia despues (Musica.DB_SILENCIO: callado hasta llegar a
+## ella).
+@export var volumen_musica_db: float = Musica.DB_NORMAL
 
 var _ticks_para_reaparecer: int = 0
 
@@ -76,28 +100,85 @@ static func zona_de(id_o_ruta: String) -> String:
 	return id_o_ruta.get_slice("_", 0)
 
 
+## Nombre visible de la zona de un id; sin nombre, el id. Una ruta usa el nombre de su archivo.
+static func nombre_de(id_o_ruta: String) -> String:
+	if id_o_ruta.begins_with("res://"):
+		return id_o_ruta.get_file().get_basename().capitalize()
+	if not _indice_nombres_cargado:
+		_indice_nombres = Cargar.si_existe(INDICE_MAPA)
+		_indice_nombres_cargado = true
+	if _indice_nombres != null:
+		var valor: Variant = _indice_nombres.get(&"nombres_zona")
+		if valor is Dictionary:
+			var nombres: Dictionary = valor
+			var nombre: String = nombres.get(zona_de(id_o_ruta), "") as String
+			if not nombre.is_empty():
+				return nombre
+	return id_o_ruta.capitalize()
+
+
 ## Como se nombra esta sala en la partida y el mapa: su id o, en una sala de prueba suelta, su ruta.
 func clave() -> String:
 	return id if not id.is_empty() else scene_file_path
 
 
-## Clave de la sala a la que pertenece un nodo de su escena (su owner); vacia si no esta en una sala.
+## Clave de la sala a la que pertenece un nodo: su owner si es la Sala y, si no, la primera Sala entre sus ancestros;
+## vacia si no esta en una sala. Dentro de una pieza instanciada el owner es la raiz de la pieza
+## (classes/class_node.rst): sin subir por los padres, un objeto recordado dentro de una pieza no se guardaria.
 static func clave_de(nodo: Node) -> String:
 	var sala: Sala = nodo.owner as Sala
-	if sala == null:
-		sala = nodo.get_parent() as Sala
+	var actual: Node = nodo.get_parent()
+	while sala == null and actual != null:
+		sala = actual as Sala
+		actual = actual.get_parent()
 	return sala.clave() if sala != null else ""
+
+
+## Si Partida recuerda el objeto (roto, abierto, recogido, comprado) en la sala del nodo.
+static func recordado(nodo: Node, objeto: String) -> bool:
+	return Partida.estado_de(clave_de(nodo), objeto) != null
+
+
+## Donde puede volver el jugador si ningun punto seguro ni su llegada tienen suelo (Jugador.ultimo_punto_seguro): la
+## Entrada y cada banco de la sala, en globales y en ese orden.
+func puntos_de_respaldo() -> PackedVector2Array:
+	var puntos: PackedVector2Array = []
+	var entrada: Node2D = get_node_or_null(^"Entrada") as Node2D
+	if entrada != null:
+		puntos.append(entrada.global_position)
+	for banco: Banco in _bancos():
+		puntos.append(banco.global_position)
+	return puntos
+
+
+# Los bancos de la sala, tambien los que van dentro de una pieza.
+func _bancos() -> Array[Banco]:
+	var bancos: Array[Banco] = []
+	for nodo: Node in find_children("*", "", true, false):
+		if nodo is Banco:
+			bancos.append(nodo as Banco)
+	return bancos
 
 
 func _ready() -> void:
 	_extender_fondo()
 	Congelado.reiniciar()
+	if inspiracion_maxima_de_prueba > Partida.inspiracion_maxima:
+		Partida.inspiracion_maxima = inspiracion_maxima_de_prueba
 	for habilidad: StringName in habilidades_de_prueba:
 		if not Partida.tiene(habilidad):
 			Partida.habilidades.append(habilidad)
 	Partida.visitar(clave())
+	# Se aplica en el tick siguiente: si el jugador aparece dentro de una RegionMusica, su pedido llega despues y gana.
+	Arranque.musica.poner(tema_musica, volumen_musica_db)
+	if Arranque.sonido != null:
+		Arranque.sonido.ficha_sala = sonidos
 	var jugador: Jugador = ESCENA_JUGADOR.instantiate() as Jugador
-	jugador.position = _punto_de_llegada()
+	# La puerta de llegada se busca una sola vez: da la posicion, el fundido y como entra el jugador.
+	var por_puerta: Puerta = null
+	if not llegada_a_banco and estacion_llegada.is_empty():
+		por_puerta = _puerta_con_id(puerta_llegada)
+	jugador.position = _punto_de_llegada(por_puerta)
 	# Si manda la estacion, no se llego por una puerta: cambio_de_sala no se emite.
 	var puerta: StringName = puerta_llegada if estacion_llegada.is_empty() else &""
 	puerta_llegada = &""
@@ -105,33 +186,37 @@ func _ready() -> void:
 	estacion_llegada = ""
 	add_child(jugador)
 	jugador.fijar_limites(limites)
+	if por_puerta != null:
+		var seguro: Vector2 = por_puerta.punto_seguro_en_sala()
+		jugador.entrar_a_sala(por_puerta.tipo, por_puerta.lado_al_llegar(limites.get_center().x),
+				to_global(seguro) if seguro != Vector2.INF else Vector2.INF)
 	_poner_mochila()
 	add_child(ESCENA_CONTROLES.instantiate())
 	add_child(ESCENA_PAUSA.instantiate())
-	# El marco de menus y sus paginas del nucleo; la pagina Mapa la agrega el bloque mapa si existe (abajo).
+	# El marco y las paginas por script van antes del fundido; las escenas opcionales, despues de la interfaz.
 	var marco: MarcoMenus = MarcoMenus.new()
 	marco.name = &"Marco"
 	add_child(marco)
-	var inventario: PaginaInventario = PaginaInventario.new()
-	inventario.name = &"Inventario"
-	add_child(inventario)
-	var amuletos: PantallaAmuletos = PantallaAmuletos.new()
-	amuletos.name = &"Amuletos"
-	add_child(amuletos)
+	_poner_paginas(false)
 	var fundido: Fundido = Fundido.new()
 	fundido.name = &"Fundido"
 	add_child(fundido)
-	fundido.empezar_en_negro()
+	# Por una puerta aclara mas despacio, como Hollow Knight (Fundido.TICKS_ACLARAR_PUERTA).
+	fundido.empezar_en_negro(Fundido.TICKS_ACLARAR_PUERTA if por_puerta != null else Fundido.TICKS_ACLARAR)
 	var vibracion: Vibracion = Vibracion.new()
 	vibracion.name = &"Vibracion"
 	add_child(vibracion)
 	var brillo: Brillo = Brillo.new()
 	brillo.name = &"Brillo"
+	brillo.oscuridad = oscuridad
 	add_child(brillo)
-	for ruta: String in [INTERFAZ, MAPA]:
-		if ResourceLoader.exists(ruta):
-			var escena: PackedScene = load(ruta) as PackedScene
-			add_child(escena.instantiate())
+	add_child(ContadorFps.new())
+	add_child(PanelPruebas.new())
+	add_child(VerHitbox.new())
+	var interfaz: PackedScene = Cargar.si_existe(INTERFAZ) as PackedScene
+	if interfaz != null:
+		add_child(interfaz.instantiate())
+	_poner_paginas(true)
 	Eventos.jugador_muerto.connect(_al_morir_el_jugador)
 	if not puerta.is_empty():
 		Eventos.cambio_de_sala.emit(clave(), puerta)
@@ -156,6 +241,25 @@ func _extender_fondo() -> void:
 	move_child(extendido, 0)
 
 
+# Un solo patron para el catalogo del marco, en los dos puntos originales de add_child.
+func _poner_paginas(desde_escena: bool) -> void:
+	for dato: Dictionary in MarcoMenus.PAGINAS:
+		if dato.has("escena") != desde_escena:
+			continue
+		var pagina: PaginaMarco = null
+		if desde_escena:
+			var ruta: String = dato["escena"]
+			var escena: PackedScene = Cargar.si_existe(ruta) as PackedScene
+			if escena != null:
+				pagina = escena.instantiate() as PaginaMarco
+		else:
+			var script: GDScript = dato["script"]
+			pagina = script.new() as PaginaMarco
+			pagina.name = dato["nombre"] as StringName
+		if pagina != null:
+			add_child(pagina)
+
+
 # Lo perdido al morir aparece en su sala, donde quedo (Partida.mochila).
 func _poner_mochila() -> void:
 	if Partida.mochila.is_empty() or str(Partida.mochila.get("sala", "")) != clave():
@@ -166,7 +270,7 @@ func _poner_mochila() -> void:
 	add_child(mochila)
 
 
-# Se reaparece en el ultimo banco donde se descanso; si no hay, en la Entrada de esta sala.
+# Arma la cuenta atras de la reaparicion.
 func _al_morir_el_jugador() -> void:
 	_ticks_para_reaparecer = TICKS_PARA_REAPARECER
 
@@ -179,31 +283,53 @@ func _physics_process(_delta: float) -> void:
 	if _ticks_para_reaparecer == 0:
 		return
 	_ticks_para_reaparecer -= 1
-	# Los ultimos ticks oscuro, la pantalla funde a negro; la sala siguiente (o esta, recargada) aclara.
-	if _ticks_para_reaparecer == Fundido.TICKS_OSCURECER:
-		Eventos.fundido_pedido.emit(Fundido.TICKS_OSCURECER, 0, 0)
-	if _ticks_para_reaparecer == 0:
-		Partida.llenar_vidas()
-		puerta_llegada = &""
-		estacion_llegada = ""
-		if Partida.sala.is_empty():
-			get_tree().reload_current_scene()
+	# Los ultimos ticks oscuro (Fundido.Perfil.MUERTE), el Fundido funde a negro y cambia a la sala del banco (o
+	# recarga esta), que aclara al empezar. Si el Fundido tiene otro cambio en curso (se murio durante su retraso), se
+	# reintenta cada tick: ese cambio se aborta al llegar al negro porque su jugador murio.
+	if _ticks_para_reaparecer == Fundido.ticks_hasta_cambio(Fundido.Perfil.MUERTE) and not _reaparecer_en_el_banco():
+		_ticks_para_reaparecer += 1
+
+
+# A la sala del ultimo banco (Partida.sala); sin banco, o si esa sala no existe, a esta misma. Las vidas se llenan ya en
+# negro, como antes del cambio: con la pantalla oscureciendo el HUD no se ve llenarse. Devuelve si el Fundido acepto
+# el cambio (sin Fundido no hay a quien pedirlo y no se reintenta).
+func _reaparecer_en_el_banco() -> bool:
+	var ruta: String = scene_file_path
+	var llegada: Fundido.Llegada = Fundido.Llegada.ENTRADA
+	if not Partida.sala.is_empty():
+		var del_banco: String = Sala.ruta_de(Partida.sala)
+		if ResourceLoader.exists(del_banco):
+			ruta = del_banco
+			llegada = Fundido.Llegada.BANCO
 		else:
-			var ruta: String = Sala.ruta_de(Partida.sala)
-			if ResourceLoader.exists(ruta):
-				llegada_a_banco = true
-				get_tree().change_scene_to_file(ruta)
-			else:
-				push_error("Sala: la sala del banco '%s' no existe; se reaparece aqui" % Partida.sala)
-				get_tree().reload_current_scene()
+			push_error("Sala: la sala del banco '%s' no existe; se reaparece aqui" % Partida.sala)
+	var fundido: Fundido = get_node_or_null(^"Fundido") as Fundido
+	if fundido == null:
+		return true
+	# Se conecta solo si el Fundido acepta el cambio: con otro en curso, su en_negro no debe llenar las vidas.
+	if not fundido.cambiar_sala(ruta, llegada, "", Fundido.Perfil.MUERTE):
+		return false
+	fundido.en_negro.connect(Partida.llenar_vidas, CONNECT_ONE_SHOT)
+	return true
 
 
-func _punto_de_llegada() -> Vector2:
+# La puerta hija con ese id; null si el id esta vacio. Si no existe, avisa y devuelve null (el jugador va a Entrada).
+func _puerta_con_id(id_puerta: StringName) -> Puerta:
+	if id_puerta.is_empty():
+		return null
+	for hijo: Node in get_children():
+		var puerta: Puerta = hijo as Puerta
+		if puerta != null and puerta.id == id_puerta:
+			return puerta
+	push_error("Sala %s: no hay una puerta con id '%s'" % [scene_file_path, id_puerta])
+	return null
+
+
+func _punto_de_llegada(por_puerta: Puerta) -> Vector2:
 	if llegada_a_banco:
-		for hijo: Node in get_children():
-			var banco: Banco = hijo as Banco
-			if banco != null and banco.id == Partida.banco:
-				return banco.position
+		for banco: Banco in _bancos():
+			if banco.id == Partida.banco:
+				return to_local(banco.global_position)
 		push_error("Sala %s: no hay un banco con id '%s'" % [scene_file_path, Partida.banco])
 	elif not estacion_llegada.is_empty():
 		# Si una puerta y una estacion piden a la vez, manda la estacion: el viaje es lo ultimo que se pidio.
@@ -212,11 +338,7 @@ func _punto_de_llegada() -> Vector2:
 			if estacion != null and estacion.id == estacion_llegada:
 				return estacion.position + estacion.llegada
 		push_error("Sala %s: no hay una estacion con id '%s'" % [scene_file_path, estacion_llegada])
-	elif not puerta_llegada.is_empty():
-		for hijo: Node in get_children():
-			var puerta: Puerta = hijo as Puerta
-			if puerta != null and puerta.id == puerta_llegada:
-				return puerta.position + puerta.llegada
-		push_error("Sala %s: no hay una puerta con id '%s'" % [scene_file_path, puerta_llegada])
+	elif por_puerta != null:
+		return por_puerta.position + por_puerta.llegada
 	var entrada: Node2D = get_node_or_null(^"Entrada") as Node2D
 	return entrada.position if entrada != null else Vector2.ZERO

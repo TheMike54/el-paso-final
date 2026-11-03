@@ -1,6 +1,6 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://2ehbw42ixhpw"]
 
-[ext_resource type="Script" path="res://nucleo/reto_preguntas.gd" id="1_reto"]
+[ext_resource type="Script" uid="uid://cccm1tni5tc4n" path="res://nucleo/reto_preguntas.gd" id="1_reto"]
 
 [sub_resource type="RectangleShape2D" id="forma_reto"]
 size = Vector2(160, 160)

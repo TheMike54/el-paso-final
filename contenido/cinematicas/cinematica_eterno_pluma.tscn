@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://d3j01fqo0jdk6"]
+
+[ext_resource type="Script" uid="uid://dbc6fy1mt5sr6" path="res://nucleo/cinematica.gd" id="1_cinematica"]
+
+[node name="CinematicaEternoPluma" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_cinematica")
+video = "res://contenido/cinematicas/eterno_pluma"
+sala_destino = "celda_3"

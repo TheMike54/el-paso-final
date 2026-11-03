@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="FichaZona" format=3 uid="uid://ced813var22ek"]
+
+[ext_resource type="Script" uid="uid://b5npnm0mfwrdt" path="res://nucleo/ficha_zona.gd" id="1_zona"]
+
+[resource]
+script = ExtResource("1_zona")
+nombre = "La Celda"
+color = Color(0.45, 0.55, 0.65, 1)
+origen_mapa = Vector2(0, 0)

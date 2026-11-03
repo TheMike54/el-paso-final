@@ -1,0 +1,11 @@
+# La Celda, sala 2: desde la Entrada (x=260) camina a la derecha hasta la puerta del salon (x=300, tipo PUERTA) y
+# pulsa interactuar: sale de espaldas por la puerta derecha de celda_1 (x=4300); ahi interactua otra vez y vuelve a
+# salir por la misma puerta de celda_2. La ida y vuelta 1<->2 con la misma pieza de puerta a los dos lados.
+escena res://contenido/salas/celda/celda_2.tscn
+2 mover_derecha press
+8 mover_derecha release
+20 interactuar press
+22 interactuar release
+300 interactuar press
+302 interactuar release
+fin 560

@@ -1,7 +1,7 @@
 extends "res://herramientas/pruebas/prueba_base.gd"
 # Prueba del aterrizaje duro: al entrar crea un jugador por caso y comprueba que el bloqueo empieza quieto, que lo
 # cortan un golpe, un peligro, sentarse y morir (tambien en el mismo tick del aterrizaje) y que la picada no lo
-# empieza: asi nunca deja atrapado al jugador. Deja la cuenta en "casos" y "fallos", que aterrizaje.guion lee.
+# empieza: asi nunca deja atrapado al jugador. Ademas, que el banco lo sienta mirando hacia su asiento. Deja la cuenta en "casos" y "fallos", que aterrizaje.guion lee.
 # Imprime el resumen y los casos que fallan.
 
 const ESCENA_JUGADOR: PackedScene = preload("res://nucleo/jugador.tscn")
@@ -47,6 +47,16 @@ func _ready() -> void:
 	jugador.sentarse(PUNTO.x)
 	_caso("sentarse corta el aterrizaje duro", not jugador.aterrizando and jugador.descansando)
 
+	# Sentarse mira hacia el asiento del banco (Banco.mirando); un banco sin lado lo deja como llego.
+	jugador = _jugador_nuevo(jugador)
+	jugador._mirando = -1.0
+	jugador.sentarse(PUNTO.x, 1.0)
+	var hacia_el_asiento: bool = jugador._mirando == 1.0
+	jugador = _jugador_nuevo(jugador)
+	jugador._mirando = -1.0
+	jugador.sentarse(PUNTO.x)
+	_caso("el banco lo sienta mirando hacia su asiento; sin lado, como llego", hacia_el_asiento and jugador._mirando == -1.0)
+
 	# El mismo tick del aterrizaje, en el orden del arbol: el golpe o el banco van antes que el jugador. El
 	# retroceso del golpe empieza subiendo (velocity.y = -retroceso.y): asi se ve que el golpe si entro.
 	jugador = _jugador_nuevo(jugador)
@@ -90,12 +100,6 @@ func _jugador_nuevo(anterior: Jugador) -> Jugador:
 	jugador.position = PUNTO
 	add_child(jugador)
 	return jugador
-
-
-# Un peligro deja al jugador quieto donde lo toco mientras la pantalla funde a negro y, ya en negro, lo pone en el
-# punto seguro: Fundido.TICKS_OSCURECER + Fundido.TICKS_EN_NEGRO_PELIGRO ticks del jugador.
-func _esperar_fundido() -> void:
-	await _esperar(Fundido.TICKS_OSCURECER + Fundido.TICKS_EN_NEGRO_PELIGRO)
 
 
 # Deja al jugador como en el tick en que toca el suelo tras una caida larga.

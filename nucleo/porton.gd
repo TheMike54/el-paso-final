@@ -41,7 +41,7 @@ func _ready() -> void:
 		recorrido = Vector2(0.0, -_forma.shape.get_rect().size.y)
 	_cerrado_en = position
 	_abierto_en = position + recorrido
-	var guardado: bool = not id.is_empty() and Partida.estado_de(Sala.clave_de(self), id) != null
+	var guardado: bool = not id.is_empty() and Sala.recordado(self, id)
 	if guardado or abierto_al_empezar:
 		_avance = 1.0
 		esta_abierto = true

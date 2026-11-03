@@ -1,0 +1,11 @@
+# La Celda: el jugador camina a la derecha y salta con el salto completo los dos fosos, el de las varillas
+# (orilla en x=1571) y el de la grieta (orilla en x=3685), unos 70 px antes de cada orilla. Los dos se cruzan con
+# el salto normal, sin habilidades: la sala es la primera del juego.
+escena res://contenido/salas/celda/celda_1.tscn
+2 mover_derecha press
+208 saltar press
+240 saltar release
+562 saltar press
+594 saltar release
+680 mover_derecha release
+fin 720

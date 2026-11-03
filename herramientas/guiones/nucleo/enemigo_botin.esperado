@@ -1,0 +1,4 @@
+# Los 9 casos de herramientas/pruebas/prueba_enemigo_botin.gd corrieron y ninguno fallo. Cada caso que falla imprime
+# una linea "FALLO enemigo_botin: <caso>".
+valor . casos 9
+valor . fallos 0

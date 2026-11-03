@@ -1,0 +1,13 @@
+# Frente a la puerta (x=300) sin cruzarla; interactuar lo lleva a celda_1, frente a su puerta derecha (x=4300), quieto
+# en el piso; de ahi vuelve a celda_2 por la misma puerta. Dos cambios de sala y sin dano.
+en 19 x 300 8
+en 290 escena res://contenido/salas/celda/celda_1.tscn
+en 290 x 4300 1
+en 290 en_suelo true
+en 290 valor Jugador transicion 0
+escena res://contenido/salas/celda/celda_2.tscn
+x 300 1
+en_suelo true
+valor Jugador transicion 0
+senal /root/Eventos cambio_de_sala 2
+senal /root/Eventos jugador_danado 0

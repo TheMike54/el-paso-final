@@ -36,7 +36,7 @@ jobs:
       - name: No local or binary files tracked
         shell: bash
         run: |
-          if git ls-files | grep -E '(^|/)(CLAUDE\.local\.md|settings\.local\.json)$|\.(apk|aab|keystore|jks)$'; then
+          if git ls-files | grep -E '(^|/)(CLAUDE\.local\.md|settings\.local\.json)$|\.(apk|aab|keystore|jks|pem|key)$'; then
             echo "::error::Local-only or binary files are tracked"
             exit 1
           fi

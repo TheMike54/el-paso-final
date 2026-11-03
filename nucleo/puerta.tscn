@@ -12,9 +12,3 @@ script = ExtResource("1_puerta")
 position = Vector2(0, -80)
 shape = SubResource("forma_puerta")
 
-[node name="Dibujo" type="ColorRect" parent="."]
-offset_left = -20.0
-offset_top = -160.0
-offset_right = 20.0
-mouse_filter = 2
-color = Color(0.6, 0.45, 0.2, 0.6)

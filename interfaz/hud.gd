@@ -1,10 +1,9 @@
 class_name Hud
 extends Control
-# Interfaz durante el juego: corazones de vida, la barra de bloques de Inspiracion y las PejeCoins, arriba
-# a la izquierda, y debajo el icono de guardado. Las PejeCoins van como en Silksong: aparecen al ganar, gastar o
-# descansar con un +N, cuentan hasta el valor nuevo y se desvanecen; el total esta en el inventario. Con una tienda
-# abierta se quedan fijas, como en los dos juegos, y el Hud corre con el arbol detenido solo mientras tanto. Se entera
-# de todo por el bus de eventos y lee Partida una sola vez al entrar a la sala. Todo en gris hasta tener arte.
+# Muestra vida, Inspiracion, PejeCoins y guardado arriba a la izquierda, lejos de los controles tactiles.
+# Las PejeCoins aparecen al ganar, gastar o descansar, cuentan y se desvanecen; el inventario muestra el total.
+# Con una tienda abierta quedan fijas y el Hud corre con el arbol detenido para mostrar las compras.
+# Escucha el bus de eventos y lee Partida solo al entrar a la sala para funcionar con cualquier sala.
 
 ## Centro del grupo en la distribucion inicial del diseno: fraccion de una pantalla 16:9, anclado
 ## arriba a la izquierda y medido en el lado corto, como los botones tactiles.
@@ -15,9 +14,18 @@ const SEPARACION: float = 0.015
 const ALTO_BLOQUE: float = 0.022
 ## Ticks que se ve el icono de guardado: 2 s.
 const TICKS_AVISO: int = 120
+## Ticks que se ve el aviso de guardado fallido: 4 s, para alcanzar a leerlo.
+const TICKS_AVISO_FALLO: int = 240
+const COLOR_FALLO: Color = Color(1.0, 0.6, 0.5)
 ## Lado del icono de guardado, en fraccion del lado corto. Va bajo las PejeCoins: abajo a la derecha lo tapaba
-## Saltar (prueba en el S50, 12-oct-2026). Provisional: el diseno del icono va despues.
+## Saltar. (36 px a 1280x720).
 const LADO_ICONO: float = 0.05
+## Respiracion del disquete mientras se ve: un ciclo de 1,2 s, escala minima y maxima y blanco maximo encima.
+const TICKS_RESPIRAR: int = 72
+const ESCALA_RESPIRAR: Vector2 = Vector2(0.94, 1.06)
+const BRILLO_RESPIRAR: float = 0.18
+## Diametro de la PejeCoin en fracciones del tamano de letra del numero (26 px a 1280x720): a 20 px se perdia.
+const DIAMETRO_MONEDA: float = 1.04
 const COLOR_LLENO: Color = Color(0.85, 0.85, 0.9)
 const COLOR_VACIO: Color = Color(0.16, 0.16, 0.19, 0.9)
 ## PejeCoins como el contador de Silksong (CurrencyCounterBase), en ticks: aparecen en 0,1 s, esperan 1 s antes de
@@ -27,8 +35,7 @@ const TICKS_ESPERA_CONTEO: int = 60
 const PASOS_CONTEO: float = 34.0
 const TICKS_A_LA_VISTA: int = 90
 const TICKS_DESVANECER: int = 18
-## Al morir la espera se acorta: con la de siempre el conteo no llegaba a 0 antes de reaparecer (90 ticks, prueba en
-## el S21, 17-oct-2026). 6 + 20 + 34 ticks caben antes de que la pantalla oscurezca.
+## Al morir la espera se acorta: con la de siempre el conteo no llegaba a 0 antes de reaparecer. 6 + 20 + 34 ticks caben antes de que la pantalla oscurezca.
 const TICKS_ESPERA_MUERTE: int = 20
 
 ## Lo que muestra; publico para los guiones.
@@ -48,6 +55,8 @@ var monedas_visibles: bool = false
 var monedas_fijas: bool = false
 ## Icono de guardado a la vista.
 var aviso_visible: bool = false
+## Aviso de guardado fallido a la vista: el mismo disquete, con su texto al lado.
+var aviso_fallo_visible: bool = false
 
 var _ticks_aviso: int = 0
 # Contador de PejeCoins: si debe verse, su opacidad, ticks antes de contar y ticks a la vista ya contado.
@@ -57,7 +66,7 @@ var _ticks_espera_conteo: int = 0
 var _ticks_a_la_vista: int = 0
 # Nodo propio, como el icono: contar o desvanecer no redibuja corazones ni barra.
 var _monedas: Node2D = null
-# El icono es un nodo propio: girarlo cambia su rotation y no redibuja corazones, barra ni texto.
+# El icono es un nodo propio: redibujarlo para que "respire" no redibuja corazones, barra ni texto.
 var _icono: Node2D = null
 
 
@@ -65,7 +74,7 @@ func _ready() -> void:
 	vidas = Partida.vidas
 	vidas_maximas = Partida.vidas_maximas
 	inspiracion = Partida.inspiracion
-	inspiracion_maxima = Partida.INSPIRACION_MAXIMA
+	inspiracion_maxima = Partida.inspiracion_maxima
 	bloques_llenos = inspiracion / Partida.INSPIRACION_POR_GOLPE
 	monedas = Partida.monedas
 	monedas_mostradas = monedas
@@ -73,6 +82,7 @@ func _ready() -> void:
 	Eventos.monedas_cambiadas.connect(_al_cambiar_monedas)
 	Eventos.inspiracion_cambiada.connect(_al_cambiar_inspiracion)
 	Eventos.partida_guardada.connect(_al_guardar)
+	Eventos.guardado_fallido.connect(_al_fallar_guardado)
 	Eventos.descanso_en_banco.connect(_al_descansar)
 	Eventos.jugador_muerto.connect(_al_morir)
 	Eventos.tienda_abierta.connect(_al_abrir_tienda)
@@ -87,6 +97,8 @@ func _ready() -> void:
 	add_child(_icono)
 	resized.connect(_colocar_icono)
 	_colocar_icono()
+	if Partida.ultimo_guardado_fallo:
+		_mostrar_aviso(TICKS_AVISO_FALLO, true)
 
 
 func _al_cambiar_vidas(nuevas: int, maximas: int) -> void:
@@ -141,10 +153,19 @@ func _al_cerrar_tienda() -> void:
 
 
 func _al_guardar() -> void:
-	_ticks_aviso = TICKS_AVISO
-	aviso_visible = true
+	_mostrar_aviso(TICKS_AVISO, false)
+
+
+func _al_fallar_guardado(_error: int) -> void:
+	_mostrar_aviso(TICKS_AVISO_FALLO, true)
+
+
+func _mostrar_aviso(ticks: int, fallo: bool) -> void:
+	_ticks_aviso = ticks
+	aviso_visible = not fallo
+	aviso_fallo_visible = fallo
 	_icono.visible = true
-	_icono.rotation = float(_ticks_aviso) * 0.1
+	_icono.queue_redraw()
 
 
 func _physics_process(_delta: float) -> void:
@@ -154,8 +175,9 @@ func _physics_process(_delta: float) -> void:
 	_ticks_aviso -= 1
 	if _ticks_aviso == 0:
 		aviso_visible = false
+		aviso_fallo_visible = false
 		_icono.visible = false
-	_icono.rotation = float(_ticks_aviso) * 0.1
+	_icono.queue_redraw()
 
 
 # Espera, cuenta hacia monedas (un paso por tick, unos PASOS_CONTEO en total), sigue a la vista y se desvanece; con
@@ -163,6 +185,8 @@ func _physics_process(_delta: float) -> void:
 func _avanzar_monedas() -> void:
 	if not _monedas_activas and _alfa_monedas == 0.0:
 		return
+	var numero_antes: int = monedas_mostradas
+	var alfa_antes: float = _alfa_monedas
 	if _ticks_espera_conteo > 0:
 		_ticks_espera_conteo -= 1
 	elif monedas_mostradas != monedas:
@@ -182,7 +206,9 @@ func _avanzar_monedas() -> void:
 		_alfa_monedas = maxf(0.0, _alfa_monedas - 1.0 / TICKS_DESVANECER)
 	monedas_visibles = _alfa_monedas > 0.0
 	_monedas.visible = monedas_visibles
-	_monedas.queue_redraw()
+	# Solo si cambio el numero o el alfa: quietas a la vista (o fijas en la tienda) no se redibujan.
+	if monedas_mostradas != numero_antes or _alfa_monedas != alfa_antes:
+		_monedas.queue_redraw()
 
 
 func _draw() -> void:
@@ -228,7 +254,7 @@ func _base_monedas(corto: float) -> float:
 	return y_barra + ALTO_BLOQUE * corto + maxi(14, roundi(0.035 * corto)) * 1.4
 
 
-# Icono provisional de guardado bajo las PejeCoins, alineado a la izquierda del grupo.
+# Icono de guardado bajo las PejeCoins, alineado a la izquierda del grupo.
 func _colocar_icono() -> void:
 	var corto: float = minf(size.x, size.y)
 	var r: float = LADO_ICONO * corto / 2.0
@@ -236,16 +262,17 @@ func _colocar_icono() -> void:
 	_icono.queue_redraw()
 
 
-# PejeCoins bajo la barra: un circulo gris del alto de la letra (el icono, hasta tener arte), el numero y el +N.
+# PejeCoins bajo la barra: la moneda (FigurasVector) casi del alto del numero, el numero y el +N.
 func _dibujar_monedas() -> void:
 	var corto: float = minf(size.x, size.y)
 	var tamano_letra: int = maxi(14, roundi(0.035 * corto))
 	var fuente: Font = ThemeDB.fallback_font
 	var color: Color = Color(COLOR_LLENO, _alfa_monedas)
 	var base: float = _base_monedas(corto)
-	var r: float = tamano_letra * 0.4
+	var r: float = tamano_letra * DIAMETRO_MONEDA / 2.0
 	var x: float = _izquierda(corto)
-	_monedas.draw_circle(Vector2(x + r, base - tamano_letra * 0.35), r, color)
+	FigurasVector.dibujar_moneda(_monedas, Vector2(x + r, base - tamano_letra * 0.35), 2.0 * r, fuente,
+			Color(1.0, 1.0, 1.0, _alfa_monedas))
 	x += 2.0 * r + SEPARACION * corto
 	var numero: String = str(monedas_mostradas)
 	_monedas.draw_string(fuente, Vector2(x, base), numero, HORIZONTAL_ALIGNMENT_LEFT, -1, tamano_letra, color)
@@ -256,13 +283,16 @@ func _dibujar_monedas() -> void:
 				HORIZONTAL_ALIGNMENT_LEFT, -1, tamano_letra, color)
 
 
-# Un rombo centrado en el nodo: girarlo es cambiar su rotation.
+# La curva suave hace que el disquete respire sin saltos al cambiar de escala y brillo.
 func _dibujar_icono() -> void:
-	var r: float = LADO_ICONO * minf(size.x, size.y) / 2.0
-	var puntos: PackedVector2Array = []
-	for i: int in range(4):
-		puntos.append(Vector2(r, 0.0).rotated(i * PI / 2.0))
-	_icono.draw_colored_polygon(puntos, COLOR_LLENO)
+	var fase: float = 0.5 - 0.5 * cos(TAU * float(TICKS_AVISO - _ticks_aviso) / TICKS_RESPIRAR)
+	var lado: float = LADO_ICONO * minf(size.x, size.y) * lerpf(ESCALA_RESPIRAR.x, ESCALA_RESPIRAR.y, fase)
+	FigurasVector.dibujar(_icono, FigurasVector.DISQUETE, Vector2.ZERO, lado, Color.WHITE, BRILLO_RESPIRAR * fase)
+	if aviso_fallo_visible:
+		var corto: float = minf(size.x, size.y)
+		var tamano_letra: int = maxi(14, roundi(0.035 * corto))
+		_icono.draw_string(ThemeDB.fallback_font, Vector2(lado * 0.75, tamano_letra * 0.35), Partida.TEXTO_GUARDADO_FALLIDO,
+				HORIZONTAL_ALIGNMENT_LEFT, -1.0, tamano_letra, COLOR_FALLO)
 
 
 # Corazon gris: dos circulos y un triangulo. Vacio, oscuro.

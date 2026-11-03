@@ -1,0 +1,4 @@
+# Los 23 casos de herramientas/pruebas/prueba_zona_camara.gd corrieron y ninguno fallo. Cada caso que falla imprime
+# una linea "FALLO zona_camara: <caso>".
+valor . casos 23
+valor . fallos 0

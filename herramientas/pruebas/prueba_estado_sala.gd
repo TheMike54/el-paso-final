@@ -36,6 +36,12 @@ func _ready() -> void:
 	sala.add_child(sin_id)
 	sin_id.romper()
 	_caso("un suelo sin id no se recuerda", Partida.salas["prueba_3"].size() == 1)
+	# Dentro de una pieza instanciada el owner es la raiz de la pieza: clave_de sube hasta la Sala y lo recuerda en ella.
+	var anidado: SueloFragil = _suelo_en_pieza(sala, "suelo_pieza")
+	_caso("clave_de de un nodo dentro de una pieza es la de su sala", anidado.owner != sala
+			and Sala.clave_de(anidado) == "prueba_3")
+	anidado.romper()
+	_caso("un suelo dentro de una pieza se recuerda en su sala", _vale(Partida.estado_de("prueba_3", "suelo_pieza"), true))
 
 	# Coleccionable: tomarlo lo marca, autoguarda, y ya no aparece.
 	var jugador: Jugador = sala.get_node(^"Jugador") as Jugador
@@ -67,7 +73,7 @@ func _ready() -> void:
 	for i: int in range(5, 13):
 		Partida.marcar("prueba_2", "coleccionable_%d" % i)
 	_caso("con 12 se entregan el amuleto y la vida maxima", entrega.entregar() == 2 and Partida.amuletos_tenidos.has(&"amuleto_prueba") and Partida.vidas_maximas == 5)
-	# La regla de interactuar es una para banco, Npc, reto y entrega: sentado no se interactua (la entrega lo olvidaba).
+	# La regla de interactuar es una para banco, Npc, reto y entrega: sentado no se interactua.
 	# El jugador cae hasta el suelo: asi la unica diferencia entre los dos casos es estar sentado.
 	for i: int in range(90):
 		if jugador.is_on_floor():
@@ -148,7 +154,7 @@ func _ready() -> void:
 	_caso("una habilidad repetida no vuelve a guardar", Partida.autoguardados == antes + 1)
 	Eventos.jefe_vencido.emit(&"jefe_prueba")
 	_caso("vencer a un jefe lo anota y autoguarda", Partida.jefes.has(&"jefe_prueba") and Partida.autoguardados == antes + 2)
-	Partida.obtener_amuleto(&"brujula")
+	Partida.obtener_amuleto(&"amuleto_velocidad")
 	_caso("recoger un amuleto autoguarda", Partida.autoguardados == antes + 3)
 	Eventos.jugador_muerto.emit()
 	_caso("morir autoguarda", Partida.autoguardados == antes + 4)
@@ -167,10 +173,24 @@ func _recompensa(cantidad: int, tipo: Recompensa.Tipo, monto: int, id: StringNam
 	return recompensa
 
 
+# Una pieza armada como escena (raiz Node2D con un suelo fragil cuyo owner es la raiz), instanciada dentro de la sala.
+func _suelo_en_pieza(sala: Sala, id: String) -> SueloFragil:
+	var raiz: Node2D = Node2D.new()
+	var suelo: SueloFragil = SueloFragil.new()
+	suelo.name = "Suelo"
+	suelo.id = id
+	raiz.add_child(suelo)
+	suelo.owner = raiz
+	var escena: PackedScene = PackedScene.new()
+	escena.pack(raiz)
+	raiz.free()
+	var pieza: Node2D = escena.instantiate() as Node2D
+	sala.add_child(pieza)
+	return pieza.get_node(^"Suelo") as SueloFragil
+
+
 func _borrar() -> void:
-	for ruta: String in [RUTA, RUTA + ".tmp"]:
-		if FileAccess.file_exists(ruta):
-			DirAccess.remove_absolute(ruta)
+	_borrar_archivos(RUTA)
 
 
 # Compara un Variant sin pasarlo directo a _caso (el tipado estricto no lo deja). 3.0 del JSON vale 3.

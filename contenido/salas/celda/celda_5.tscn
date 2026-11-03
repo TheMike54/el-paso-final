@@ -1,0 +1,214 @@
+[gd_scene format=3 uid="uid://be4xucsv5leue"]
+
+[ext_resource type="PackedScene" uid="uid://bl4kcwxb626lh" path="res://contenido/objetos/celda/colgante_frente.tscn" id="99_colgante_frente"]
+[ext_resource type="PackedScene" uid="uid://dkg1tgmycc1sr" path="res://contenido/zonas/celda/sala_celda.tscn" id="0_base"]
+[ext_resource type="Texture2D" uid="uid://chq6otlb0rvwe" path="res://contenido/salas/celda/arte/pasillo_pared.png" id="1_pared"]
+[ext_resource type="Texture2D" uid="uid://b7mg0jhxcokc2" path="res://contenido/salas/celda/arte/elevador_cadenas.png" id="2_elevador"]
+[ext_resource type="Texture2D" uid="uid://cohevd3kiq7tg" path="res://contenido/salas/celda/arte/polea_elevador.png" id="3_polea"]
+[ext_resource type="Texture2D" uid="uid://cmac1tt8x8oik" path="res://contenido/salas/celda/arte/techo.png" id="4_techo"]
+[ext_resource type="Texture2D" uid="uid://dh3rgbh4pqdd1" path="res://contenido/salas/celda/arte/columna.png" id="5_columna"]
+[ext_resource type="Texture2D" uid="uid://hea7stl1d3pj" path="res://contenido/salas/celda/arte/pasillo_piso.png" id="6_piso"]
+[ext_resource type="PackedScene" uid="uid://doew4h1bd21gu" path="res://contenido/objetos/celda/foso_varillas_pasillo.tscn" id="7_foso"]
+[ext_resource type="PackedScene" uid="uid://cjqt0adne2xn2" path="res://contenido/objetos/celda/aspas.tscn" id="8_aspas"]
+[ext_resource type="PackedScene" uid="uid://cktp3d3amsb88" path="res://nucleo/coleccionable.tscn" id="9_coleccionable"]
+[ext_resource type="PackedScene" uid="uid://c1mh87shrjl0d" path="res://nucleo/monedas_sueltas.tscn" id="10_monedas"]
+[ext_resource type="PackedScene" uid="uid://snbg7ufyq4g6" path="res://contenido/objetos/celda/hueco_piso.tscn" id="11_hueco_piso"]
+[ext_resource type="Texture2D" uid="uid://cmdggylm5oww3" path="res://contenido/salas/celda/arte/escombros.png" id="12_escombros"]
+[ext_resource type="Texture2D" uid="uid://bfyy7mvwxo0b4" path="res://contenido/salas/celda/arte/pila_examenes_rota.png" id="13_pila"]
+[ext_resource type="Texture2D" uid="uid://c04xej401kxml" path="res://contenido/salas/celda/arte/frente_cadena.png" id="15_cadena"]
+[ext_resource type="Texture2D" uid="uid://dcacnthyug5wa" path="res://contenido/salas/celda/arte/frente_cable.png" id="16_cable"]
+[ext_resource type="Texture2D" uid="uid://caivy1777ho0r" path="res://contenido/salas/celda/arte/tiro_hueco.png" id="18_tiro"]
+[ext_resource type="Texture2D" uid="uid://dstamayabpovb" path="res://contenido/salas/celda/arte/orilla_hueco.png" id="17_orilla"]
+
+[sub_resource type="RectangleShape2D" id="forma_pared"]
+size = Vector2(80, 800)
+
+[sub_resource type="RectangleShape2D" id="forma_losa_a"]
+size = Vector2(654, 246)
+
+[sub_resource type="RectangleShape2D" id="forma_losa_b"]
+size = Vector2(629, 246)
+
+[sub_resource type="RectangleShape2D" id="forma_losa_c"]
+size = Vector2(343, 246)
+
+[sub_resource type="RectangleShape2D" id="forma_techo"]
+size = Vector2(2050, 160)
+
+[node name="Celda5" instance=ExtResource("0_base")]
+id = "celda_5"
+limites = Rect2(0, 0, 1970, 720)
+posicion_mapa = Vector2(6832, 1440)
+
+[node name="Entrada" parent="." index="0"]
+position = Vector2(1350, 554)
+
+[node name="Pared" type="Sprite2D" parent="Juego"]
+texture_repeat = 3
+position = Vector2(0, 14)
+texture = ExtResource("1_pared")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 1970, 706)
+
+[node name="BajoPiso" type="Sprite2D" parent="Juego"]
+texture_repeat = 2
+position = Vector2(0, 554)
+texture = ExtResource("18_tiro")
+centered = false
+flip_v = true
+region_enabled = true
+region_rect = Rect2(0, 0, 1970, 200)
+
+[node name="Riel" type="Sprite2D" parent="Juego"]
+position = Vector2(158, 450)
+texture = ExtResource("1_pared")
+centered = false
+region_enabled = true
+region_rect = Rect2(284, 194, 404, 18)
+
+[node name="ColumnaIzquierda" type="Sprite2D" parent="Juego"]
+position = Vector2(-60, 14)
+texture = ExtResource("5_columna")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 160, 540)
+
+[node name="ColumnaDerecha" type="Sprite2D" parent="Juego"]
+position = Vector2(1810, 14)
+texture = ExtResource("5_columna")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 160, 540)
+
+[node name="ElevadorAbajo" type="Sprite2D" parent="Juego"]
+position = Vector2(1503, 138)
+texture = ExtResource("2_elevador")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 404, 180, 637)
+
+[node name="Polea" type="Sprite2D" parent="Juego"]
+position = Vector2(1517, 72)
+texture = ExtResource("3_polea")
+centered = false
+
+[node name="TechoPasillo" type="Sprite2D" parent="Juego"]
+texture_repeat = 2
+texture = ExtResource("4_techo")
+centered = false
+region_enabled = true
+region_rect = Rect2(162, 0, 1970, 112)
+
+[node name="PasilloPiso" type="Sprite2D" parent="SueloPintado"]
+position = Vector2(0, 554)
+texture = ExtResource("6_piso")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 1450, 167)
+
+[node name="PasilloPisoDerecha" type="Sprite2D" parent="SueloPintado"]
+position = Vector2(1712, 554)
+texture = ExtResource("6_piso")
+centered = false
+region_enabled = true
+region_rect = Rect2(1712, 0, 258, 167)
+
+[node name="OrillaIzquierda" type="Sprite2D" parent="SueloPintado"]
+position = Vector2(1382, 509)
+scale = Vector2(1.4, 1.4)
+texture = ExtResource("17_orilla")
+centered = false
+
+[node name="OrillaDerecha" type="Sprite2D" parent="SueloPintado"]
+position = Vector2(1640, 509)
+scale = Vector2(1.4, 1.4)
+texture = ExtResource("17_orilla")
+centered = false
+flip_h = true
+
+[node name="ParedIzquierda" type="StaticBody2D" parent="Terreno"]
+position = Vector2(60, 300)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/ParedIzquierda"]
+shape = SubResource("forma_pared")
+
+[node name="ParedDerecha" type="StaticBody2D" parent="Terreno"]
+position = Vector2(1850, 300)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/ParedDerecha"]
+shape = SubResource("forma_pared")
+
+[node name="LosaA" type="StaticBody2D" parent="Terreno"]
+position = Vector2(327, 677)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/LosaA"]
+shape = SubResource("forma_losa_a")
+
+[node name="LosaB" type="StaticBody2D" parent="Terreno"]
+position = Vector2(1154.5, 677)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/LosaB"]
+shape = SubResource("forma_losa_b")
+
+[node name="LosaC" type="StaticBody2D" parent="Terreno"]
+position = Vector2(1878.5, 677)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/LosaC"]
+shape = SubResource("forma_losa_c")
+
+[node name="Techo" type="StaticBody2D" parent="Terreno"]
+position = Vector2(1025, -6)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/Techo"]
+shape = SubResource("forma_techo")
+
+[node name="FosoVarillas" parent="Peligros" instance=ExtResource("7_foso")]
+position = Vector2(747, 554)
+
+[node name="Aspas" parent="Peligros" instance=ExtResource("8_aspas")]
+position = Vector2(470, 459)
+
+[node name="FrenteEscombros" type="Sprite2D" parent="Frente"]
+use_parent_material = true
+position = Vector2(1170, 624)
+scale = Vector2(2, 2)
+texture = ExtResource("12_escombros")
+centered = false
+flip_h = true
+
+[node name="FrentePilaExamenesRota" type="Sprite2D" parent="Frente"]
+use_parent_material = true
+position = Vector2(2100, 634)
+scale = Vector2(2, 2)
+texture = ExtResource("13_pila")
+centered = false
+
+[node name="FrenteCadenaColgante" parent="Frente" instance=ExtResource("99_colgante_frente")]
+position = Vector2(900, -10)
+
+[node name="Dibujo" parent="Frente/FrenteCadenaColgante" index="0"]
+texture = ExtResource("15_cadena")
+offset = Vector2(-12.5, 0)
+
+[node name="FrenteCableColgante" parent="Frente" instance=ExtResource("99_colgante_frente")]
+position = Vector2(2250, -10)
+
+[node name="Dibujo" parent="Frente/FrenteCableColgante" index="0"]
+texture = ExtResource("16_cable")
+offset = Vector2(-47, 0)
+
+[node name="Coleccionable" parent="." instance=ExtResource("9_coleccionable")]
+position = Vector2(130, 554)
+id = "coleccionable_pasillo"
+
+[node name="MonedasRepisa" parent="." instance=ExtResource("10_monedas")]
+position = Vector2(1760, 554)
+id = "monedas_repisa"
+
+[node name="PuertaAbajo" parent="." instance=ExtResource("11_hueco_piso")]
+position = Vector2(1588, 694)
+id = &"abajo"
+sala_destino = "celda_2"
+puerta_destino = &"arriba"
+llegada = Vector2(-238, -140)

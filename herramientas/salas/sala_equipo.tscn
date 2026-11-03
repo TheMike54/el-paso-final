@@ -1,0 +1,180 @@
+[gd_scene format=3 uid="uid://dghfvwf11yb8y"]
+
+[ext_resource type="Script" uid="uid://k7a08bqsbqd0" path="res://nucleo/sala.gd" id="1_sala"]
+[ext_resource type="PackedScene" uid="uid://dljj3hd7ldowx" path="res://nucleo/banco.tscn" id="2_banco"]
+[ext_resource type="Script" uid="uid://cu40g0xx2fvk2" path="res://herramientas/salas/entrega_equipo_prueba.gd" id="3_entrega"]
+[ext_resource type="Script" uid="uid://cltshx6hm4a3b" path="res://nucleo/recompensa.gd" id="4_recompensa"]
+[ext_resource type="PackedScene" uid="uid://dgy2sncgkvcml" path="res://nucleo/enemigo.tscn" id="5_enemigo"]
+[ext_resource type="Resource" uid="uid://iapim1jfhxu4" path="res://herramientas/salas/fichas/caminante_botin.tres" id="6_ficha"]
+
+[sub_resource type="RectangleShape2D" id="forma_suelo"]
+size = Vector2(3600, 80)
+
+[sub_resource type="RectangleShape2D" id="forma_pared"]
+size = Vector2(40, 720)
+
+[sub_resource type="RectangleShape2D" id="forma_entrega"]
+size = Vector2(120, 160)
+
+[sub_resource type="RectangleShape2D" id="forma_plataforma"]
+size = Vector2(600, 80)
+
+[sub_resource type="Resource" id="premio_prueba"]
+script = ExtResource("4_recompensa")
+cantidad = 0
+tipo = 2
+id = &"amuleto_prueba"
+
+[sub_resource type="Resource" id="premio_velocidad"]
+script = ExtResource("4_recompensa")
+cantidad = 0
+tipo = 2
+id = &"amuleto_velocidad"
+
+[sub_resource type="Resource" id="premio_escudo"]
+script = ExtResource("4_recompensa")
+cantidad = 0
+tipo = 2
+id = &"amuleto_escudo"
+
+[sub_resource type="Resource" id="premio_inspiracion"]
+script = ExtResource("4_recompensa")
+cantidad = 0
+tipo = 2
+id = &"amuleto_inspiracion"
+
+[sub_resource type="Resource" id="premio_botin"]
+script = ExtResource("4_recompensa")
+cantidad = 0
+tipo = 2
+id = &"amuleto_botin"
+
+[sub_resource type="Resource" id="premio_patas"]
+script = ExtResource("4_recompensa")
+cantidad = 0
+tipo = 2
+id = &"patas_cucaracha"
+
+[sub_resource type="Resource" id="premio_brujula"]
+script = ExtResource("4_recompensa")
+cantidad = 0
+tipo = 5
+id = &"brujula"
+
+[node name="SalaEquipo" type="Node2D"]
+script = ExtResource("1_sala")
+habilidades_de_prueba = Array[StringName]([&"pluma"])
+limites = Rect2(0, 0, 3600, 720)
+
+[node name="Entrada" type="Marker2D" parent="."]
+position = Vector2(300, 680)
+
+[node name="Suelo" type="StaticBody2D" parent="."]
+position = Vector2(1800, 720)
+
+[node name="Forma" type="CollisionShape2D" parent="Suelo"]
+shape = SubResource("forma_suelo")
+
+[node name="Dibujo" type="ColorRect" parent="Suelo"]
+offset_left = -1800.0
+offset_top = -40.0
+offset_right = 1800.0
+offset_bottom = 40.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="ParedIzquierda" type="StaticBody2D" parent="."]
+position = Vector2(20, 360)
+
+[node name="Forma" type="CollisionShape2D" parent="ParedIzquierda"]
+shape = SubResource("forma_pared")
+
+[node name="Dibujo" type="ColorRect" parent="ParedIzquierda"]
+offset_left = -20.0
+offset_top = -360.0
+offset_right = 20.0
+offset_bottom = 360.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="ParedDerecha" type="StaticBody2D" parent="."]
+position = Vector2(3580, 360)
+
+[node name="Forma" type="CollisionShape2D" parent="ParedDerecha"]
+shape = SubResource("forma_pared")
+
+[node name="Dibujo" type="ColorRect" parent="ParedDerecha"]
+offset_left = -20.0
+offset_top = -360.0
+offset_right = 20.0
+offset_bottom = 360.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="Entrega" type="Area2D" parent="."]
+position = Vector2(450, 680)
+script = ExtResource("3_entrega")
+recompensas = Array[ExtResource("4_recompensa")]([SubResource("premio_prueba"), SubResource("premio_velocidad"), SubResource("premio_escudo"), SubResource("premio_inspiracion"), SubResource("premio_botin"), SubResource("premio_patas"), SubResource("premio_brujula")])
+
+[node name="Forma" type="CollisionShape2D" parent="Entrega"]
+position = Vector2(0, -80)
+shape = SubResource("forma_entrega")
+
+[node name="Dibujo" type="ColorRect" parent="Entrega"]
+offset_left = -45.0
+offset_top = -80.0
+offset_right = 45.0
+mouse_filter = 2
+color = Color(0.4, 0.7, 0.6, 1)
+
+[node name="Indicacion" type="Label" parent="Entrega"]
+offset_left = -180.0
+offset_top = -210.0
+offset_right = 180.0
+offset_bottom = -100.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 28
+text = "Equipo gratis
+Párate aquí y empuja arriba"
+horizontal_alignment = 1
+
+[node name="Banco" parent="." instance=ExtResource("2_banco")]
+position = Vector2(850, 680)
+id = "banco_equipo"
+
+[node name="Asiento" type="ColorRect" parent="Banco"]
+offset_left = -60.0
+offset_top = -40.0
+offset_right = 60.0
+mouse_filter = 2
+color = Color(0.5, 0.4, 0.25, 1)
+
+[node name="Indicacion" type="Label" parent="Banco"]
+offset_left = -190.0
+offset_top = -210.0
+offset_right = 190.0
+offset_bottom = -100.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 28
+text = "Siéntate para cambiar
+amuletos y útiles"
+horizontal_alignment = 1
+
+[node name="PlataformaEnemigo" type="StaticBody2D" parent="."]
+position = Vector2(3200, 620)
+
+[node name="Forma" type="CollisionShape2D" parent="PlataformaEnemigo"]
+shape = SubResource("forma_plataforma")
+
+[node name="Dibujo" type="ColorRect" parent="PlataformaEnemigo"]
+offset_left = -300.0
+offset_top = -40.0
+offset_right = 300.0
+offset_bottom = 40.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="Caminante" parent="." instance=ExtResource("5_enemigo")]
+position = Vector2(3200, 580)
+id = &"caminante_equipo"
+ficha = ExtResource("6_ficha")

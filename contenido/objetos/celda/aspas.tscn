@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://cjqt0adne2xn2"]
+
+[ext_resource type="Script" uid="uid://c2i8bitphouxk" path="res://nucleo/vaiven.gd" id="1_vaiven"]
+[ext_resource type="Script" uid="uid://ctfv6lercldws" path="res://nucleo/giro.gd" id="2_giro"]
+[ext_resource type="Texture2D" uid="uid://cwk2acce0cwhr" path="res://contenido/salas/celda/arte/aspas.png" id="3_aspas"]
+[ext_resource type="Script" uid="uid://jy2tkfmforul" path="res://nucleo/dano_contacto.gd" id="4_dano"]
+
+[sub_resource type="CircleShape2D" id="forma_aspas"]
+radius = 65.0
+
+[node name="Aspas" type="Node2D"]
+script = ExtResource("1_vaiven")
+recorrido = Vector2(-220, 0)
+ticks_ida = 100
+ticks_espera = 20
+
+[node name="Giro" type="Node2D" parent="."]
+script = ExtResource("2_giro")
+ticks_vuelta = -42
+
+[node name="Dibujo" type="Sprite2D" parent="Giro"]
+texture = ExtResource("3_aspas")
+
+[node name="Dano" type="Area2D" parent="Giro"]
+script = ExtResource("4_dano")
+
+[node name="Forma" type="CollisionShape2D" parent="Giro/Dano"]
+shape = SubResource("forma_aspas")

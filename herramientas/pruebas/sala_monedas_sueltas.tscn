@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://cdmtwtddke6bl"]
+
+[ext_resource type="Script" uid="uid://btsq7yau0fo5l" path="res://herramientas/pruebas/prueba_monedas_sueltas.gd" id="1_prueba"]
+
+[node name="SalaMonedasSueltas" type="Node"]
+script = ExtResource("1_prueba")

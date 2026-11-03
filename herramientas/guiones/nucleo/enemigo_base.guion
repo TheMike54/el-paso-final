@@ -1,6 +1,6 @@
 # En la sala de enemigos el jugador vence al debil (dos golpes) y al fuerte (tres, acercandose 48 px entre
 # golpe y golpe: cada golpe lo empuja 60), sale por la puerta derecha a la sala del banco y vuelve sin descansar. Camina
-# hacia la izquierda por donde estaba el fuerte.
+# hacia la izquierda por donde estaba el fuerte. Los cuadros incluyen los dos cruces de puerta (medidos el 27-oct-2026).
 escena res://herramientas/salas/sala_enemigos.tscn
 2 mover_derecha press
 52 mover_derecha release
@@ -23,5 +23,5 @@ escena res://herramientas/salas/sala_enemigos.tscn
 245 mover_derecha press
 460 mover_derecha release
 470 mover_izquierda press
-680 mover_izquierda release
-fin 690
+745 mover_izquierda release
+fin 760

@@ -43,6 +43,17 @@ func _ready() -> void:
 	_escribir(r1 + Guardado.RESPALDO, "{\"version\": 3, \"par")
 	_caso("una copia cortada no cuenta y no pisa la ranura", not Guardado.tiene_respaldo(r1) and Guardado.restaurar(r1) != OK and Guardado.cargar(r1).estado == Guardado.Estado.VALIDA)
 	_caso("la siguiente copia la reemplaza, sin temporal", Guardado.respaldar(r1) == OK and Guardado.tiene_respaldo(r1) and not FileAccess.file_exists(r1 + Guardado.RESPALDO + ".tmp"))
+	# La copia falla al abrir su temporal (una carpeta con ese nombre): la anterior se queda.
+	var temporal: String = r1 + Guardado.RESPALDO + ".tmp"
+	DirAccess.make_dir_absolute(temporal)
+	Engine.print_error_messages = false
+	var copia: Error = Guardado.respaldar(r1)
+	Engine.print_error_messages = true
+	DirAccess.remove_absolute(temporal)
+	_caso("si la copia falla lo dice y conserva la anterior", copia != OK and Guardado.tiene_respaldo(r1) and Guardado.cargar(r1).estado == Guardado.Estado.VALIDA)
+	Guardado.fingir_fallo(r1 + Guardado.RESPALDO, ERR_FILE_CANT_WRITE)
+	_caso("si no se puede borrar la copia, lo dice", Guardado.borrar(r1) != OK)
+	Guardado.olvidar_fallos()
 	Guardado.borrar(r1)
 
 	# Texto de las fichas.
@@ -52,6 +63,11 @@ func _ready() -> void:
 	con_banco["banco"] = {"sala": "raices_1", "id": "banco_1"}
 	_caso("la ubicacion es la sala del banco", Ranuras.ubicacion(con_banco) == "Raices 1")
 	_caso("sin banco, la ultima sala visitada", Ranuras.ubicacion(PARTIDA) == "Prueba 2")
+	con_banco["banco"] = {"sala": "celda_3", "id": "banco_1"}
+	_caso("el banco muestra el nombre de su zona", Ranuras.ubicacion(con_banco) == "La Celda")
+	var en_celda: Dictionary = {"salas_visitadas": ["celda_3"]}
+	_caso("la ultima visitada muestra el nombre de su zona", Ranuras.ubicacion(en_celda) == "La Celda")
+	_caso("sin nombre de zona se conserva el id legible", Sala.nombre_de("sin_nombre_7") == "Sin Nombre 7")
 	var suelta: Dictionary = PARTIDA.duplicate(true)
 	suelta["salas_visitadas"] = ["res://herramientas/salas/sala_banco.tscn"]
 	_caso("una sala suelta, por el nombre de su escena", Ranuras.ubicacion(suelta) == "Sala Banco")
@@ -113,6 +129,35 @@ func _probar_menu() -> void:
 	(ranuras.get_node(^"Confirmar").find_child("Si", true, false) as Button).pressed.emit()
 	_caso("confirmar borra y la ficha queda vacia", not FileAccess.file_exists(FORMATO % 3) and _detalle(ranuras, 3) == "Nueva partida")
 
+	# Una ficha intacta que no se puede abrir: no se juega, no se borra ni se restaura, y Borrar que falla lo dice.
+	_caso("sin fallos no hay aviso en las ranuras", _aviso(ranuras).is_empty())
+	Guardado.fingir_fallo(FORMATO % 2, ERR_FILE_CANT_OPEN)
+	ranuras.leer()
+	ranuras.volver(2)
+	_caso("la que no se puede abrir lo dice y no ofrece Borrar ni Restaurar", _detalle(ranuras, 2) == "No se puede leer" and _ficha(ranuras, 2, "Principal").disabled and not _ficha(ranuras, 2, "Borrar").visible and not _ficha(ranuras, 2, "Restaurar").visible)
+	_caso("el foco no se pierde en una ficha sin botones", (ranuras.get_node(^"Marco/Arriba/Volver") as Button).has_focus())
+	_caso("y no se abre", menu.preparar_ranura(2).is_empty())
+	Guardado.olvidar_fallos()
+	ranuras.leer()
+	Guardado.fingir_fallo(FORMATO % 2, ERR_FILE_CANT_WRITE)
+	ranuras.pedir(Ranuras.Accion.BORRAR, 2)
+	Engine.print_error_messages = false
+	ranuras.confirmar()
+	Engine.print_error_messages = true
+	Guardado.olvidar_fallos()
+	_caso("si Borrar falla lo dice y la partida sigue", _aviso(ranuras) == "No se pudo borrar la partida 2." and FileAccess.file_exists(FORMATO % 2))
+	ranuras.pedir(Ranuras.Accion.RESTAURAR, 2)
+	_caso("pedir otra cosa quita el aviso", _aviso(ranuras).is_empty())
+	ranuras.atras()
+	ranuras.leer()
+	_fallar_borrar(ranuras)
+	ranuras.volver(2)
+	_caso("volver a las ranuras quita el aviso", _aviso(ranuras).is_empty())
+	_fallar_borrar(ranuras)
+	ranuras.abrir()
+	_caso("abrir las ranuras quita el aviso", _aviso(ranuras).is_empty())
+	ranuras.leer()
+
 	# Restaurar desde la ficha: la ranura 2 avanzo (9 vidas) despues de su copia (5).
 	var avanzada: Dictionary = PARTIDA.duplicate(true)
 	avanzada["vidas_maximas"] = 9
@@ -126,6 +171,12 @@ func _probar_menu() -> void:
 	_ficha(ranuras, 2, "Restaurar").pressed.emit()
 	si.pressed.emit()
 	_caso("confirmar vuelve la ranura a su copia", (Guardado.cargar(FORMATO % 2).partida["vidas_maximas"] as int) == 5 and _detalle(ranuras, 2) == Ranuras.detalle(PARTIDA))
+	ranuras.pedir(Ranuras.Accion.RESTAURAR, 2)
+	DirAccess.remove_absolute(FORMATO % 2 + Guardado.RESPALDO)
+	Engine.print_error_messages = false
+	ranuras.confirmar()
+	Engine.print_error_messages = true
+	_caso("si Restaurar falla lo dice y la partida sigue", _aviso(ranuras) == "No se pudo restaurar la partida 2." and FileAccess.file_exists(FORMATO % 2))
 	menu.notification(NOTIFICATION_WM_GO_BACK_REQUEST)
 	_caso("Atras en las ranuras vuelve al menu", not ranuras.visible and centro.visible)
 	_caso("con el foco en Jugar", (menu.get_node(^"Centro/Opciones/Jugar") as Button).has_focus())
@@ -135,10 +186,16 @@ func _probar_menu() -> void:
 	_caso("la ficha sin nombre se titula Partida N", _titulo(ranuras, 2) == "Partida 2")
 	var nueva: NuevaPartida = menu.nueva_partida
 	_ficha(ranuras, 1, "Principal").pressed.emit()
-	_caso("tocar una vacia abre Nueva partida con el foco en Hombre", nueva.visible and not ranuras.visible and nueva.botones["hombre"].has_focus())
-	_caso("sin personaje Empezar no responde", nueva.empezar_boton.disabled)
-	nueva.botones["mujer"].pressed.emit()
-	_caso("elegir uno lo enciende y habilita Empezar", nueva.personaje == "mujer" and nueva.botones["mujer"].button_pressed and not nueva.botones["hombre"].button_pressed and not nueva.empezar_boton.disabled)
+	# Con la eleccion oculta (NuevaPartida.ELEGIR_PERSONAJE) se revisa que no se vea y que ya haya personaje.
+	if NuevaPartida.ELEGIR_PERSONAJE:
+		_caso("tocar una vacia abre Nueva partida con el foco en Hombre", nueva.visible and not ranuras.visible and nueva.botones["hombre"].has_focus())
+		_caso("sin personaje Empezar no responde", nueva.empezar_boton.disabled)
+		nueva.botones["mujer"].pressed.emit()
+		_caso("elegir uno lo enciende y habilita Empezar", nueva.personaje == "mujer" and nueva.botones["mujer"].button_pressed and not nueva.botones["hombre"].button_pressed and not nueva.empezar_boton.disabled)
+	else:
+		_caso("tocar una vacia abre Nueva partida con el foco en Empezar", nueva.visible and not ranuras.visible and nueva.empezar_boton.has_focus())
+		_caso("sin la fila de personajes", not nueva.botones["hombre"].is_visible_in_tree() and not nueva.botones["mujer"].is_visible_in_tree())
+		_caso("ya con el primer personaje: Empezar responde y el nombre vacio sera Alumno", nueva.personaje == NuevaPartida.PERSONAJES[0] and not nueva.empezar_boton.disabled and nueva.campo.placeholder_text == "Alumno")
 	menu.notification(NOTIFICATION_WM_GO_BACK_REQUEST)
 	_caso("Atras vuelve a las ranuras con el foco en la elegida", not nueva.visible and ranuras.visible and _ficha(ranuras, 1, "Principal").has_focus())
 	_caso("el nombre se limpia: sin simbolos, orillas ni espacios repetidos", NuevaPartida.limpiar_nombre("  Ana   María!! ", "mujer") == "Ana María" and NuevaPartida.limpiar_nombre("Ñandú_123", "hombre") == "Ñandú123")
@@ -147,17 +204,19 @@ func _probar_menu() -> void:
 	menu.notification(NOTIFICATION_WM_GO_BACK_REQUEST)
 
 	# Entrar a una ranura (sin cambiar de escena).
-	_caso("una vacia empieza en la sala inicial", menu.preparar_ranura(1) == menu.sala_inicial)
-	_caso("y fija el autoguardado en su ranura, ya escrita", Partida.ruta_guardado == FORMATO % 1 and Guardado.cargar(FORMATO % 1).estado == Guardado.Estado.VALIDA)
-	Guardado.borrar(FORMATO % 1)
+	_caso("una vacia empieza en la cinematica", menu.preparar_ranura(1) == menu.inicio_partida_nueva and menu.inicio_partida_nueva != menu.sala_inicial)
+	_caso("y fija el autoguardado en su ranura sin escribirla: cerrar ahi la deja vacia", Partida.ruta_guardado == FORMATO % 1 and Guardado.cargar(FORMATO % 1).estado == Guardado.Estado.VACIA)
 	menu.preparar_ranura(1, "mujer", "Ana")
+	Partida.autoguardar()
 	var escrita: Dictionary = Guardado.cargar(FORMATO % 1).partida
-	_caso("una nueva guarda personaje y nombre", Partida.personaje == "mujer" and Partida.nombre == "Ana" and str(escrita.get("personaje")) == "mujer" and str(escrita.get("nombre")) == "Ana")
+	_caso("su primer guardado lleva personaje y nombre", Partida.personaje == "mujer" and Partida.nombre == "Ana" and str(escrita.get("personaje")) == "mujer" and str(escrita.get("nombre")) == "Ana")
 	ranuras.leer()
 	_caso("y su ficha se titula con el nombre", _titulo(ranuras, 1) == "Ana")
 	Guardado.borrar(FORMATO % 2)
 	Guardado.guardar(PARTIDA, FORMATO % 2)
-	_caso("una ocupada sin banco continua en la sala inicial", menu.preparar_ranura(2) == menu.sala_inicial)
+	Partida.ultimo_guardado_fallo = true
+	_caso("una ocupada sin banco continua en la sala inicial, sin cinematica", menu.preparar_ranura(2) == menu.sala_inicial)
+	_caso("abrir una ranura olvida el fallo de la anterior", not Partida.ultimo_guardado_fallo)
 	_caso("con su partida, su ruta y su copia", Partida.vidas_maximas == 5 and Partida.ruta_guardado == FORMATO % 2 and Guardado.tiene_respaldo(FORMATO % 2))
 	var con_banco: Dictionary = PARTIDA.duplicate(true)
 	con_banco["banco"] = {"sala": "prueba_1", "id": "banco_prueba"}
@@ -171,6 +230,12 @@ func _probar_menu() -> void:
 
 	# Con el aviso de pocos toques las fichas quedan arriba de el.
 	Toques.forzar(true)
+	Partida.ultimo_guardado_fallo = true
+	var tras_fallo: MenuPrincipal = ESCENA_MENU.instantiate() as MenuPrincipal
+	add_child(tras_fallo)
+	_caso("el menu dice que el ultimo guardado fallo", tras_fallo.get_node_or_null(^"AvisoGuardado") != null)
+	Partida.ultimo_guardado_fallo = false
+	tras_fallo.free()
 	var con_aviso: MenuPrincipal = ESCENA_MENU.instantiate() as MenuPrincipal
 	add_child(con_aviso)
 	con_aviso.abrir_ranuras()
@@ -228,6 +293,12 @@ func _ficha(ranuras: Ranuras, numero: int, nombre: String) -> Button:
 	return ranuras.get_node(NodePath("Marco/Desplazable")).find_child("Ficha%d" % numero, true, false).get_node(NodePath(nombre)) as Button
 
 
+# El aviso de encima de las fichas, si se ve; vacio si no.
+func _aviso(ranuras: Ranuras) -> String:
+	var aviso: Label = ranuras.get_node_or_null(^"Marco/Aviso") as Label
+	return aviso.text if aviso != null and aviso.visible else ""
+
+
 func _titulo(ranuras: Ranuras, numero: int) -> String:
 	return (_ficha(ranuras, numero, "Principal").find_child("Titulo", true, false) as Label).text
 
@@ -240,3 +311,12 @@ func _limpiar() -> void:
 	for numero: int in range(1, Guardado.RANURAS + 1):
 		Guardado.borrar(FORMATO % numero)
 	Guardado.borrar(VIEJA)
+
+
+func _fallar_borrar(ranuras: Ranuras) -> void:
+	Guardado.fingir_fallo(FORMATO % 2, ERR_FILE_CANT_WRITE)
+	ranuras.pedir(Ranuras.Accion.BORRAR, 2)
+	Engine.print_error_messages = false
+	ranuras.confirmar()
+	Engine.print_error_messages = true
+	Guardado.olvidar_fallos()

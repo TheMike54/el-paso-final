@@ -3,14 +3,19 @@ extends Control
 # Pantalla de partida nueva del menu: al tocar una ranura vacia se elige personaje (hombre o mujer) y se escribe un
 # nombre con el teclado del telefono antes de empezar. Lo elegido va a Partida y al guardado (personaje y nombre, que
 # ya existian vacios). Se arma en codigo como las ranuras. Atras y pausa vuelven a las ranuras (cerrado).
+# Mientras haya un solo personaje con arte, la eleccion queda oculta (ELEGIR_PERSONAJE) y se empieza con el primero.
 
 signal confirmada(personaje: String, nombre: String)
 signal cerrado()
 
 const PERSONAJES: PackedStringArray = ["hombre", "mujer"]
+## Con false la fila de personajes no se ve y la partida empieza con el primero: solo el hombre tiene arte.
+const ELEGIR_PERSONAJE: bool = false
 const LARGO_NOMBRE: int = 12
 ## Nombre si se deja vacio, segun el personaje.
 const NOMBRE_POR_OMISION: Dictionary[String, String] = {"hombre": "Alumno", "mujer": "Alumna"}
+
+static var _no_permitido: RegEx = null
 
 ## Ranura que se esta empezando.
 var numero: int = 0
@@ -26,8 +31,6 @@ var reservado_abajo: float = 0.0:
 var botones: Dictionary[String, Button] = {}
 var campo: LineEdit = null
 var empezar_boton: Button = null
-
-static var _no_permitido: RegEx = null
 
 var _marco: VBoxContainer = null
 var _titulo: Label = null
@@ -49,12 +52,13 @@ func _exit_tree() -> void:
 
 func abrir(ranura: int) -> void:
 	numero = ranura
-	personaje = ""
+	personaje = "" if ELEGIR_PERSONAJE else PERSONAJES[0]
 	campo.text = ""
 	_titulo.text = "Nueva partida %d" % ranura
 	_pintar()
 	visible = true
-	Tema.dar_foco(botones[PERSONAJES[0]])
+	# Sin eleccion, el foco va a Empezar y no al nombre: en el telefono el campo enfocado abriria el teclado.
+	Tema.dar_foco(botones[PERSONAJES[0]] if ELEGIR_PERSONAJE else empezar_boton)
 
 
 func atras() -> void:
@@ -109,7 +113,7 @@ func _acomodar() -> void:
 	_subida = 0.0
 
 
-# El teclado del telefono tapaba el campo del nombre (S50, 13-oct-2026): mientras esta abierto, todo sube lo justo
+# El teclado del telefono tapaba el campo del nombre: mientras esta abierto, todo sube lo justo
 # para que el campo quede encima de el.
 func _process(_delta: float) -> void:
 	var subida: float = 0.0
@@ -142,6 +146,7 @@ func _armar() -> void:
 	var personajes: HBoxContainer = HBoxContainer.new()
 	personajes.name = "Personajes"
 	personajes.add_theme_constant_override(&"separation", int(Tema.SEPARACION))
+	personajes.visible = ELEGIR_PERSONAJE
 	filas.add_child(personajes)
 	for cual: String in PERSONAJES:
 		var boton: Button = Tema.boton(cual.capitalize(), Tema.CELDA)

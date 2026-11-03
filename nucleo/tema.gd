@@ -1,18 +1,15 @@
 class_name Tema
 extends RefCounted
-# Tema de los menus (menu principal, Configuracion, pausa y zona de pruebas), en gis: letra Cabin Sketch (gruesa en
-# los titulos), opciones sin caja de 108 px de alto, que en el telefono mas chico probado (Senwa S50, densidad 240)
-# son los 48 dp que pide Android, y el foco como flechita y subrayado de gis (EstiloGis, visible tras usar control o
-# teclado, Tema.dar_foco). Se arma en codigo y se asigna solo a las raices de los menus, asi no toca el HUD. Da tambien
-# las columnas segun el ancho de la vista, el area util dentro del area segura y las piezas que repiten los menus
-# (boton, encabezado con Volver, titulo y raya).
+# Arma el tema de gis de los menus con Cabin Sketch y opciones de 108 px: 48 dp en el Senwa S50 (densidad 240).
+# Solo se asigna a las raices de los menus para que no afecte al HUD; el foco aparece con control o teclado.
+# Se arma en codigo para compartir medidas, estilos y piezas entre los menus sin repetirlos en cada escena.
+# Calcula columnas y area util dentro del area segura, y construye botones y encabezados con Volver, titulo y raya.
 
 ## Alto minimo de todo lo que se toca, en px de la vista.
 const ALTO_TOQUE: float = 108.0
 ## Celda de las cuadriculas de opciones y separacion entre columnas y entre filas.
 const CELDA: Vector2 = Vector2(420.0, ALTO_TOQUE)
-# 16 y no 24: con 24 tres columnas de Configuracion median 1308 de los 1312 px del S50 y la izquierda se cortaba
-# (captura del 12-oct-2026).
+# 16 y no 24: con 24 tres columnas de Configuracion miden 1308 de los 1312 px del S50 y la izquierda se corta.
 const SEPARACION: float = 16.0
 const SEPARACION_FILAS: float = 12.0
 ## Margen minimo alrededor del menu, dentro del area segura: nada pegado a las orillas.
@@ -26,7 +23,7 @@ const SEPARACION_ARRIBA: int = 32
 const LETRA: int = 36
 const LETRA_CHICA: int = 33
 const LETRA_TITULO: int = 48
-## Alto de una linea con LETRA en Cabin Sketch (get_height, medido el 17-oct-2026; con la fuente por omision era 50).
+## Alto de una linea con LETRA en Cabin Sketch (get_height).
 const ALTO_LETRA: float = 43.0
 ## Margen izquierdo de cada opcion: ahi va la flechita del foco (EstiloGis), y el texto empieza despues.
 const MARGEN_OPCION: float = 52.0
@@ -36,7 +33,7 @@ const COLUMNA_MINIMA: float = 128.0
 
 ## Letra de los menus: Cabin Sketch (SIL Open Font License, nucleo/fuentes/ofl.txt). Se carga con load() al armar el
 ## tema y no con preload: en un clon limpio, la primera importacion compila este script antes de importar las fuentes
-## y el preload fallaba (copia del 17-oct-2026).
+## y el preload falla.
 const RUTA_FUENTE: String = "res://nucleo/fuentes/cabin_sketch.ttf"
 const RUTA_FUENTE_GRUESA: String = "res://nucleo/fuentes/cabin_sketch_bold.ttf"
 ## Gis blanco (texto con foco o elegido, titulos) y gis gastado (las demas opciones, rayas de fondo).
@@ -72,6 +69,8 @@ const POMO: int = 72
 const FILA_APAGADA: StringName = &"FilaApagada"
 const DATO_APAGADO: StringName = &"DatoApagado"
 const GRIS_APAGADO: Color = Color(0.45, 0.47, 0.45, 1.0)
+## Cuadritos del rastro de una ficha de partida.
+const RASTRO: Color = Color(0.62, 0.68, 0.8, 1.0)
 ## Titulos mas grandes que TITULO, variaciones de el (Label): el nombre del juego en el menu principal y el de la pausa.
 const TITULO_JUEGO: StringName = &"TituloJuego"
 const LETRA_TITULO_JUEGO: int = 96
@@ -89,7 +88,7 @@ const GIS_TENUE: Color = Color(GIS, 0.7)
 const OPCION_CHICA: StringName = &"OpcionChica"
 ## Boton de un solo simbolo (Button, de TARJETA): + y - del mapa, en Cabin Sketch. La caja lo separa de lo dibujado
 ## debajo. Letra de 96 sin margenes de arriba y abajo: el + mide 35 px de ancho y el boton 113 de alto (a la letra de
-## los botones el + media unos 12 px; capturas del 20-oct-2026).
+## los botones el + mide unos 12 px).
 const SIMBOLO: StringName = &"Simbolo"
 const LETRA_SIMBOLO: int = 96
 const MARGEN_SIMBOLO: float = 0.0
@@ -127,9 +126,9 @@ static func crear() -> Theme:
 	var tema: Theme = Theme.new()
 	tema.default_font = load(RUTA_FUENTE) as Font
 	tema.default_font_size = LETRA
-	var vacia: StyleBoxEmpty = _vacia(MARGEN_OPCION)
-	var elegida: EstiloGis = _gis(EstiloGis.Forma.SUBRAYADO, GIS, MARGEN_OPCION)
-	var foco: EstiloGis = _gis(EstiloGis.Forma.MARCA, GIS, MARGEN_OPCION)
+	var vacia: StyleBoxEmpty = TemaEstilos.estilo_vacio(MARGEN_OPCION)
+	var elegida: EstiloGis = TemaEstilos.estilo_gis(EstiloGis.Forma.SUBRAYADO, GIS, MARGEN_OPCION)
+	var foco: EstiloGis = TemaEstilos.estilo_gis(EstiloGis.Forma.MARCA, GIS, MARGEN_OPCION)
 	# Sin caja: el texto en gis gastado y, con el foco, encima o presionado (encendido: la categoria o el personaje
 	# elegidos), en gis blanco; lo presionado ademas subrayado.
 	tema.set_stylebox(&"normal", &"Button", vacia)
@@ -148,25 +147,24 @@ static func crear() -> Theme:
 	tema.set_type_variation(TITULO, &"Label")
 	tema.set_font(&"font", TITULO, load(RUTA_FUENTE_GRUESA) as Font)
 	tema.set_font_size(&"font_size", TITULO, LETRA_TITULO)
-	_volver(tema)
-	_tarjeta(tema)
-	_simbolo(tema)
-	_pestana(tema)
-	_con_detalle(tema)
-	var caja_foco: EstiloGis = _gis(EstiloGis.Forma.CAJA, GIS, 0.0)
+	TemaEstilos.volver(tema)
+	TemaEstilos.tarjeta(tema)
+	TemaEstilos.simbolo(tema)
+	TemaEstilos.pestana(tema)
+	TemaEstilos.con_detalle(tema)
+	var caja_foco: EstiloGis = TemaEstilos.estilo_gis(EstiloGis.Forma.CAJA, GIS, 0.0)
 	tema.set_stylebox(&"focus", &"HSlider", caja_foco)
-	_barra_ancha(tema, caja_foco)
+	TemaEstilos.barra_ancha(tema, caja_foco)
 	tema.set_type_variation(FILA_APAGADA, &"Button")
 	for estado: StringName in [&"normal", &"hover", &"pressed", &"hover_pressed"]:
 		tema.set_stylebox(estado, FILA_APAGADA, vacia)
-	for color: StringName in [&"font_color", &"font_hover_color", &"font_pressed_color", &"font_focus_color", &"font_hover_pressed_color"]:
-		tema.set_color(color, FILA_APAGADA, GRIS_APAGADO)
+	TemaEstilos.apagar_letra(tema, FILA_APAGADA)
 	tema.set_type_variation(DATO_APAGADO, &"Label")
 	tema.set_color(&"font_color", DATO_APAGADO, GRIS_APAGADO)
 	_etiquetas(tema)
-	_opcion_centrada(tema)
-	_adornos(tema)
-	_fila_tienda(tema)
+	TemaEstilos.opcion_centrada(tema)
+	TemaEstilos.adornos(tema)
+	TemaEstilos.fila_tienda(tema)
 	# Cada opcion de un menu emergente (copiar y pegar del campo del nombre) tambien mide ALTO_TOQUE: letra mas
 	# separacion.
 	tema.set_font_size(&"font_size", &"PopupMenu", LETRA)
@@ -188,7 +186,7 @@ static func area_util(vista: Vector2) -> Rect2:
 
 ## Pone el foco en un control de un menu. Si lo ultimo que se uso fue el dedo no lo dibuja (grab_focus con
 ## hide_focus): con el dedo no hace falta la marca, y la primera flecha o el primer movimiento del control la
-## muestra (`classes/class_control.rst:38`). Si fue un control o el teclado, se ve desde que se abre el menu.
+## muestra (`classes/class_control.rst`). Si fue un control o el teclado, se ve desde que se abre el menu.
 static func dar_foco(control: Control) -> void:
 	control.grab_focus(not UltimaEntrada.con_control())
 
@@ -207,12 +205,17 @@ static func area_menu(vista: Vector2, reservado_abajo: float) -> Rect2:
 	return area
 
 
+## Negro con alfa: los velos sobre el juego o el video.
+static func negro(alfa: float) -> Color:
+	return Color(0.0, 0.0, 0.0, alfa)
+
+
 ## Fondo de un menu armado en codigo, sin agregar: negro con alfa (VELO por omision) a pantalla completa, llamado Fondo
 ## y con el tema de los menus, para ser la raiz de su rama de UI. Detiene los toques (mouse_filter por omision).
 static func fondo_menu(alfa: float = VELO) -> ColorRect:
 	var fondo: ColorRect = ColorRect.new()
 	fondo.name = "Fondo"
-	fondo.color = Color(0.0, 0.0, 0.0, alfa)
+	fondo.color = negro(alfa)
 	fondo.theme = crear()
 	fondo.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	return fondo
@@ -292,7 +295,7 @@ static func raya_abajo(control: Control) -> void:
 
 ## Acomoda un Control de pantalla completa al area util de su vista, ahora, cada vez que la ventana cambia y cada vez
 ## que cambia su minimo: una etiqueta con ajuste de linea lo infla un momento al armarse y, sin esto, se quedaba
-## alto de mas (1298 px en una vista de 720, 12-oct-2026). Se llama una vez, en el _ready del control; se
+## alto de mas (1298 px en una vista de 720). Se llama una vez, en el _ready del control; se
 ## desconecta solo al salir del arbol.
 static func ajustar(control: Control) -> void:
 	# Una funcion propia por control: un metodo estatico con bind no distingue un control de otro al conectar.
@@ -311,89 +314,8 @@ static func _ajustar_ya(control: Control) -> void:
 	control.size = area.size
 
 
-# Variacion VOLVER: la flecha de gis hacia atras siempre a la vista (gastada; blanca con el foco, encima o presionado),
-# y con el foco ademas el subrayado.
-static func _volver(tema: Theme) -> void:
-	tema.set_type_variation(VOLVER, &"Button")
-	var gastada: EstiloGis = _gis(EstiloGis.Forma.ATRAS, GASTADO, MARGEN_OPCION)
-	var blanca: EstiloGis = _gis(EstiloGis.Forma.ATRAS, GIS, MARGEN_OPCION)
-	tema.set_stylebox(&"normal", VOLVER, gastada)
-	tema.set_stylebox(&"hover", VOLVER, blanca)
-	tema.set_stylebox(&"pressed", VOLVER, blanca)
-	tema.set_stylebox(&"hover_pressed", VOLVER, blanca)
-	tema.set_stylebox(&"focus", VOLVER, _gis(EstiloGis.Forma.SUBRAYADO, GIS, MARGEN_OPCION))
-
-
-# Variacion TARJETA: un boton con contenido propio (ficha de ranura, caja de dialogo y sus opciones) en una caja de gis
-# con relleno oscuro; con el foco, encima o presionado, la caja en gis blanco.
-static func _tarjeta(tema: Theme) -> void:
-	tema.set_type_variation(TARJETA, &"Button")
-	_cajas_tarjeta(tema, TARJETA)
-	tema.set_color(&"font_color", TARJETA, GIS)
-
-
-# Variacion SIMBOLO: las cajas de TARJETA con margenes de arriba y abajo de MARGEN_SIMBOLO y LETRA_SIMBOLO.
-static func _simbolo(tema: Theme) -> void:
-	tema.set_type_variation(SIMBOLO, TARJETA)
-	_cajas_tarjeta(tema, SIMBOLO, MARGEN_SIMBOLO)
-	tema.set_font_size(&"font_size", SIMBOLO, LETRA_SIMBOLO)
-
-
-# Las cajas de gis de una tarjeta para la variacion nombre; vertical menor que 0 deja los margenes de _margenes.
-static func _cajas_tarjeta(tema: Theme, nombre: StringName, vertical: float = -1.0) -> void:
-	var normal: EstiloGis = _gis(EstiloGis.Forma.CAJA, Color(GASTADO, 0.7), MARGEN_DERECHO)
-	normal.fondo = FONDO_TARJETA
-	normal.grosor = 2.4
-	var clara: EstiloGis = _gis(EstiloGis.Forma.CAJA, GIS, MARGEN_DERECHO)
-	clara.fondo = FONDO_TARJETA
-	var foco: EstiloGis = _gis(EstiloGis.Forma.CAJA, GIS, MARGEN_DERECHO)
-	foco.grosor = 3.4
-	if vertical >= 0.0:
-		for estilo: EstiloGis in [normal, clara, foco]:
-			estilo.content_margin_top = vertical
-			estilo.content_margin_bottom = vertical
-	tema.set_stylebox(&"normal", nombre, normal)
-	tema.set_stylebox(&"hover", nombre, clara)
-	tema.set_stylebox(&"pressed", nombre, clara)
-	tema.set_stylebox(&"hover_pressed", nombre, clara)
-	tema.set_stylebox(&"disabled", nombre, normal)
-	tema.set_stylebox(&"focus", nombre, foco)
-
-
-# Variacion PESTANA: sin la flechita a la izquierda, para que quepan siete en la fila.
-static func _pestana(tema: Theme) -> void:
-	tema.set_type_variation(PESTANA, &"Button")
-	var vacia: StyleBoxEmpty = _vacia(MARGEN_DERECHO)
-	var elegida: EstiloGis = _gis(EstiloGis.Forma.SUBRAYADO, GIS, MARGEN_DERECHO)
-	tema.set_stylebox(&"normal", PESTANA, vacia)
-	tema.set_stylebox(&"hover", PESTANA, vacia)
-	tema.set_stylebox(&"disabled", PESTANA, vacia)
-	tema.set_stylebox(&"pressed", PESTANA, elegida)
-	tema.set_stylebox(&"hover_pressed", PESTANA, elegida)
-	tema.set_stylebox(&"focus", PESTANA, _gis(EstiloGis.Forma.CAJA, GIS, MARGEN_DERECHO))
-
-
-# Variacion CON_DETALLE: los mismos trazos que un boton, con el contenido arriba; el subrayado del foco queda bajo el
-# texto y el detalle va debajo.
-static func _con_detalle(tema: Theme) -> void:
-	tema.set_type_variation(CON_DETALLE, &"Button")
-	var arriba: float = (ALTO_TOQUE - ALTO_LETRA) / 2.0 - ALTO_DETALLE / 2.0
-	var abajo: float = ALTO_TOQUE + ALTO_DETALLE - ALTO_LETRA - arriba
-	var normal: StyleBoxEmpty = _vacia(MARGEN_OPCION)
-	var elegida: EstiloGis = _gis(EstiloGis.Forma.SUBRAYADO, GIS, MARGEN_OPCION)
-	var foco: EstiloGis = _gis(EstiloGis.Forma.MARCA, GIS, MARGEN_OPCION)
-	for estilo: StyleBox in [normal, elegida, foco]:
-		estilo.content_margin_top = arriba
-		estilo.content_margin_bottom = abajo
-	for estado: StringName in [&"normal", &"hover", &"disabled"]:
-		tema.set_stylebox(estado, CON_DETALLE, normal)
-	for estado: StringName in [&"pressed", &"hover_pressed"]:
-		tema.set_stylebox(estado, CON_DETALLE, elegida)
-	tema.set_stylebox(&"focus", CON_DETALLE, foco)
-
-
 # Variaciones de etiqueta y la opcion chica: solo cambian letra o color; TITULO_JUEGO y TITULO_PAUSA heredan de TITULO
-# el gis grueso (una variacion puede salir de otra, classes/class_theme.rst:1173).
+# el gis grueso (una variacion puede salir de otra, classes/class_theme.rst).
 static func _etiquetas(tema: Theme) -> void:
 	tema.set_type_variation(TITULO_JUEGO, TITULO)
 	tema.set_font_size(&"font_size", TITULO_JUEGO, LETRA_TITULO_JUEGO)
@@ -409,110 +331,3 @@ static func _etiquetas(tema: Theme) -> void:
 	tema.set_color(&"font_color", TENUE, GIS_TENUE)
 	tema.set_type_variation(OPCION_CHICA, &"Button")
 	tema.set_font_size(&"font_size", OPCION_CHICA, LETRA_CHICA)
-
-
-# Variacion OPCION_CENTRADA: el mismo margen a los dos lados en todos los estados (Button acomoda el texto con el
-# stylebox del estado y dibuja focus encima: si solo focus cambiara, el texto brincaria al enfocar), sin subrayado al
-# presionar y con el foco una flechita a cada lado.
-static func _opcion_centrada(tema: Theme) -> void:
-	tema.set_type_variation(OPCION_CENTRADA, &"Button")
-	var vacia: StyleBoxEmpty = _vacia(MARGEN_OPCION)
-	vacia.content_margin_right = MARGEN_OPCION
-	var foco: EstiloGis = _gis(EstiloGis.Forma.LADOS, GIS, MARGEN_OPCION)
-	foco.content_margin_right = MARGEN_OPCION
-	for estado: StringName in [&"normal", &"hover", &"pressed", &"hover_pressed", &"disabled"]:
-		tema.set_stylebox(estado, OPCION_CENTRADA, vacia)
-	tema.set_stylebox(&"focus", OPCION_CENTRADA, foco)
-
-
-# Variaciones ADORNO_ANCHO y ADORNO_CHICO de PanelContainer: un PanelContainer sin hijos mide lo minimo de su stylebox,
-# que son sus margenes; asi el adorno trae su tamano del tema y nadie repite los numeros.
-static func _adornos(tema: Theme) -> void:
-	for par: Array in [[ADORNO_ANCHO, TAMANO_ADORNO_ANCHO], [ADORNO_CHICO, TAMANO_ADORNO_CHICO]]:
-		var nombre: StringName = par[0] as StringName
-		var tamano: Vector2 = par[1] as Vector2
-		var estilo: EstiloGis = EstiloGis.new()
-		estilo.forma = EstiloGis.Forma.ADORNO
-		estilo.color = GIS
-		estilo.grosor = 2.4
-		estilo.content_margin_left = tamano.x / 2.0
-		estilo.content_margin_right = tamano.x / 2.0
-		estilo.content_margin_top = tamano.y / 2.0
-		estilo.content_margin_bottom = tamano.y / 2.0
-		tema.set_type_variation(nombre, &"PanelContainer")
-		tema.set_stylebox(&"panel", nombre, estilo)
-
-
-# Variaciones FILA_TIENDA (Button), FILA_TIENDA_APAGADA (de ella, en gris) y FRANJA (Panel). La fila deja a la
-# izquierda el lugar del icono y la moneda; su foco no dibuja nada (lo marca la franja, que se ve tambien tras un toque).
-static func _fila_tienda(tema: Theme) -> void:
-	tema.set_type_variation(FILA_TIENDA, &"Button")
-	var vacia: StyleBoxEmpty = _vacia(MARGEN_DERECHO + LADO_ICONO_FILA + LADO_MONEDA_FILA + SEPARACION_ICONO * 2.0)
-	for estado: StringName in [&"normal", &"hover", &"pressed", &"hover_pressed", &"disabled", &"focus"]:
-		tema.set_stylebox(estado, FILA_TIENDA, vacia)
-	tema.set_type_variation(FILA_TIENDA_APAGADA, FILA_TIENDA)
-	for color: StringName in [&"font_color", &"font_hover_color", &"font_pressed_color", &"font_focus_color", &"font_hover_pressed_color"]:
-		tema.set_color(color, FILA_TIENDA_APAGADA, GRIS_APAGADO)
-	var franja: EstiloGis = EstiloGis.new()
-	franja.forma = EstiloGis.Forma.FRANJA
-	franja.color = GIS
-	franja.grosor = 2.4
-	franja.fondo = RELLENO_FRANJA
-	franja.content_margin_top = ALTO_ORILLA_FRANJA
-	franja.content_margin_bottom = ALTO_ORILLA_FRANJA
-	tema.set_type_variation(FRANJA, &"Panel")
-	tema.set_stylebox(&"panel", FRANJA, franja)
-
-
-## Variacion BARRA_ANCHA de HSlider (volumen y brillo, mockup del 13-oct-2026): pista gruesa, lo lleno en verde y un
-## pomo redondo de POMO px. Una variacion y no el HSlider del tema: las barras del editor de botones no cambian.
-static func _barra_ancha(tema: Theme, foco: StyleBox) -> void:
-	tema.set_type_variation(BARRA_ANCHA, &"HSlider")
-	var pista: StyleBoxFlat = StyleBoxFlat.new()
-	pista.bg_color = BORDE_BOTON
-	pista.set_corner_radius_all(int(GROSOR_PISTA / 2.0))
-	pista.content_margin_top = GROSOR_PISTA / 2.0
-	pista.content_margin_bottom = GROSOR_PISTA / 2.0
-	var lleno: StyleBoxFlat = pista.duplicate() as StyleBoxFlat
-	lleno.bg_color = ENCENDIDO
-	tema.set_stylebox(&"slider", BARRA_ANCHA, pista)
-	tema.set_stylebox(&"grabber_area", BARRA_ANCHA, lleno)
-	tema.set_stylebox(&"grabber_area_highlight", BARRA_ANCHA, lleno)
-	tema.set_stylebox(&"focus", BARRA_ANCHA, foco)
-	var pomo: ImageTexture = _circulo(POMO, GIS)
-	tema.set_icon(&"grabber", BARRA_ANCHA, pomo)
-	tema.set_icon(&"grabber_highlight", BARRA_ANCHA, pomo)
-	tema.set_icon(&"grabber_disabled", BARRA_ANCHA, pomo)
-
-
-static func _circulo(diametro: int, color: Color) -> ImageTexture:
-	var imagen: Image = Image.create_empty(diametro, diametro, false, Image.FORMAT_RGBA8)
-	var radio: float = diametro / 2.0
-	for y: int in range(diametro):
-		for x: int in range(diametro):
-			# Borde suavizado de 1 px.
-			var d: float = Vector2(x + 0.5 - radio, y + 0.5 - radio).length()
-			imagen.set_pixel(x, y, Color(color, clampf(radio - d, 0.0, 1.0)))
-	return ImageTexture.create_from_image(imagen)
-
-
-# Con la letra de 36 (ALTO_LETRA) los margenes de arriba y abajo dan los 108 px del toque.
-static func _margenes(estilo: StyleBox, izquierdo: float) -> void:
-	estilo.content_margin_left = izquierdo
-	estilo.content_margin_right = MARGEN_DERECHO
-	estilo.content_margin_top = (ALTO_TOQUE - ALTO_LETRA) / 2.0
-	estilo.content_margin_bottom = (ALTO_TOQUE - ALTO_LETRA) / 2.0
-
-
-static func _vacia(izquierdo: float) -> StyleBoxEmpty:
-	var vacia: StyleBoxEmpty = StyleBoxEmpty.new()
-	_margenes(vacia, izquierdo)
-	return vacia
-
-
-static func _gis(forma: EstiloGis.Forma, color: Color, izquierdo: float) -> EstiloGis:
-	var estilo: EstiloGis = EstiloGis.new()
-	estilo.forma = forma
-	estilo.color = color
-	_margenes(estilo, izquierdo)
-	return estilo

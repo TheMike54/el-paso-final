@@ -1,0 +1,533 @@
+[gd_scene format=3 uid="uid://cjvdmatepekny"]
+
+[ext_resource type="PackedScene" uid="uid://bl4kcwxb626lh" path="res://contenido/objetos/celda/colgante_frente.tscn" id="99_colgante_frente"]
+[ext_resource type="PackedScene" uid="uid://dkg1tgmycc1sr" path="res://contenido/zonas/celda/sala_celda.tscn" id="0_base"]
+[ext_resource type="Script" uid="uid://bo41itjgtinf1" path="res://nucleo/fondo_tapado.gd" id="1_tapado"]
+[ext_resource type="PackedScene" uid="uid://daady0ech8iml" path="res://contenido/objetos/celda/fondo_profundo.tscn" id="2_profundo"]
+[ext_resource type="PackedScene" uid="uid://dvajyptekcdbs" path="res://contenido/objetos/celda/fondo_lejana.tscn" id="3_lejana"]
+[ext_resource type="PackedScene" uid="uid://bb5en817vk1b6" path="res://contenido/objetos/celda/lejana_computo_a.tscn" id="4_computo_a"]
+[ext_resource type="PackedScene" uid="uid://dne3ft4yp1k4e" path="res://contenido/objetos/celda/lejana_0.tscn" id="5_lejana_0"]
+[ext_resource type="PackedScene" uid="uid://g0a2gj6xpvf1" path="res://contenido/objetos/celda/lejana_computo_b.tscn" id="6_computo_b"]
+[ext_resource type="PackedScene" uid="uid://bp20etvgldjan" path="res://contenido/objetos/celda/fondo_medio.tscn" id="7_medio"]
+[ext_resource type="Texture2D" uid="uid://bdwmy4kcmrjnf" path="res://contenido/salas/celda/arte/medio_computo_a.png" id="8_medio_computo"]
+[ext_resource type="Texture2D" uid="uid://dsndbmdqgk1oy" path="res://contenido/salas/celda/arte/m_escalera.png" id="9_m_escalera"]
+[ext_resource type="Texture2D" uid="uid://dnmmrwij0aad8" path="res://contenido/salas/celda/arte/m_pupitre.png" id="10_m_pupitre"]
+[ext_resource type="Texture2D" uid="uid://cwhb630rvgco4" path="res://contenido/salas/celda/arte/m_cubeta.png" id="11_m_cubeta"]
+[ext_resource type="Texture2D" uid="uid://ccok2sltmmtvm" path="res://contenido/salas/celda/arte/m_estante.png" id="12_m_estante"]
+[ext_resource type="Texture2D" uid="uid://c75wusae4dklj" path="res://contenido/salas/celda/arte/m_estante_b.png" id="13_m_estante_b"]
+[ext_resource type="Texture2D" uid="uid://vqodsesu0tao" path="res://contenido/salas/celda/arte/m_perchero.png" id="14_m_perchero"]
+[ext_resource type="Texture2D" uid="uid://8h7f7bxeyyor" path="res://contenido/salas/celda/arte/m_perchero_b.png" id="15_m_perchero_b"]
+[ext_resource type="Texture2D" uid="uid://3dkqfh3tjqne" path="res://contenido/salas/celda/arte/m_caja_archivo.png" id="16_m_caja"]
+[ext_resource type="Texture2D" uid="uid://pht70rodfilo" path="res://contenido/salas/celda/arte/pared_lockers.png" id="17_lockers"]
+[ext_resource type="Texture2D" uid="uid://bglwb7gjcatne" path="res://contenido/salas/celda/arte/friso.png" id="18_friso"]
+[ext_resource type="Texture2D" uid="uid://caivy1777ho0r" path="res://contenido/salas/celda/arte/tiro_hueco.png" id="19_tiro"]
+[ext_resource type="Texture2D" uid="uid://cmac1tt8x8oik" path="res://contenido/salas/celda/arte/techo.png" id="20_techo"]
+[ext_resource type="Texture2D" uid="uid://dstamayabpovb" path="res://contenido/salas/celda/arte/orilla_hueco.png" id="21_orilla"]
+[ext_resource type="Texture2D" uid="uid://cu7hihjs3mdbg" path="res://contenido/salas/celda/arte/columna_rota.png" id="22_columna_rota"]
+[ext_resource type="Texture2D" uid="uid://c6aa8p4nywe4a" path="res://contenido/salas/celda/arte/columna_capitel.png" id="47_columna_capitel"]
+[ext_resource type="Texture2D" uid="uid://b387p2dl8txi5" path="res://contenido/salas/celda/arte/pupitre_perfil.png" id="23_pupitre"]
+[ext_resource type="Texture2D" uid="uid://cmdggylm5oww3" path="res://contenido/salas/celda/arte/escombros.png" id="24_escombros"]
+[ext_resource type="Texture2D" uid="uid://d3eij0fhrkyp3" path="res://contenido/salas/celda/arte/escombros_repisas.png" id="25_escombros_repisas"]
+[ext_resource type="Texture2D" uid="uid://coogq8hil3fdc" path="res://contenido/salas/celda/arte/caja_archivo.png" id="26_caja"]
+[ext_resource type="Texture2D" uid="uid://cmlxounfl8fna" path="res://contenido/salas/celda/arte/suelo.png" id="27_suelo"]
+[ext_resource type="PackedScene" uid="uid://bnu7yribrlryu" path="res://contenido/objetos/celda/foso_varillas.tscn" id="28_foso"]
+[ext_resource type="PackedScene" uid="uid://bqta26mv2abf4" path="res://contenido/objetos/celda/cables_pelados.tscn" id="29_cables"]
+[ext_resource type="PackedScene" uid="uid://c81goee3yy3jv" path="res://contenido/objetos/celda/lampara_plataforma.tscn" id="30_lampara"]
+[ext_resource type="Script" uid="uid://c2i8bitphouxk" path="res://nucleo/vaiven.gd" id="31_vaiven"]
+[ext_resource type="Texture2D" uid="uid://dvck5hgapso37" path="res://contenido/salas/celda/arte/plataforma_cadenas.png" id="32_plataforma"]
+[ext_resource type="Texture2D" uid="uid://b7mg0jhxcokc2" path="res://contenido/salas/celda/arte/elevador_cadenas.png" id="33_elevador"]
+[ext_resource type="PackedScene" uid="uid://c1mh87shrjl0d" path="res://nucleo/monedas_sueltas.tscn" id="34_monedas"]
+[ext_resource type="PackedScene" uid="uid://cq48dd3nywtn1" path="res://contenido/objetos/celda/polvo_tubo.tscn" id="37_polvo"]
+[ext_resource type="PackedScene" uid="uid://c3v0dvamqoi4p" path="res://contenido/objetos/celda/luz_tubo.tscn" id="38_luz_tubo"]
+[ext_resource type="Texture2D" uid="uid://bfyy7mvwxo0b4" path="res://contenido/salas/celda/arte/pila_examenes_rota.png" id="39_pila"]
+[ext_resource type="Texture2D" uid="uid://c04xej401kxml" path="res://contenido/salas/celda/arte/frente_cadena.png" id="41_cadena"]
+[ext_resource type="Texture2D" uid="uid://dcacnthyug5wa" path="res://contenido/salas/celda/arte/frente_cable.png" id="42_cable"]
+[ext_resource type="PackedScene" uid="uid://bwy16c0wxrvhc" path="res://contenido/objetos/celda/puerta_salon.tscn" id="43_puerta_salon"]
+[ext_resource type="PackedScene" uid="uid://ccvvnaol1yc42" path="res://contenido/objetos/celda/puerta_salida.tscn" id="44_puerta_salida"]
+[ext_resource type="PackedScene" uid="uid://t0hl58kau0ro" path="res://contenido/objetos/celda/hueco_techo.tscn" id="45_hueco_techo"]
+[ext_resource type="PackedScene" uid="uid://cuu5yv83nmowx" path="res://nucleo/piezas/niebla.tscn" id="46_niebla"]
+
+[sub_resource type="RectangleShape2D" id="forma_suelo_a"]
+size = Vector2(1407, 80)
+
+[sub_resource type="RectangleShape2D" id="forma_suelo_b"]
+size = Vector2(1881, 80)
+
+[sub_resource type="RectangleShape2D" id="forma_suelo_c"]
+size = Vector2(740, 80)
+
+[sub_resource type="RectangleShape2D" id="forma_pared"]
+size = Vector2(80, 1100)
+
+[sub_resource type="RectangleShape2D" id="forma_techo_izquierda"]
+size = Vector2(3760, 246)
+
+[sub_resource type="RectangleShape2D" id="forma_techo_derecha"]
+size = Vector2(274, 246)
+
+[sub_resource type="RectangleShape2D" id="forma_escalon_1"]
+size = Vector2(69, 125)
+
+[sub_resource type="RectangleShape2D" id="forma_escalon_2"]
+size = Vector2(58, 162)
+
+[sub_resource type="RectangleShape2D" id="forma_escalon_3"]
+size = Vector2(92, 195)
+
+[sub_resource type="RectangleShape2D" id="forma_escalon_4"]
+size = Vector2(97, 230)
+
+[sub_resource type="RectangleShape2D" id="forma_columna_rota"]
+size = Vector2(160, 250)
+
+[sub_resource type="RectangleShape2D" id="forma_caja"]
+size = Vector2(86, 51)
+
+[sub_resource type="RectangleShape2D" id="forma_colgada"]
+size = Vector2(180, 20)
+
+[node name="Celda2" instance=ExtResource("0_base")]
+id = "celda_2"
+limites = Rect2(0, 0, 4320, 934)
+posicion_mapa = Vector2(4482, 2160)
+
+[node name="Entrada" parent="." index="0"]
+position = Vector2(260, 774)
+
+[node name="FondosTapados" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+mouse_filter = 2
+script = ExtResource("1_tapado")
+fin_pared = 1800.0
+
+[node name="Profundo" parent="FondosTapados" instance=ExtResource("2_profundo")]
+scroll_scale = Vector2(0.05, 0.05)
+scroll_offset = Vector2(0, 11)
+
+[node name="Lejana" parent="FondosTapados" instance=ExtResource("3_lejana")]
+modulate = Color(0.65, 0.7, 0.8, 1)
+scroll_scale = Vector2(0.18, 0.18)
+scroll_offset = Vector2(0, 39)
+repeat_size = Vector2(3840, 0)
+
+[node name="LejanaComputoA" parent="FondosTapados/Lejana" instance=ExtResource("4_computo_a")]
+
+[node name="Lejana0" parent="FondosTapados/Lejana" instance=ExtResource("5_lejana_0")]
+position = Vector2(1196, 0)
+
+[node name="LejanaComputoB" parent="FondosTapados/Lejana" instance=ExtResource("6_computo_b")]
+position = Vector2(3020, 0)
+
+[node name="Medio" parent="FondosTapados" instance=ExtResource("7_medio")]
+modulate = Color(0.75, 0.8, 0.9, 1)
+scroll_scale = Vector2(0.5, 0.5)
+scroll_offset = Vector2(0, 107)
+
+[node name="Medio" type="Sprite2D" parent="FondosTapados/Medio"]
+texture_repeat = 2
+position = Vector2(-400, 412)
+scale = Vector2(2, 2)
+texture = ExtResource("8_medio_computo")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 2300, 89)
+
+[node name="MEscalera" type="Sprite2D" parent="FondosTapados/Medio"]
+position = Vector2(80, 412)
+scale = Vector2(2, 2)
+texture = ExtResource("9_m_escalera")
+centered = false
+
+[node name="MPupitre" type="Sprite2D" parent="FondosTapados/Medio"]
+position = Vector2(477, 456)
+scale = Vector2(2, 2)
+texture = ExtResource("10_m_pupitre")
+centered = false
+flip_h = true
+
+[node name="MCubeta" type="Sprite2D" parent="FondosTapados/Medio"]
+position = Vector2(977, 500)
+scale = Vector2(2, 2)
+texture = ExtResource("11_m_cubeta")
+centered = false
+flip_h = true
+
+[node name="MEstante" type="Sprite2D" parent="FondosTapados/Medio"]
+position = Vector2(1392, 405)
+scale = Vector2(2, 2)
+texture = ExtResource("12_m_estante")
+centered = false
+flip_h = true
+
+[node name="MCubeta2" type="Sprite2D" parent="FondosTapados/Medio"]
+position = Vector2(1926, 500)
+scale = Vector2(2, 2)
+texture = ExtResource("11_m_cubeta")
+centered = false
+flip_h = true
+
+[node name="MEstanteB" type="Sprite2D" parent="FondosTapados/Medio"]
+position = Vector2(2230, 405)
+scale = Vector2(2, 2)
+texture = ExtResource("13_m_estante_b")
+centered = false
+flip_h = true
+
+[node name="MPerchero" type="Sprite2D" parent="FondosTapados/Medio"]
+position = Vector2(2663, 430)
+scale = Vector2(2, 2)
+texture = ExtResource("14_m_perchero")
+centered = false
+flip_h = true
+
+[node name="MPupitre2" type="Sprite2D" parent="FondosTapados/Medio"]
+position = Vector2(3009, 456)
+scale = Vector2(2, 2)
+texture = ExtResource("10_m_pupitre")
+centered = false
+
+[node name="MPercheroB" type="Sprite2D" parent="FondosTapados/Medio"]
+position = Vector2(3368, 430)
+scale = Vector2(2, 2)
+texture = ExtResource("15_m_perchero_b")
+centered = false
+
+[node name="MCajaArchivo" type="Sprite2D" parent="FondosTapados/Medio"]
+position = Vector2(3741, 500)
+scale = Vector2(2, 2)
+texture = ExtResource("16_m_caja")
+centered = false
+
+[node name="Pared" type="Sprite2D" parent="Juego"]
+texture_repeat = 3
+position = Vector2(0, 200)
+texture = ExtResource("17_lockers")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, -44, 1800, 594)
+
+[node name="Friso" type="Sprite2D" parent="Juego"]
+texture_repeat = 2
+position = Vector2(-200, 74)
+texture = ExtResource("18_friso")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 4600, 210)
+
+[node name="TiroHueco" type="Sprite2D" parent="Juego"]
+texture_repeat = 2
+position = Vector2(3740, -50)
+texture = ExtResource("19_tiro")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 410, 200)
+
+[node name="Columna" type="Sprite2D" parent="Juego"]
+position = Vector2(-47, 70)
+texture = ExtResource("47_columna_capitel")
+centered = false
+
+[node name="Columna2" type="Sprite2D" parent="Juego"]
+position = Vector2(983, 70)
+texture = ExtResource("47_columna_capitel")
+centered = false
+
+[node name="Columna3" type="Sprite2D" parent="Juego"]
+position = Vector2(1703, 70)
+texture = ExtResource("47_columna_capitel")
+centered = false
+
+[node name="Techo" type="Sprite2D" parent="Juego"]
+texture_repeat = 2
+position = Vector2(-200, 0)
+texture = ExtResource("20_techo")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 3950, 112)
+
+[node name="TechoDerecha" type="Sprite2D" parent="Juego"]
+texture_repeat = 2
+position = Vector2(4136, 0)
+texture = ExtResource("20_techo")
+centered = false
+region_enabled = true
+region_rect = Rect2(574, 0, 464, 112)
+
+[node name="OrillaIzquierda" type="Sprite2D" parent="Juego"]
+modulate = Color(0.78, 0.78, 0.78, 1)
+position = Vector2(3698, -34)
+texture = ExtResource("21_orilla")
+centered = false
+flip_v = true
+
+[node name="OrillaDerecha" type="Sprite2D" parent="Juego"]
+modulate = Color(0.78, 0.78, 0.78, 1)
+position = Vector2(4078, -34)
+texture = ExtResource("21_orilla")
+centered = false
+flip_h = true
+flip_v = true
+
+[node name="PupitrePerfil" type="Sprite2D" parent="Juego"]
+position = Vector2(860, 673)
+texture = ExtResource("23_pupitre")
+centered = false
+
+[node name="PupitrePerfil2" type="Sprite2D" parent="Juego"]
+position = Vector2(2050, 673)
+texture = ExtResource("23_pupitre")
+centered = false
+flip_h = true
+
+[node name="Escombros" type="Sprite2D" parent="Juego"]
+position = Vector2(1180, 726)
+texture = ExtResource("24_escombros")
+centered = false
+
+[node name="Escombros2" type="Sprite2D" parent="Juego"]
+position = Vector2(3900, 726)
+texture = ExtResource("24_escombros")
+centered = false
+flip_h = true
+
+[node name="CajaArchivo" type="Sprite2D" parent="Juego"]
+position = Vector2(4060, 723)
+texture = ExtResource("26_caja")
+centered = false
+
+[node name="EscombrosAlto" type="Sprite2D" parent="Juego"]
+z_index = -4
+z_as_relative = false
+position = Vector2(2294, 525)
+texture = ExtResource("25_escombros_repisas")
+centered = false
+
+[node name="ColumnaRota" type="Sprite2D" parent="Juego"]
+z_index = -4
+z_as_relative = false
+position = Vector2(2730, 493)
+texture = ExtResource("22_columna_rota")
+centered = false
+
+[node name="Suelo" type="Sprite2D" parent="SueloPintado"]
+texture_repeat = 2
+position = Vector2(-200, 774)
+texture = ExtResource("27_suelo")
+centered = false
+region_enabled = true
+region_rect = Rect2(1166, 0, 4800, 161)
+
+[node name="SueloA" type="StaticBody2D" parent="Terreno"]
+position = Vector2(703.5, 814)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/SueloA"]
+shape = SubResource("forma_suelo_a")
+
+[node name="SueloB" type="StaticBody2D" parent="Terreno"]
+position = Vector2(2533.5, 814)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/SueloB"]
+shape = SubResource("forma_suelo_b")
+
+[node name="SueloC" type="StaticBody2D" parent="Terreno"]
+position = Vector2(4030, 814)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/SueloC"]
+shape = SubResource("forma_suelo_c")
+
+[node name="ParedIzquierda" type="StaticBody2D" parent="Terreno"]
+position = Vector2(90, 417)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/ParedIzquierda"]
+shape = SubResource("forma_pared")
+
+[node name="ParedDerecha" type="StaticBody2D" parent="Terreno"]
+position = Vector2(4360, 417)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/ParedDerecha"]
+shape = SubResource("forma_pared")
+
+[node name="Techo" type="StaticBody2D" parent="Terreno"]
+
+[node name="Izquierda" type="CollisionShape2D" parent="Terreno/Techo"]
+position = Vector2(1880, -43)
+shape = SubResource("forma_techo_izquierda")
+
+[node name="Derecha" type="CollisionShape2D" parent="Terreno/Techo"]
+position = Vector2(4263, -43)
+shape = SubResource("forma_techo_derecha")
+
+[node name="Subida" type="StaticBody2D" parent="Terreno"]
+
+[node name="Escalon1" type="CollisionShape2D" parent="Terreno/Subida"]
+position = Vector2(2388.5, 711.5)
+shape = SubResource("forma_escalon_1")
+
+[node name="Escalon2" type="CollisionShape2D" parent="Terreno/Subida"]
+position = Vector2(2452, 693)
+shape = SubResource("forma_escalon_2")
+
+[node name="Escalon3" type="CollisionShape2D" parent="Terreno/Subida"]
+position = Vector2(2527, 676.5)
+shape = SubResource("forma_escalon_3")
+
+[node name="Escalon4" type="CollisionShape2D" parent="Terreno/Subida"]
+position = Vector2(2621.5, 659)
+shape = SubResource("forma_escalon_4")
+
+[node name="ColumnaRota" type="CollisionShape2D" parent="Terreno/Subida"]
+position = Vector2(2872, 649)
+shape = SubResource("forma_columna_rota")
+
+[node name="CajaEscalon" type="StaticBody2D" parent="Terreno"]
+position = Vector2(4103, 748.5)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/CajaEscalon"]
+shape = SubResource("forma_caja")
+
+[node name="LamparaPlataforma" parent="Terreno" instance=ExtResource("30_lampara")]
+position = Vector2(3145, 517)
+
+[node name="PlataformaVaiven" type="AnimatableBody2D" parent="Terreno"]
+z_index = -10
+position = Vector2(3330, 504)
+script = ExtResource("31_vaiven")
+recorrido = Vector2(310, 0)
+ticks_ida = 180
+ticks_espera = 60
+
+[node name="Arte" type="Sprite2D" parent="Terreno/PlataformaVaiven"]
+position = Vector2(0, -424)
+texture = ExtResource("32_plataforma")
+centered = false
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/PlataformaVaiven"]
+position = Vector2(90, 10)
+shape = SubResource("forma_colgada")
+
+[node name="Elevador" type="AnimatableBody2D" parent="Terreno"]
+z_index = -10
+position = Vector2(3853, 264)
+script = ExtResource("31_vaiven")
+recorrido = Vector2(0, 250)
+ticks_ida = 180
+ticks_espera = 60
+
+[node name="Arte" type="Sprite2D" parent="Terreno/Elevador"]
+position = Vector2(0, -1000)
+texture = ExtResource("33_elevador")
+centered = false
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/Elevador"]
+position = Vector2(90, 10)
+shape = SubResource("forma_colgada")
+
+[node name="FosoVarillas" parent="Peligros" instance=ExtResource("28_foso")]
+position = Vector2(1500, 774)
+
+[node name="FosoVarillas2" parent="Peligros" instance=ExtResource("28_foso")]
+position = Vector2(3567, 774)
+
+[node name="CablesPelados" parent="Peligros" instance=ExtResource("29_cables")]
+position = Vector2(3213, 774)
+
+[node name="PolvoTubo1" parent="Encima" instance=ExtResource("37_polvo")]
+position = Vector2(605, 110)
+
+[node name="PolvoTubo2" parent="Encima" instance=ExtResource("37_polvo")]
+position = Vector2(1355, 110)
+
+[node name="PolvoTubo3" parent="Encima" instance=ExtResource("37_polvo")]
+position = Vector2(2505, 110)
+
+[node name="PolvoTubo4" parent="Encima" instance=ExtResource("37_polvo")]
+position = Vector2(3605, 110)
+
+[node name="LuzTubo1" parent="Luces" instance=ExtResource("38_luz_tubo")]
+position = Vector2(605, 102.4)
+
+[node name="LuzTubo2" parent="Luces" instance=ExtResource("38_luz_tubo")]
+position = Vector2(1355, 102.4)
+
+[node name="LuzTubo3" parent="Luces" instance=ExtResource("38_luz_tubo")]
+position = Vector2(2505, 102.4)
+
+[node name="LuzTubo4" parent="Luces" instance=ExtResource("38_luz_tubo")]
+position = Vector2(3605, 102.4)
+
+[node name="Frente" parent="." index="7"]
+scroll_scale = Vector2(1.45, 1.45)
+
+[node name="FrenteEscombros" type="Sprite2D" parent="Frente"]
+use_parent_material = true
+position = Vector2(760, 940)
+scale = Vector2(2, 2)
+texture = ExtResource("24_escombros")
+centered = false
+flip_h = true
+
+[node name="FrentePilaExamenesRota" type="Sprite2D" parent="Frente"]
+use_parent_material = true
+position = Vector2(2330, 950)
+scale = Vector2(2, 2)
+texture = ExtResource("39_pila")
+centered = false
+
+[node name="FrenteEscombros2" type="Sprite2D" parent="Frente"]
+use_parent_material = true
+position = Vector2(2800, 940)
+scale = Vector2(2, 2)
+texture = ExtResource("24_escombros")
+centered = false
+
+[node name="FrentePilaExamenesRota2" type="Sprite2D" parent="Frente"]
+use_parent_material = true
+position = Vector2(3150, 950)
+scale = Vector2(2, 2)
+texture = ExtResource("39_pila")
+centered = false
+flip_h = true
+
+[node name="FrenteCadenaColgante" parent="Frente" instance=ExtResource("99_colgante_frente")]
+position = Vector2(1500, 4)
+
+[node name="Dibujo" parent="Frente/FrenteCadenaColgante" index="0"]
+texture = ExtResource("41_cadena")
+offset = Vector2(-12.5, 0)
+
+[node name="FrenteCableColgante" parent="Frente" instance=ExtResource("99_colgante_frente")]
+position = Vector2(2400, 4)
+
+[node name="Dibujo" parent="Frente/FrenteCableColgante" index="0"]
+texture = ExtResource("42_cable")
+offset = Vector2(-47, 0)
+
+[node name="MonedasSueltas" parent="." instance=ExtResource("34_monedas")]
+position = Vector2(2872, 524)
+
+[node name="PuertaIzquierda" parent="." instance=ExtResource("43_puerta_salon")]
+position = Vector2(300, 774)
+id = &"izquierda"
+sala_destino = "celda_1"
+puerta_destino = &"derecha"
+llegada = Vector2(0, 0)
+
+[node name="PuertaDerecha" parent="." instance=ExtResource("44_puerta_salida")]
+position = Vector2(4250, 774)
+id = &"derecha"
+sala_destino = "celda_3"
+puerta_destino = &"izquierda"
+llegada = Vector2(-64, 0)
+
+[node name="PuertaArriba" parent="." instance=ExtResource("45_hueco_techo")]
+position = Vector2(3943, 84)
+id = &"arriba"
+sala_destino = "celda_5"
+puerta_destino = &"abajo"
+llegada = Vector2(0, 180)
+punto_seguro = Vector2(-243, 690)
+
+[node name="Niebla" parent="." instance=ExtResource("46_niebla")]
+scroll_scale = Vector2(1.1, 1.1)
+scroll_offset = Vector2(0, 535)

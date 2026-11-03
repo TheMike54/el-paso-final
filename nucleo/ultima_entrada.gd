@@ -1,14 +1,14 @@
 class_name UltimaEntrada
 extends Node
-# Recuerda si lo ultimo que uso la persona fue el dedo (o el raton) o un control o el teclado. Tema.dar_foco lo lee
-# para dibujar el foco de un menu solo al navegar con control o teclado, aunque haya un control conectado y se este
-# tocando con el dedo. Lo crea Arranque; corre tambien en pausa, porque la pausa es un menu. En Android ademas esconde
-# el puntero del sistema que saca el touchpad del DUALSHOCK 4 (o un raton), y su clic no cuenta como un toque. Tambien
-# dice que se uso (dispositivo) y lo avisa en el bus: IconoBoton dibuja la tecla o el boton de esa familia de control.
-# Guarda las dos reglas de que entrada cuenta, marca_teclado y es_de_juego (esta la lee ControlesTactiles).
+# Recuerda el ultimo dispositivo usado para que Tema.dar_foco muestre el foco solo con control o teclado.
+# Avisa los cambios en el bus para que IconoBoton muestre la tecla o el boton de la familia del control.
+# Lo crea Arranque y corre tambien en pausa, porque la pausa es un menu.
+# Distingue la entrada que cambia el foco de la que oculta los controles tactiles para no confundir sus reglas.
 
 ## Lo que devuelve clasificar con un evento que no cambia lo ultimo que se uso.
 const SIN_CAMBIO: int = -1
+## Teclas que no cambian lo ultimo que se uso: el volumen del telefono (marca_teclado).
+const TECLAS_DE_VOLUMEN: Array[Key] = [KEY_VOLUMEUP, KEY_VOLUMEDOWN, KEY_VOLUMEMUTE]
 
 ## Lo ultimo que se uso: TOQUE (dedo o clic), TECLADO, o la familia del control (Mando.familia). Al arrancar, la del
 ## primer control conectado, o TOQUE. Al cambiar de verdad emite Eventos.dispositivo_cambiado (IconoBoton la escucha).
@@ -53,6 +53,7 @@ func _ready() -> void:
 		Input.joy_connection_changed.connect(_registrar)
 
 
+# En Android esconde el puntero del touchpad del DUALSHOCK 4 o del raton; su clic no cuenta como toque.
 func _input(evento: InputEvent) -> void:
 	anotar(evento, _android)
 	if not _android:
@@ -99,11 +100,15 @@ static func clasificar(evento: InputEvent, android: bool = false) -> int:
 
 
 ## Regla 1 de las dos sobre que entrada cuenta: cualquier tecla pulsada marca TECLADO en clasificar, tambien las que
-## no son de ninguna accion (Atras y el volumen del telefono llegan como teclas), y asi un menu muestra el foco. Mira
-## solo el tipo de evento. No es la regla de es_de_juego, que ademas pide una accion del juego: unificarlas cambiaria
-## el juego.
+## no son de ninguna accion (Atras del telefono llega como tecla), y asi un menu muestra el foco. El volumen no: si
+## llega como tecla, subirlo o tomar una captura (encendido + bajar volumen) con el control en la mano pasaria los
+## iconos a las del teclado. No es la regla de es_de_juego, que ademas pide una accion del
+## juego: unificarlas cambiaria el juego.
 static func marca_teclado(evento: InputEvent) -> bool:
-	return evento is InputEventKey and evento.is_pressed()
+	var tecla: InputEventKey = evento as InputEventKey
+	if tecla == null or not tecla.pressed:
+		return false
+	return not (TECLAS_DE_VOLUMEN.has(tecla.keycode) or TECLAS_DE_VOLUMEN.has(tecla.physical_keycode))
 
 
 ## Regla 2 de las dos sobre que entrada cuenta: una tecla, un boton o un eje del control pulsado que dispara una

@@ -18,6 +18,12 @@ func _ready() -> void:
 	var corto: float = minf(c.size.x, c.size.y)
 	var radio_joystick: float = ControlesTactiles.RADIO_JOYSTICK * corto
 
+	# Los arreglos paralelos de los botones van por indice: uno de menos y el boton nuevo se indexa fuera de rango.
+	var n: int = ControlesTactiles.ACCIONES.size()
+	_caso("un dato por boton: etiquetas, centros, anclas y radios tan largos como las acciones",
+			ControlesTactiles.ETIQUETAS.size() == n and ControlesTactiles.CENTROS.size() == n
+			and ControlesTactiles.ANCLAS.size() == n and ControlesTactiles.RADIOS.size() == n)
+
 	_tocar(c, 0, c.centro(&"saltar"), true)
 	_caso("tocar Saltar presiona saltar", Input.is_action_pressed(&"saltar"))
 	_caso("tocar Saltar no presiona otra accion", not Input.is_action_pressed(&"atacar"))
@@ -197,8 +203,7 @@ func _ready() -> void:
 	get_tree().paused = true
 	_tocar(c, 30, c.centro(&"saltar"), false)
 	_caso("con un menu abierto, levantar un dedo que ya estaba suelta su boton", not Input.is_action_pressed(&"saltar"))
-	await get_tree().process_frame
-	await get_tree().process_frame
+	await _esperar_cuadros(2)
 	_tocar(c, 31, c.centro(&"pausa"), true)
 	_caso("con un menu abierto, tocar Pausa presiona pausa", Input.is_action_pressed(&"pausa"))
 	_tocar(c, 31, c.centro(&"pausa"), false)
@@ -213,16 +218,14 @@ func _ready() -> void:
 	_caso("con un menu abierto, el joystick no toma un dedo nuevo", ControlesTactiles._dedo_joystick == -1 and _ninguna_movida())
 	_tocar(c, 37, origen, false)
 	get_tree().paused = false
-	await get_tree().process_frame
-	await get_tree().process_frame
+	await _esperar_cuadros(2)
 	# El dedo que toco Pausa para abrir el menu: al detenerse el arbol se suelta con lo demas y levantarlo no hace nada.
 	_tocar(c, 38, c.centro(&"pausa"), true)
 	_tocar(c, 33, c.centro(&"saltar"), true)
 	_tocar(c, 34, origen, true)
 	_arrastrar(c, 34, origen + Vector2(radio_joystick, 0.0))
 	get_tree().paused = true
-	await get_tree().process_frame
-	await get_tree().process_frame
+	await _esperar_cuadros(2)
 	_caso("al abrirse un menu se sueltan el boton y el joystick que estaban apoyados", not Input.is_action_pressed(&"saltar")
 			and _ninguna_movida() and ControlesTactiles._dedo_joystick == -1 and ControlesTactiles._dedos_en_botones.is_empty())
 	_tocar(c, 38, c.centro(&"pausa"), false)
@@ -231,8 +234,7 @@ func _ready() -> void:
 	_tocar(c, 33, c.centro(&"saltar"), false)
 	_tocar(c, 34, origen, false)
 	get_tree().paused = false
-	await get_tree().process_frame
-	await get_tree().process_frame
+	await _esperar_cuadros(2)
 	_tocar(c, 35, c.centro(&"saltar"), true)
 	_caso("al cerrar el menu, tocar Saltar vuelve a presionar saltar", not get_tree().paused and Input.is_action_pressed(&"saltar"))
 	_tocar(c, 35, c.centro(&"saltar"), false)

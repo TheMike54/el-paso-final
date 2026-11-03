@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://dhac71jk7pqh4"]
+
+[ext_resource type="Script" uid="uid://cmmeicqvbmdk2" path="res://nucleo/plataforma_delgada.gd" id="1_plataforma"]
+
+[node name="PlataformaDelgada" type="StaticBody2D"]
+script = ExtResource("1_plataforma")

@@ -25,7 +25,7 @@
   },
   {
     "id": "icono-guardado-y-monedas",
-    "que": "Al guardar se ve 2 s un icono provisional bajo las PejeCoins, alineado a la izquierda del grupo, en lugar del texto, y bajo la barra de Inspiracion se ven las PejeCoins",
+    "que": "Al guardar se ve 2 s el icono del disquete bajo las PejeCoins, alineado a la izquierda del grupo, en lugar del texto, y bajo la barra de Inspiracion se ven las PejeCoins",
     "comprobacion": "herramientas/guiones/contenido/zona_prueba_coleccionable.guion; herramientas/guiones/contenido/zona_prueba_vitrina.guion",
     "pasa": true
   },

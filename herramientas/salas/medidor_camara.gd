@@ -27,7 +27,7 @@ var _ticks_en_el_aire: int = 0
 
 
 func _ready() -> void:
-	if DisplayServer.get_name() == "headless":
+	if Ajustes.sin_ventana():
 		get_tree().root.size = VISTA_SIN_PANTALLA
 
 

@@ -12,7 +12,7 @@ tiene que subir, zona por zona, hasta su salón y vencer a los tres sinodales qu
 | Problema observable | En esos ratos buscan algo para entretenerse desde el teléfono |
 | Alternativa actual | Redes sociales u otros juegos |
 | Tarea principal | Avanzar y descubrir zonas, guardando en bancos para continuar en otro momento |
-| Criterio de éxito | Una persona que nunca lo ha jugado entiende los controles sin que nadie le explique y vence al jefe de la primera zona |
+| Criterio de éxito | Una persona que nunca lo ha jugado entiende los controles sin que nadie le explique y cruza la primera zona hasta obtener el impulso |
 | Hipótesis sin validar | Los alumnos de ESCOM jugarían El Paso Final para entretenerse en sus ratos libres |
 
 ## Historia de usuario y criterio de aceptación
@@ -27,22 +27,22 @@ ese mismo banco con las mismas vidas y las mismas habilidades.
 
 | Área | Entra |
 |---|---|
-| Inicio | Elegir personaje (mujer u hombre) y escribir su nombre; menú con cuatro ranuras de partida (nueva o continuar), con estados vacío, dañado y de otra versión |
-| Historia | Intro con imágenes fijas y escena de los sinodales |
-| Zonas | Las dos primeras, completas: tres enemigos, raíces con espinas, un mini jefe opcional y el jefe de la zona |
-| Progresión | La habilidad de impulso, el arma base y un amuleto |
-| Sistemas | Cuatro vidas, curación, bancos y guardado, lo perdido al morir (mochila), y un reto de preguntas para recuperar lo perdido al morir; una tienda de PejeCoins (decisión del 17-oct-2026) |
+| Inicio | Escribir su nombre (el personaje es el hombre; la elección de mujer u hombre existe pero está oculta hasta tener el arte de la mujer); menú con cuatro ranuras de partida (nueva o continuar), con estados vacío, dañado y de otra versión |
+| Historia | Intro en video (la cinemática antes de La Celda) y escena de los sinodales |
+| Zonas | Las dos primeras, completas: tres enemigos y raíces con espinas, sin jefe: la primera zona todavía enseña a jugar |
+| Progresión | La habilidad de impulso, el arma base y dos amuletos en Las Raíces: Patas de Cucaracha y Caparazón de Cucaracha |
+| Sistemas | Cuatro vidas, curación, bancos y guardado, lo perdido al morir (mochila), y un reto de preguntas para recuperar lo perdido al morir; una tienda de PejeCoins, que vende la brújula |
 | Personajes | Un personaje guía que entrega el arma y el mapa de la primera zona |
 | Teléfono | Controles táctiles personalizables y modo de bajo detalle para gama baja |
-| Idioma | Solo español (decisión del 14-oct-2026) |
+| Idioma | Solo español |
 | Desarrollo | Zona de pruebas básica: pasillo de mecánicas, arena de jefes y panel de trucos. Viaja también en la versión publicada y aparece con el modo desarrollador (`docs/contrato.md`, «Paquete de publicación») |
 
 ## Qué se aplaza a propósito
 
 Las zonas restantes y el final con los sinodales; las demás habilidades; el minijuego de apuestas;
-las mejoras del arma; el viaje rápido entre estaciones en las zonas (el núcleo lo deja programado; las zonas 1
-y 2 lo llevan solo si alcanza el tiempo de contenido, decisión del 17-oct-2026); los personajes secundarios restantes; la música
-completa; el fondo animado del menú. Fuera de la v1 (decisiones del 13-oct-2026): inventario de objetos, «sobrecarga»
+las mejoras del arma; el viaje rápido entre estaciones en las zonas (el núcleo lo deja programado; no habrá
+estaciones en la primera versión); los personajes secundarios restantes; la música
+completa. Fuera de la v1: inventario de objetos, «sobrecarga»
 de amuletos y logros; el dash hacia abajo se descartó (le quitaría su papel a la caída en picada).
 
 ## Cómo se construye

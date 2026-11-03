@@ -1,0 +1,129 @@
+[gd_scene format=3 uid="uid://djt6vl1ded6ns"]
+
+[ext_resource type="Script" uid="uid://k7a08bqsbqd0" path="res://nucleo/sala.gd" id="1_sala"]
+[ext_resource type="PackedScene" uid="uid://dgy2sncgkvcml" path="res://nucleo/enemigo.tscn" id="2_enemigo"]
+[ext_resource type="Script" uid="uid://dd7k60u0x8ibk" path="res://nucleo/ficha_enemigo.gd" id="3_ficha"]
+[ext_resource type="Script" uid="uid://dq4o6bao672c7" path="res://herramientas/salas/comportamientos/jefe_prueba.gd" id="4_comportamiento"]
+[ext_resource type="Script" uid="uid://dvbujhx3h18nc" path="res://nucleo/arena_jefe.gd" id="5_arena"]
+[ext_resource type="Script" uid="uid://dn6rca0unfj6d" path="res://nucleo/porton.gd" id="6_porton"]
+[ext_resource type="Script" uid="uid://cltshx6hm4a3b" path="res://nucleo/recompensa.gd" id="7_recompensa"]
+
+[sub_resource type="RectangleShape2D" id="forma_suelo"]
+size = Vector2(2400, 80)
+
+[sub_resource type="RectangleShape2D" id="forma_pared"]
+size = Vector2(40, 720)
+
+[sub_resource type="RectangleShape2D" id="forma_arena"]
+size = Vector2(1000, 600)
+
+[sub_resource type="Resource" id="ficha_jefe"]
+script = ExtResource("3_ficha")
+id = &"jefe_prueba"
+vida = 12
+umbrales_fase = Array[int]([6])
+jefe = true
+tamano = Vector2(100, 120)
+comportamiento = ExtResource("4_comportamiento")
+velocidad = 120.0
+gravedad = 2400.0
+
+[sub_resource type="Resource" id="premio"]
+script = ExtResource("7_recompensa")
+tipo = 3
+id = &"impulso"
+
+[node name="SalaJefe" type="Node2D"]
+script = ExtResource("1_sala")
+habilidades_de_prueba = Array[StringName]([&"pluma"])
+limites = Rect2(0, 0, 2400, 720)
+
+[node name="Entrada" type="Marker2D" parent="."]
+position = Vector2(300, 680)
+
+[node name="Suelo" type="StaticBody2D" parent="."]
+position = Vector2(1200, 720)
+
+[node name="Forma" type="CollisionShape2D" parent="Suelo"]
+shape = SubResource("forma_suelo")
+
+[node name="Dibujo" type="ColorRect" parent="Suelo"]
+offset_left = -1200.0
+offset_top = -40.0
+offset_right = 1200.0
+offset_bottom = 40.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="ParedIzquierda" type="StaticBody2D" parent="."]
+position = Vector2(20, 360)
+
+[node name="Forma" type="CollisionShape2D" parent="ParedIzquierda"]
+shape = SubResource("forma_pared")
+
+[node name="Dibujo" type="ColorRect" parent="ParedIzquierda"]
+offset_left = -20.0
+offset_top = -360.0
+offset_right = 20.0
+offset_bottom = 360.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="ParedDerecha" type="StaticBody2D" parent="."]
+position = Vector2(2380, 360)
+
+[node name="Forma" type="CollisionShape2D" parent="ParedDerecha"]
+shape = SubResource("forma_pared")
+
+[node name="Dibujo" type="ColorRect" parent="ParedDerecha"]
+offset_left = -20.0
+offset_top = -360.0
+offset_right = 20.0
+offset_bottom = 360.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="PortonIzquierdo" type="AnimatableBody2D" parent="."]
+position = Vector2(600, 320)
+script = ExtResource("6_porton")
+id = "arena_izquierdo"
+abierto_al_empezar = true
+
+[node name="Forma" type="CollisionShape2D" parent="PortonIzquierdo"]
+shape = SubResource("forma_pared")
+
+[node name="PortonDerecho" type="AnimatableBody2D" parent="."]
+position = Vector2(1800, 320)
+script = ExtResource("6_porton")
+id = "arena_derecho"
+abierto_al_empezar = true
+
+[node name="Forma" type="CollisionShape2D" parent="PortonDerecho"]
+shape = SubResource("forma_pared")
+
+[node name="Jefe" parent="." instance=ExtResource("2_enemigo")]
+position = Vector2(1200, 680)
+id = &"jefe_arena_prueba"
+ficha = SubResource("ficha_jefe")
+
+[node name="Arena" type="Area2D" parent="." node_paths=PackedStringArray("jefe", "portones")]
+position = Vector2(1200, 380)
+script = ExtResource("5_arena")
+jefe = NodePath("../Jefe")
+id_jefe = &"arena_jefe_prueba"
+portones = Array[NodePath]([NodePath("../PortonIzquierdo"), NodePath("../PortonDerecho")])
+recompensa = SubResource("premio")
+
+[node name="Forma" type="CollisionShape2D" parent="Arena"]
+shape = SubResource("forma_arena")
+
+[node name="Indicacion" type="Label" parent="."]
+offset_left = 80.0
+offset_top = 110.0
+offset_right = 580.0
+offset_bottom = 230.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 28
+text = "Entra y vence al jefe
+A media vida acelera y embiste
+Premio: impulso"

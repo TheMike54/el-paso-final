@@ -2,8 +2,8 @@ class_name ProyectilEnemigo
 extends AtaqueEnemigo
 # Disparo de un enemigo: un ataque que avanza recto (crear_disparo) o en arco con su propia gravedad (crear_arco),
 # dana al jugador al tocarlo y desaparece contra un solido (buscado con un rayo que cubre el paso del tick, como la
-# bola del jugador) o al acabar su vida. Con se_puede_parar, el ataque del jugador lo para como a cualquier
-# AtaqueEnemigo. Lo crea ComportamientoEnemigo (disparar, lanzar_en_arco).
+# bola del jugador) o al acabar su vida. Con se_puede_parar, el ataque del jugador lo desvia: desaparece con una
+# chispa, sin el congelado del parry (Jugador._desviar). Lo crea ComportamientoEnemigo (disparar, lanzar_en_arco).
 
 const TAMANO: Vector2 = Vector2(36.0, 36.0)
 
@@ -50,6 +50,7 @@ static func _crear(dano_del_golpe: int, parable: bool) -> ProyectilEnemigo:
 	var disparo: ProyectilEnemigo = ProyectilEnemigo.new()
 	disparo.dano = dano_del_golpe
 	disparo.se_puede_parar = parable
+	disparo.con_trazo = false
 	disparo.ticks = 180
 	disparo.monitorable = true
 	disparo._poner_forma(Rect2(-TAMANO / 2.0, TAMANO))

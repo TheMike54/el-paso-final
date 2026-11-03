@@ -66,9 +66,3 @@ func _ready() -> void:
 
 	Partida.reiniciar()
 	_resumen()
-
-
-# Un peligro deja al jugador quieto donde lo toco mientras la pantalla funde a negro y, ya en negro, lo pone en su
-# punto: Fundido.TICKS_OSCURECER + Fundido.TICKS_EN_NEGRO_PELIGRO ticks del jugador.
-func _esperar_fundido() -> void:
-	await _esperar(Fundido.TICKS_OSCURECER + Fundido.TICKS_EN_NEGRO_PELIGRO)

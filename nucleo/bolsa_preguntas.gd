@@ -1,7 +1,7 @@
 class_name BolsaPreguntas
 extends Resource
 # Bolsa de preguntas del reto de la mochila (lo perdido al morir): de aqui se sortean preguntas_por_reto en cada
-# intento y se gana con meta aciertos. Es dato, una sola para todo el juego (decision del 17-oct-2026): la del juego
+# intento y se gana con meta aciertos. Es dato, una sola para todo el juego: la del juego
 # va en contenido/ y el nucleo la carga solo si existe. El validador revisa su forma con fallos().
 
 ## Preguntas de donde se sortea; con el doble de preguntas_por_reto, un intento nuevo no repite las del anterior.

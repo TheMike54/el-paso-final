@@ -1,0 +1,5 @@
+# Los casos de herramientas/pruebas/prueba_musica.gd corrieron y ninguno fallo (sin pantalla, como el CI; con pantalla
+# suma uno: la reproduccion del tema sigue donde iba al reaparecer). Cada caso que falla imprime una linea
+# "FALLO musica: <caso>".
+valor . casos 21
+valor . fallos 0

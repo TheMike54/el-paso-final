@@ -1,12 +1,13 @@
 class_name Golpeable
 extends Area2D
-# Componente de lo que el ataque del jugador puede golpear (enemigos, objetos que se rompen).
-# Va como hijo del nodo golpeable, con su forma; cuenta los golpes, empuja un poco a su padre
-# lejos del atacante (sin cruzar paredes ni salir de la sala) y avisa con la senal golpeado (con el dano, para quien lleve la vida) y con
-# Eventos.enemigo_golpeado, o con Eventos.objeto_golpeado si no es un enemigo (muro, palanca: sin Inspiracion). Lo
-# golpean el ataque del jugador y el proyectil.
+# Receptor comun de ataques del jugador y proyectiles para enemigos y objetos, como muros o palancas.
+# Va como hijo con su forma; cuenta golpes y empuja al padre sin cruzar paredes ni salir de la sala.
+# Delega la vida con golpeado(atacante, dano) y avisa por Eventos.enemigo_golpeado u objeto_golpeado.
+# Distingue objetos de enemigos para que golpear un objeto no de Inspiracion.
 
 signal golpeado(atacante: Node2D, dano: int)
+## Un golpe que bloqueo (bloqueo dio true): no conto, no empujo ni dio Inspiracion.
+signal bloqueado(atacante: Node2D)
 
 ## Velocidad con que el padre sale empujado al recibir un golpe, en px/s. 0: no se mueve. 600 x 6 ticks = 60 px.
 @export var velocidad_retroceso: float = 600.0
@@ -19,6 +20,11 @@ signal golpeado(atacante: Node2D, dano: int)
 ## Golpes recibidos desde que entro a la sala, y el dano que sumaron.
 var golpes: int = 0
 var dano_recibido: int = 0
+## Si es valido y devuelve true para el atacante, el golpe rebota (escudo, caparazon cerrado), como el golpe que
+## bloquea HealthManager.Invincible de Hollow Knight: sin dano, sin empuje y sin Inspiracion; avisa con
+## Eventos.objeto_golpeado (suena y vibra como pegarle a un objeto) y con bloqueado. Lo fija el Enemigo con
+## ComportamientoEnemigo.bloquea_golpe. Firma: func(atacante: Node2D) -> bool (classes/class_callable.rst).
+var bloqueo: Callable = Callable()
 
 var _ticks_empujado: int = 0
 var _sentido: float = 0.0
@@ -28,7 +34,12 @@ func _ready() -> void:
 	Capas.poner(self, Capas.GOLPEABLE, 0)
 
 
-func recibir_golpe(atacante: Node2D, dano: int = 1) -> void:
+## Recibe un golpe; devuelve false si lo bloqueo (para que quien golpea no cuente Inspiracion).
+func recibir_golpe(atacante: Node2D, dano: int = 1) -> bool:
+	if bloqueo.is_valid() and bloqueo.call(atacante) == true:
+		bloqueado.emit(atacante)
+		Eventos.objeto_golpeado.emit(get_parent())
+		return false
 	golpes += 1
 	dano_recibido += dano
 	var padre: Node2D = get_parent() as Node2D
@@ -42,6 +53,7 @@ func recibir_golpe(atacante: Node2D, dano: int = 1) -> void:
 		Eventos.enemigo_golpeado.emit(get_parent())
 	else:
 		Eventos.objeto_golpeado.emit(get_parent())
+	return true
 
 
 func _physics_process(delta: float) -> void:
@@ -51,9 +63,16 @@ func _physics_process(delta: float) -> void:
 	var padre: Node2D = get_parent() as Node2D
 	var paso: float = _sentido * velocidad_retroceso * delta
 	var libre: float = _paso_libre(paso)
-	padre.global_position.x += libre
+	# Un cuerpo se mueve con la fisica (no entra en un solido que el rayo de _paso_libre no vio, como un saliente arriba o
+	# abajo); lo que no es un cuerpo (una palanca, un muro) se desplaza a mano.
+	var cuerpo: CharacterBody2D = padre as CharacterBody2D
+	var choco: bool = false
+	if cuerpo != null:
+		choco = cuerpo.move_and_collide(Vector2(libre, 0.0)) != null
+	else:
+		padre.global_position.x += libre
 	# Contra una pared o el borde de la sala el empuje se acaba ahi.
-	if libre != paso:
+	if libre != paso or choco:
 		_ticks_empujado = 0
 
 

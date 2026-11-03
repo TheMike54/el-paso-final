@@ -1,0 +1,33 @@
+# La Celda, sala 2, ruta por arriba de los cables: desde la Entrada salta el foso de varillas, sube por los escombros
+# hasta la columna rota, pasa a la lampara (plataforma de una via) y a la plataforma que va y viene; de ella se deja
+# caer a los cables pelados (peligro) y reaparece en la lampara, el ultimo suelo firme que no se mueve.
+escena res://contenido/salas/celda/celda_2.tscn
+2 mover_derecha press
+175 saltar press
+207 saltar release
+300 saltar press
+324 saltar release
+326 saltar press
+350 saltar release
+352 saltar press
+376 saltar release
+378 saltar press
+402 saltar release
+404 saltar press
+428 saltar release
+426 mover_derecha release
+540 mover_derecha press
+545 saltar press
+565 saltar release
+588 mover_derecha release
+898 mover_derecha press
+905 saltar press
+927 saltar release
+940 mover_derecha release
+1445 mover_derecha press
+1447 saltar press
+1470 saltar release
+1490 mover_derecha release
+1500 mover_izquierda press
+1540 mover_izquierda release
+fin 1700

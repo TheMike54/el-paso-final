@@ -1,0 +1,5 @@
+# Array[StringName] con un solo elemento: prueba posesion, equipo y ausencia de duplicados.
+en 1 valor /root/Partida amuletos_tenidos [&"amuleto_velocidad"]
+en 1 valor /root/Partida amuletos_equipados [&"amuleto_velocidad"]
+valor /root/Partida amuletos_tenidos [&"amuleto_velocidad"]
+valor /root/Partida amuletos_equipados [&"amuleto_velocidad"]

@@ -1,0 +1,6 @@
+# Casos de herramientas/pruebas/prueba_zona_camara.gd: los topes de una ZonaCamara (tambien con y negativas), zonas
+# encimadas (manda la ultima), una zona que desaparece, la deteccion real del jugador, la entrada al instante al
+# llegar a la sala, la salida al instante recien colocada, la entrada lenta despues y que el lento solo arranque si
+# cambia la zona que manda. Tarda unos 450 ticks.
+escena res://herramientas/pruebas/sala_zona_camara.tscn
+fin 600

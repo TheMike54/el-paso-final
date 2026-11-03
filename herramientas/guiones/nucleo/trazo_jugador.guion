@@ -1,0 +1,6 @@
+# El jugador ataca de lado en prueba_1: su trazo (Jugador/Trazo) se ve unos ticks despues del golpe, del lado al
+# que mira y sobre el area de golpe, y se apaga solo.
+escena res://herramientas/salas/zonas/prueba/prueba_1.tscn
+10 atacar press
+12 atacar release
+fin 40

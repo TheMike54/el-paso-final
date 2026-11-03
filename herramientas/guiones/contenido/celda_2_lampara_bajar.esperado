@@ -1,0 +1,8 @@
+# Sale de la lampara hacia la columna rota y termina en el piso entre el foso de varillas y los escombros (x 1593 a
+# 2354), sin dano.
+en 1000 y 517 2
+escena res://contenido/salas/celda/celda_2.tscn
+x 1981 60
+y 774 2
+en_suelo true
+senal /root/Eventos jugador_danado 0

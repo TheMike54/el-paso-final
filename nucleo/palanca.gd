@@ -1,9 +1,9 @@
 class_name Palanca
 extends Node2D
-# Palanca que se mueve con un golpe del jugador (como la Lever de Silksong): el primer golpe la activa, la deja
-# inclinada hacia el otro lado y, tras ticks_retraso, abre cada Porton de su lista. Despues ya no cambia; los
-# golpes solo rebotan al jugador. La bola no la mueve. Con id se marca en el estado de su sala y aparece activada;
-# cada porton guarda lo suyo. Golpearla no da Inspiracion (su Golpeable no es un enemigo).
+# Palanca como la Lever de Silksong: el primer golpe la inclina y abre sus Porton tras ticks_retraso.
+# Despues los golpes solo rebotan al jugador; la bola no la mueve y su Golpeable es objeto para no dar Inspiracion.
+# Con id se marca al abrir y vuelve activada; cada porton conserva su propio estado para separar ambas persistencias.
+# Un AnimatedSprite2D (animacion) reemplaza la caja gris cuando tiene arte.
 
 ## Al activarse.
 signal activada()
@@ -17,14 +17,17 @@ const LARGO: float = 70.0
 
 ## Id unico dentro de la sala; lo exige el validador en las salas con id.
 @export var id: String = ""
-## Portones que abre (rutas a nodos Porton de la misma sala).
-@export var portones: Array[NodePath] = []
+## Portones que abre, de la misma sala (nodos exportados, resueltos por el editor).
+@export var portones: Array[Porton] = []
 ## Ticks entre el golpe y la apertura (Hollow Knight: 0,75 s).
 @export var ticks_retraso: int = 45
 ## Congelado al activarla y temblor de camara: ticks y px.
 @export var ticks_congelado: int = 6
 @export var ticks_temblor: int = 10
 @export var px_temblor: float = 6.0
+## Dibujo opcional, hijo de la palanca; sin el, la caja gris. Inclinado a la derecha sin voltear: se refleja con
+## scale.x hacia donde queda inclinada.
+@export var animacion: AnimatedSprite2D = null
 
 ## Activada (ya no cambia) y si ya abrio sus portones; publicos para los guiones.
 var esta_activada: bool = false
@@ -49,11 +52,11 @@ func _ready() -> void:
 	golpeable.add_child(forma)
 	add_child(golpeable)
 	golpeable.golpeado.connect(_al_recibir_golpe)
-	if not id.is_empty() and Partida.estado_de(Sala.clave_de(self), id) != null:
+	if not id.is_empty() and Sala.recordado(self, id):
 		esta_activada = true
 		abrio = true
 		_inclinacion = 1.0
-	queue_redraw()
+	_inclinar()
 
 
 func _physics_process(_delta: float) -> void:
@@ -64,9 +67,10 @@ func _physics_process(_delta: float) -> void:
 		return
 	_ticks_para_abrir = -1
 	abrio = true
-	for ruta: NodePath in portones:
-		var porton: Porton = get_node_or_null(ruta) as Porton
-		if porton != null:
+	if not id.is_empty():
+		Partida.marcar(Sala.clave_de(self), id)
+	for porton: Porton in portones:
+		if is_instance_valid(porton):
 			porton.abrir()
 
 
@@ -77,17 +81,25 @@ func _al_recibir_golpe(atacante: Node2D, _dano: int) -> void:
 	# Se inclina hacia el lado contrario al de quien la golpea.
 	var lado: float = signf(global_position.x - atacante.global_position.x)
 	_inclinacion = lado if lado != 0.0 else -_inclinacion
-	queue_redraw()
-	if not id.is_empty():
-		Partida.marcar(Sala.clave_de(self), id)
+	_inclinar()
 	Congelado.pedir(ticks_congelado)
 	(atacante as Jugador).temblar(ticks_temblor, px_temblor)
 	_ticks_para_abrir = ticks_retraso
 	activada.emit()
 
 
+# Con dibujo lo refleja; sin el, redibuja la caja gris.
+func _inclinar() -> void:
+	if animacion != null:
+		animacion.scale.x = absf(animacion.scale.x) * _inclinacion
+	else:
+		queue_redraw()
+
+
 func _draw() -> void:
 	# Caja gris: base y palanca inclinada, mientras no haya arte.
+	if animacion != null:
+		return
 	draw_rect(Rect2(-30.0, -20.0, 60.0, 20.0), COLOR_BASE)
 	var punta: Vector2 = Vector2(0.0, -20.0) + Vector2.UP.rotated(deg_to_rad(GRADOS) * _inclinacion) * LARGO
 	draw_line(Vector2(0.0, -20.0), punta, COLOR_PALANCA, 10.0)

@@ -1,0 +1,5 @@
+# En el hueco, en el suelo y pegado a la cara derecha del escalon bajo (x 1650 + medio jugador).
+en 100 valor Jugador global_position:y 1040 2
+en 160 valor Jugador global_position:x 1690 2
+# Arriba del escalon bajo (su cara de arriba esta en y 860). Las vidas no se revisan: el volador ronda el hueco.
+valor Jugador global_position:y 860 2

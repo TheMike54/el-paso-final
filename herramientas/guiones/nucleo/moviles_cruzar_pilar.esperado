@@ -1,4 +1,5 @@
-# Del otro lado del pilar (su cara derecha esta en x 2030), en el suelo y sin perder vidas.
-valor Jugador global_position:x 2470 60
+# Del otro lado del pilar (su cara derecha esta en x 2030), en el suelo y sin perder vidas. Medido de nuevo el
+# 25-oct-2026, con el escalon alto en x 1840 (antes 1760, 2470).
+valor Jugador global_position:x 2536 60
 valor Jugador global_position:y 1040 2
 valor Jugador vidas 4 0.5

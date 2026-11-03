@@ -1,10 +1,9 @@
 class_name EntregaRecompensas
 extends Interactuable
-# Quien entrega las recompensas de los coleccionables (el padre de las larvas de Hollow Knight): con el
-# jugador encima y en el suelo, interactuar entrega cada recompensa cuya cantidad ya se junto y que no se
-# entrego antes. Cada entrega queda marcada en el estado de su sala (entregado_<cantidad>) y autoguarda.
-# Va como hija directa de la raiz de una sala, con su forma. La capa y el disparador (sin congelado) son de la
-# base Interactuable, sin aviso: la entrega no lo dibuja.
+# Canje de coleccionables como el padre de las larvas de Hollow Knight: interactuar desde el suelo entrega lo reunido.
+# Marca entregado_<cantidad> en el estado de la sala y autoguarda cada premio para no entregarlo dos veces.
+# Va con su forma como hija directa de la raiz de una sala; hereda capa y disparador sin congelado de Interactuable.
+# No dibuja el aviso de interaccion del resto de interactuables.
 
 ## Las marcas de las entregas en el estado de la sala empiezan asi; un Npc o un reto no usan ese id.
 const PREFIJO_ENTREGADO: String = "entregado_"

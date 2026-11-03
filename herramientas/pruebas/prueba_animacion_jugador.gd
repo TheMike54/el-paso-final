@@ -186,6 +186,21 @@ func _recurso() -> void:
 	var separacion: float = AnimacionJugador.separacion_pared(cuadros, 158.0, 40.0)
 	_caso("pared: el cuerpo se aparta 50 px para que la mano toque la pared (dio %s)" % separacion,
 			is_equal_approx(separacion, 50.0))
+	# La escala de la hoja del ataque vertical salia de la katana y no de la mascara: el cuerpo quedaba al 71 %
+	# (docs/errores/2026-10-24-ataque-vertical-encogido.md). De pie con el brazo arriba mide al menos lo que quieto.
+	var alto_arriba: float = _mas_alto(cuadros, AnimacionJugador.ATAQUE_ARRIBA)
+	var alto_quieto: float = _mas_alto(cuadros, AnimacionJugador.QUIETO)
+	_caso("ataque arriba: el cuerpo no se encoge (%s px contra %s de quieto)" % [alto_arriba, alto_quieto],
+			alto_arriba >= alto_quieto)
+	# Tendido, el cuerpo se apoya en el suelo como quieto: el borde de abajo de cada cuadro en el del lienzo
+	# (docs/errores/2026-10-24-hueco-al-morir.md).
+	var en_el_aire: PackedStringArray = []
+	for i: int in range(cuadros.get_frame_count(AnimacionJugador.MUERTE)):
+		var trozo: AtlasTexture = cuadros.get_frame_texture(AnimacionJugador.MUERTE, i) as AtlasTexture
+		var hueco: float = lienzo.y - trozo.margin.position.y - trozo.region.size.y
+		if not is_zero_approx(hueco):
+			en_el_aire.append("%d a %s px" % [i, hueco])
+	_caso("muerte: el cuerpo toca el suelo (en el aire: %s)" % ", ".join(en_el_aire), en_el_aire.is_empty())
 
 
 func _escena() -> void:
@@ -207,6 +222,14 @@ func _es(que: String, e: AnimacionJugador.Estado, esperado: StringName) -> void:
 func _tras_cola(que: String, e: AnimacionJugador.Estado, esperado: StringName) -> void:
 	AnimacionJugador.actualizar_cola_ataque(e)
 	_es(que, e, esperado)
+
+
+# Alto del cuadro mas alto de una animacion (su region, sin el margen).
+func _mas_alto(cuadros: SpriteFrames, nombre: StringName) -> float:
+	var alto: float = 0.0
+	for i: int in range(cuadros.get_frame_count(nombre)):
+		alto = maxf(alto, (cuadros.get_frame_texture(nombre, i) as AtlasTexture).region.size.y)
+	return alto
 
 
 func _segundos(cuadros: SpriteFrames, nombre: StringName) -> float:

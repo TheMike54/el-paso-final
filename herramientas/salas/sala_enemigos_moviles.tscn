@@ -140,7 +140,7 @@ mouse_filter = 2
 color = Color(0.3, 0.3, 0.32, 1)
 
 [node name="EscalonAlto" type="StaticBody2D" parent="."]
-position = Vector2(1760, 700)
+position = Vector2(1840, 700)
 
 [node name="Forma" type="CollisionShape2D" parent="EscalonAlto"]
 shape = SubResource("forma_escalon_alto")

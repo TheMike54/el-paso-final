@@ -1,0 +1,6 @@
+# La Celda: el jugador camina a la derecha sin saltar y cae al foso de las varillas (de x=1571 a 1757). Es un
+# peligro: pierde una vida y vuelve al último suelo firme, antes de la orilla izquierda, no a la Entrada.
+escena res://contenido/salas/celda/celda_1.tscn
+2 mover_derecha press
+240 mover_derecha release
+fin 330

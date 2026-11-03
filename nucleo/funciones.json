@@ -2,19 +2,13 @@
   {
     "id": "arranque",
     "que": "El autoload Arranque carga el puerto de depuracion solo en un build de depuracion y si el archivo viaja en el paquete",
-    "comprobacion": "herramientas/guiones/nucleo/caja.guion",
-    "pasa": true
-  },
-  {
-    "id": "caja-gris",
-    "que": "La sala_inicial (donde cae una partida nueva hasta que exista la primera sala real) es una caja gris que camina y salta con las acciones mover_izquierda, mover_derecha y saltar",
-    "comprobacion": "herramientas/guiones/nucleo/caja.guion",
+    "comprobacion": "herramientas/guiones/contenido/cinematica_celda.guion",
     "pasa": true
   },
   {
     "id": "entrada-acciones",
     "que": "El InputMap tiene todas las acciones del juego con su teclado inicial y la logica solo lee acciones con nombre",
-    "comprobacion": "manual: project.godot lista las acciones de docs/contrato.md y ningun .gd de nucleo/ lee teclas ni toques, salvo nucleo/controles_tactiles.gd, que traduce los toques a acciones; nucleo/editor_controles.gd lee el raton emulado del toque para mover los botones , nucleo/configuracion.gd lee botones del control para reasignarlos y nucleo/ultima_entrada.gd lee toques, teclas, el control y el raton para saber que se uso al ultimo (foco e iconos de los menus)",
+    "comprobacion": "manual: project.godot lista las acciones de docs/ajustes-y-entrada.md y ningun .gd de nucleo/ lee teclas ni toques, salvo nucleo/controles_tactiles.gd, que traduce los toques a acciones; nucleo/editor_controles.gd lee el raton emulado del toque para mover los botones , nucleo/configuracion.gd lee botones del control para reasignarlos y nucleo/ultima_entrada.gd lee toques, teclas, el control y el raton para saber que se uso al ultimo (foco e iconos de los menus)",
     "pasa": true
   },
   {
@@ -91,8 +85,8 @@
   },
   {
     "id": "entrada-control",
-    "que": "El control (Xbox / PlayStation) emite las mismas acciones del InputMap, con su mapeo en docs/contrato.md",
-    "comprobacion": "manual: con un control conectado, el stick izquierdo y cada boton disparan la accion que dice docs/contrato.md",
+    "que": "El control (Xbox / PlayStation) emite las mismas acciones del InputMap, con su mapeo en docs/ajustes-y-entrada.md",
+    "comprobacion": "manual: con un control conectado, el stick izquierdo y cada boton disparan la accion que dice docs/ajustes-y-entrada.md",
     "pasa": true
   },
   {
@@ -181,7 +175,7 @@
   },
   {
     "id": "vibracion-al-aterrizar",
-    "que": "El aterrizaje duro y el aterrizaje de la picada emiten Eventos.jugador_aterrizo y el telefono vibra 80 ms con fuerza 0,9; con el ajuste vibracion apagado no vibra",
+    "que": "Eventos.jugador_aterrizo(velocidad, duro, picada) sale una vez en cada aterrizaje con caida (aparecer en una sala no cuenta); el telefono vibra 80 ms con fuerza 0,9 solo en el duro y en el de la picada; con el ajuste vibracion apagado no vibra",
     "comprobacion": "herramientas/guiones/nucleo/vibracion_aterrizaje.guion",
     "pasa": true
   },
@@ -223,7 +217,7 @@
   },
   {
     "id": "guardado-v3",
-    "que": "El guardado es la version 3 de docs/contrato.md (banco {sala, id}, listas de ids, monedas, mochila, mapas, salas visitadas y mapeadas, estado por sala, personaje, nombre y tiempo jugado); una partida de la version 2 es INCOMPATIBLE y un banco sin id es DANADA",
+    "que": "El guardado es la version 4 de docs/contrato.md (banco {sala, id}, listas de ids, monedas, mochila, mapas, salas visitadas y mapeadas, estado por sala, personaje, nombre y tiempo jugado, mas los campos de NUEVOS); una partida de la version 2 o 3 es INCOMPATIBLE y un banco sin id es DANADA",
     "comprobacion": "herramientas/guiones/nucleo/guardado.guion",
     "pasa": true
   },
@@ -265,7 +259,7 @@
   },
   {
     "id": "enemigo-comportamiento",
-    "que": "La ficha de un enemigo puede llevar un script de comportamiento (ComportamientoEnemigo) que ataca con un AtaqueEnemigo separado del cuerpo y dispara ProyectilEnemigo; el muneco que ataca de la zona de pruebas lo usa: su golpe parable y su disparo se paran y su golpe no parable dana aunque el jugador ataque",
+    "que": "La ficha de un enemigo puede llevar un script de comportamiento (ComportamientoEnemigo) que ataca con un AtaqueEnemigo separado del cuerpo y dispara ProyectilEnemigo; el muneco que ataca de la zona de pruebas lo usa: su golpe parable se para, su disparo se desvia y su golpe no parable dana aunque el jugador ataque",
     "comprobacion": "herramientas/guiones/nucleo/parry.guion",
     "pasa": true
   },
@@ -325,7 +319,7 @@
   },
   {
     "id": "parry-visible",
-    "que": "Un parry congela todo 20 ticks, dibuja un estallido blanco en el punto de choque y empuja al jugador hacia atras; el golpe parado no quita vida",
+    "que": "Un parry congela todo 20 ticks, muestra un destello en la punta de la espada y empuja al jugador hacia atras; el golpe parado no quita vida",
     "comprobacion": "herramientas/guiones/nucleo/parry.guion; herramientas/guiones/nucleo/parry_ventana.guion",
     "pasa": true
   },
@@ -361,44 +355,44 @@
   },
   {
     "id": "ranuras-telefono",
-    "que": "En el telefono las 4 fichas caben en una fila y se leen y se tocan con el pulgar, con y sin el aviso de pocos toques; una partida nueva deja ocupada su ficha y Borrar y Restaurar funcionan con su confirmacion",
-    "comprobacion": "manual: en el S50 o el S20 con el APK de desarrollo: Jugar, ranura 1, un personaje y Empezar (caja gris), Volver al menu, Jugar: la ficha 1 dice Inicio y 0 min; entrar otra vez y volver: aparece Restaurar; Borrar con su confirmacion la deja vacia",
+    "que": "En el telefono las 4 fichas caben en una fila y se leen y se tocan con el pulgar, con y sin el aviso de pocos toques; una partida nueva ocupa su ficha desde su primer guardado y Borrar y Restaurar funcionan con su confirmacion",
+    "comprobacion": "manual: en el S50 o el S20 con el APK de desarrollo: Jugar, ranura 1 y Empezar, ver la cinematica, en La Celda pausa y Salir al menu, Jugar: la ficha 1 dice Celda 1 y 0 min; entrar otra vez y volver: aparece Restaurar; Borrar con su confirmacion la deja vacia",
     "pasa": true
   },
   {
     "id": "audio-y-brillo",
-    "que": "Configuracion tiene Audio, un panel con el volumen general, de musica y de efectos (cada uno en su bus: Master, Musica y Efectos), cada uno con barra ancha y altavoz, que se guardan; mientras esta abierto suena la musica de prueba y Probar efecto toca uno; y Brillo, en su pantalla, de 50 a 150 %, que oscurece o aclara el mundo (no el HUD ni los menus) y se guarda",
-    "comprobacion": "herramientas/guiones/nucleo/menu_configuracion.guion;herramientas/guiones/nucleo/guardado.guion",
+    "que": "Configuracion tiene Audio, un panel con el volumen general, de musica y de efectos (cada uno en su bus: Master, Musica y Efectos), cada uno con barra ancha y altavoz, que se guardan; mientras esta abierto, si no se oye musica, Musica pone el tema del menu para probar la barra y al cerrarlo devuelve lo que habia, y Probar efecto toca uno; y Brillo, en su pantalla, de 50 a 150 %, que oscurece o aclara el mundo (no el HUD ni los menus) y se guarda",
+    "comprobacion": "herramientas/guiones/nucleo/menu_configuracion.guion;herramientas/guiones/nucleo/guardado.guion;herramientas/guiones/nucleo/musica.guion",
     "pasa": true
   },
   {
     "id": "audio-y-brillo-telefono",
-    "que": "En el telefono la musica de prueba y el efecto se oyen, cada barra cambia solo su parte y el brillo se ve bien en sus extremos sin tapar los toques",
+    "que": "En el telefono la musica y el efecto se oyen, cada barra cambia solo su parte y el brillo se ve bien en sus extremos sin tapar los toques",
     "comprobacion": "manual: en el S50 o el S20 con el APK de desarrollo: Configuracion, Audio: suena la musica; bajar Musica a 0 la calla y Probar efecto sigue sonando; bajar Efectos a 0 calla el efecto; General a 0 calla todo; Brillo en 50 y en 150: el mundo se oscurece o aclara, el HUD y los botones no cambian y siguen respondiendo",
     "pasa": true
   },
   {
     "id": "amuletos-banco",
-    "que": "Los amuletos se ponen y se quitan solo sentado en un banco, en la pagina Amuletos del marco de menus (la abre la accion inventario sentado, o el boton tactil que sentado dice Inventario); de pie solo se ven; Partida no pone uno que no se tiene, repetido ni mas de MAX_EQUIPADOS, y poner o quitar autoguarda",
+    "que": "Los amuletos se ponen y se quitan solo sentado en un banco, en la pagina Amuletos del marco de menus (la abre la accion inventario sentado, o el boton tactil que sentado dice Inventario); de pie solo se ven; Partida no pone uno que no se tiene, repetido ni uno que no cabe en la carga, y poner o quitar autoguarda",
     "comprobacion": "herramientas/guiones/nucleo/amuletos.guion",
     "pasa": true
   },
   {
     "id": "amuletos-telefono",
-    "que": "En el telefono la pagina Amuletos del marco de menus se abre sentado con el boton Inventario, se lee y se toca con el pulgar, y la brujula puesta sentado se ve en el mapa",
-    "comprobacion": "manual: fila Amuletos en el banco de docs/pruebas.md, en el S50 o el S20",
+    "que": "En el telefono la pagina Amuletos del marco de menus se abre sentado con el boton Inventario, se lee y se toca con el pulgar (la brujula, que antes se ponia aqui, ahora es un util: entrada equipo-telefono)",
+    "comprobacion": "manual: fila Amuletos y utiles en el banco de docs/pruebas.md, en el S50 o el S20",
     "pasa": true
   },
   {
     "id": "personaje-y-nombre",
-    "que": "Una ranura vacia abre Nueva partida: elegir Hombre o Mujer (sin eso Empezar no responde) y un nombre limpio de hasta 12 caracteres (vacio, Alumno o Alumna); la partida guarda personaje y nombre y su ficha lleva el nombre; Atras vuelve a las ranuras",
+    "que": "Una ranura vacia abre Nueva partida: un nombre limpio de hasta 12 caracteres (vacio, Alumno) con el personaje hombre; la eleccion de Hombre o Mujer existe pero esta oculta (`NuevaPartida.ELEGIR_PERSONAJE`) hasta tener el segundo personaje; la partida guarda personaje y nombre y su ficha lleva el nombre; Atras vuelve a las ranuras",
     "comprobacion": "herramientas/guiones/nucleo/ranuras.guion",
     "pasa": true
   },
   {
     "id": "personaje-y-nombre-telefono",
     "que": "En el telefono el campo del nombre abre el teclado de Android, Enter empieza la partida y la ficha muestra el nombre",
-    "comprobacion": "manual: en el S50 o el S20: Jugar, ranura vacia, Mujer, tocar Nombre y escribir con el teclado del telefono, Enter; Volver al menu, Jugar: la ficha lleva el nombre",
+    "comprobacion": "manual: en el S50 o el S20: Jugar, ranura vacia, tocar Nombre y escribir con el teclado del telefono, Enter; Volver al menu, Jugar: la ficha lleva el nombre",
     "pasa": true
   },
   {
@@ -427,7 +421,7 @@
   },
   {
     "id": "sonidos-eventos",
-    "que": "Los eventos del juego suenan: salto (senal nueva jugador_salto), golpe dado, dano, parry, curar y banco, en el bus Efectos, desde Sonido en Arranque (no se corta al cambiar de sala), con la ficha de prueba, pocas voces y sin repetir el mismo evento en ticks seguidos salvo dano y parry",
+    "que": "Los eventos del juego suenan en el bus Efectos desde Sonido en Arranque (no se corta al cambiar de sala) con la ficha del juego (sonidos_jugador.tres; salto y parry vacios a proposito), sin repetir el mismo evento en ticks seguidos salvo dano y parry",
     "comprobacion": "herramientas/guiones/nucleo/sonido.guion;herramientas/guiones/nucleo/bus_eventos.guion",
     "pasa": true
   },
@@ -435,7 +429,7 @@
     "id": "sonidos-telefono",
     "que": "En el telefono cada evento se oye, el golpe dado y el recibido se distinguen, nada se corta al cruzar una puerta y el volumen de efectos los baja",
     "comprobacion": "manual: fila Efectos de los eventos de docs/pruebas.md, en el S50 o el S20",
-    "pasa": false
+    "pasa": true
   },
   {
     "id": "marco-menus",
@@ -613,7 +607,7 @@
   },
   {
     "id": "enemigo-arco",
-    "que": "ProyectilEnemigo en arco con gravedad propia: lanzar_en_arco calcula la rapidez para un angulo fijo y cae cerca del objetivo, se detiene en los solidos y se puede parar; sin gravedad sigue recto",
+    "que": "ProyectilEnemigo en arco con gravedad propia: lanzar_en_arco calcula la rapidez para un angulo fijo y cae cerca del objetivo, se detiene en los solidos y se puede desviar; sin gravedad sigue recto",
     "comprobacion": "herramientas/guiones/nucleo/enemigos_moviles.guion",
     "pasa": true
   },
@@ -711,7 +705,7 @@
     "id": "aviso-accion-rediseno-telefono",
     "que": "En el telefono la sala Pizarrones se entiende en orden (saltar, atacar al caminante, curar, sentarse): cada aviso con su palabra se lee, se va al hacer la accion y el caminante deja con ganas de curarse",
     "comprobacion": "manual: zona de pruebas, Mundo, Pizarrones, en el telefono con el dedo: recorrer la sala de izquierda a derecha y volver a entrar",
-    "pasa": false
+    "pasa": true
   },
   {
     "id": "botones-por-ensenar",
@@ -723,7 +717,7 @@
     "id": "botones-por-ensenar-telefono",
     "que": "En el telefono, en la sala Pizarrones, cada boton de la pantalla aparece al llegar a su pizarron y se entiende que es nuevo; con una vida menos se puede probar curar",
     "comprobacion": "manual: zona de pruebas, sala Pizarrones, en el telefono con el dedo: recorrerla de izquierda a derecha y curarse en el pizarron de curar",
-    "pasa": false
+    "pasa": true
   },
   {
     "id": "menus-gis",
@@ -751,7 +745,7 @@
   },
   {
     "id": "sonidos-muro-y-porton",
-    "que": "FichaSonidos tiene un campo de efecto para romper un muro (muro_roto) y abrir un porton (porton), vacios mientras no haya archivo. Sonido.EVENTOS lista cada evento que Sonido toca y cada uno es campo de la ficha; tocar() avisa con push_warning si le llega uno que no lo es",
+    "que": "FichaSonidos tiene un campo de efecto para romper un muro (muro_roto) y abrir un porton (porton), con su WAV en la ficha del juego. Cada senal que Sonido escucha toca su evento (lo comprueba la prueba emitiendo cada una); tocar() avisa con push_warning si le llega un evento que no es campo de la ficha",
     "comprobacion": "herramientas/guiones/nucleo/sonido.guion",
     "pasa": true
   },
@@ -847,7 +841,7 @@
   },
   {
     "id": "configuracion-partida",
-    "que": "Configuracion partida en piezas (paso 7 de la auditoria, pieza 10: M6 y M7): el panel de audio es PanelAudio (nucleo/panel_audio.gd, script del nodo PanelAudio de configuracion.tscn: filas de volumen, altavoces, probar efecto y musica de prueba) y la pantalla de brillo es PantallaBrillo (nucleo/pantalla_brillo.gd, creada en codigo con el nombre PanelBrillo: escena tenue, ventana con foto o EscenaMuestra, cuadro de calibracion, shader de la foto y barra); avisan a Configuracion con barra_movida y barra_soltada, y guardar sigue siendo de Configuracion. El panel a la vista es un solo valor (enum Seccion) en lugar de cinco visible, y atras() vuelve a la lista con el foco en el boton que abrio el subpanel. Las rutas de nodo y la API que usan otros archivos no cambian (las constantes que solo usaban el audio o el brillo pasan a PanelAudio y PantallaBrillo); nada cambia a la vista ni en el comportamiento: capturas a 1280x720 de configuracion, mando, audio, creditos, brillo, ranuras, nueva partida, zona, pausa y las tres paginas del marco identicas pixel por pixel a las de antes",
+    "que": "Configuracion partida en piezas (paso 7 de la auditoria, pieza 10: M6 y M7): el panel de audio es PanelAudio (nucleo/panel_audio.gd, script del nodo PanelAudio de configuracion.tscn: filas de volumen, altavoces, probar efecto y la musica de prueba, que hoy pide a Musica) y la pantalla de brillo es PantallaBrillo (nucleo/pantalla_brillo.gd, creada en codigo con el nombre PanelBrillo: escena tenue, ventana con foto o EscenaMuestra, cuadro de calibracion, shader de la foto y barra); avisan a Configuracion con barra_movida y barra_soltada, y guardar sigue siendo de Configuracion. El panel a la vista es un solo valor (enum Seccion) en lugar de cinco visible, y atras() vuelve a la lista con el foco en el boton que abrio el subpanel. Las rutas de nodo y la API que usan otros archivos no cambian (las constantes que solo usaban el audio o el brillo pasan a PanelAudio y PantallaBrillo); nada cambia a la vista ni en el comportamiento: capturas a 1280x720 de configuracion, mando, audio, creditos, brillo, ranuras, nueva partida, zona, pausa y las tres paginas del marco identicas pixel por pixel a las de antes",
     "comprobacion": "herramientas/guiones/nucleo/menu_configuracion.guion;herramientas/pruebas/prueba_menu_configuracion.gd;herramientas/guiones/nucleo/marco.guion;nucleo/panel_audio.gd;nucleo/pantalla_brillo.gd",
     "pasa": true
   },
@@ -889,8 +883,356 @@
   },
   {
     "id": "animacion-cuerpo-jugador",
-    "que": "El cuerpo del jugador se dibuja con un AnimatedSprite2D (nodo Dibujo de nucleo/jugador.tscn) y el SpriteFrames nucleo/arte/jugador_hombre/jugador_hombre.tres, hecho de AtlasTexture sobre atlas_0.png con un lienzo comun (todos los cuadros miden lo mismo). AnimacionJugador.elegir, pura, elige la animacion con la tabla de prioridades de Hollow Knight (muerte, fundido de peligro, dormir, dano, aterrizaje duro, picada, curar, bola, estocada, ataque abajo, arriba o al lado, voltereta, impulso, pared, aire, carrera, correr, quieto); el giro en carrera es una capa aparte, solo en el suelo. Los clips con tiempo propio toman el cuadro de los contadores de ticks; los bucles los corre el sprite, quieto en el congelado. Volteo con Dibujo.scale.x, parpadeo de invulnerable y tinte de curar con modulate, destello en blanco con un shader de un uniforme. _draw conserva solo los efectos, encima del cuerpo. El dibujo solo lee: la traza por tick de 36 guiones del jugador sale identica",
+    "que": "El cuerpo del jugador se dibuja con un AnimatedSprite2D (nodo Dibujo de nucleo/jugador.tscn) y el SpriteFrames nucleo/arte/jugador_hombre/jugador_hombre.tres, hecho de AtlasTexture sobre atlas_0.png con un lienzo comun (todos los cuadros miden lo mismo). AnimacionJugador.elegir, pura, elige la animacion con la tabla de prioridades de Hollow Knight (muerte, salir por una PUERTA con entrar_puerta y llegar por ella con salir_puerta, fundido de peligro, dormir, dano, aterrizaje duro, picada, curar, bola, estocada, ataque abajo, arriba o al lado, voltereta, impulso, pared, aire, carrera, correr, quieto); el giro en carrera es una capa aparte, solo en el suelo. Los clips con tiempo propio toman el cuadro de los contadores de ticks; los bucles los corre el sprite, quieto en el congelado. Volteo con Dibujo.scale.x, parpadeo de invulnerable con modulate, destello en blanco con un shader de un uniforme. El dibujo solo lee: la traza por tick de 36 guiones del jugador sale identica",
     "comprobacion": "herramientas/guiones/nucleo/animacion_jugador.guion;herramientas/pruebas/prueba_animacion_jugador.gd;herramientas/guiones/nucleo/animacion_bucles.guion;herramientas/guiones/nucleo/animacion_reaparicion.guion",
     "pasa": true
+  },
+  {
+    "id": "partida-nueva-cinematica",
+    "que": "Una ranura vacia empieza la partida en memoria y va a la cinematica de La Celda; el archivo se escribe con el primer guardado (banco, autoguardado, morir, salir al menu o segundo plano dentro de una sala), como Hollow Knight y Silksong: cerrar durante la cinematica deja la ranura vacia y la cinematica se repite. Continuar sin banco lleva a La Celda (sala_inicial), sin cinematica",
+    "comprobacion": "herramientas/guiones/nucleo/ranuras.guion",
+    "pasa": true
+  },
+  {
+    "id": "video-reproductor",
+    "que": "ReproductorVideo reproduce un .mp4 H.264 a 1080 con el decodificador del telefono (JavaClassWrapper y ExternalTexture, sin plugin) copiado una vez a user://video/; en la PC, el .ogv (Theora), que no viaja en el APK; si Android falla, la imagen de respaldo (o termina, si no tiene bucle); se pausa en segundo plano y sigue al volver; el volumen sigue a Master y Musica",
+    "comprobacion": "manual: registro del APK de desarrollo en el S50 y el S21 (menu 57-60 FPS en el S50, sin avisos de ReproductorVideo); herramientas/guiones/contenido/cinematica_celda.guion",
+    "pasa": false
+  },
+  {
+    "id": "menu-video-fondo",
+    "que": "El menu principal tiene de fondo el video en bucle bajo un velo; con Configuracion abierta se ve desenfocado y congelado, y sigue al cerrarla; los menus van a 60 FPS como maximo",
+    "comprobacion": "manual: docs/pruebas.md, «Video del menu y cinematica» (audio, costura del bucle, volumen con Musica)",
+    "pasa": true
+  },
+  {
+    "id": "ajustes-avanzados",
+    "que": "Configuracion tiene Avanzado (tambien desde la pausa): Recursos, FPS, Luces 2D (bloqueadas en bajo; apagadas por omision), Niebla (apagada por omision) y Mostrar FPS; con el modo desarrollador, Pruebas y Ver hitbox; cada cambio se guarda y avisa al bus",
+    "comprobacion": "herramientas/guiones/nucleo/menu_configuracion.guion;herramientas/guiones/nucleo/guardado.guion",
+    "pasa": true
+  },
+  {
+    "id": "contador-fps",
+    "que": "Mostrar FPS pone un contador en una esquina, encima de todo, que no tapa ningun control a 1280x720, 1920x1080 y 2560x1440",
+    "comprobacion": "manual: docs/pruebas.md, «Avanzado y trazo del ataque»",
+    "pasa": true
+  },
+  {
+    "id": "panel-pruebas-y-hitbox",
+    "que": "Con el modo desarrollador, el panel de pruebas apaga y enciende por grupo lo que la sala tenga (luces, niebla, cables, fondos, particulas) sin codigo por sala, y Ver hitbox dibuja cada forma con el color de lo que es",
+    "comprobacion": "herramientas/guiones/nucleo/piezas_sala.guion",
+    "pasa": true
+  },
+  {
+    "id": "piezas-sala",
+    "que": "Piezas para armar salas sin codigo: FondoTapado (se dibuja solo pasado el fin de la pared), LuzSala (pulso, destello o parpadeo; luz 2D solo en alto con Luces 2D), oscuridad de la sala, Niebla en banda, Colgante que se mece al empujarlo y EmisorRafaga",
+    "comprobacion": "herramientas/guiones/nucleo/piezas_sala.guion",
+    "pasa": true
+  },
+  {
+    "id": "trazo-ataque",
+    "que": "Cada ataque del jugador (lado, arriba, abajo, en carrera) dibuja un trazo blanco del tamano de su area de golpe que se apaga solo; los ataques enemigos que se pueden parar dibujan el mismo trazo",
+    "comprobacion": "herramientas/guiones/nucleo/trazo_ataque.guion;herramientas/guiones/nucleo/trazo_jugador.guion",
+    "pasa": true
+  },
+  {
+    "id": "recursos-memoria-android",
+    "que": "Recursos en automatico lee la memoria del telefono (MemTotal e isLowRamDevice): el S50 queda en bajo y el S21 en alto",
+    "comprobacion": "manual: registro del APK de desarrollo; S50 bajo comprobado el 25-oct-2026, falta el S21",
+    "pasa": false
+  },
+  {
+    "id": "efectos-jugador-telefono",
+    "que": "En el telefono, el parry muestra su destello en la punta de la espada, la bola se ve como bola de fuego en capas y curar muestra el aura con su luz, sin bajar los FPS de la sala curando ni con la bola en pantalla",
+    "comprobacion": "manual: docs/pruebas.md, fila Efectos del jugador (S50)",
+    "pasa": true
+  },
+  {
+    "id": "recogibles",
+    "que": "Coleccionable, MonedasSueltas, ObjetoHabilidad y ObjetoMapa heredan de Recogible: un jugador muerto no los toma, se toman una sola vez y lo que se recuerda por id no vuelve al recargar la sala ni al cargar la partida; las PejeCoins sueltas suman su cantidad una vez",
+    "comprobacion": "herramientas/guiones/nucleo/monedas_sueltas.guion;herramientas/guiones/nucleo/estado_sala.guion;herramientas/guiones/contenido/zona_prueba_vitrina.guion",
+    "pasa": true
+  },
+  {
+    "id": "recogibles-telefono",
+    "que": "En el telefono, el coleccionable (la credencial con su halo que late) y el monton de PejeCoins se leen como premio en una sala oscura, sin bandas en el halo, y una sala con monedas sueltas no baja de 60 FPS en el S50 en bajo",
+    "comprobacion": "manual: docs/pruebas.md, «La Celda, salas 2 a 5» (coleccionables de las salas 3 y 5; PejeCoins sueltas de las salas 2, 4 y 5)",
+    "pasa": true
+  },
+  {
+    "id": "plataformas-moviles",
+    "que": "Vaiven y Giro cuentan en ticks (espera al empezar y en cada extremo, desfase); la plataforma que es ella misma el AnimatableBody2D con Vaiven lleva al jugador; el punto seguro no se toma sobre lo que se mueve (ni en su pausa) y al usarlo se comprueba el suelo (suelo fragil roto: vuelve a la llegada, y la mochila igual); un elevador solido que baja sobre el jugador no lo dana ni lo atrapa; saltar de una plataforma que baja sube lo mismo que del suelo (platform_on_leave ADD_UPWARD_VELOCITY)",
+    "comprobacion": "herramientas/guiones/nucleo/plataformas.guion",
+    "pasa": true
+  },
+  {
+    "id": "plataforma-delgada",
+    "que": "PlataformaDelgada (nucleo/piezas/plataforma_delgada.tscn) es la unica una via: se cruza caminando a cualquier altura sobre el suelo, el salto desde abajo la atraviesa y se queda encima, ni la caida ni la picada la atraviesan y cuenta como punto seguro",
+    "comprobacion": "herramientas/guiones/nucleo/plataformas.guion",
+    "pasa": true
+  },
+  {
+    "id": "plataformas-telefono",
+    "que": "En el telefono, en la sala Plataformas: subirse y bajarse de la plataforma y del elevador se siente bien, saltar del elevador mientras baja no se siente corto, quedarse debajo del elevador no se ve mal, y la lampara se cruza caminando y se sube de un salto",
+    "comprobacion": "manual: S50, APK de desarrollo, zona de pruebas, Mundo, Plataformas",
+    "pasa": true
+  },
+  {
+    "id": "puertas-tipo",
+    "que": "Puerta extiende Interactuable y tiene tipo (LADO, PUERTA, ARRIBA, ABAJO): LADO, ARRIBA y ABAJO se cruzan al entrar en su area; PUERTA solo con interactuar estando enfrente, con su aviso, y el jugador se pone en su x, se voltea y sale de espaldas por la otra",
+    "comprobacion": "herramientas/guiones/nucleo/cambio_de_sala.guion; herramientas/guiones/nucleo/puerta_accion.guion; herramientas/guiones/contenido/celda_2_subir.guion; herramientas/guiones/contenido/celda_5_bajar.guion; herramientas/guiones/contenido/celda_4_tiro.guion",
+    "pasa": true
+  },
+  {
+    "id": "fundido-cambio-sala",
+    "que": "El Fundido es el unico que cambia de sala (puerta, estacion, muerte; la cinematica usa Fundido.ir_a_sala): un cambio a la vez, perfiles de tiempos PUERTA, ESTACION y MUERTE, emite en_negro, no cambia si el jugador murio mientras oscurecia y avisa con un error si change_scene_to_packed falla",
+    "comprobacion": "herramientas/guiones/nucleo/transicion.guion; herramientas/guiones/nucleo/fundido_puerta.guion; herramientas/guiones/nucleo/estaciones.guion; herramientas/guiones/nucleo/jugador_reaparecer.guion",
+    "pasa": true
+  },
+  {
+    "id": "transicion-jugador",
+    "que": "Mientras cruza una puerta (Jugador.Transicion) el jugador no lee los controles, no recibe dano ni peligros y no interactua; se mueve con move_and_slide, entra caminando por LADO y de espaldas por PUERTA, y el punto_seguro de la puerta va antes que la llegada en ultimo_punto_seguro",
+    "comprobacion": "herramientas/guiones/nucleo/transicion.guion; herramientas/guiones/nucleo/cambio_de_sala.guion",
+    "pasa": true
+  },
+  {
+    "id": "puertas-telefono",
+    "que": "En el telefono, en la sala Puerta C: pasar por enfrente de una PUERTA, aun corriendo con el joystick algo inclinado hacia arriba, no la cruza, atacar hacia arriba enfrente no la cruza, inclinar el joystick hacia arriba enfrente si, y el cruce (voltearse, fundido, salir de espaldas) se ve bien y no responde a toques",
+    "comprobacion": "manual: S50, APK de desarrollo, zona de pruebas, Mundo, Puerta C",
+    "pasa": true
+  },
+  {
+    "id": "zona-camara",
+    "que": "ZonaCamara: mientras el jugador esta en su forma, la camara no muestra nada fuera de sus limites (Rect2 en coordenadas de la sala, tambien con y negativas), recortados con los de la sala; con zonas encimadas manda la ultima en que entro y al salir vuelve la anterior y despues la sala; recien llegada la sala la camara entra al instante y despues la alcanza con el seguimiento lento",
+    "comprobacion": "herramientas/guiones/nucleo/zona_camara.guion",
+    "pasa": true
+  },
+  {
+    "id": "muro-descubre-y-luz-corte",
+    "que": "MuroRompible.tapas y descubre son nodos exportados: lo que descubre esta oculto hasta romperse, aparece al romperse y, marcado, al volver a la sala; lo escondido detras queda encerrado por el solido (caminando contra el muro entero no se toman las monedas del cuarto). LuzSala.corte_arriba recorta el halo a esa altura sobre la luz y halo_radio fija su lado por pieza",
+    "comprobacion": "herramientas/guiones/nucleo/muro_rompible.guion;herramientas/guiones/nucleo/piezas_sala.guion",
+    "pasa": true
+  },
+  {
+    "id": "aviso-accion-modo",
+    "que": "AvisoAccion.modo: UNA_VEZ (con id, hecha no vuelve en la partida), POR_VISITA (sin id, vuelve en cada visita aunque haya marca) y SIEMPRE (sale cada vez que el jugador entra aunque este hecha y el boton deja de latir al hacerla); con el jugador sentado, hablando o muerto no sale, y al pararse vuelve",
+    "comprobacion": "herramientas/guiones/nucleo/aviso_accion.guion",
+    "pasa": false
+  },
+  {
+    "id": "npc-animado",
+    "que": "Npc con AnimatedSprite2D opcional: quieto, hablar con la caja abierta y entregar al terminar contando una etapa, que vuelve a quieto; se voltea hacia el jugador reflejando el dibujo sobre los pies, con zona muerta, y sin dibujo sigue la forma provisional",
+    "comprobacion": "herramientas/guiones/nucleo/npc.guion;herramientas/guiones/nucleo/dialogo.guion",
+    "pasa": true
+  },
+  {
+    "id": "clave-de-piezas",
+    "que": "Sala.clave_de sube hasta la primera Sala: un objeto que se recuerda dentro de una pieza instanciada (su owner es la raiz de la pieza) se guarda en su sala",
+    "comprobacion": "herramientas/guiones/nucleo/estado_sala.guion",
+    "pasa": true
+  },
+  {
+    "id": "sonidos-jugador",
+    "que": "Pasos (jugador_paso, en los cuadros de pasos del SpriteFrames del personaje, en el suelo y fuera de un cruce de puerta), aterrizaje (si es duro o cae a velocidad_aterrizaje_min o mas: bajar un escalon no suena), picada (por el argumento picada de jugador_aterrizo) e impulso (jugador_impulso) suenan con los WAV elegidos de nucleo/sonidos/jugador/; paso, aterrizaje y golpe varian el tono con un AudioStreamRandomizer. En el CI (sin pantalla Sonido esta mudo) los guiones comprueban cada senal a su evento, el umbral del aterrizaje y los pasos y aterrizajes en una sala. Solo con ventana (comando de la fila de sonido.guion en docs/pruebas.md) se comprueba el sonido real del unico AudioStreamPlayer con AudioStreamPolyphonic: un efecto nuevo no corta a uno que suena y, con las voces llenas, se descarta el nuevo",
+    "comprobacion": "herramientas/guiones/nucleo/sonido.guion;herramientas/guiones/nucleo/habilidad_impulso.guion;herramientas/guiones/nucleo/vibracion_aterrizaje.guion",
+    "pasa": false
+  },
+  {
+    "id": "musica-por-sala",
+    "que": "Musica (hija de Arranque, Arranque.musica) toca un tema a la vez en el bus Musica: cada pedido (tema, volumen de region y segundos) se aplica en el tick siguiente y gana el ultimo; un tema que ya suena, o que se esta yendo, no se reasigna ni vuelve a empezar; tema vacio no toca la musica y Musica.SILENCIO la calla. Cada Sala pide su tema_musica y volumen_musica_db al entrar (el mismo recurso en las salas de una zona, en su base; La Celda, SILENCIO), RegionMusica cambia tema o volumen dentro de una sala, el menu pone su tema, la cinematica y la zona de pruebas callan, y el panel de audio, si al abrirlo no se oye nada, pide a Musica el tema del menu y al cerrarlo devuelve lo que habia. Reaparecer o cargar en el banco dentro de una region no reinicia el tema",
+    "comprobacion": "herramientas/guiones/nucleo/musica.guion",
+    "pasa": false
+  },
+  {
+    "id": "musica-telefono",
+    "que": "En el telefono el tema del menu suena sin cortes en el bucle, la cinematica lo calla, La Celda queda callada, la region de la sala de prueba Musica lo sube y lo baja sin reiniciarlo, reaparecer o cargar en su banco no lo empieza de nuevo ni lo baja un instante, al volver de esa sala a la lista de la zona el tema callado no vuelve a oirse, y en la pausa lejos de un tema Configuracion, Audio pone el tema y al cerrarla se calla",
+    "comprobacion": "manual: docs/pruebas.md, «Musica»",
+    "pasa": true
+  },
+  {
+    "id": "enemigo-arte",
+    "que": "Enemigo y Palanca con arte: un AnimatedSprite2D hijo (animacion) apaga la caja gris. El del enemigo mira a la derecha, se refleja con scale.x cada vez que cambia mirando, toca quieto al aparecer, las demas con animar() y se detiene durante el congelado; el tipo con arte es una escena heredada de enemigo.tscn. El de la palanca se refleja hacia donde queda inclinada",
+    "comprobacion": "herramientas/guiones/nucleo/enemigo_arte.guion;herramientas/guiones/nucleo/enemigo_base.guion;herramientas/guiones/nucleo/muro_rompible.guion",
+    "pasa": true
+  },
+  {
+    "id": "enemigo-botin",
+    "que": "FichaEnemigo.botin: al vencerlo (con el ataque o con la bola, sin error del motor), un MonedasSueltas botin_<id> salta desde su centro y cae al suelo de abajo, tambien si el enemigo vuela; tomarlo suma sus PejeCoins y lo marca en su sala, y el mismo ejemplar ya no vuelve a soltarlo; una ficha sin botin no suelta nada; el validador reserva el prefijo botin_",
+    "comprobacion": "herramientas/guiones/nucleo/enemigo_botin.guion;herramientas/guiones/herramientas/validador.guion",
+    "pasa": true
+  },
+  {
+    "id": "enemigo-enganches",
+    "que": "Ganchos de ComportamientoEnemigo: bloquea_golpe (golpe bloqueado sin dano, sin empuje, sin contar ni dar Inspiracion, avisado como objeto), lado_de, jugador_lo_mira (Jugador.mirando de solo lectura) y flotar (sin gravedad y MOTION_MODE_FLOATING, y vuelta al modo de la ficha)",
+    "comprobacion": "herramientas/guiones/nucleo/enemigo_enganches.guion",
+    "pasa": true
+  },
+  {
+    "id": "enemigo-sonidos",
+    "que": "Efectos por ficha: FichaEnemigo.sonidos y Sala.sonidos; Sonido.tocar(evento, propia) usa el primer efecto de la ficha propia, la de la sala o la global; eventos vencido y ataque (ComportamientoEnemigo.sonar)",
+    "comprobacion": "herramientas/guiones/nucleo/sonido.guion",
+    "pasa": true
+  },
+  {
+    "id": "enemigo-datos",
+    "que": "Datos por ejemplar: el comportamiento lee sus numeros de un DatosComportamiento (del Enemigo de la sala, si no de su ficha, si no los de su clase), no de constantes; dos enemigos del mismo tipo con radio distinto se comportan distinto",
+    "comprobacion": "herramientas/guiones/nucleo/enemigo_datos.guion",
+    "pasa": true
+  },
+  {
+    "id": "amuletos-carga",
+    "que": "Los amuletos tienen ficha (FichaAmuleto: nombre, descripcion, costo 1 a 3, icono opcional y efectos) en un catalogo (CatalogoEquipo, contenido/equipo.tres y el de pruebas); Partida pone uno solo si esta en el catalogo, se tiene y su costo cabe en la carga (empieza en 3, como Hollow Knight); la carga se guarda",
+    "comprobacion": "herramientas/guiones/nucleo/amuletos.guion;herramientas/guiones/nucleo/guardado.guion",
+    "pasa": true
+  },
+  {
+    "id": "amuletos-efectos",
+    "que": "Los amuletos puestos cambian al jugador y al botin: velocidad al caminar, ticks sin dano tras un golpe, Inspiracion por golpe a un enemigo y PejeCoins del botin; quitar el amuleto vuelve al valor base",
+    "comprobacion": "herramientas/guiones/nucleo/efectos_amuletos.guion",
+    "pasa": true
+  },
+  {
+    "id": "amuletos-pagina-ficha",
+    "que": "La pagina Amuletos muestra por fila el icono de la ficha (sin el, el amuleto de gis), el nombre, el costo y si esta puesto, y la descripcion del que tiene el foco o se toca; uno fuera del catalogo se lista con su id y no responde",
+    "comprobacion": "herramientas/guiones/nucleo/amuletos.guion",
+    "pasa": true
+  },
+  {
+    "id": "utiles",
+    "que": "Utiles aparte de los amuletos, como las herramientas de Silksong: la brujula es el primero; Partida.utiles_tenidos y utiles_equipados (una ranura, sin carga), la pagina Utiles del marco entre Amuletos y Mapa (solo sentado se cambian) y el mapa marca al jugador con la brujula puesta; el guardado sube a la version 4 y una partida de la 3 da INCOMPATIBLE",
+    "comprobacion": "herramientas/guiones/nucleo/utiles.guion;herramientas/guiones/nucleo/marco.guion;herramientas/guiones/mapa/mapa_cuentas.guion;herramientas/guiones/nucleo/guardado.guion",
+    "pasa": true
+  },
+  {
+    "id": "equipo-telefono",
+    "que": "En el telefono las paginas Amuletos y Utiles se leen y se tocan con el pulgar: icono, nombre, costo y descripcion caben a 1280x720 y en el S50; la brujula puesta sentado en Utiles se ve en el mapa; con el amuleto de velocidad se nota caminar mas rapido",
+    "comprobacion": "manual: fila Amuletos y utiles en el banco de docs/pruebas.md, en el S50",
+    "pasa": true
+  },
+  {
+    "id": "inspiracion-y-carga-crecen",
+    "que": "La capacidad de Inspiracion empieza en INSPIRACION_INICIAL y los Modulos de RAM suman tres bloques hasta INSPIRACION_TOPE; la carga crece por muescas desde CARGA_INICIAL hasta CARGA_TOPE. Las recompensas autoguardan ambas capacidades, el guardado sin inspiracion_maxima usa la inicial y el HUD y el inventario muestran el maximo actual",
+    "comprobacion": "herramientas/guiones/nucleo/crecer.guion",
+    "pasa": true
+  },
+  {
+    "id": "jefe-fases-y-arena",
+    "que": "Ficha con umbrales de fase y jefe; cada fase cruzada emite y llama al gancho una vez; ArenaJefe duerme, cierra al entrar, abre al vencer, da recompensa y emite jefe_vencido una vez; volver sin jefe y morir sin premio",
+    "comprobacion": "herramientas/guiones/nucleo/sala_jefe.guion",
+    "pasa": true
+  },
+  {
+    "id": "jefe-telefono",
+    "que": "La arena y el jefe de caja gris se pueden jugar con el pulgar: se entiende el cambio de fase y el aviso de embestida, los portones cierran y abren, vencer da impulso una vez y morir no lo da",
+    "comprobacion": "manual: fila Jefe de docs/pruebas.md, en el telefono",
+    "pasa": true
+  },
+  {
+    "id": "sonido-ataque-jugador",
+    "que": "Cada ataque del jugador, pegue o no, emite Eventos.jugador_ataco y Sonido toca ataque_jugador (en la ficha del juego, el mismo WAV que el golpe); si pega, el golpe suena aparte",
+    "comprobacion": "herramientas/guiones/nucleo/sonido.guion",
+    "pasa": true
+  },
+  {
+    "id": "sonido-ataque-jugador-telefono",
+    "que": "En el telefono el ataque al aire suena, y pegarle a algo no se oye como un golpe doble molesto",
+    "comprobacion": "manual: zona de pruebas, Combate, atacar al aire y al muneco",
+    "pasa": true
+  },
+  {
+    "id": "sonido-curar-al-empezar",
+    "que": "El efecto de curar suena con curacion_empezada y no con jugador_curado; el jugador emite curacion_cortada al soltar o con un golpe, y Sonido calla la voz (esto ultimo, solo con ventana: prueba_sonido)",
+    "comprobacion": "herramientas/guiones/nucleo/sonido.guion;herramientas/guiones/nucleo/jugador_curar_soltar.guion;herramientas/guiones/nucleo/jugador_curar_golpe.guion",
+    "pasa": true
+  },
+  {
+    "id": "sonido-curar-telefono",
+    "que": "En el telefono el sonido de curar acompana la curacion sin retraso y se calla al soltar a medias",
+    "comprobacion": "manual: zona de pruebas, Combate, Curar",
+    "pasa": true
+  },
+  {
+    "id": "botones-ocultos",
+    "que": "Sala.botones_ocultos esconde un boton hasta que un AvisoAccion de una sala posterior lo ensena, sin pedir aviso en esa sala; la base de La Celda esconde curar",
+    "comprobacion": "herramientas/guiones/nucleo/aviso_accion.guion;herramientas/guiones/herramientas/validador.guion",
+    "pasa": true
+  },
+  {
+    "id": "botones-ocultos-telefono",
+    "que": "En La Celda no se ve el boton de curar y los demas no se mueven",
+    "comprobacion": "manual: La Celda, en el telefono",
+    "pasa": true
+  },
+  {
+    "id": "aplastar-peligro",
+    "que": "Una pieza solida que baja sobre el jugador lo golpea en vez de hundirlo: DanoContacto.aplastador, zona fija con peligro en el extremo del recorrido, solo dana al que esta en el suelo mientras Vaiven.aplasta dice que la pieza viene hacia la zona y lo alcanza; quien va encima, sigue en el aire o sale a tiempo no se toca, y en la zona no se recuerda punto seguro. Reemplaza lo que plataformas-moviles y sala-celda-4-ruta dicen del aplastamiento sin dano",
+    "comprobacion": "herramientas/guiones/nucleo/plataformas.guion;herramientas/guiones/contenido/celda_4_raiz.guion",
+    "pasa": true
+  },
+  {
+    "id": "aplastar-telefono",
+    "que": "El golpe de aplastar se siente justo al tocar la pieza y el jugador reaparece de pie fuera de ella, en la sala Plataformas y en la raiz de La Celda",
+    "comprobacion": "manual: fila Aplastar de docs/pruebas.md, en el telefono",
+    "pasa": true
+  },
+  {
+    "id": "guardado-fallido-aviso",
+    "que": "Un guardado que falla (disco lleno, temporal distinto de lo escrito) no toca la partida, emite guardado_fallido y el aviso se ve en el HUD, en un Hud nuevo y en el menu",
+    "comprobacion": "herramientas/guiones/nucleo/guardado.guion;herramientas/guiones/nucleo/ranuras.guion",
+    "pasa": true
+  },
+  {
+    "id": "objeto-amuleto",
+    "que": "ObjetoAmuleto: pieza de sala que da un amuleto al tocarla y no aparece si la partida ya lo tiene",
+    "comprobacion": "herramientas/guiones/nucleo/amuletos.guion;herramientas/guiones/nucleo/capas_fisica.guion",
+    "pasa": true
+  },
+  {
+    "id": "banco-en-pieza",
+    "que": "Un banco dentro de una pieza guarda la clave de su sala y se puede volver a el",
+    "comprobacion": "herramientas/guiones/nucleo/muro_rompible.guion",
+    "pasa": true
+  },
+  {
+    "id": "cinematica-sala-mala",
+    "que": "Una cinematica cuya sala de destino no carga vuelve al menu",
+    "comprobacion": "herramientas/guiones/nucleo/cinematica_sala_mala.guion",
+    "pasa": true
+  },
+  {
+    "id": "guardado-ilegible",
+    "que": "Una partida intacta que no se puede abrir da ILEGIBLE: no se abre, no se borra ni se restaura y la ficha lo dice",
+    "comprobacion": "herramientas/guiones/nucleo/guardado.guion;herramientas/guiones/nucleo/ranuras.guion",
+    "pasa": true
+  },
+  {
+    "id": "guardado-rangos",
+    "que": "Una partida con vidas, monedas, tiempo o monto de mochila por debajo de su minimo da DANADA",
+    "comprobacion": "herramientas/guiones/nucleo/guardado.guion",
+    "pasa": true
+  },
+  {
+    "id": "respaldo-fallido",
+    "que": "Si la copia de la sesion falla, Restaurar no ofrece la de una sesion anterior",
+    "comprobacion": "herramientas/guiones/nucleo/ranuras.guion",
+    "pasa": true
+  },
+  {
+    "id": "ranuras-avisa-fallo",
+    "que": "Si Borrar o Restaurar fallan, las ranuras lo dicen con una linea encima de las fichas",
+    "comprobacion": "herramientas/guiones/nucleo/ranuras.guion",
+    "pasa": true
+  },
+  {
+    "id": "enemigo-en-pieza",
+    "que": "Un enemigo dentro de una pieza se recuerda con la clave de su sala",
+    "comprobacion": "herramientas/guiones/nucleo/enemigo_botin.guion",
+    "pasa": true
+  },
+  {
+    "id": "arranque-sin-logo",
+    "que": "El juego arranca sin el logo de Godot: negro mientras carga y después el menú",
+    "comprobacion": "manual: en el S50, abrir el juego; no sale el logo de Godot y se llega al menú",
+    "pasa": false
   }
 ]

@@ -1,0 +1,5 @@
+# Corre herramientas/pruebas/prueba_transicion.gd: inmunidad y control durante el cruce de una puerta, largo del clip
+# entrar_puerta, el Fundido como unico dueno del cambio (uno a la vez, sin cambiar si el jugador murio) y la llegada por
+# una puerta con su transicion y su punto seguro. Sin entradas propias.
+escena res://herramientas/pruebas/sala_transicion.tscn
+fin 300

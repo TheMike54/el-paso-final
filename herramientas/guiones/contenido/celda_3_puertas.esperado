@@ -1,0 +1,14 @@
+# En celda_2, en la llegada de su puerta derecha (x=4186); de vuelta en celda_3, caminando desde la llegada de la
+# puerta izquierda (x=224); al final, en celda_4, caminando desde la llegada de su puerta izquierda (x=134) por el
+# pasillo de arriba (piso en y=560). Tres cambios de sala, sin dano.
+en 300 escena res://contenido/salas/celda/celda_2.tscn
+en 300 x 4186 2
+en 450 escena res://contenido/salas/celda/celda_3.tscn
+en 450 x 344 2
+escena res://contenido/salas/celda/celda_4.tscn
+x 368 8
+y 560 2
+en_suelo true
+valor Jugador transicion 0
+senal /root/Eventos cambio_de_sala 3
+senal /root/Eventos jugador_danado 0

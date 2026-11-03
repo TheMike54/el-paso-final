@@ -1,0 +1,14 @@
+# Pasar por delante sin interactuar no cruza (una PUERTA no se cruza caminando).
+en 125 senal /root/Eventos cambio_de_sala 0
+en 125 valor Jugador transicion 0
+# Interactuar lo mete: puesto en la x de la puerta (800) y saliendo por ella (Jugador.Transicion.SALE_POR_PUERTA).
+en 200 x 800 0.5
+en 200 valor Jugador transicion 2
+# Ya en la sala nueva sale de espaldas (LLEGA_POR_PUERTA; medido el 27-oct-2026: ya en el 242).
+en 250 valor Jugador transicion 5
+# Llega a la puerta fondo (1800) con el control, sin dano.
+x 1800 0.5
+en_suelo true
+valor Jugador transicion 0
+senal /root/Eventos cambio_de_sala 1
+senal /root/Eventos jugador_danado 0

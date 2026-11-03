@@ -1,0 +1,13 @@
+# En celda_3, tras entrar caminando desde la llegada de su boquete derecho (x=2916): quieto en x=2646. Al final, en
+# celda_4, caminando desde la llegada de la puerta izquierda (x=134), en el piso del pasillo (y=560). Dos cambios de
+# sala, sin dano.
+en 150 escena res://contenido/salas/celda/celda_3.tscn
+en 150 x 2646 6
+en 150 y 1080 2
+escena res://contenido/salas/celda/celda_4.tscn
+x 254 6
+y 560 2
+en_suelo true
+valor Jugador transicion 0
+senal /root/Eventos cambio_de_sala 2
+senal /root/Eventos jugador_danado 0

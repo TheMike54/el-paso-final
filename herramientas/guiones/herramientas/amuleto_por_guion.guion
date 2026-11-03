@@ -1,0 +1,5 @@
+# La sala no equipa amuletos: la posesion y el equipo vienen de esta linea.
+escena res://herramientas/salas/sala_combate_chico.tscn
+amuleto amuleto_velocidad
+amuleto amuleto_velocidad
+fin 3

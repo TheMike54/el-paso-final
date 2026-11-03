@@ -3,3 +3,5 @@ valor /root/Partida inspiracion 33
 valor Jugador vidas 3
 valor Jugador curando false
 senal /root/Eventos jugador_curado 0
+senal /root/Eventos curacion_empezada 1
+senal /root/Eventos curacion_cortada 1

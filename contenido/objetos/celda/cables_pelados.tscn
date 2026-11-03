@@ -1,0 +1,98 @@
+[gd_scene format=3 uid="uid://bqta26mv2abf4"]
+
+[ext_resource type="Script" uid="uid://jy2tkfmforul" path="res://nucleo/dano_contacto.gd" id="1_dano"]
+[ext_resource type="Texture2D" uid="uid://rf8crlcxiul3" path="res://contenido/salas/celda/arte/cables_pelados.png" id="2_cables"]
+[ext_resource type="Script" uid="uid://dctc7invor25u" path="res://nucleo/luz_sala.gd" id="3_luz"]
+[ext_resource type="Script" uid="uid://cvwxpi8gv5l01" path="res://nucleo/emisor_rafaga.gd" id="4_rafaga"]
+[ext_resource type="CanvasItemMaterial" uid="uid://bi0s26tb0wqda" path="res://nucleo/arte/aditivo.tres" id="5_aditivo"]
+
+[sub_resource type="RectangleShape2D" id="forma_cables"]
+size = Vector2(350, 40)
+
+[sub_resource type="Gradient" id="chispa"]
+offsets = PackedFloat32Array(0, 0.15, 0.7, 1)
+colors = PackedColorArray(1, 0.89411765, 0.5882353, 0, 1, 0.89411765, 0.5882353, 1, 1, 0.89411765, 0.5882353, 1, 1, 0.89411765, 0.5882353, 0)
+
+[node name="CablesPelados" type="Area2D"]
+script = ExtResource("1_dano")
+peligro = true
+
+[node name="Forma" type="CollisionShape2D" parent="."]
+position = Vector2(0, -20)
+shape = SubResource("forma_cables")
+
+[node name="Dibujo" type="Sprite2D" parent="."]
+z_index = -5
+z_as_relative = false
+position = Vector2(-266, -40)
+texture = ExtResource("2_cables")
+centered = false
+
+[node name="Senal" type="Node2D" parent="."]
+z_index = 13
+z_as_relative = false
+position = Vector2(0, -24)
+script = ExtResource("3_luz")
+radio = 130.0
+tinte = Color(1, 0.7, 0.35, 1)
+tipo = 2
+pulso_medio = 0.55
+pulso_amplitud = 0.2
+pulso_velocidad = 3.0
+
+[node name="Destello" type="Node2D" parent="."]
+z_index = 13
+z_as_relative = false
+position = Vector2(0, -32)
+script = ExtResource("3_luz")
+radio = 170.0
+tinte = Color(1, 0.89411765, 0.5882353, 1)
+tipo = 3
+
+[node name="Chispas" type="CPUParticles2D" parent="." node_paths=PackedStringArray("destello")]
+z_index = 12
+z_as_relative = false
+material = ExtResource("5_aditivo")
+position = Vector2(-140, -32)
+emitting = false
+lifetime = 0.6
+one_shot = true
+explosiveness = 1.0
+lifetime_randomness = 0.6
+direction = Vector2(0, -1)
+spread = 70.0
+gravity = Vector2(0, 1500)
+initial_velocity_min = 150.0
+initial_velocity_max = 380.0
+scale_amount_min = 2.0
+scale_amount_max = 4.0
+color = Color(1, 0.89411765, 0.5882353, 1)
+color_ramp = SubResource("chispa")
+script = ExtResource("4_rafaga")
+intervalo_min = 0.8
+intervalo_max = 2.6
+destello = NodePath("../Destello")
+
+[node name="Chispas2" type="CPUParticles2D" parent="." node_paths=PackedStringArray("destello")]
+z_index = 12
+z_as_relative = false
+material = ExtResource("5_aditivo")
+position = Vector2(90, -36)
+emitting = false
+lifetime = 0.6
+one_shot = true
+explosiveness = 1.0
+lifetime_randomness = 0.6
+direction = Vector2(0, -1)
+spread = 70.0
+gravity = Vector2(0, 1500)
+initial_velocity_min = 150.0
+initial_velocity_max = 380.0
+scale_amount_min = 2.0
+scale_amount_max = 4.0
+color = Color(1, 0.89411765, 0.5882353, 1)
+color_ramp = SubResource("chispa")
+script = ExtResource("4_rafaga")
+intervalo_min = 1.2
+intervalo_max = 3.4
+destello = NodePath("../Destello")

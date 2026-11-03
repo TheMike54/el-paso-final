@@ -1,0 +1,5 @@
+# De vuelta en suelo firme a la izquierda de la grieta (el suelo acaba en x=3685), no dentro de ella; un solo golpe.
+x 3638 2
+en_suelo true
+senal /root/Eventos jugador_danado 1
+valor Jugador muerto false

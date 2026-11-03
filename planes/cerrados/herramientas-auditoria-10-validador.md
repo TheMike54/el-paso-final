@@ -2,7 +2,7 @@ CERRADO
 
 # Auditoría, paso 10: el resto de T8 (herramientas)
 
-Paso 10 de `planes/activos/nucleo-auditoria-codigo.md`. H4, H14, H15, H16, H20 y H25 se cerraron en el paso 2.
+Paso 10 de `planes/cerrados/nucleo-auditoria-codigo.md`. H4, H14, H15, H16, H20 y H25 se cerraron en el paso 2.
 
 Regla:
 - el juego no cambia;

@@ -1,0 +1,6 @@
+# El golpe empieza en el estado del cuadro 12 (atacar recien presionada se nota en N+2); el trazo espera
+# TICKS_RETRASO (4) y se ve desde el 16, a la derecha: centro del area (90) mas DESDE_AREA (-30) = 60.
+en 15 valor Jugador/Trazo visible false
+en 16 valor Jugador/Trazo visible true
+en 16 valor Jugador/Trazo position:x 60 1
+valor Jugador/Trazo visible false

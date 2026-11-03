@@ -1,0 +1,11 @@
+# Llega frente a la puerta (x=4300) sin cruzarla; interactuar lo mete (Jugador.Transicion.SALE_POR_PUERTA) y sale de
+# espaldas por la puerta izquierda de celda_2 (x=300, la misma pieza de puerta del otro lado). Sin dano en la ruta.
+en 689 x 4304 4
+en 689 senal /root/Eventos cambio_de_sala 0
+en 700 valor Jugador transicion 2
+escena res://contenido/salas/celda/celda_2.tscn
+x 300 1
+en_suelo true
+valor Jugador transicion 0
+senal /root/Eventos cambio_de_sala 1
+senal /root/Eventos jugador_danado 0

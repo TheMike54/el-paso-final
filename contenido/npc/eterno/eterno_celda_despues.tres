@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="FichaDialogo" format=3 uid="uid://c41fftdqodkt3"]
+
+[ext_resource type="Script" uid="uid://dycfvji2i3yph" path="res://nucleo/ficha_dialogo.gd" id="1_ficha"]
+[ext_resource type="Script" uid="uid://cvgtxxidjsdxl" path="res://nucleo/linea_dialogo.gd" id="2_linea"]
+
+[sub_resource type="Resource" id="linea_1"]
+script = ExtResource("2_linea")
+quien = "El Eterno"
+texto = "Sigue subiendo. Yo ya no pude; tú todavía sí."
+
+[resource]
+script = ExtResource("1_ficha")
+lineas = Array[ExtResource("2_linea")]([SubResource("linea_1")])

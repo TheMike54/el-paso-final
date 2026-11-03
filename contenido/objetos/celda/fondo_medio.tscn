@@ -1,0 +1,5 @@
+[gd_scene format=3 uid="uid://bp20etvgldjan"]
+
+[node name="Medio" type="Parallax2D"]
+z_index = -80
+scroll_scale = Vector2(0.5, 1)

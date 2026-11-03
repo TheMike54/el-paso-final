@@ -1,0 +1,9 @@
+# La Celda, sala 2, puerta derecha (SALIDA, tipo LADO): entra por el hueco del techo como celda_5_bajar, baja con el
+# elevador y en su pausa de abajo camina a la derecha: cae junto a la caja, la sube y cruza la puerta caminando.
+# La puerta lleva a celda_3: aparece junto a su puerta izquierda (de SALIDA) y sigue unos pasos.
+escena res://contenido/salas/celda/celda_5.tscn
+2 mover_derecha press
+40 mover_derecha release
+330 mover_derecha press
+395 mover_derecha release
+fin 600

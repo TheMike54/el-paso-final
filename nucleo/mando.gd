@@ -1,17 +1,16 @@
 class_name Mando
 extends RefCounted
-# Reasignacion de los botones del control (mando): cada accion reasignable tiene un boton; asignar uno que ya
-# usaba otra accion los intercambia, asi ninguna accion se queda sin boton. Los ejes no se reasignan: ni el
-# movimiento ni impulso (RT) ni interactuar (stick arriba), que en project.godot no tienen boton. Lo que se cambia se guarda en Ajustes ("mando") y se aplica al InputMap al cargarlos. Estatico,
-# como Ajustes: el InputMap es uno solo para todo el juego. Tambien da el nombre de cada boton (BOTONES), el mismo
-# origen para Configuracion y para IconoBoton.
+# Reasigna botones del mando por intercambio para que ninguna accion pierda su boton al tomar uno ocupado.
+# Excluye ejes: movimiento, impulso (RT) e interactuar (stick arriba) no tienen boton en project.godot.
+# Ajustes guarda "mando" y lo aplica al cargar; es estatico porque el InputMap es comun a todo el juego.
+# Comparte BOTONES entre Configuracion e IconoBoton para mantener los nombres en un solo origen.
 
-## Lo ultimo que se uso (UltimaEntrada.dispositivo): el dedo o un clic, el teclado o la familia de un control
-## (familia), que decide como se dibujan sus botones en la interfaz (IconoBoton).
+## Lo ultimo que se uso (UltimaEntrada.dispositivo): no solo mandos, tambien el dedo o un clic y el teclado; para un
+## control, su familia (familia), que decide como se dibujan sus botones en la interfaz (IconoBoton).
 enum Dispositivo {TOQUE, TECLADO, XBOX, PLAYSTATION}
 
 const REASIGNABLES: Array[StringName] = [&"saltar", &"atacar", &"curar", &"mapa", &"mapa_rapido", &"inventario", &"pausa"]
-## Nombre que tenia inventario en ajustes de antes del 13-oct-2026, y el nuevo: aplicar() los traduce.
+## Los ajustes viejos usan "mochila" para inventario: aplicar() traduce al nombre nuevo.
 const ACCION_VIEJA: String = "mochila"
 const ACCION_RENOMBRADA: StringName = &"inventario"
 ## Columnas de BOTONES: el nombre neutro (Configuracion, nombre_de) y el de cada familia (IconoBoton, nombre_en).
@@ -22,7 +21,7 @@ const COLUMNA_PLAYSTATION: int = 2
 ## la de PlayStation el simbolo que traza IconoBoton; en los demas, el texto de la pastilla.
 const CARA: int = 4
 # Array[Array] y no Array[PackedStringArray]: en una const, las filas literales quedan Array y leerlas como
-# PackedStringArray da "" (sonda del 18-oct-2026 en 4.7.2).
+# PackedStringArray da "" en 4.7.2.
 ## Nombre de cada boton de un control estandar, una fila por indice de JoyButton (0..14), y por columna neutro, Xbox y
 ## PlayStation. Las columnas difieren a proposito (Select / View / Share, Izquierda / Izq.).
 const BOTONES: Array[Array] = [
@@ -180,12 +179,12 @@ static func _poner(accion: StringName, boton: int) -> void:
 ## Los botones que difieren de project.godot, para guardarlos.
 static func a_diccionario() -> Dictionary:
 	_recordar_por_omision()
-	var cambios: Dictionary = {}
+	var distintos: Dictionary = {}
 	for accion: StringName in REASIGNABLES:
 		var boton: int = boton_de(accion)
 		if boton != _por_omision[accion]:
-			cambios[String(accion)] = boton
-	return cambios
+			distintos[String(accion)] = boton
+	return distintos
 
 
 ## Vuelve a project.godot y aplica lo guardado intercambiando como asignar (un archivo editado a mano no deja dos
@@ -200,14 +199,14 @@ static func _aplicar(guardado: Variant) -> void:
 	_restablecer()
 	if typeof(guardado) != TYPE_DICTIONARY:
 		return
-	var cambios: Dictionary = (guardado as Dictionary).duplicate()
-	# La accion mochila se renombro inventario (13-oct-2026): unos ajustes viejos guardan su boton con el nombre viejo.
-	if cambios.has(ACCION_VIEJA) and not cambios.has(String(ACCION_RENOMBRADA)):
-		cambios[String(ACCION_RENOMBRADA)] = cambios[ACCION_VIEJA]
-	cambios.erase(ACCION_VIEJA)
-	for clave: Variant in cambios:
+	var guardados: Dictionary = (guardado as Dictionary).duplicate()
+	# Los ajustes viejos guardan el boton de inventario con el nombre mochila.
+	if guardados.has(ACCION_VIEJA) and not guardados.has(String(ACCION_RENOMBRADA)):
+		guardados[String(ACCION_RENOMBRADA)] = guardados[ACCION_VIEJA]
+	guardados.erase(ACCION_VIEJA)
+	for clave: Variant in guardados:
 		var accion: StringName = StringName(str(clave))
-		var valor: Variant = cambios[clave]
+		var valor: Variant = guardados[clave]
 		if REASIGNABLES.has(accion) and typeof(valor) == TYPE_FLOAT:
 			var boton: float = valor
 			_asignar(accion, int(boton))

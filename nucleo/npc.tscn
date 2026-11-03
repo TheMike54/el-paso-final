@@ -1,6 +1,6 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://b58veekclyq56"]
 
-[ext_resource type="Script" path="res://nucleo/npc.gd" id="1_npc"]
+[ext_resource type="Script" uid="uid://dfekgl7glfsqy" path="res://nucleo/npc.gd" id="1_npc"]
 
 [sub_resource type="RectangleShape2D" id="forma_npc"]
 size = Vector2(120, 160)

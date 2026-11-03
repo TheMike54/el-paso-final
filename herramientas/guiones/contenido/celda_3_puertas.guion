@@ -1,0 +1,12 @@
+# La Celda, sala 3, puertas (las dos tipo LADO): desde la Entrada (x=1340) camina a la izquierda y cruza la puerta de
+# SALIDA (x=160): aparece en celda_2 a la izquierda de su puerta derecha; vuelve a la derecha por ella y reaparece en
+# celda_3 junto a la puerta izquierda; camina a la derecha, pasa al Eterno, las raices y las pilas (areas que no
+# frenan) y cruza el boquete de la derecha (x=2980), que lleva a celda_4 por su puerta izquierda.
+escena res://contenido/salas/celda/celda_3.tscn
+2 mover_izquierda press
+230 mover_izquierda release
+330 mover_derecha press
+360 mover_derecha release
+460 mover_derecha press
+960 mover_derecha release
+fin 1060

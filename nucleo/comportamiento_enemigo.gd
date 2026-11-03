@@ -1,17 +1,20 @@
 class_name ComportamientoEnemigo
 extends Node
-# Base del comportamiento de un enemigo: el script que su ficha referencia (FichaEnemigo.comportamiento) y
-# que nucleo/enemigo.gd agrega como hijo sin saber cual es. Cada tipo hereda de aqui (los del juego en
-# contenido/enemigos/, los de prueba en herramientas/) y escribe su logica en actuar(), que no corre durante
-# el congelado comun. El cuerpo sigue danando por contacto; los ataques van aparte (atacar, disparar). Las
-# ayudas de movimiento (caer, mover, pared_delante, orilla_delante, ve_al_jugador) dejan la fisica aqui y no en
-# cada comportamiento.
+# Base que Enemigo agrega desde FichaEnemigo.comportamiento sin conocer el tipo concreto.
+# Los tipos de contenido/enemigos/ y herramientas/ heredan actuar(), detenido durante el congelado comun.
+# Centraliza las ayudas de movimiento y deteccion para no repetir la fisica en cada comportamiento.
+# El cuerpo dana por contacto; atacar y disparar crean ataques separados del cuerpo.
 
 ## Largo de los rayos de pared y de orilla, mas alla del borde del cuerpo, en px.
 const ALCANCE_RAYO: float = 12.0
+## Destello del cuerpo que avisa de un ataque.
+const COLOR_AVISO: Color = Color(1.7, 1.7, 1.7)
 
 ## El enemigo que lo lleva; lo fija nucleo/enemigo.gd antes de agregarlo.
 var enemigo: Enemigo = null
+## Sus numeros: los del ejemplar, si no los de la ficha, si no datos_por_omision(). Los fija nucleo/enemigo.gd antes
+## de agregarlo; cada comportamiento los lee con su clase (datos as DatosVolador). Solo lectura.
+var datos: DatosComportamiento = null
 
 
 func _physics_process(_delta: float) -> void:
@@ -25,14 +28,57 @@ func actuar() -> void:
 	pass
 
 
+## Gancho al cruzar cada umbral de vida, incluso si un golpe cruza varios. Fase inicial: 0.
+## No crear ataques ni disparos aqui: puede llegar desde una senal de fisica. Hacerlo en actuar() segun enemigo.fase.
+func al_cambiar_fase(_fase: int) -> void:
+	pass
+
+
+## Los numeros de este tipo de comportamiento cuando ni el ejemplar ni la ficha traen: un new() de su clase de
+## datos, con los valores por omision de sus @export. Sin numeros propios, null.
+func datos_por_omision() -> DatosComportamiento:
+	return null
+
+
+## Toca un efecto propio del enemigo, como ataque; un campo vacio usa el de la sala o el global.
+func sonar(evento: StringName) -> void:
+	if Arranque.sonido != null:
+		Arranque.sonido.tocar(evento, enemigo.ficha.sonidos)
+
+
+## Gancho: true si este golpe rebota (escudo de frente, caparazon cerrado). El enemigo se lo pasa a su Golpeable
+## (Golpeable.bloqueo): bloqueado no hace dano, ni empuja, ni da Inspiracion. Por omision, ningun golpe rebota.
+func bloquea_golpe(_atacante: Node2D) -> bool:
+	return false
+
+
+## Lado donde esta nodo respecto del enemigo: -1 izquierda, 1 derecha, 0 justo encima o debajo. Para un escudo:
+## lado_de(atacante) == enemigo.mirando es un golpe de frente.
+func lado_de(nodo: Node2D) -> float:
+	return signf(nodo.global_position.x - enemigo.global_position.x)
+
+
+## Si el jugador mira hacia el enemigo (para el que se esconde o ataca cuando le dan la espalda). Sin jugador, false.
+func jugador_lo_mira() -> bool:
+	var objetivo: Jugador = jugador()
+	return objetivo != null and objetivo.mirando == -lado_de(objetivo)
+
+
+## Apaga o vuelve a poner la gravedad (trepar, enterrarse): flotando, caer() no hace nada y el cuerpo usa
+## MOTION_MODE_FLOATING (sin suelo: todo choque cuenta como pared; classes/class_characterbody2d.rst).
+## Con false vuelve al modo que da la ficha.
+func flotar(si: bool) -> void:
+	enemigo.flotando = si
+
+
 ## El jugador de la sala, o null.
 func jugador() -> Jugador:
-	return get_tree().get_first_node_in_group(Jugador.GRUPO) as Jugador
+	return Jugador.actual(get_tree())
 
 
-## Suma la gravedad de la ficha a la velocidad, con su tope. Sin gravedad (vuela), no hace nada.
+## Suma la gravedad de la ficha a la velocidad, con su tope. Sin gravedad (vuela) o flotando, no hace nada.
 func caer() -> void:
-	if enemigo.ficha.gravedad <= 0.0:
+	if enemigo.ficha.gravedad <= 0.0 or enemigo.flotando:
 		return
 	var delta: float = get_physics_process_delta_time()
 	enemigo.velocity.y = minf(enemigo.velocity.y + enemigo.ficha.gravedad * delta, enemigo.ficha.caida_maxima)
@@ -51,8 +97,8 @@ func en_suelo() -> bool:
 ## Si hay un solido justo delante, a media altura, hacia sentido (-1 o 1).
 func pared_delante(sentido: float) -> bool:
 	var mitad: float = enemigo.ficha.tamano.x / 2.0
-	var centro: Vector2 = enemigo.global_position + Vector2(0.0, -enemigo.ficha.tamano.y / 2.0)
-	return _choca(centro, centro + Vector2(sentido * (mitad + ALCANCE_RAYO), 0.0))
+	var desde: Vector2 = centro()
+	return _choca(desde, desde + Vector2(sentido * (mitad + ALCANCE_RAYO), 0.0))
 
 
 ## Si delante, hacia sentido, se acaba el suelo: el rayo baja desde la punta del pie de ese lado.
@@ -67,7 +113,7 @@ func ve_al_jugador(radio: float) -> bool:
 	if objetivo == null or objetivo.muerto:
 		return false
 	var desde: Vector2 = centro()
-	var hasta: Vector2 = objetivo.global_position + Vector2(0.0, -80.0)
+	var hasta: Vector2 = objetivo.centro()
 	return desde.distance_to(hasta) <= radio and not _choca(desde, hasta)
 
 
@@ -79,7 +125,6 @@ func centro() -> Vector2:
 ## Voltea hacia donde mira el enemigo.
 func girar() -> void:
 	enemigo.mirando = -enemigo.mirando
-	enemigo.queue_redraw()
 
 
 ## Ataque separado del cuerpo, hijo del enemigo: un rectangulo relativo a sus pies que dana durante ticks.

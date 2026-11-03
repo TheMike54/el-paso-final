@@ -1,0 +1,10 @@
+# Sigue en celda_4 al llegar abajo del tiro; al final, en celda_3, en el piso (y=1080) cerca de la llegada de su
+# boquete derecho (x=2916): la puerta ABAJO del piso se cruzo cayendo. Un cambio de sala, sin dano.
+en 290 escena res://contenido/salas/celda/celda_4.tscn
+escena res://contenido/salas/celda/celda_3.tscn
+x 2796 8
+y 1080 2
+en_suelo true
+valor Jugador transicion 0
+senal /root/Eventos cambio_de_sala 1
+senal /root/Eventos jugador_danado 0

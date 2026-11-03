@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://c8a2pra0yiysj"]
+
+[ext_resource type="PackedScene" uid="uid://cantrdqq1cwy8" path="res://nucleo/puerta.tscn" id="1_puerta"]
+[ext_resource type="Texture2D" uid="uid://do7kijxvq8lwf" path="res://contenido/salas/celda/arte/marco_salida_b.png" id="2_marco"]
+
+[node name="PuertaSalidaB" instance=ExtResource("1_puerta")]
+
+[node name="Marco" type="Sprite2D" parent="."]
+z_index = -20
+z_as_relative = false
+position = Vector2(-135, -303)
+texture = ExtResource("2_marco")
+centered = false

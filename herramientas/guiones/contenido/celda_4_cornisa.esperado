@@ -1,0 +1,18 @@
+# Arriba con la raiz (cara en y=660) y en la cornisa con las 10 PejeCoins. Pegado a la pared bajo el alero (x=2275, piso
+# en y=1280): el salto pega en el alero (y=1000), los pies no pasan de y=1162 y vuelve al piso. Sin cambio de sala (no
+# cae por el boquete) ni dano.
+en 790 y 660 2
+en 870 y 560 2
+en 870 x 2404 12
+en 900 valor /root/Partida monedas 10
+en 1000 x 2275 2
+en 1000 y 1280 2
+en 1042 y 1162 4
+en 1042 en_suelo false
+x 2275 2
+y 1280 2
+en_suelo true
+valor /root/Partida monedas 10
+valor Jugador transicion 0
+senal /root/Eventos cambio_de_sala 0
+senal /root/Eventos jugador_danado 0

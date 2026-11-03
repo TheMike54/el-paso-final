@@ -1,0 +1,3 @@
+# Las escenas reales miden las cuentas sin amuleto, puesto y quitado, incluido el botin diferido.
+escena res://herramientas/pruebas/sala_efectos_amuletos.tscn
+fin 120

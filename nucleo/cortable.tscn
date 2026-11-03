@@ -1,6 +1,6 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://dlkhh7q2rsnfi"]
 
-[ext_resource type="Script" path="res://nucleo/cortable.gd" id="1_cortable"]
+[ext_resource type="Script" uid="uid://30xinh15o2iq" path="res://nucleo/cortable.gd" id="1_cortable"]
 
 [sub_resource type="RectangleShape2D" id="forma_cortable"]
 size = Vector2(64, 48)

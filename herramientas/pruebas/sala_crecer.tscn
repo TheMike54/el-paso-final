@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://b8k5w3mrt2c6p"]
+
+[ext_resource type="Script" uid="uid://c7b4m2xq6r8ka" path="res://herramientas/pruebas/prueba_crecer.gd" id="1_prueba"]
+
+[node name="SalaCrecer" type="Node"]
+script = ExtResource("1_prueba")

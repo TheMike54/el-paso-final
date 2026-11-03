@@ -1,8 +1,8 @@
 class_name Interactuable
 extends Area2D
-# Base de lo que se usa con interactuar estando encima (Npc, reto, mochila, tienda, estacion, banco, entrega): la
-# capa, si el jugador esta cerca, el disparador en el tick (la misma regla para todos: Jugador.encima_de y sin
-# congelado), la caja de dialogo que se corta con un golpe y el dibujo provisional con su triangulo de aviso. Cada
+# Base de lo que se usa con interactuar estando encima (Npc, reto, mochila, tienda, estacion, banco, entrega,
+# puerta): la capa, si el jugador esta cerca, el disparador en el tick (la misma regla para todos: Jugador.encima_de y
+# sin congelado), la caja de dialogo que se corta con un golpe y el dibujo provisional con su triangulo de aviso. Cada
 # clase pone lo suyo en los ganchos.
 
 const COLOR_AVISO: Color = Color(1.0, 1.0, 1.0, 0.9)

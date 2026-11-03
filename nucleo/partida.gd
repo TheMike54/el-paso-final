@@ -5,11 +5,21 @@ extends Node
 # algo, al morir y al pasar la app a segundo plano. Va antes de Arranque en los autoloads.
 
 const VIDAS_MAXIMAS_INICIALES: int = 4
-const INSPIRACION_MAXIMA: int = 99
+## Tres bloques iniciales permiten una curacion por barra llena.
+const INSPIRACION_INICIAL: int = 33
+## Los Modulos de RAM amplian la barra hasta nueve bloques.
+const INSPIRACION_TOPE: int = 99
+## Limite de carga como las muescas de amuleto de Hollow Knight, que van de 3 a 11.
+const CARGA_TOPE: int = 11
+## Lo que se le dice a quien juega cuando no se pudo guardar.
+const TEXTO_GUARDADO_FALLIDO: String = "No se pudo guardar"
 ## Inspiracion que da un golpe por omision y lo que vale un bloque de la barra del HUD.
 const INSPIRACION_POR_GOLPE: int = 11
-## Amuletos puestos a la vez. Provisional: la carga de cada amuleto llega cuando haya tres con efecto.
-const MAX_EQUIPADOS: int = 3
+## Carga con la que se empieza: los amuletos puestos no pueden costar mas que carga_maxima (Hollow Knight empieza
+## con 3 muescas).
+const CARGA_INICIAL: int = 3
+## Utiles puestos a la vez: una ranura por ahora.
+const MAX_UTILES: int = 1
 ## Los ids de los coleccionables empiezan asi: el total se cuenta con las marcas de las salas.
 const PREFIJO_COLECCIONABLE: String = "coleccionable"
 ## Archivo donde se guarda fuera de una partida empezada en el menu (guiones, zona de pruebas): asi
@@ -28,12 +38,23 @@ var vidas: int = VIDAS_MAXIMAS_INICIALES:
 		if valor != vidas:
 			vidas = valor
 			Eventos.vidas_cambiadas.emit(vidas, vidas_maximas)
+## Capacidad persistente de la barra: cada Modulo de RAM suma tres bloques.
+var inspiracion_maxima: int = INSPIRACION_INICIAL:
+	set(valor):
+		var nueva: int = clampi(valor, INSPIRACION_INICIAL, INSPIRACION_TOPE)
+		if nueva != inspiracion_maxima:
+			inspiracion_maxima = nueva
+			if inspiracion > inspiracion_maxima:
+				inspiracion = inspiracion_maxima
+			else:
+				Eventos.inspiracion_cambiada.emit(inspiracion, inspiracion_maxima)
 ## Recurso de curacion: se llena golpeando y se gasta al curar. No se guarda.
 var inspiracion: int = 0:
 	set(valor):
-		if valor != inspiracion:
-			inspiracion = valor
-			Eventos.inspiracion_cambiada.emit(inspiracion, INSPIRACION_MAXIMA)
+		var nueva: int = clampi(valor, 0, inspiracion_maxima)
+		if nueva != inspiracion:
+			inspiracion = nueva
+			Eventos.inspiracion_cambiada.emit(inspiracion, inspiracion_maxima)
 ## PejeCoins.
 var monedas: int = 0:
 	set(valor):
@@ -47,6 +68,12 @@ var habilidades: Array[StringName] = []
 var jefes: Array[StringName] = []
 var amuletos_tenidos: Array[StringName] = []
 var amuletos_equipados: Array[StringName] = []
+## Carga persistente para amuletos, ampliable hasta CARGA_TOPE.
+var carga_maxima: int = CARGA_INICIAL:
+	set(valor):
+		carga_maxima = clampi(valor, CARGA_INICIAL, CARGA_TOPE)
+var utiles_tenidos: Array[StringName] = []
+var utiles_equipados: Array[StringName] = []
 ## Lo que se perdio al morir: {sala, x, y, monto}, o vacio. x e y van en coordenadas de la sala; la Mochila que
 ## crea la sala lo devuelve con el reto (ver dejar_mochila).
 var mochila: Dictionary = {}
@@ -72,6 +99,9 @@ var ruta_guardado: String = RUTA_PRUEBAS
 var enemigos_vencidos: Array[String] = []
 ## Autoguardados hechos desde que arranco el juego; publico para los guiones.
 var autoguardados: int = 0
+## El ultimo guardado fallo: el Hud y el menu lo leen al entrar, porque el aviso del Hud no sobrevive a un cambio de
+## escena (salir al menu, reaparecer).
+var ultimo_guardado_fallo: bool = false
 
 
 func _ready() -> void:
@@ -79,6 +109,7 @@ func _ready() -> void:
 	Eventos.jugador_muerto.connect(_al_morir)
 	Eventos.habilidad_obtenida.connect(_al_obtener.unbind(1))
 	Eventos.amuleto_obtenido.connect(_al_obtener.unbind(1))
+	Eventos.util_obtenido.connect(_al_obtener.unbind(1))
 	Eventos.mapa_obtenido.connect(_al_obtener.unbind(1))
 	Eventos.coleccionable_obtenido.connect(_al_obtener.unbind(1))
 	Eventos.jefe_vencido.connect(_al_vencer_jefe)
@@ -101,6 +132,7 @@ func reiniciar() -> void:
 	vidas_maximas = VIDAS_MAXIMAS_INICIALES
 	vidas = vidas_maximas
 	inspiracion = 0
+	inspiracion_maxima = INSPIRACION_INICIAL
 	monedas = 0
 	banco = ""
 	sala = ""
@@ -108,10 +140,15 @@ func reiniciar() -> void:
 	jefes.clear()
 	amuletos_tenidos.clear()
 	amuletos_equipados.clear()
+	carga_maxima = CARGA_INICIAL
+	utiles_tenidos.clear()
+	utiles_equipados.clear()
+	Eventos.equipo_cambiado.emit()
 	mochila = {}
 	mapas.clear()
 	salas_visitadas.clear()
 	salas_mapeadas.clear()
+	ultimo_guardado_fallo = false
 	estaciones.clear()
 	botones_ensenados.clear()
 	salas.clear()
@@ -146,7 +183,7 @@ func estacion_abierta(id: String) -> bool:
 
 
 func ganar_inspiracion(cantidad: int) -> void:
-	inspiracion = clampi(inspiracion + cantidad, 0, INSPIRACION_MAXIMA)
+	inspiracion = clampi(inspiracion + cantidad, 0, inspiracion_maxima)
 
 
 func tiene(habilidad: StringName) -> bool:
@@ -185,26 +222,92 @@ func esta_equipado(amuleto: StringName) -> bool:
 	return amuletos_equipados.has(amuleto)
 
 
-## Se puede poner si se tiene, no esta puesto y queda lugar. Donde se puede (sentado en un banco) lo decide quien
-## llama: Partida no conoce al jugador.
+## Carga que ocupan los amuletos puestos (la suma de sus costos; uno fuera del catalogo no cuenta).
+func carga_usada() -> int:
+	var usada: int = 0
+	for amuleto: StringName in amuletos_equipados:
+		var ficha: FichaAmuleto = CatalogoEquipo.amuleto(amuleto)
+		usada += ficha.costo if ficha != null else 0
+	return usada
+
+
+## Se puede poner si esta en el catalogo, se tiene, no esta puesto y su costo cabe en la carga que queda. Donde se
+## puede (sentado en un banco) lo decide quien llama: Partida no conoce al jugador.
 func puede_equipar(amuleto: StringName) -> bool:
-	return amuletos_tenidos.has(amuleto) and not esta_equipado(amuleto) and amuletos_equipados.size() < MAX_EQUIPADOS
+	var ficha: FichaAmuleto = CatalogoEquipo.amuleto(amuleto)
+	return (ficha != null and amuletos_tenidos.has(amuleto) and not esta_equipado(amuleto)
+			and carga_usada() + ficha.costo <= carga_maxima)
 
 
-## Pone un amuleto y autoguarda. Devuelve false si no se puede (ver puede_equipar).
+## Pone un amuleto, lo avisa (equipo_cambiado) y autoguarda. Devuelve false si no se puede (ver puede_equipar).
 func equipar(amuleto: StringName) -> bool:
 	if not puede_equipar(amuleto):
 		return false
 	amuletos_equipados.append(amuleto)
+	Eventos.equipo_cambiado.emit()
 	autoguardar()
 	return true
 
 
-## Quita un amuleto puesto y autoguarda. Devuelve false si no estaba puesto.
+## Quita un amuleto puesto, lo avisa y autoguarda. Devuelve false si no estaba puesto.
 func desequipar(amuleto: StringName) -> bool:
 	if not esta_equipado(amuleto):
 		return false
 	amuletos_equipados.erase(amuleto)
+	Eventos.equipo_cambiado.emit()
+	autoguardar()
+	return true
+
+
+## Lo que hacen juntos los amuletos puestos, como una ficha: factores multiplicados y extras sumados. Sin amuletos,
+## una ficha neutra. Se calcula al llamarla: quien la lee cada tick la guarda y la renueva con equipo_cambiado.
+func efectos_amuletos() -> FichaAmuleto:
+	var suma: FichaAmuleto = FichaAmuleto.new()
+	for amuleto: StringName in amuletos_equipados:
+		var ficha: FichaAmuleto = CatalogoEquipo.amuleto(amuleto)
+		if ficha == null:
+			continue
+		suma.velocidad_factor *= ficha.velocidad_factor
+		suma.invulnerable_extra += ficha.invulnerable_extra
+		suma.inspiracion_extra += ficha.inspiracion_extra
+		suma.botin_factor *= ficha.botin_factor
+	return suma
+
+
+## Suma un util y lo avisa (el aviso autoguarda). Si ya lo tenia, no hace nada.
+func obtener_util(util: StringName) -> void:
+	if utiles_tenidos.has(util):
+		return
+	utiles_tenidos.append(util)
+	Eventos.util_obtenido.emit(util)
+
+
+func util_equipado(util: StringName) -> bool:
+	return utiles_equipados.has(util)
+
+
+## Se puede poner si esta en el catalogo, se tiene, no esta puesto y queda ranura (MAX_UTILES). No gasta carga.
+func puede_equipar_util(util: StringName) -> bool:
+	return (CatalogoEquipo.util(util) != null and utiles_tenidos.has(util) and not util_equipado(util)
+			and utiles_equipados.size() < MAX_UTILES)
+
+
+## Pone un util, lo avisa (equipo_cambiado) y autoguarda. Devuelve false si no se puede.
+func equipar_util(util: StringName) -> bool:
+	if not puede_equipar_util(util):
+		return false
+	utiles_equipados.append(util)
+	Eventos.equipo_cambiado.emit()
+	autoguardar()
+	return true
+
+
+## Quita un util puesto, lo avisa y autoguarda. Devuelve false si no estaba puesto.
+func desequipar_util(util: StringName) -> bool:
+	if not util_equipado(util):
+		return false
+	utiles_equipados.erase(util)
+	Eventos.equipo_cambiado.emit()
 	autoguardar()
 	return true
 
@@ -273,6 +376,15 @@ func dar_recompensa(recompensa: Recompensa) -> void:
 			obtener_habilidad(recompensa.id)
 		Recompensa.Tipo.MAPA:
 			obtener_mapa(String(recompensa.id))
+		Recompensa.Tipo.UTIL:
+			obtener_util(recompensa.id)
+		Recompensa.Tipo.INSPIRACION_MAXIMA:
+			inspiracion_maxima += recompensa.monto
+			autoguardar()
+		Recompensa.Tipo.CARGA:
+			carga_maxima += recompensa.monto
+			Eventos.equipo_cambiado.emit()
+			autoguardar()
 
 
 ## Al entrar a una sala: queda como visitada.
@@ -352,14 +464,12 @@ func _al_vencer_jefe(jefe: StringName) -> void:
 	autoguardar()
 
 
-## Guarda lo obtenido sin cambiar el banco: al reabrir se aparece en el ultimo banco. Lo avisa con
-## Eventos.partida_guardada, como el banco.
+## Guarda lo obtenido sin cambiar el banco: al reabrir se aparece en el ultimo banco. Lo avisa como el banco
+## (guardar).
 func autoguardar() -> Error:
 	var error: Error = guardar(ruta_guardado)
 	if error == OK:
 		autoguardados += 1
-	else:
-		push_error("Partida: no se pudo autoguardar (error %d)" % error)
 	return error
 
 
@@ -372,6 +482,10 @@ func a_diccionario() -> Dictionary:
 		"jefes": _textos(jefes),
 		"amuletos_tenidos": _textos(amuletos_tenidos),
 		"amuletos_equipados": _textos(amuletos_equipados),
+		"carga_maxima": carga_maxima,
+		"inspiracion_maxima": inspiracion_maxima,
+		"utiles_tenidos": _textos(utiles_tenidos),
+		"utiles_equipados": _textos(utiles_equipados),
 		"monedas": monedas,
 		"mochila": mochila.duplicate(true),
 		"mapas": mapas.duplicate(),
@@ -409,6 +523,11 @@ func desde_diccionario(partida: Dictionary) -> void:
 	# Campo nuevo (Guardado.NUEVOS): una partida que llega sin pasar por Guardado.cargar puede no traerlo.
 	estaciones = _cadenas(partida.get("estaciones", []) as Array)
 	botones_ensenados = _ids(partida.get("botones_ensenados", []) as Array)
+	carga_maxima = Guardado.entero(partida.get("carga_maxima"), CARGA_INICIAL)
+	inspiracion_maxima = Guardado.entero(partida.get("inspiracion_maxima"), INSPIRACION_INICIAL)
+	utiles_tenidos = _ids(partida.get("utiles_tenidos", []) as Array)
+	utiles_equipados = _ids(partida.get("utiles_equipados", []) as Array)
+	Eventos.equipo_cambiado.emit()
 	salas.clear()
 	var leidas: Dictionary = partida["salas"]
 	for clave_sala: Variant in leidas:
@@ -420,11 +539,16 @@ func desde_diccionario(partida: Dictionary) -> void:
 	tiempo_jugado = partida["tiempo_jugado"] as float
 
 
-## Guarda la partida; si salio bien, lo avisa con Eventos.partida_guardada.
+## Guarda la partida y lo avisa con Eventos.partida_guardada o, si fallo, con Eventos.guardado_fallido: quien juega
+## debe enterarse de que su progreso no quedo guardado.
 func guardar(ruta: String) -> Error:
 	var error: Error = Guardado.guardar(a_diccionario(), ruta)
+	ultimo_guardado_fallo = error != OK
 	if error == OK:
 		Eventos.partida_guardada.emit()
+	else:
+		push_warning("Partida: no se pudo guardar en %s (error %d)" % [ruta, error])
+		Eventos.guardado_fallido.emit(error)
 	return error
 
 

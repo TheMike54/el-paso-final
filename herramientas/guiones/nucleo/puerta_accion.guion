@@ -1,0 +1,11 @@
+# En la sala C (dos puertas tipo PUERTA que llevan una a la otra) el jugador pasa caminando frente a la puerta "salon"
+# sin cruzarla, vuelve, se para enfrente y pulsa interactuar: se voltea, se mete y sale de espaldas por la puerta
+# "fondo" de la misma sala, donde recupera el control.
+escena res://herramientas/salas/sala_puerta_c.tscn
+2 mover_derecha press
+120 mover_derecha release
+130 mover_izquierda press
+180 mover_izquierda release
+190 interactuar press
+192 interactuar release
+fin 320

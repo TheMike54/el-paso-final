@@ -2,7 +2,7 @@ class_name PaginaInventario
 extends PaginaMarco
 # Pagina Inventario del marco de menus: lo que el jugador lleva, solo para leer. Muestra lo que ya existe en
 # Partida (vida, Inspiracion, PejeCoins, arma, habilidades, mapas y lo perdido al morir); no hay objetos todavia,
-# porque un inventario de objetos subiria el guardado a la version 4. La crea cada sala, como Amuletos.
+# porque guardar uno seria un campo nuevo en Guardado.NUEVOS. La crea cada sala, como Amuletos.
 
 ## El arma es la habilidad pluma: sin ella no se ataca.
 const ARMA: StringName = Habilidades.PLUMA
@@ -46,11 +46,11 @@ func mostrar_en_marco() -> void:
 func _llenar() -> void:
 	valores = {
 		"Vida": "%d de %d" % [Partida.vidas, Partida.vidas_maximas],
-		"Inspiración": "%d de %d" % [Partida.inspiracion, Partida.INSPIRACION_MAXIMA],
+		"Inspiración": "%d de %d" % [Partida.inspiracion, Partida.inspiracion_maxima],
 		"PejeCoins": str(Partida.monedas),
 		"Arma": PantallaAmuletos.nombre_de(ARMA) if Partida.tiene(ARMA) else "Sin arma",
-		"Habilidades": _lista(Partida.habilidades.filter(func(h: StringName) -> bool: return h != ARMA), "Ninguna"),
-		"Mapas": _lista(Partida.mapas, "Ninguno"),
+		"Habilidades": _nombres_de(Partida.habilidades.filter(func(h: StringName) -> bool: return h != ARMA), "Ninguna"),
+		"Mapas": _nombres_de(Partida.mapas, "Ninguno"),
 		"Lo perdido": perdido(Partida.mochila),
 	}
 	for hijo: Node in _filas.get_children():
@@ -80,8 +80,8 @@ static func perdido(mochila: Dictionary) -> String:
 	return "%d PejeCoins en %s" % [cantidad, str(sala)] if typeof(sala) == TYPE_STRING else "%d PejeCoins" % cantidad
 
 
-func _lista(ids: Array, vacio: String) -> String:
+func _nombres_de(ids: Array, vacio: String) -> String:
 	var nombres: PackedStringArray = []
 	for id: Variant in ids:
-		nombres.append(String(str(id)).capitalize())
+		nombres.append(str(id).capitalize())
 	return ", ".join(nombres) if not nombres.is_empty() else vacio

@@ -1,9 +1,24 @@
 # Contrato del proyecto
 
-Lo que un bloque puede dar por hecho de los demás: la configuración del proyecto, el ciclo de vida, los autoloads,
-la entrada y la interfaz de los guiones. Si un cambio altera algo de aquí, este documento se actualiza en el
-mismo cambio. Las señales del bus de eventos, la forma de una sala, la ficha de una entidad y el esquema del
-guardado entran a este documento en el mismo cambio que los implementa, con su plan aprobado antes.
+Lo que un bloque puede dar por hecho de los demás: la configuración del proyecto, el ciclo de vida, el guardado, los autoloads, el bus de eventos y la forma de una sala. Si un cambio altera algo de aquí, este documento se actualiza en el mismo cambio. Las señales del bus de eventos, la forma de una sala, la ficha de una entidad y el esquema del guardado entran a este documento o a su archivo por tema en el mismo cambio que los implementa, con su plan aprobado antes.
+
+El contrato se parte por tema para leer solo lo que la tarea toca. Este archivo es el núcleo; los demás son parte del contrato y se leen cuando la tarea toca su tema:
+
+| Archivo | Qué trae | Cuándo leerlo |
+|---|---|---|
+| `docs/contrato.md` (este) | Configuración, ciclo de vida, guardado, estado de la partida, autoloads, bus de eventos, fichas de amuletos y útiles, grupos, capas de física y de dibujo, paquete de publicación | Antes de crear contenido, un autoload o tocar el guardado |
+| `docs/sala.md` | Forma de una sala, cambio de sala y llegada, cámara, suelos y plataformas, fondo extendido y bancos | Al crear una sala, y al tocar la reaparición, la carga de una ranura, las transiciones o el viaje rápido |
+| `docs/componentes.md` | Las piezas del núcleo que una sala instancia: golpeables, recogibles, NPC, tienda, estaciones, plataformas, peligros | Al armar una sala o una pieza |
+| `docs/enemigos.md` | Ficha de enemigo, comportamientos, datos, botín, ataques, parry y ganchos | Al crear o tocar un enemigo |
+| `docs/audio.md` | Buses, `Sonido`, `Musica` y `Vibracion` | Al tocar sonido, música o vibración |
+| `docs/ajustes-y-entrada.md` | El archivo de ajustes, `Mando`, brillo, las acciones de entrada, los controles táctiles y su editor | Al agregar un ajuste o una acción, o al tocar los controles |
+| `docs/interfaz.md` | HUD, mapa, marco de menús, pantallas de amuletos y útiles, menú principal, `Tema`, pausa y piezas de menú | Al tocar un menú, el HUD o el mapa |
+| `docs/arte-y-rendimiento.md` | Modo de recursos, presupuesto por sala, importación del arte, arte de zona y las mediciones que sostienen las reglas | Antes de agregar arte, luces, partículas o una sala |
+| `docs/validador.md` | Lo que revisa `herramientas/validar.gd` en salas y fichas, el uid de escenas y recursos y los avisos | Al agregar una regla del validador o ante un fallo que no se entiende |
+
+`docs/jugador.md` (propiedades, combate, curar, habilidades y prioridad del movimiento del jugador) y `docs/guiones.md` (formato, comando y condiciones de fallo de los guiones) también son parte del contrato.
+
+Mantenimiento: aquí no se anotan fechas de decisión ni el historial de las mediciones (la fecha vive en git, en el plan o en `docs/errores/`; la medición, en `docs/pruebas.md` o en `docs/arte-y-rendimiento.md`), y una cifra que ya es un `@export` o una `const` no se copia: se cita el archivo y el nombre.
 
 ## Configuración del proyecto
 
@@ -14,18 +29,22 @@ Valores de `project.godot`. No se cambian sin actualizar esta tabla.
 | Motor | Godot 4.7.2 estable, edición estándar | Un proyecto guardado con una versión más nueva no abre en una anterior |
 | Renderer | Compatibility en `rendering_method` y en `rendering_method.mobile` | Teléfonos de gama baja |
 | Resolución base | 1280×720 | Proporción 16:9; el arte se mide contra esta base |
-| Estiramiento | `canvas_items` con aspecto `expand`, limitado al ejecutar a proporciones de 4:3 a 22:9 (`nucleo/vista.gd`, aplicado por `Arranque`, el mismo rango en escritorio, teléfono y tableta) | Dentro del rango la base se escala y se ve más escenario, sin barras; fuera, la vista se recorta a 1760×720 o 1280×960 y el motor pone barras negras. Sin pantalla (guiones) no se aplica. El color de borrado es negro (`Arranque`): fuera de una sala no se ve gris |
+| Estiramiento | `canvas_items` con aspecto `expand`, limitado al ejecutar a proporciones de 4:3 a 22:9 (`nucleo/vista.gd`, que aplica `Arranque`; el mismo rango en escritorio, teléfono y tableta) | Dentro del rango la base se escala y se ve más escenario, sin barras; fuera, la vista se recorta a 1760×720 o 1280×960 y el motor pone barras negras. Sin pantalla (guiones) no se aplica. El color de borrado es negro (`Arranque`): fuera de una sala no se ve gris |
 | Escala | Cuadro de 40 px; el personaje mide 160 px de alto | Medida común para salas, colisiones y arte |
 | Orientación | Horizontal con giro (`window/handheld/orientation=4`, `SCREEN_SENSOR_LANDSCAPE`) | Se juega acostado, hacia cualquiera de los dos lados |
 | Botón Atrás | `quit_on_go_back=false` | Atrás no cierra la app: en el juego abre la pausa (con el marco de menús o Configuración abiertos, los cierra o vuelve un nivel) y en el menú pide confirmación |
 | Tipado | `untyped_declaration`, `unsafe_property_access`, `unsafe_method_access` y `unsafe_call_argument` como error | Un error de tipos se ve al validar, no al jugar |
 | Texturas | Ninguna de más de 2048 px por lado (lo revisa el validador) | Memoria en gama baja |
 | Solo 2D | `Arranque` pone `disable_3d` en la vista raíz | La vista no prepara nada de 3D; un nodo 3D no se vería |
+| Arranque | `application/boot_splash/show_image` apagado y `bg_color` negro | Sin el logo de Godot: la pantalla queda en negro mientras carga, hasta el menú |
 | Compresión de texturas | `textures/vram_compression/import_etc2_astc=true` | Godot no exporta a Android sin ella |
-| Filtro de texturas | `textures/canvas_textures/default_texture_filter=2` (lineal con mipmaps) | La vista de 1280×720 se encoge en pantallas más chicas; el arte del mundo lleva mipmaps (ver «Recursos») |
-| Interpolación de física | Apagada (`physics/common/physics_interpolation`, por omisión) | Decidido el 15-oct-2026: en el S21 a 120 FPS no hay saltos sin ella, y suma retraso a la entrada (parry, salto en cola) |
+| Filtro de texturas | `textures/canvas_textures/default_texture_filter=2` (lineal con mipmaps) | La vista de 1280×720 se encoge en pantallas más chicas; el arte del mundo lleva mipmaps (ver `docs/arte-y-rendimiento.md`, «Recursos») |
+| Interpolación de física | Apagada (`physics/common/physics_interpolation`, por omisión) | En el S21 a 120 FPS no hay saltos sin ella, y suma retraso a la entrada (parry, salto en cola) |
 | Capas de física | `layer_names/2d_physics/layer_1` a `layer_7` | Nombres en el editor; la tabla, en «Capas de física» |
 | Id del paquete Android | `com.themike54.elpasofinal` | Identidad estable de la app instalada |
+| Ícono | `config/icon` = `res://nucleo/arte/icono/icono_192.png`; en los dos presets, `launcher_icons/*`: el de 192 y los adaptativos de 432 (frente, fondo y monocromo), en `nucleo/arte/icono/` | El ícono aprobado en el lanzador y en el editor (`tutorials/export/exporting_for_android.rst:119-127`) |
+| Idioma | Solo español en la v1; cada texto se escribe completo, sin frases armadas a pedazos | Decisión cerrada |
+| Exportación | «Publicacion» exporta AAB con plantilla Gradle; «Desarrollo», APK. Una sola máquina exporta las versiones; la clave de publicación la genera la persona y se guarda fuera del repo | Decisión cerrada (ver también `CLAUDE.md`, «Decisiones cerradas») |
 
 ## Ciclo de vida
 
@@ -34,26 +53,17 @@ Valores de `project.godot`. No se cambian sin actualizar esta tabla.
 - La acción `pausa` no guarda. La partida se guarda al descansar en un banco y se autoguarda (lo obtenido, nunca la
   posición: al continuar se aparece en el último banco) en los momentos que lista `autoguardar()` en «Estado de la
   partida».
-- Pausa: `nucleo/pausa.tscn` (`class_name Pausa`), que crea cada sala. La acción `pausa` o el botón Atrás de
-  Android la abren y la cierran (`get_tree().paused`); tiene Continuar, «Configuración» (la misma del menú, en la capa
-  22 encima de la pausa y con el juego detenido, sin «Desarrollador»; de ahí sale el editor de los botones táctiles;
-  ver «Menú» y «Entrada») y «Salir al menú», como en Hollow Knight. Los amuletos, el inventario y el mapa están en el
-  marco de menús (ver «Marco de menús»). Al abrirse guarda una copia de la pantalla para la pantalla de brillo (no en
-  headless) y la suelta al cerrarse. Se abre sola al perder el foco (`NOTIFICATION_APPLICATION_FOCUS_OUT` o
-  `NOTIFICATION_APPLICATION_PAUSED`: apps recientes, otra ventana) y no se cierra sola al volver. Corre con
-  `PROCESS_MODE_ALWAYS`, igual que los controles táctiles. Su propiedad `abierta` dice si está abierta. La pausa
-  lee la acción, no el evento: la abren igual la tecla, el botón táctil y un guion. Con el editor abierto (`editor`
-  no es `null`), la acción `pausa` no hace nada y Atrás es Cancelar. Con Configuración abierta, `pausa` y Atrás
-  vuelven un nivel en ella (`Configuracion.atras()`). Con la pausa abierta, `volver` (B / Círculo) hace lo mismo que
-  `pausa`; con la pausa cerrada no se lee, porque en la partida B es `curar` y no la abre.
+- Pausa: `nucleo/pausa.tscn` (`class_name Pausa`), que crea cada sala. La acción `pausa` o el botón Atrás de Android la abren y la cierran (`get_tree().paused`); con ella abierta, `volver` (B / Círculo) hace lo mismo que `pausa`, y con la pausa cerrada no se lee, porque en la partida B es `curar`. Sus botones, la Configuración que abre y cuándo se abre sola: `docs/interfaz.md`, «Pausa».
 - El guardado se escribe en un archivo temporal y después se renombra: un cierre a la mitad no daña la partida.
   Lo hace `Archivo` (`escribir_atomico(ruta, texto)` y `copiar_atomico(desde, hacia)`, con el temporal
   `<destino>.tmp`), que usan la partida, su copia y los ajustes: todo archivo nuevo de `user://` pasa por ella.
-- Los ajustes del jugador van en su propio archivo, no en la partida (ver «Ajustes y vibración»).
-- El guardado es JSON con número de versión. Al cargar se distinguen partida válida, archivo dañado y partida de
-  una versión incompatible, más el caso sin partida guardada (ver «Guardado»).
+  Única excepción: las copias de video de `ReproductorVideo` (`user://video/`), porque `DirAccess.copy_absolute` no
+  abre un archivo del paquete del APK (probado en el S50); una copia cortada se vuelve a copiar, porque
+  su tamaño no coincide.
+- Los ajustes del jugador van en su propio archivo, no en la partida (ver `docs/ajustes-y-entrada.md`, «Ajustes»).
+- El guardado es JSON con número de versión. Al cargar se distinguen partida válida, archivo dañado, partida de
+  una versión incompatible y archivo que no se pudo abrir, más el caso sin partida guardada (ver «Guardado»).
 - Todo lo persistente (puerta abierta, objeto recogido, jefe vencido) se identifica con un ID de texto estable.
-- Las fichas `.tres` son de solo lectura en ejecución: un recurso cargado es la misma copia para todos.
 
 ## Guardado
 
@@ -64,41 +74,43 @@ Valores de `project.godot`. No se cambian sin actualizar esta tabla.
 | `Guardado.guardar(partida: Dictionary, ruta: String) -> Error` | Escribe `{"version": VERSION, "partida": partida}` en `<ruta>.tmp` y lo renombra a `<ruta>`. Devuelve `OK` o el error |
 | `Guardado.cargar(ruta := Guardado.RUTA) -> Guardado.Resultado` | Devuelve `estado` y, si es `VALIDA`, `partida` |
 | `Guardado.borrar(ruta := Guardado.RUTA) -> Error` | Borra `<ruta>`, `<ruta>.tmp`, `<ruta>.bak` y `<ruta>.bak.tmp` si existen (lo usa «Borrar» de una ranura); no toca los ajustes |
-| `Guardado.ruta_ranura(numero) -> String` | `user://partida_<numero>.json`, de 1 a `RANURAS` (4) |
+| `Guardado.ruta_ranura(numero) -> String` | `user://partida_<numero>.json`, de 1 a `RANURAS` |
 | `Guardado.entero(valor, por_omision) -> int` | Un número leído de una partida como `int` (truncado), aunque el JSON lo haya vuelto `float`; si no es número, `por_omision`. Lo usan `Partida.estado_entero` y `Partida.monto_mochila` |
 | `Guardado.migrar(desde, hacia) -> Error` | Renombra `desde` a `hacia` si `desde` existe y `hacia` no; si no, nada (nunca pisa una partida) |
-| `Guardado.respaldar(ruta) -> Error` | Copia una partida `VALIDA` a `<ruta>.bak.tmp` y la renombra a `<ruta>.bak`; una que no es válida no se copia y la copia anterior sigue |
+| `Guardado.respaldar(ruta) -> Error` | Copia una partida `VALIDA` a `<ruta>.bak.tmp` y la renombra a `<ruta>.bak`; una que no es válida no se copia y la copia anterior sigue. Si la copia falla, la anterior se queda: una vieja rescata más que ninguna |
 | `Guardado.restaurar(ruta) -> Error`, `Guardado.tiene_respaldo(ruta) -> bool` | Copia `<ruta>.bak` a `<ruta>.tmp` y lo renombra a `<ruta>`; solo cuenta una copia `VALIDA` (una cortada o dañada no): sin ella, `ERR_FILE_NOT_FOUND` y `tiene_respaldo` da `false` |
+| `Guardado.fingir_fallo(ruta, error)`, `Guardado.olvidar_fallos()` | Solo para las pruebas: `ruta` no se puede leer ni borrar |
 
 | `Guardado.Estado` | Cuándo |
 |---|---|
 | `VALIDA` | El archivo es JSON, su `version` es `VERSION` y `partida` tiene todos los campos del esquema con su tipo; los de `NUEVOS` que faltan se rellenan con su valor por omisión |
 | `VACIA` | No hay archivo: partida nueva. Un `.tmp` sobrante de un cierre a la mitad no cuenta |
-| `DANADA` | No es JSON, no es un objeto, falta `version` o no es número, `partida` no es un objeto, o le falta un campo o tiene otro tipo (un campo de `NUEVOS` con otro tipo también) |
-| `INCOMPATIBLE` | `version` es más nueva que `VERSION` (el juego no la sabe leer) o más vieja y sin su función de conversión (hoy no hay ninguna: la 3 es la primera que llegó a la QA) |
+| `DANADA` | No es JSON, no es un objeto, falta `version` o no es número, `partida` no es un objeto, le falta un campo o tiene otro tipo (un campo de `NUEVOS` con otro tipo también), un número está bajo su mínimo (`Guardado.MINIMOS`) o el `monto` de la mochila es negativo |
+| `INCOMPATIBLE` | `version` es más nueva que `VERSION` (el juego no la sabe leer) o más vieja (hoy no hay ninguna función de conversión). Ver «Partidas viejas» abajo |
+| `ILEGIBLE` | El archivo existe y no se pudo abrir (`FileAccess.get_open_error()`): nada dice que esté dañado, así que no se abre, no se borra ni se restaura. `Guardado.Resultado.cerrada()` agrupa `DANADA`, `INCOMPATIBLE` e `ILEGIBLE` |
 
-- Cuatro ranuras: `user://partida_1.json` a `partida_4.json`. `RUTA` (`user://partida.json`) es la partida de antes de
-  las ranuras: el menú la pasa a la ranura 1 al abrir (`migrar`), y `Banco` la usa como centinela. `VERSION` es 3.
-- Esquema de la versión 3 (`Guardado.ESQUEMA`), copiado de Hollow Knight y Silksong (lo del jugador como listas de
-  ids; lo de cada sala con clave sala + objeto). Un campo nuevo va a `Guardado.NUEVOS` con su valor por
-  omisión en forma de JSON (`0.0`, `Array` sin tipo): al cargar, `Guardado.completar` lo rellena en una partida que
-  no lo tiene, sin subir `VERSION` (decisión del 14-oct-2026). `VERSION` sube solo cuando cambia la forma de un campo
-  que ya existe, y en el mismo cambio se escribe la función que convierte la partida de la versión anterior.
 
-  | Campo | Tipo | Qué guarda |
-  |---|---|---|
-  | `banco` | objeto | `{sala, id}`: clave de la sala y id del último banco; `{}` si no se ha descansado. Si no está vacío y le falta `sala` o `id` (texto), la partida es `DANADA` |
-  | `vidas_maximas` | número | Vidas máximas |
-  | `habilidades`, `jefes`, `amuletos_tenidos`, `amuletos_equipados` | listas | Ids |
-  | `monedas` | número | PejeCoins |
-  | `mochila` | objeto | Lo perdido al morir, `{sala, x, y, monto}`, o `{}` |
-  | `mapas` | lista | Zonas cuyo mapa se tiene |
-  | `salas_visitadas`, `salas_mapeadas` | listas | Claves de sala (id, o ruta en una sala de prueba suelta) |
-  | `estaciones` | lista | Ids de las estaciones del viaje rápido abiertas. Campo de `NUEVOS` (17-oct-2026): una partida sin él carga con `[]` |
-  | `botones_ensenados` | lista | Acciones cuyo botón de la pantalla ya enseñó un pizarrón (`Sala.botones_por_ensenar`). Campo de `NUEVOS` (17-oct-2026): una partida sin él carga con `[]` |
-  | `salas` | objeto | Estado por sala: `{clave de la sala: {id del objeto: true o número}}` |
-  | `personaje`, `nombre` | texto | Elegidos en Nueva partida; vacíos si no se eligieron |
-  | `tiempo_jugado` | número | Segundos con el juego corriendo dentro de una sala |
+- Cuatro ranuras: `user://partida_1.json` a `partida_4.json`. `RUTA` (`user://partida.json`) es la partida de antes de las ranuras: el menú la pasa a la ranura 1 al abrir (`migrar`), y `Banco` la usa como centinela.
+- Esquema: `Guardado.ESQUEMA` tiene los campos base y `Guardado.NUEVOS` los que se agregaron después sin subir `VERSION`; se copió de Hollow Knight y Silksong (lo del jugador como listas de ids; lo de cada sala con clave sala + objeto). Un campo nuevo va a `NUEVOS` con su valor por omisión en forma de JSON (`0.0`, `Array` sin tipo) y no sube `VERSION`: al cargar, `Guardado.completar` lo rellena en una partida que no lo tiene. `VERSION` sube solo cuando cambia la forma o el contenido de un campo que ya existe; si la versión anterior se conserva, en el mismo cambio se escribe la función que la convierte.
+- Partidas viejas: hasta terminar el juego no se conserva ninguna versión vieja y no existe código de conversión; una partida de otra versión es `INCOMPATIBLE` y no se abre (decisión de la persona, D5 del plan `nucleo-base-auditoria-codigo`). Cuando haya una partida que conservar, cada cambio de forma trae una tabla de conversiones por versión en `Guardado.cargar()` y una prueba que cargue una partida de la versión vieja y compruebe el resultado.
+
+| Campo | Tipo | Qué guarda |
+|---|---|---|
+| `banco` | objeto | `{sala, id}`: clave de la sala y id del último banco; `{}` si no se ha descansado. Si no está vacío y le falta `sala` o `id` (texto), la partida es `DANADA` |
+| `vidas_maximas` | número | Vidas máximas |
+| `habilidades`, `jefes`, `amuletos_tenidos`, `amuletos_equipados` | listas | Ids |
+| `monedas` | número | PejeCoins |
+| `mochila` | objeto | Lo perdido al morir, `{sala, x, y, monto}`, o `{}` |
+| `mapas` | lista | Zonas cuyo mapa se tiene |
+| `salas_visitadas`, `salas_mapeadas` | listas | Claves de sala (id, o ruta en una sala de prueba suelta) |
+| `estaciones` | lista | Ids de las estaciones del viaje rápido abiertas. Campo de `NUEVOS`: una partida sin él carga con `[]` |
+| `botones_ensenados` | lista | Acciones cuyo botón de la pantalla ya enseñó un pizarrón (`Sala.botones_por_ensenar`). Campo de `NUEVOS`: una partida sin él carga con `[]` |
+| `carga_maxima` | número | Carga para amuletos, de `Partida.CARGA_INICIAL` a `Partida.CARGA_TOPE`. Campo de `NUEVOS` |
+| `inspiracion_maxima` | número | Capacidad de la barra, de `Partida.INSPIRACION_INICIAL` a `Partida.INSPIRACION_TOPE`. Campo de `NUEVOS`: si falta, carga con `Partida.INSPIRACION_INICIAL` |
+| `utiles_tenidos`, `utiles_equipados` | listas | Ids de los útiles (la brújula). Campos de `NUEVOS`: una partida sin ellos carga con `[]` |
+| `salas` | objeto | Estado por sala: `{clave de la sala: {id del objeto: true o número}}` |
+| `personaje`, `nombre` | texto | Elegidos en Nueva partida; vacíos si no se eligieron |
+| `tiempo_jugado` | número | Segundos con el juego corriendo dentro de una sala |
 
 - Lo que reaparece (enemigos) no se escribe. Sin cifrado ni suma de control.
 - Al leer, los números vuelven como `float`: `var vidas: int = partida["vidas_maximas"] as int`.
@@ -106,88 +118,6 @@ Valores de `project.godot`. No se cambian sin actualizar esta tabla.
   quien llama dice el archivo) escribe `Partida.a_diccionario()` y, si salió
   bien, emite `Eventos.partida_guardada`; entrar a una ranura ocupada carga el resultado con
   `Partida.desde_diccionario()` (con las vidas llenas) y lleva al jugador a su banco.
-
-## Ajustes y vibración
-
-`nucleo/ajustes.gd` (`class_name Ajustes`): funciones estáticas, como `Guardado`. Archivo `user://ajustes.json`
-(`{"version": 1, "ajustes": {...}}`), escrito a un temporal y renombrado. Son del teléfono y no de la partida:
-agregar un ajuste no cambia `Guardado.VERSION`. Un archivo que falta, dañado o de otra versión deja los valores
-por omisión: los de sí o no en `Ajustes.POR_OMISION`; la disposición de los botones en
-`DisposicionControles.por_omision()`.
-
-| Ajuste | Por omisión | Qué es |
-|---|---|---|
-| `vibracion` | `true` | Vibrar al pegar, al recibir daño, al parar, al curarse, al descansar y al aterrizar duro |
-| `temblor` | `true` | Temblor de la cámara al aterrizar de una caída (se apaga por mareo). Un archivo sin la clave la deja encendida |
-| `modo_desarrollador` | `false` | Muestra en el menú principal la entrada a la zona de pruebas |
-| `volumen` | 1 | Volumen general (bus Master), de 0 a 1; en 0, silencio. Se aplica al cargar (`Ajustes.aplicar_volumen()`) |
-| `volumen_musica` | 1 | Volumen del bus `Musica`, de 0 a 1, como el general. Un archivo sin la clave lo deja en 1 |
-| `volumen_efectos` | 1 | Volumen del bus `Efectos`, de 0 a 1, como el general. Un archivo sin la clave lo deja en 1 |
-| `brillo` | 1 | De 0,5 a 1,5: multiplica el color del mundo de la sala (debajo de 1 oscurece, encima aclara); el HUD, los controles y los menús no cambian. Se aplica al cargar (`Ajustes.aplicar_brillo()`) |
-| `recursos` | `"auto"` | Modo de recursos: `auto` (decide la detección), `bajo` o `alto`. Otro valor vuelve a `auto` (ver «Recursos») |
-| `fps` | 60 | 60 o 120; otro valor, o un archivo sin la clave, deja 60. `Ajustes.aplicar_fps()` (al cargar, al tocar FPS o Recursos) pone `Engine.max_fps` con `Ajustes.limite_fps()`: 0 (sin límite; con V-Sync, que en Compatibility siempre está, el refresco de la pantalla) solo con 120, Recursos en alto y una pantalla de `REFRESCO_RAPIDO` (90) Hz o más (`DisplayServer.screen_get_refresh_rate()`, -1 si no se sabe); si no, 60. Sin pantalla (guiones, CI) no toca el límite. La física sigue a 60 ticks |
-| `mando` | `{}` | Botones del control que difieren de `project.godot`: `{acción: índice de botón}`. Lo aplica `Mando.aplicar` al cargar |
-| `controles` | La distribución inicial | `{"opacidad": n, "botones": {acción: {"ancla": [0|1, 0|1], "desplazamiento": [x, y], "escala": n}}}` (ver «Entrada»). Lo que falta o no es válido se queda en su valor por omisión, botón por botón; escala y opacidad fuera de rango se recortan |
-
-- Audio: `default_bus_layout.tres` (raíz) define los buses `Musica` y `Efectos`, que envían a `Master`;
-  `Master` lleva un `AudioEffectHardLimiter` como último efecto, contra el recorte cuando suenan varios a la vez. La música se
-  toca en `Ajustes.BUS_MUSICA` y los efectos en `Ajustes.BUS_EFECTOS`; nada suena directo en `Master`. Un volumen o
-  un brillo que no es número deja su valor por omisión y uno fuera de rango se recorta.
-- Brillo: `nucleo/brillo.gd` (`class_name Brillo`), un `CanvasModulate` con `Brillo.color_para(valor)` (gris `v`,
-  alfa 1). Lo crea cada `Sala` como hijo, también en los guiones; `Brillo.instancia` es el de la sala viva, o null
-  fuera de una sala, donde el brillo no se aplica. No dibuja nada encima de la pantalla: un rectángulo translúcido de
-  pantalla completa costaba ~6 ms por cuadro en el Senwa S50 (`docs/pruebas.md`, «Sala de arte»). Una sala no lleva
-  otro `CanvasModulate`: solo vale uno por canvas.
-- `Ajustes.cargar_una_vez()` lo llaman `Arranque` (así los botones del control y el volumen valen desde el principio),
-  la vibración, el jugador, los controles táctiles, la Configuración y el editor de controles; `Ajustes.guardar()`,
-  cada cambio de la Configuración (las barras de volumen y brillo, al soltarlas, con el altavoz, al cambiar de panel,
-  al cerrar y al pasar la app al fondo) y «Listo» del editor de controles.
-- `nucleo/mando.gd` (`class_name Mando`, estático): reasigna los botones del control de `Mando.REASIGNABLES`
-  (`saltar`, `atacar`, `curar`, `mapa`, `mapa_rapido`, `inventario`, `pausa`; los ejes no: ni el movimiento ni
-  `impulso` (RT) ni `interactuar` (stick arriba), que no tienen botón en `project.godot`). `asignar(acción, botón)`
-  intercambia con la acción que ya tenía ese botón: ninguna se queda sin botón; un botón fuera de
-  `0..JOY_BUTTON_SDL_MAX-1` se ignora. `aplicar` (al cargar) asigna lo guardado del mismo modo, así un archivo
-  editado a mano no deja dos acciones en un botón. `por_omision()` vuelve a los de `project.godot`. El Start con que
-  se acaba de asignar un botón no cuenta como Atrás en el menú (`Configuracion.acaba_de_asignar()`).
-  `Mando.cambios` sube con cada cambio del InputMap (lo leen las pruebas); quien dibuja botones escucha
-  `Eventos.mando_cambiado`. El nombre de cada botón sale de una sola tabla, `Mando.BOTONES`
-  (una fila por índice de `JoyButton` 0..14, columnas neutro, Xbox y PlayStation; en los cuatro de la cara, `CARA`, la
-  letra y el símbolo): `nombre_de(botón)` da el neutro de Configuración («—» sin botón), `nombre_en(botón, familia)` el
-  que dibuja `IconoBoton` y `nombre_de_eje(eje, familia)` el de un gatillo o stick; fuera de la tabla, «Boton n».
-  `Mando.familia(nombre, guid)` da `Mando.Dispositivo.PLAYSTATION` si el GUID
-  SDL trae el fabricante Sony (`4c05`) o el nombre dice PS3/PS4/PS5, PlayStation, DualShock, DualSense o Sony, y
-  `Mando.Dispositivo.XBOX` en cualquier otro caso. Los nombres reales que dan Windows y Android no se han medido. En una build de
-  depuración, `UltimaEntrada` imprime `CONTROL <n> nombre=... guid=... familia=...` por cada control conectado.
-- `nucleo/vibracion.gd` (`class_name Vibracion`, `Node`), que crea cada sala con el nombre `Vibracion`: escucha el
-  bus y llama a `Input.vibrate_handheld(ms, fuerza)` con un patrón por evento (propiedades exportadas):
-
-| Evento | Señal | Duración | Fuerza (0 a 1) |
-|---|---|---|---|
-| Pegarle a algo (ataque, pogo, bola, onda) | `enemigo_golpeado` y `objeto_golpeado` | 25 ms | 0,35 |
-| Parar un ataque (parry) | `parry` | 45 ms | 0,6 |
-| Recibir daño | `jugador_danado` | 60 ms | 0,8 |
-| Curarse | `jugador_curado` | 40 ms | 0,45 |
-| Descansar | `descanso_en_banco` | 70 ms | 0,5 |
-| Aterrizaje duro y aterrizaje de la picada | `jugador_aterrizo` | 80 ms | 0,9 |
-
-- Entre una vibración y la siguiente pasan al menos `ticks_entre_vibraciones` (4); recibir daño y el parry no esperan (el parry llega en el mismo tick que el golpe a su dueño). Nada más
-  vibra: ni moverse, ni saltar, ni los menús. Cuenta en `pedidas` (con el ajuste encendido o no) y `enviadas`, y la
-  última en `ultima`: los guiones las leen con `valor Vibracion`.
-- Efectos: `nucleo/sonido.gd` (`class_name Sonido`, `Node`, en pausa también), que crea `Arranque` como `/root/Arranque/Sonido`:
-  vive fuera de las salas, así nada se corta al cruzar una puerta o salir al menú. Escucha `jugador_salto`,
-  `enemigo_golpeado`, `objeto_golpeado` (el mismo sonido de golpe), `muro_roto`, `porton_abierto`, `jugador_danado`, `parry`, `jugador_curado` y `descanso_en_banco` y toca, en el bus `Efectos`, el
-  efecto de su `FichaSonidos` (`nucleo/ficha_sonidos.gd`: un `AudioStream` por evento, su tono y una variación al
-  azar). Hoy la ficha es la de prueba, `nucleo/sonidos/sonidos_prueba.tres`, la única que hay.
-  Los eventos que toca están en la constante pública `Sonido.EVENTOS` (`salto`, `golpe`, `muro_roto`, `porton`,
-  `dano`, `parry`, `curar`, `banco`), y cada uno es un campo `AudioStream` de `FichaSonidos`
-  (`campos_de_efecto()` los lista). `muro_roto` y `porton` están vacíos en la ficha de prueba: todavía no tienen
-  archivo y no suenan. Un evento sin archivo en la ficha no suena; uno que no es campo de la ficha hace que
-  `tocar()` avise con `push_warning`. Un evento nuevo lleva su campo en `FichaSonidos` y su nombre en `EVENTOS`.
-  `voces` (4) a la vez, cada nuevo en la voz siguiente; el mismo evento no suena dos veces en menos de
-  `ticks_entre_iguales` (3), salvo daño y parry. Sin pantalla cuenta pero no toca. `pedidos`, `tocados` y `ultimo`
-  son públicas. La música por zona, como se decidió el 14-oct-2026, va en «Contenido que viene».
-- En Android, `vibrate_handheld` necesita el permiso `VIBRATE` en el preset de exportación (presets de Android); sin él no vibra. Un
-  teléfono sin control de fuerza solo respeta la duración.
 
 ## Estado de la partida
 
@@ -197,24 +127,27 @@ Autoload `Partida` (`nucleo/partida.gd`): lo que sobrevive al cambio de sala. Un
 |---|---|
 | `vidas`, `vidas_maximas` | Vidas actuales y máximas (4 al empezar). `Jugador.vidas` lee y escribe `Partida.vidas`. Cada cambio emite `vidas_cambiadas` |
 | `banco`, `sala` | Id del último banco donde se descansó y la clave de su sala (`Sala.clave()`); vacíos si no se ha descansado |
-| `jefes`, `amuletos_tenidos`, `amuletos_equipados`, `mochila`, `mapas`, `personaje`, `nombre`, `tiempo_jugado` | Los campos del guardado del mismo nombre |
+| `jefes`, `amuletos_tenidos`, `amuletos_equipados`, `carga_maxima`, `utiles_tenidos`, `utiles_equipados`, `mochila`, `mapas`, `personaje`, `nombre`, `tiempo_jugado` | Los campos del guardado del mismo nombre |
 | `monedas` | PejeCoins; cada cambio emite `monedas_cambiadas` |
+| `ultimo_guardado_fallo`, `TEXTO_GUARDADO_FALLIDO` | Si el último `guardar()` falló, y el texto del aviso. Lo leen un `Hud` nuevo y el menú principal, para que el aviso no se pierda al cambiar de pantalla. No se guarda; un guardado bueno, `reiniciar()` y abrir una ranura lo apagan |
 | `gastar_monedas(cantidad)` | Cobra (la `Tienda`): devuelve `false` y no cambia nada si no alcanzan o si `cantidad` es negativa |
 | `estaciones`, `abrir_estacion(id)`, `estacion_abierta(id)` | Ids de las estaciones del viaje rápido ya pagadas. `abrir_estacion` no repite un id ni guarda: guarda la `Estacion` |
 | `botones_ensenados`, `ensenar_boton(accion)` | Acciones cuyo botón de la pantalla ya enseñó un `AvisoAccion`. `ensenar_boton` no repite ni guarda |
-| `dejar_mochila(sala, punto)`, `monto_mochila()`, `punto_de_mochila()`, `recuperar_mochila()`, `perder_mochila()` | Lo perdido al morir, como el capullo de Silksong. El jugador, al morir y antes de emitir `jugador_muerto`, llama `dejar_mochila` con la clave de su sala y su `ultimo_punto_seguro()`, así el autoguardado de la muerte ya la lleva: con monedas, `mochila = {sala, x, y, monto}` (coordenadas de la sala) y `monedas` en 0, y una mochila anterior se pierde; sin monedas no cambia nada. `monto_mochila()` da el monto como número aunque el JSON lo haya vuelto `float`; `punto_de_mochila()`, su `x, y` como `Vector2` (un eje que no es número, 0), para la sala y el mapa. `recuperar_mochila()` suma el monto, vacía la mochila, emite `mochila_recuperada` y autoguarda. `perder_mochila()` (perder el reto) la vacía sin devolver nada y autoguarda |
+| `dejar_mochila(sala, punto)`, `monto_mochila()`, `punto_de_mochila()`, `recuperar_mochila()`, `perder_mochila()` | Lo perdido al morir, como el capullo de Silksong. El jugador, al morir y antes de emitir `jugador_muerto`, llama `dejar_mochila` con la clave de su sala y su `ultimo_punto_seguro()`, así el autoguardado de la muerte ya la lleva: con PejeCoins, `mochila = {sala, x, y, monto}` y `monedas` en 0, y una mochila anterior se pierde; sin PejeCoins no cambia nada. `monto_mochila()` y `punto_de_mochila()` leen el JSON aunque haya vuelto `float` (un eje que no es número, 0). `recuperar_mochila()` suma el monto, la vacía, emite `mochila_recuperada` y autoguarda; `perder_mochila()` (perder el reto) la vacía sin devolver nada y autoguarda |
 | `salas_visitadas`, `visitar(clave)` | Claves de las salas visitadas; la sala se anota al entrar |
 | `salas_mapeadas` | Al oír `descanso_en_banco`, con la habilidad `pluma_mapa`, pasan aquí las visitadas cuya zona está en `mapas` (como la Pluma de Hollow Knight y Silksong) |
-| `salas`, `estado_de(sala, objeto)`, `estado_entero(sala, objeto, por_omision)`, `marcar(sala, objeto, valor := true)` | Estado por sala. `estado_de` da `null` si no hay nada; `estado_entero` da un número aunque el JSON lo haya vuelto `float`, o `por_omision`. Lo usan `SueloFragil`, `MuroRompible`, `Palanca`, `Porton`, `Coleccionable`, `Tienda` (lo vendido), `AvisoAccion` (hecho), `EntregaRecompensas` (lo entregado), `Npc` (su etapa, un número) y `RetoPreguntas` (`<id>`, `<id>_indice` y `<id>_aciertos`) con su `id` y la clave de su sala (`Sala.clave_de(nodo)`) |
+| `salas`, `estado_de(sala, objeto)`, `estado_entero(sala, objeto, por_omision)`, `marcar(sala, objeto, valor := true)` | Estado por sala. `estado_de` da `null` si no hay nada; `estado_entero` da un número aunque el JSON lo haya vuelto `float`, o `por_omision`. Lo usan `SueloFragil`, `MuroRompible`, `Palanca`, `Porton`, `Coleccionable`, `Tienda`, `AvisoAccion`, `EntregaRecompensas`, `Npc` y `RetoPreguntas` (`<id>`, `<id>_indice` y `<id>_aciertos`) con su `id` y la clave de su sala (`Sala.clave_de(nodo)`) |
 | `total_coleccionables()`, `contar_coleccionables(salas)` | Marcas de todas las salas cuyo id empieza con `PREFIJO_COLECCIONABLE` (`coleccionable`); la segunda cuenta un estado de salas leído de un archivo (la ficha de una ranura) e ignora lo que no es diccionario |
 | `obtener_habilidad(id)`, `obtener_amuleto(id)`, `obtener_mapa(zona)` | Suman y emiten `habilidad_obtenida`, `amuleto_obtenido` o `mapa_obtenido` (si ya estaba, nada). Nada escribe `mapas` directo: el `ObjetoMapa` y `dar_recompensa` pasan por `obtener_mapa` |
-| `MAX_EQUIPADOS`, `puede_equipar(id)`, `equipar(id)`, `desequipar(id)`, `esta_equipado(id)` | Poner un amuleto exige tenerlo, que no esté puesto y que haya lugar (`MAX_EQUIPADOS`, 3, provisional hasta que haya carga). `equipar` y `desequipar` devuelven `false` si no pueden y, si cambian algo, autoguardan. Dónde se puede (sentado en un banco) lo decide la pantalla de los amuletos: `Partida` no conoce al jugador. Nada escribe `amuletos_equipados` directo |
-| `dar_recompensa(recompensa)` | Entrega una `Recompensa` (PejeCoins, vida máxima, amuleto, habilidad o el mapa de una zona, con `obtener_mapa`) |
+| `CARGA_INICIAL`, `CARGA_TOPE`, `carga_maxima`, `carga_usada()`, `puede_equipar(id)`, `equipar(id)`, `desequipar(id)`, `esta_equipado(id)` | Poner un amuleto exige que esté en el catálogo (`CatalogoEquipo.amuleto`, ver «Amuletos y útiles»), tenerlo, que no esté puesto y que su `costo` quepa en la carga que queda: `carga_usada()` suma los costos de los puestos y no pasa de `carga_maxima` (de `CARGA_INICIAL` a `CARGA_TOPE`, como las muescas de Hollow Knight). La recompensa `CARGA` suma su `monto` en muescas y se recorta al tope; las mejoras de una muesca crecen de una en una. La capacidad se guarda y al reiniciar vuelve a `CARGA_INICIAL`. `equipar` y `desequipar` devuelven `false` si no pueden y, si cambian algo, emiten `equipo_cambiado` y autoguardan. Dónde se puede (sentado en un banco) lo decide la pantalla de los amuletos: `Partida` no conoce al jugador. Nada escribe `amuletos_equipados` directo |
+| `efectos_amuletos()` | Lo que hacen juntos los amuletos puestos, como una `FichaAmuleto` nueva: factores multiplicados y extras sumados; sin amuletos, neutra. Se calcula al llamarla: quien la lee cada tick la guarda y la renueva al oír `equipo_cambiado` |
+| `utiles_tenidos`, `utiles_equipados`, `MAX_UTILES`, `obtener_util(id)`, `util_equipado(id)`, `puede_equipar_util(id)`, `equipar_util(id)`, `desequipar_util(id)` | Los útiles (la brújula), como las herramientas de Silksong: aparte de los amuletos, sin carga y con `MAX_UTILES` puestos a la vez. Mismas reglas que los amuletos (catálogo, tenerlo, no repetir); `obtener_util` emite `util_obtenido`, que autoguarda, y poner o quitar emite `equipo_cambiado` y autoguarda. Nada escribe `utiles_equipados` directo |
+| `dar_recompensa(recompensa)` | Entrega una `Recompensa` (PejeCoins, vida máxima, amuleto, habilidad, el mapa de una zona, con `obtener_mapa`, un útil, con `obtener_util`, capacidad de Inspiración (`INSPIRACION_MAXIMA`, puntos) o carga (`CARGA`, muescas)). Las dos mejoras de capacidad se recortan a sus topes y autoguardan; la de carga emite `equipo_cambiado` |
 | `ruta_guardado` | Archivo del banco y del autoguardado: `RUTA_PRUEBAS` (`user://prueba_partida.json`) por omisión, para que guiones y zona de pruebas no pisen la partida real; entrar a una ranura lo cambia a la ruta de esa ranura |
-| `autoguardar()`, `autoguardados` | Guarda en `ruta_guardado` sin tocar el banco y emite `partida_guardada`. Lo llaman los avisos `habilidad_obtenida`, `amuleto_obtenido`, `mapa_obtenido`, `coleccionable_obtenido`, `jefe_vencido` (que además anota el jefe) y `jugador_muerto`; «Salir al menú» de la pausa; la entrega de recompensas; poner o quitar un amuleto; terminar contando una conversación de un `Npc`; cada respuesta de un `RetoPreguntas`; recuperar o perder la mochila; comprar en una `Tienda`; abrir una `Estacion` (también la gratis); y `NOTIFICATION_APPLICATION_PAUSED` o `NOTIFICATION_APPLICATION_FOCUS_OUT` con una sala abierta. `autoguardados` los cuenta. Hay dos formas de autoguardar: por el bus, para lo que tiene evento (`Partida` escucha en `_ready` los avisos de arriba), y por llamada directa (`Partida.autoguardar()`, o `guardar(ruta)` en el banco), para lo que `Partida` no escucha (poner o quitar un amuleto, la mochila, la tienda, una estación); un cambio nuevo usa la que le corresponda. Lo demás se escribe en el siguiente guardado: las marcas de `MuroRompible`, `Palanca`, `Porton`, `SueloFragil` y `AvisoAccion`, `salas_visitadas` y `botones_ensenados` |
-| `habilidades`, `tiene(id)` | `Array[StringName]` con las habilidades obtenidas, y si una está. Los ids están en `nucleo/habilidades.gd` (`class_name Habilidades`, una constante por habilidad y `TODAS`); el código usa las constantes, no el texto. `obtener_habilidad` con un id que no está en `TODAS` imprime un `ERROR:` y no lo suma. El validador revisa que cada habilidad de un `ObjetoHabilidad`, de una `Recompensa` (de una entrega, un reto o una ficha de diálogo) y de `habilidades_de_prueba` esté en `TODAS`. Los ids no se renombran: los guarda la partida. Amuletos y jefes llevarán su id en su ficha cuando exista el primero |
+| `autoguardar()`, `autoguardados` | Guarda en `ruta_guardado` sin tocar el banco y emite `partida_guardada`; `autoguardados` los cuenta. Dos formas: por el bus, para lo que tiene evento (`Partida` escucha en `_ready` `habilidad_obtenida`, `amuleto_obtenido`, `util_obtenido`, `mapa_obtenido`, `coleccionable_obtenido`, `jefe_vencido` —que además anota el jefe— y `jugador_muerto`), y por llamada directa (`Partida.autoguardar()`, o `guardar(ruta)` en el banco), para lo que `Partida` no escucha; un cambio nuevo usa la que le corresponda. Además se autoguarda en: «Salir al menú» de la pausa; la entrega de recompensas; poner o quitar un amuleto o un útil; terminar contando una conversación de un `Npc`; cada respuesta de un `RetoPreguntas`; recuperar o perder la mochila; comprar en una `Tienda`; abrir una `Estacion` (también la gratis); y `NOTIFICATION_APPLICATION_PAUSED` o `NOTIFICATION_APPLICATION_FOCUS_OUT` con una sala abierta. Lo demás se escribe en el siguiente guardado: las marcas de `MuroRompible`, `Palanca`, `Porton`, `SueloFragil`, `AvisoAccion` y `MonedasSueltas` (con sus PejeCoins), `salas_visitadas` y `botones_ensenados` |
+| `habilidades`, `tiene(id)` | `Array[StringName]` con las habilidades obtenidas, y si una está. Los ids están en `nucleo/habilidades.gd` (`class_name Habilidades`, una constante por habilidad y `TODAS`); el código usa las constantes, no el texto. `obtener_habilidad` con un id que no está en `TODAS` imprime un `ERROR:` y no lo suma (el validador revisa los de objetos, recompensas y `habilidades_de_prueba`: `docs/validador.md`). Los ids no se renombran: los guarda la partida. Amuletos y útiles llevan su id en su ficha (ver «Amuletos y útiles»); el `id_jefe` de `ArenaJefe` |
 | `enemigos_vencidos`, `vencer(clave)`, `fue_vencido(clave)` | Claves (`"<clave de la sala>#<id>"`) de los enemigos fuertes vencidos desde el último descanso o la última muerte. Se borra al oír `descanso_en_banco` o `jugador_muerto` y en `reiniciar()`; no se guarda |
-| `inspiracion`, `ganar_inspiracion(n)` | Recurso de curación (0 a `INSPIRACION_MAXIMA`, 99); no se guarda, se reinicia con la partida y se vacía al oír `jugador_muerto`. Cada cambio emite `inspiracion_cambiada` |
+| `inspiracion`, `inspiracion_maxima`, `ganar_inspiracion(n)` | Recurso de curación recortado entre 0 e `inspiracion_maxima`, incluso al asignarlo. La capacidad empieza en `INSPIRACION_INICIAL`, crece con `Recompensa.Tipo.INSPIRACION_MAXIMA` hasta `INSPIRACION_TOPE` y se guarda; un Módulo de RAM suma tres bloques (`monto` en puntos). La Inspiración actual no se guarda: se reinicia con la partida y se vacía al oír `jugador_muerto`. Cada cambio del valor o de la capacidad emite `inspiracion_cambiada` con el máximo actual, aunque la barra esté vacía |
 | `reiniciar()` | Partida nueva: la llaman una ranura vacía y la zona de pruebas |
 | `llenar_vidas()` | Vidas al máximo: al reaparecer después de morir |
 | `a_diccionario()` / `desde_diccionario(partida)` | Hacia y desde los campos de `Guardado.ESQUEMA` y `Guardado.NUEVOS`. Al cargar, lo que no se guarda empieza de cero: Inspiración 0 y sin enemigos vencidos |
@@ -225,60 +158,13 @@ Autoload `Partida` (`nucleo/partida.gd`): lo que sobrevive al cambio de sala. Un
 |---|---|---|
 | `Eventos` | `nucleo/eventos.gd` | Bus de eventos: solo declara las señales de «Bus de eventos». Va antes de `Arranque` para existir cuando arranca todo lo demás |
 | `Partida` | `nucleo/partida.gd` | Estado de la partida (ver «Estado de la partida»). Va después de `Eventos` y antes de `Arranque` |
-| `Arranque` | `nucleo/arranque.gd` | Pone el color de borrado en negro, carga los ajustes y, con pantalla, aplica el rango de la vista al arrancar y, diferido al final del cuadro, al cambiar el tamaño de la ventana (`proporcion_minima` y `proporcion_maxima`, exportadas). Imprime `ARRANQUE depuracion=<bool> puerto=<bool>` y, solo en un build de depuración y si el archivo viaja en el paquete, carga con `load()` el puerto de depuración como hijo suyo (`PuertoDepuracion`). También crea `Sonido` (ver «Ajustes y vibración») y `UltimaEntrada` (ver «Menú», párrafo «Tamaños»), con o sin pantalla |
+| `Arranque` | `nucleo/arranque.gd` | Pone el color de borrado en negro, carga los ajustes y, con pantalla, aplica el rango de la vista al arrancar y, diferido al final del cuadro, al cambiar el tamaño de la ventana (`proporcion_minima` y `proporcion_maxima`, exportadas). Imprime `ARRANQUE depuracion=<bool> puerto=<bool>` y, solo en un build de depuración y si el archivo viaja en el paquete, carga con `load()` el puerto de depuración como hijo suyo (`PuertoDepuracion`). También crea `Sonido` y `Musica` (ver `docs/audio.md`; los guarda con su tipo en `sonido` y `musica`) y `UltimaEntrada` (ver `docs/interfaz.md`, «Menú», párrafo «Tamaños y aspecto»), con o sin pantalla |
 
 - Un autoload nuevo se agrega a esta tabla en el mismo cambio.
 - Nada de `herramientas/` es autoload ni se carga con `preload`: el juego debe arrancar sin esa carpeta.
-
-## Recursos
-
-`nucleo/recursos.gd` (`class_name Recursos`, estático). `Recursos.bajos()` dice si rige el modo bajo: el ajuste
-`recursos`, o en `auto` la detección (`es_debil()`: un build de 32 bits, `OS.has_feature("32")`, o menos de
-`UMBRAL_MEMORIA`, 3 GB, en `OS.get_memory_info()["physical"]`). Las piezas lo leen al entrar a la sala: un cambio en
-Configuración vale desde la sala siguiente. Elegir alto en un teléfono débil se permite y la Configuración avisa.
-
-| Pieza | En modo bajo | En alto |
-|---|---|---|
-| `nucleo/prescindible.gd` (`class_name Prescindible`, `Node`), hijo de un adorno (emisor, capa lejana, cortable de más) | Quita a su padre al entrar | Nada |
-| `nucleo/planta.gd` (`class_name Planta`, `Node2D`) | Quieta | Se mece (`grados`, `periodo`, `desfase`) con un tiempo propio en `_process`: quieta en la pausa y en el congelado común |
-| `nucleo/niebla.gd` (`class_name Niebla`, `Node2D`) | Quieta | Avanza `velocidad` px/s y vuelve tras `recorrido`, con tiempo propio: quieta en la pausa y en el congelado común |
-
-- Presupuesto por sala (lo revisa el validador en toda escena cuya raíz es una `Sala`): a lo más 3 emisores de
-  partículas con 60 partículas entre todos, 30 plantas, ninguna luz 2D y a lo más 2 capas translúcidas
-  grandes: un `Sprite2D`, `TextureRect`, `ColorRect`, `NinePatchRect` o `Polygon2D` visible con alfa efectivo menor
-  que 1 (el de su color en `ColorRect` y `Polygon2D`, por su `self_modulate` y el `modulate` de él y de sus padres;
-  dentro de un `CanvasLayer` oculto no cuenta) que cubre al menos un
-  cuarto de 1280×720 con la escala de sus padres y sus anclas. Nunca se marca como prescindible un aviso de peligro ni algo cuya colisión importe.
-  Excepción: la sala de arte (`herramientas/salas/sala_arte.gd`) arma su decoración en `_ready` y pasa del
-  presupuesto a propósito (hasta 12 emisores y ~500 partículas en alto): es la sala para medir el rendimiento.
-- `herramientas/salas/sala_recursos.tscn` llena el presupuesto (2 nieblas, 30 plantas, 3 emisores, 6 cortables;
-  prescindibles una niebla, dos emisores y cuatro cortables) para medir los FPS en bajo y en alto.
-- Un `Fondo` opaco (con el `FondoExtendido` que crea, ver «Fondo extendido») cuesta en el S50: medido el
-  13-oct-2026, dos salas de pruebas bajaban de 60 a ~50 FPS con él (detalle en `docs/pruebas.md`, «Medir antes de
-  optimizar»; no se separó cuánto es de cada rectángulo). Una sala cuyo fondo puede ser negro va sin `Fondo`; el
-  núcleo no tiene otra forma de dar un color de fondo. El validador no lo revisa.
-- Tamaño del arte (decisión del 14-oct-2026): se pinta al tamaño en que se ve en la vista de 1280×720 (1x; el
-  personaje mide 160 px) y no se encoge en la escena. Ninguna imagen pasa de 2048 px por lado.
-- Importación del arte del mundo (`contenido/` y `herramientas/salas/arte/`; lo revisa el validador leyendo cada
-  `.import`): Mipmaps > Generate encendido, porque la vista se encoge en las pantallas más chicas
-  (`tutorials/assets_pipeline/importing_images.rst:373-393`; en la sala de arte, medido el 13-oct-2026 en el S50,
-  34,1 → 34,3 FPS y el APK +1,8 MB). Compresión Lossless por omisión; VRAM Compressed solo en una imagen sin
-  transparencia, como los fondos opacos grandes (`importing_images.rst:185-189`: en 2D deja artefactos). Excepción
-  decidida el 13-oct-2026: `fondo1`, `fondo2`, `lejana1` y `suelo` de la sala de arte, con transparencia, van en
-  VRAM (`ALFA_EN_VRAM` en `herramientas/validar.gd`). El HUD y los menús van sin mipmaps.
-- Filtro por omisión del lienzo: lineal con mipmaps (`rendering/textures/canvas_textures/default_texture_filter`
-  = 2 en `project.godot`).
-- Atlas del jugador (21-oct-2026): `nucleo/arte/jugador_hombre/atlas_0.png`, una página de 1976 × 636 con los 61
-  cuadros del hombre a 1x y 8 px entre ellos, Lossless y «Fix Alpha Border» encendido (las hojas de origen llegaron
-  en JPG, `importing_images.rst:423-433`). Cada cuadro es un `AtlasTexture` con `region` justa, `filter_clip` y el
-  lienzo común de 316 × 180 en `margin` (`margin.position` lo coloca; `margin.size` completa el lienzo, así todos
-  miden lo mismo, `classes/class_atlastexture.rst:102`). El `SpriteFrames` (`jugador_hombre.tres`) lo escribe
-  `herramientas/generar_sprites.tscn` con `ResourceSaver`, tras reimportar el atlas (comando en su cabecera). Va sin
-  mipmaps y fuera de `CARPETAS_ARTE_MUNDO`. Medido en el S50 (APK de
-  desarrollo, 60 s por escena tras 5 s): sin mipmaps, 59,6 FPS de media en la sala de recursos, en la zona de
-  pruebas y en la de movimiento (mínimo 58-59), con 146,7, 141,9 y 146,0 MB de PSS; con mipmaps, las mismas medias y
-  mínimos, con 146,9, 141,2 y 147,0 MB, y el APK +0,27 MB. Antes del cambio (18-oct-2026), recursos y zona daban 59,6
-  con 144,0 y 142,1 MB.
+- Lo que el núcleo carga de otro bloque o de `herramientas/` pasa por `Cargar.si_existe(ruta)` (`nucleo/cargar.gd`,
+  estático): el recurso, o `null` si no existe; quien lo llama lo convierte con `as`. Si solo hay que saber si existe,
+  `ResourceLoader.exists`.
 
 ## Bus de eventos
 
@@ -293,505 +179,81 @@ cambio.
 | `jugador_muerto` | — | El jugador, al quedarse sin vidas |
 | `jugador_curado` | `vidas: int` (las que tiene ya curado) | El jugador, al terminar una curación |
 | `vidas_cambiadas` | `vidas: int`, `maximas: int` | `Partida`, cada vez que cambian las vidas o las vidas máximas (daño, curación, reaparición, banco) |
-| `inspiracion_cambiada` | `inspiracion: int`, `maxima: int` | `Partida`, cada vez que cambia la Inspiración |
+| `inspiracion_cambiada` | `inspiracion: int`, `maxima: int` | `Partida`, cada vez que cambia la Inspiración o su capacidad máxima |
 | `descanso_en_banco` | `banco: StringName` (id del banco) | El banco, al descansar |
 | `partida_guardada` | — | `Partida.guardar(ruta)` (banco y autoguardado), cuando el guardado salió bien |
+| `guardado_fallido` | `error: int` | `Partida.guardar(ruta)` (banco y autoguardado), cuando no se pudo guardar; el HUD lo dice en pantalla |
 | `enemigo_golpeado` | `enemigo: Node` | Un `Golpeable` con `es_enemigo`, al recibir un golpe del ataque, la bola o la onda (solo el ataque llena la Inspiración) |
-| `objeto_golpeado` | `objeto: Node` | Un `Golpeable` sin `es_enemigo` (muro rompible, palanca), al recibir un golpe; no da Inspiración. Lo oyen `Sonido` y `Vibracion` como un golpe |
+| `objeto_golpeado` | `objeto: Node` | Un `Golpeable` sin `es_enemigo` (muro rompible, palanca), al recibir un golpe; cualquier `Golpeable`, al bloquear uno; y el jugador al desviar un disparo (`objeto` es el disparo); no da Inspiración. Lo oyen `Sonido` y `Vibracion` como un golpe |
 | `muro_roto` | `muro: StringName` (su id) | El `MuroRompible`, al romperse. Lo oye `Sonido` |
 | `porton_abierto` | `porton: StringName` (su id) | El `Porton`, al empezar a abrirse. Lo oye `Sonido` |
-| `enemigo_vencido` | `enemigo: StringName` (id de su ficha) | El enemigo, al quedarse sin vida |
-| `parry` | — | El jugador, al parar un `AtaqueEnemigo` |
-| `habilidad_obtenida` | `habilidad: StringName` | `Partida.obtener_habilidad()` (el objeto de habilidad, una recompensa; en el juego, los jefes). Autoguarda |
+| `enemigo_vencido` | `enemigo: StringName` (id de su ficha) | El enemigo, al quedarse sin vida. El botín no lo escucha: lo suelta `Enemigo` (`docs/enemigos.md`, «Enemigos», viñeta «Botín») |
+| `parry` | — | El jugador, al parar un `AtaqueEnemigo`. Un `ProyectilEnemigo` no: se desvía y emite `objeto_golpeado` (`docs/enemigos.md`) |
+| `habilidad_obtenida` | `habilidad: StringName` | `Partida.obtener_habilidad()` (el objeto de habilidad o una recompensa). Autoguarda |
 | `amuleto_obtenido` | `amuleto: StringName` | `Partida.obtener_amuleto()`. Autoguarda |
+| `util_obtenido` | `util: StringName` | `Partida.obtener_util()`. Autoguarda |
+| `equipo_cambiado` | — | `Partida`, al poner o quitar un amuleto o un útil, al recibir una recompensa `CARGA`, en `reiniciar()` y en `desde_diccionario()`. Lo oye quien guarde `efectos_amuletos()` |
 | `mapa_obtenido` | `zona: String` (la del mapa) | `Partida.obtener_mapa()` (el `ObjetoMapa`, una recompensa). Autoguarda |
 | `coleccionable_obtenido` | `coleccionable: StringName` (su id) | El `Coleccionable` al tomarlo. Autoguarda |
 | `monedas_cambiadas` | `monedas: int` | `Partida`, cada vez que cambian las PejeCoins |
-| `jefe_vencido` | `jefe: StringName` (id del jefe) | El jefe. `Partida` lo anota en `jefes` y autoguarda |
-| `cambio_de_sala` | `sala: String` (`Sala.clave()`: id, o ruta en una sala de prueba suelta), `puerta: StringName` (por la que llegó) | La sala, ya con el jugador puesto, cuando se llega por una puerta |
-| `jugador_aterrizo` | `velocidad: float` (px/s al tocar el suelo) | El jugador vivo, en un aterrizaje duro y al aterrizar de la picada (antes de la onda, para que su vibración gane a la del golpe) |
+| `jefe_vencido` | `jefe: StringName` (id del jefe) | `ArenaJefe` (`docs/enemigos.md`, «Jefes»). `Partida` lo anota en `jefes` y autoguarda |
+| `cambio_de_sala` | `sala: String` (`Sala.clave()`: id, o ruta en una sala de prueba suelta), `puerta: StringName` (por la que llegó) | La sala, ya con el jugador puesto, cuando se llega por una puerta. Solo sale al llegar por una puerta, no por estación, banco ni muerte |
+| `jugador_aterrizo` | `velocidad: float` (px/s de caída del último tick en el aire), `duro: bool` (empezó un aterrizaje duro), `picada: bool` (aterrizó de la picada) | El jugador vivo, una vez en cada aterrizaje con caída (aparecer en una sala no cuenta); el de la picada, antes de la onda, para que su vibración gane a la del golpe. `Vibracion` vibra solo con `duro` o `picada`; `Sonido` toca picada, o aterrizaje si es duro o cae a `velocidad_aterrizaje_min` o más |
 | `jugador_salto` | — | El jugador al despegar en cada salto: en el suelo, coyote, en la pared y doble salto. Lo oye `Sonido` |
-| `fundido_pedido` | `ticks_oscurecer: int`, `ticks_en_negro: int`, `ticks_aclarar: int` (0: se queda en negro) | El jugador al tocar un peligro, la sala al final de la muerte y la puerta al cruzarla; la escucha el `Fundido` de la sala |
+| `jugador_paso` | — | El jugador, al entrar a un cuadro de pasos (metadato `pasos` de su `SpriteFrames`) caminando o en carrera, en el suelo y fuera de un cruce de puerta. Lo oye `Sonido` |
+| `jugador_impulso` | — | El jugador, al empezar un impulso. Lo oye `Sonido` |
+| `jugador_ataco` | — | El jugador, al empezar cada ataque (de lado, arriba, abajo o en carrera), pegue o no. `Sonido` toca `ataque_jugador`; si pega, el golpe suena aparte |
+| `curacion_empezada` | — | El jugador, al empezar a curar. `Sonido` toca `curar` |
+| `curacion_cortada` | — | El jugador, si la curación no llega a terminar (soltar, dejar el suelo, un golpe, un peligro, morir, cruzar una puerta o dejar la sala). `Sonido` calla `curar`; terminar emite `jugador_curado` |
+| `fundido_pedido` | `ticks_oscurecer: int`, `ticks_en_negro: int`, `ticks_aclarar: int` (0: se queda en negro) | El jugador al tocar un peligro y el `Fundido` al empezar un cambio de sala (puerta, estación o muerte); la escucha el `Fundido` de la sala |
 | `mochila_recuperada` | `monto: int` (las PejeCoins devueltas) | `Partida.recuperar_mochila()`, al ganar el reto de la `Mochila` o al interactuar con ella sin bolsa. Autoguarda |
 | `articulo_comprado` | `articulo: ArticuloTienda` | `Tienda.comprar()`, tras cobrar, marcar y entregar; después autoguarda |
 | `tienda_abierta` | — | El `MenuTienda`, al final de su `_ready`, ya con el árbol detenido. La escucha el `Hud`: deja las PejeCoins fijas a la vista y corre en pausa |
 | `tienda_cerrada` | — | El `MenuTienda` al cerrarse (`cerrar()`, una vez), ya quitada la pausa. La escucha el `Hud`: el contador vuelve a su ciclo |
-| `viaje_hecho` | `estacion: String` (el id de la estación de llegada) | La `Estacion` de salida, en negro, justo antes de cambiar a la sala de la otra. No guarda |
+| `viaje_hecho` | `estacion: String` (el id de la estación de llegada) | La `Estacion` de salida, en negro, justo antes de cambiar a la sala de la otra (si ese cambio falla, el `Fundido` emite después `cambio_fallido`). No guarda |
 | `dispositivo_cambiado` | `dispositivo: int` (el nuevo `Mando.Dispositivo`) | `UltimaEntrada`, solo cuando `dispositivo` cambia de verdad (un toque tras otro no la emite). Al arrancar con un control conectado sale antes del primer cuadro. La escucha `IconoBoton` |
+| `ajuste_cambiado` | `clave: StringName` (la de `Ajustes`) | La Configuración, al cambiar cualquier ajuste de sí o no (`Ajustes.CLAVES_SI_NO`), también desde la pausa; se aplican al momento `luces_avanzadas`, `niebla`, `mostrar_fps`, `panel_pruebas`, `ver_hitbox` y `modo_desarrollador` (`Ajustes.MODO_DESARROLLADOR`); `vibracion` y `temblor` no tienen quien la escuche. La escuchan las piezas que dependen de él (`ContadorFps`, `LuzSala`, `Niebla`, el panel de pruebas y ver hitbox). `recursos` no: vale desde la sala siguiente (ver `docs/arte-y-rendimiento.md`, «Recursos») |
 | `mando_cambiado` | — | `Mando`, una vez al final de `asignar`, `aplicar` o `por_omision` si puso algún botón, aunque sea el mismo que ya tenía (no por cada botón; un botón inválido no la emite). Una emisión de más solo cuesta un refresco del ícono. La escucha `IconoBoton` |
 
-## Entrada
+Ganchos a propósito: `enemigo_vencido`, `cambio_de_sala`, `mochila_recuperada`, `articulo_comprado` y `viaje_hecho` no tienen oyente en el juego (solo pruebas y guiones) y no se borran, por decisión de la auditoría del código; `jefe_vencido` lo emite `ArenaJefe` y lo anota `Partida`. Dejar de emitir una señal lo decide la persona.
 
-La lógica lee acciones con nombre (`Input.is_action_pressed(&"saltar")`), nunca la tecla ni el toque.
+## Amuletos y útiles
 
-| Acción | Teclado inicial | Control (Xbox / PlayStation) |
-|---|---|---|
-| `mover_izquierda` | A | Stick izquierdo a la izquierda |
-| `mover_derecha` | D | Stick izquierdo a la derecha |
-| `mover_arriba` | Flecha arriba | Stick izquierdo arriba |
-| `mover_abajo` | Flecha abajo | Stick izquierdo abajo |
-| `saltar` | W | A / Cruz |
-| `atacar` | Espacio | X / Cuadrado |
-| `curar` | Q | B / Círculo |
-| `impulso` | Flecha derecha | RT / R2 |
-| `interactuar` | Flecha arriba | Stick izquierdo arriba |
-| `mapa_rapido` | Tab | LB / L1 |
-| `mapa` | M | Y / Triángulo |
-| `inventario` | I | View / Select |
-| `pagina_anterior` | Z | LB / L1 |
-| `pagina_siguiente` | C | RB / R1 |
-| `pausa` | Esc | Start |
-| `volver` | — | B / Círculo |
+Las pantallas del marco para ponerlos y quitarlos (`PantallaAmuletos`, `PantallaUtiles`) están en `docs/interfaz.md`, «Pantallas de amuletos y útiles».
 
-Las teclas se guardan como tecla física (`physical_keycode`): valen por su posición en el teclado, no por la
-letra de la distribución. Una acción nueva se agrega a `project.godot` y a esta tabla en el mismo cambio.
+### Fichas y catálogo
 
-- `inventario` se llamaba `mochila` hasta el 13-oct-2026: `Mando.aplicar` da a `inventario` el botón que unos
-  ajustes viejos guardaron como `mochila`. El campo `mochila` del guardado (lo perdido al morir) no cambió.
-- LB es `mapa_rapido` y también `pagina_anterior`: el mapa rápido solo responde si `mapa_rapido` empezó a pulsarse
-  con el juego andando (sostenido desde el marco o la pausa, al cerrarlos no se muestra hasta soltarlo), y las páginas
-  solo con el marco de menús abierto, que lo detiene. Las dos acciones de página no se reasignan.
-- B / Círculo también es `volver`: en los menús (menú principal, ranuras, Nueva partida, Configuración, la pausa
-  abierta, el marco de menús y la zona de pruebas) vuelve un nivel, igual que `pausa`. En la partida no se lee y B
-  cura. No se reasigna, igual que `ui_accept`: si el jugador mueve `curar` a otro botón, B sigue volviendo. No tiene
-  tecla: Retroceso borraría el nombre en Nueva partida y a la vez volvería, porque una acción cuenta aunque el
-  `LineEdit` se coma la tecla; en el teclado vuelve Esc. Al esperar un botón en «Botones del control», el B con
-  que se asigna no vuelve (`Configuracion.acaba_de_asignar()`, como el Start).
-- A / Cruz también es `ui_accept`, la acción con la que un menú pulsa el botón que tiene el foco: Godot 4.7.2 no
-  le pone ningún botón del control, así que `project.godot` la redefine con sus tres teclas (Enter, Enter del
-  teclado numérico y Espacio) y A. No se reasigna: si el jugador mueve `saltar` a otro botón, A sigue aceptando.
-
-- `interactuar` y `mover_arriba` comparten tecla y las dos se activan juntas. Son acciones aparte para
-  reasignarlas por separado; junto a algo con que interactuar, la lógica del jugador decide cuál vale.
-- El pogo (`mover_abajo` + `atacar` en el aire), la caída en picada (`mover_abajo` + `curar` en el aire) y el salto
-  en pared (empujar hacia la pared en el aire) son combinaciones de acciones, no acciones propias.
-- `curar` es el botón de poderes, como en Hollow Knight: mantenerlo cura y tocarlo lanza el poder (ver `docs/jugador.md`).
-- Controles táctiles: `nucleo/controles_tactiles.tscn` (`class_name ControlesTactiles`), que crea cada sala.
-  Traducen el toque a estas mismas acciones con `Input.action_press` y `action_release`; es el único script que
-  lee toques durante el juego (el Editor de controles lee el ratón emulado del toque, ver más abajo, y la
-  Configuración lee botones del control para reasignarlos). Lee en `_input` y no en el tick, a diferencia del resto
-  de la entrada: el toque es un evento con dedo y posición que `Input` no guarda; lo que produce son acciones, y
-  esas sí se leen en el tick. Por eso se excluye a mano mientras hay conversación o editor (`hablando`,
-  `editando`). Joystick invisible en la zona de abajo a la izquierda (aparece donde se pone el dedo; da fuerza de 0
-  a 1 a `mover_*`, con zona muerta de 0,2; hacia arriba también da `interactuar`, como la flecha arriba) y botones Saltar, Atacar, Curar, Impulso, Pausa y Mapa en la
-  distribución inicial (no hay botón de inventario: el de Mapa tiene doble uso, de pie dice «Mapa» y da `mapa`, y
-  sentado en un banco (`Jugador.descansando`, leído del grupo `jugador`, `Jugador.GRUPO`) dice «Inventario» y da `inventario`; al
-  soltar se suelta la acción que se presionó); Impulso solo mientras `Partida.tiene(&"impulso")` y Atacar mientras `Partida.tiene(&"pluma")` (sin la habilidad no se dibuja ni responde,
-  y un dedo encima se suelta al perderla; la tabla `HABILIDAD_DE_BOTON` dice qué botón pide qué habilidad). Anclados a su esquina y medidos en proporción del lado corto. Se ocultan con una tecla o
-  el control y reaparecen al tocar la pantalla; los de una sala nueva nacen visibles solo con pantalla táctil y si
-  lo último que se usó fue el dedo (`UltimaEntrada.con_control()` en false). Las dos cosas siguen una sola regla,
-  `ControlesTactiles.deben_verse(tactil, con_control)`; jugando, `procesar` le pasa lo que dice `UltimaEntrada.clasificar` del evento, porque su `_input` corre antes de que `UltimaEntrada` lo anote (un toque, apoyado o levantado, es el dedo; una tecla o un botón con acción del juego, nunca). Hay dos reglas distintas sobre qué entrada cuenta, las dos estáticas en `UltimaEntrada`:
-  `marca_teclado(evento)`, que usa `clasificar`, da verdadero con cualquier tecla pulsada, también Atrás y el volumen
-  del teléfono, y así un menú muestra el foco; `es_de_juego(evento)`, que usa `procesar` para ocultar los controles,
-  pide además que una tecla, un botón o un eje del control dispare una acción del InputMap que no empiece por `ui_`.
-  Con un eje, las dos piden la mitad (en `es_de_juego` la pone `is_pressed`, que en 4.7.2 da verdadero desde 0,5; la
-  zona muerta de la acción no cuenta). Lo que cambia el dispositivo sin ocultar los controles: una tecla sin acción
-  (Atrás, el volumen, Enter), un botón sin acción (L3, R3, Guía) y un eje sin acción (LT, el stick derecho).
-  Unificarlas cambiaría el juego (Atrás o el volumen dejarían de mostrar el foco, o empezarían a ocultar los
-  controles): es una decisión abierta de la persona. Los dedos se recuerdan entre salas (variables estáticas): un dedo
-  que sigue en la pantalla al cruzar una puerta o al reaparecer lo sueltan los controles de la sala nueva; si
-  entre una sala y otra pasan más de `CUADROS_CAMBIO_DE_SALA` cuadros (el menú), al llegar se suelta todo. También
-  se suelta todo al perder el foco la ventana o la app y al pausarla Android (`_notification`); un dedo que vuelve a
-  tocar con un índice ya registrado suelta antes lo que tenía, y un toque con `canceled` suelta. Con un menú abierto,
-  es decir con el árbol detenido (`get_tree().paused`, que hoy ponen solo la pausa, el marco de menús, la tienda,
-  las estaciones y su cobro), solo los botones de `BOTONES_DE_MENU` (Pausa y Mapa, que sentado manda `inventario`) toman un
-  dedo nuevo, así que siguen cerrando su menú como el teclado y el control (Pausa, en Configuración, vuelve un nivel);
-  un toque nuevo en Saltar, Atacar, Curar, Impulso (o cualquier botón fuera de `BOTONES_DE_MENU`) o en la zona del joystick no hace nada. Soltar y arrastrar siguen, y
-  al detenerse el árbol se suelta todo, también el dedo con que se tocó Pausa o Mapa: los menús leen solo
-  `is_action_just_pressed`, así que soltar su acción no abre ni cierra nada, y al levantarlo ya no hay qué soltar. Los
-  botones se siguen dibujando. Toda pausa futura del árbol también dejará sin responder los botones de juego y el
-  joystick. Dónde va
-  cada botón y su tamaño los da `Ajustes.disposicion` (`nucleo/disposicion_controles.gd`, `class_name
-  DisposicionControles`, sin nodos): por botón, la esquina de ancla, el desplazamiento desde ella en fracción del lado
-  corto y la escala (de 0,5 a 2), más una opacidad para todos (de 0,2 a 1). La distribución inicial sale de
-  `CENTROS`, `ANCLAS` y `RADIOS`. Al crearse, al cambiar de tamaño y cuando `Ajustes.disposicion` cambia, los
-  controles meten cada botón dentro del área segura (`DisplayServer.get_display_safe_area()` pasada a coordenadas de
-  la vista) y no dejan achicar un botón por debajo de su tamaño por omisión ni de un objetivo de 48 dp (contando la holgura del
-  toque), el que sea menor: el mínimo no agranda la distribución inicial. Las dos cosas solo en el teléfono (`OS.has_feature
-  ("mobile")`): en la PC, toda la vista y sin mínimo. El joystick no se configura.
-- Editor de controles: `nucleo/editor_controles.tscn` (`class_name EditorControles` en su nodo `Lienzo`), que abren
-  la pausa (`Pausa.abrir_editor()`) y la Configuración del menú principal (ver «Menú»). Tocar un botón lo selecciona y arrastrarlo lo mueve (al soltar, se ancla a la
-  esquina más cercana y entra en el área segura); un deslizador cambia el tamaño del seleccionado y otro la opacidad
-  de todos; «Restaurar» pide un segundo toque. Edita una copia: «Listo» la pone en `Ajustes.disposicion` y la
-  guarda, «Cancelar» la descarta. Lee el ratón (en el teléfono, emulado desde el toque). Mientras está abierto,
-  `ControlesTactiles.editando` es verdadero: los toques no accionan nada y los botones del juego no se dibujan.
-- Conversación: mientras hay una `CajaDialogo`, `ControlesTactiles.hablando` es verdadero y solo Pausa se dibuja y
-  responde; el joystick se suelta y no se toma. La caja se toca directamente.
-- Resaltar: `ControlesTactiles.resaltada` (estática) es la acción cuyo botón late, un aro que crece y se aclara una
-  vez por segundo en un nodo propio. La pone un `AvisoAccion` a la vista y sin hacer, en táctil, y la quita al salir o al hacer la acción.
-  No late un botón sin su habilidad, ni con el editor abierto, ni hablando. `latiendo` es pública para las pruebas.
-- Botones por enseñar: en una sala con `botones_por_ensenar`, el botón de esas acciones no se dibuja ni responde hasta
-  que la acción está en `Partida.botones_ensenados` (`por_ensenar(accion)`, pública). Solo táctil: el control y el
-  teclado no cambian. Los controles buscan su sala subiendo por el árbol al entrar.
-- Control (Xbox / PlayStation): un evento del InputMap junto a cada tecla, para cualquier control (`device` -1).
-  El stick usa la zona muerta de cada acción (0,2); RT es un eje que cuenta como presionado pasada esa zona. LT queda libre.
-
-## Jugador
-
-El jugador (propiedades, combate, curar, habilidades y prioridad del movimiento) está en `docs/jugador.md`.
-
-## Componentes
-
-| Componente | Qué es |
-|---|---|
-| `nucleo/arte/destello.gdshader` (shader `canvas_item`) | Destello en blanco del cuerpo del jugador: mezcla el color con blanco según el uniforme `cantidad` (0 a 1), sin tocar el alfa, con la misma lectura de textura del sprite. Es el `ShaderMaterial` del nodo `Dibujo` de `nucleo/jugador.tscn`; lo mueve el `Jugador` (congelado común y tras un parry), no `AnimacionJugador`. Un `modulate` mayor que 1 no aclara en Compatibility. Detalle en `docs/jugador.md`, «Dibujo» |
-| `nucleo/golpeable.gd` (`class_name Golpeable`, `Area2D`) | Hijo de lo que el ataque o la bola pueden golpear, con su forma. `recibir_golpe(atacante, dano := 1)` cuenta `golpes` y `dano_recibido`, empuja a su padre lejos del atacante (`velocidad_retroceso` 600 px/s, `ticks_retroceso` 6: 60 px; 0 para que no se mueva; golpeado justo desde arriba no se empuja) sin meter su forma en un `StaticBody2D` (lo busca con un rayo a media altura) ni sacarla de los `limites` de su `Sala`: al topar, el empuje se acaba, emite su señal `golpeado(atacante, dano)` y, con su padre, `Eventos.enemigo_golpeado` si `es_enemigo` (por omisión) o `Eventos.objeto_golpeado` si no. Solo el ataque a un `Golpeable` con `es_enemigo` llena la Inspiración; el rebote, el pogo y la voltereta son iguales para los dos |
-| `nucleo/muro_rompible.gd` (`class_name MuroRompible`, `StaticBody2D`) | Pared, techo o suelo que se rompe a golpes (como el Breakable Wall de Hollow Knight): sólido como cualquier otro, con su forma y su dibujo en la sala. Crea su `Golpeable` (sin `es_enemigo`, sin retroceso, `MARGEN_GOLPE` 12 px más grande que su forma, público como `golpeable`). Aguanta `golpes` (4; `quedan`); el ataque, el pogo, la onda de la picada y la bola cuentan uno cada uno (la bola se detiene en el sólido y le pega desde su rayo). `solo_desde` (`CUALQUIERA`, `IZQUIERDA`, `DERECHA`, `ARRIBA`, `ABAJO`) limita de qué lado cuenta el golpe (`cuenta_desde(punto)`); del otro lado solo rebota al jugador. Cada golpe lo sacude y tiembla la cámara (`Jugador.temblar`); al romperse: `roto`, se marca con `id` (obligatorio en las salas con id) en el estado de su sala, suelta `escombros` partículas, emite `se_rompio` y `Eventos.muro_roto`, desvanece en `ticks_desvanecer` (20) cada nodo de `tapas` (rutas a `CanvasItem` que tapan el cuarto escondido) y desaparece. Marcado, no aparece y sus tapas quedan ocultas |
-| `nucleo/palanca.gd` (`class_name Palanca`, `Node2D`) | Palanca que se mueve con un golpe del jugador (como la Lever de Silksong): crea su `Golpeable` (sin `es_enemigo`, 70×110). Solo un golpe cuyo atacante es el `Jugador` la activa (la bola no), una vez: queda inclinada hacia el otro lado, se marca con `id` en el estado de su sala, pide el congelado común (`ticks_congelado` 6) y temblor, emite `activada` y, `ticks_retraso` (45) después, llama `abrir()` en cada `Porton` de `portones`. Marcada, aparece activada (`esta_activada`, `abrio`) |
-| `nucleo/porton.gd` (`class_name Porton`, `AnimatableBody2D`) | Portón que se desliza `recorrido` (cero: su alto hacia arriba) en `ticks_apertura` (30), en el tick y quieto durante el congelado. `abrir()` se marca con `id` al empezar (salir a media apertura lo deja abierto), emite `Eventos.porton_abierto` y, al terminar, `abierto`. `cerrar()` lo regresa sin tocar lo guardado (arenas); `abierto_al_empezar` para el de una arena. Marcado, aparece abierto. `esta_abierto` y `abriendo` son públicas |
-| `nucleo/suelo_fragil.gd` (`class_name SueloFragil`, `StaticBody2D`) | Sólido que se pisa como cualquier otro y que rompe la caída en picada (`romper()`: `roto` y desaparece). Va en la sala con su forma y su dibujo. Con `id` (obligatorio en las salas con id) se marca en el estado de su sala al romperse y ya no aparece al entrar |
-| `nucleo/coleccionable.tscn` (`class_name Coleccionable`, `Area2D`) | Al tocarlo el jugador vivo: se marca en el estado de su sala, emite `coleccionable_obtenido` (autoguarda) y desaparece; marcado, no aparece. `id` único en la sala que empieza con `coleccionable`. Gris, sin tema |
-| `nucleo/entrega_recompensas.gd` (`class_name EntregaRecompensas`, `Interactuable`) | Con el jugador encima y `Jugador.puede_interactuar`, `interactuar` recién pulsado y sin `Congelado.activo()` (la misma regla del `Npc`: es el disparador de la base, con `con_aviso` en falso, sin aviso ni dibujo propio) entrega cada `Recompensa` de su lista cuya `cantidad` ya se juntó y no se entregó (marca `PREFIJO_ENTREGADO` + cantidad, `entregado_<cantidad>`, en su sala) y autoguarda. `entregadas` las cuenta |
-| `nucleo/recompensa.gd` (`class_name Recompensa`, `Resource`) | `cantidad`, `tipo` (`MONEDAS`, `VIDA_MAXIMA`, `AMULETO`, `HABILIDAD`, `MAPA`; el orden no cambia porque se guarda como número), `monto` e `id` (en `MAPA`, la zona) |
-| `nucleo/interactuable.gd` (`class_name Interactuable`, `Area2D`) | Base de lo que se usa con `interactuar` estando encima: `Npc`, `RetoPreguntas`, `Mochila`, `Tienda`, `Estacion`, `Banco` y `EntregaRecompensas` la extienden (los dos últimos con `con_aviso` en falso, fijado en `_init`). En `_ready` (las subclases llaman `super()`) se pone en `INTERACCION` con máscara `JUGADOR`. En el tick: con una `caja` (`CajaDialogo`) abierta, la cierra si el jugador ya no es válido, dejó de hablar o murió (`_cerrar_caja()`: suelta al jugador y pone `caja.ficha = null` antes de `queue_free()`), y no hace más; si no, con `_puede_interactuar()` (gancho, verdadero por omisión) sigue `cerca` (`Jugador.encima_de`, redibuja al cambiar) y, con `interactuar` recién pulsado y sin `Congelado.activo()`, llama al gancho `_al_interactuar(jugador)`. `con_aviso` en falso no sigue `cerca` ni dibuja aviso: solo mira `encima_de` al pulsar. `_abrir_caja(jugador, ficha, al_elegir)` deja al jugador hablando y abre la caja (nodo `Caja`); al terminar llama `_al_terminar(contar)`, que por omisión cierra. Dibujo: `dibujar_provisional(ancho, alto, color)`, el rectángulo con los pies en el origen, solo sin un `CanvasItem` hijo que no sea `CollisionShape2D` (`sin_arte()`; los `CanvasLayer`, como la caja, no cuentan), y `dibujar_aviso(altura)`, el triángulo `COLOR_AVISO` con la punta a esa altura, siempre que `cerca`, con arte o sin él. `_crear_forma(ancho, alto)` crea la forma para quien no la trae en su escena. `cerca` y `caja` son públicas |
-| `nucleo/npc.tscn` (`class_name Npc`, `Interactuable`) | Personaje con quien se habla. Con el jugador encima, en el suelo y libre (sin morir, sentarse, aterrizar duro ni hablar ya), un triángulo encima avisa e `interactuar` abre una `CajaDialogo` con la conversación de su `etapa` y llama `Jugador.empezar_a_hablar()`. `conversaciones` tiene una `FichaDialogo` por etapa. Terminar contando sube la etapa, la marca en el estado de su sala (`id` único en la sala, que no empieza con `coleccionable` ni `entregado_`), entrega las recompensas de esa ficha una sola vez y autoguarda; terminada la última, se repite sin entregar. Sin contar (`CANCELAR`), un golpe, un peligro o morir la cierran sin cambiar nada. Emite `conversacion_terminada(etapa)`; `etapa`, `cerca` y `caja` son públicas. Forma provisional: un rectángulo |
-| `nucleo/aviso_accion.gd` (`class_name AvisoAccion`, `Area2D`) | Pizarrón que enseña una acción con su botón y una palabra, como los avisos de King's Pass. `acciones` (una o dos del InputMap; el validador lo exige), `id` (opcional; sin repetir entre los avisos de la escena ni, en una sala con id, con otro objeto que se recuerda, y sin prefijo reservado; el validador lo exige), `texto` (la palabra; vacía, la etiqueta del botón de la pantalla de la última acción), `nota` (una línea más, opcional), `pizarron` (false: sin caja gris, para el aviso sobre un objeto), `tamano` (la zona, apoyada en el suelo y centrada en el aviso, 480×320) y `punto` (centro del pizarrón, 0, −240). Con el jugador dentro espera `TICKS_ESPERA` (30) y el dibujo aparece en `TICKS_APARECER` (12); al salir se va en los mismos. Con el control o el teclado, un `IconoBoton` por acción a escala 2, con la palabra en el último; tras un toque, el botón de la pantalla con su etiqueta (moverse o interactuar: el aro del joystick con su perilla), y la palabra debajo si es otra que la etiqueta, y además pone `ControlesTactiles.resaltada` para que ese botón lata, y la quita al salir, al hacer la acción o al dejar el árbol. **Hecha:** la última acción se pulsa con las demás mantenidas, en cualquier punto de la sala y sin una conversación abierta ese tick ni el anterior (`ControlesTactiles.hablando`: avanzar o cerrar una caja de diálogo con saltar o atacar no cuenta); curar cuenta al curar una vida (`Eventos.jugador_curado`). Al aparecer o al quedar hecho, enseña los botones de la pantalla de sus acciones (`Partida.ensenar_boton`). Hecha, con `id` se marca en el estado de la sala (`Partida.marcar`) y no vuelve en la partida; si estaba a la vista sigue hasta `TICKS_MINIMO` (60) desde que apareció; si no había aparecido, ya no sale. Sin un `CanvasItem` hijo propio dibuja una caja gris oscura (`PIZARRON`); el arte del pizarrón lo pone la sala. `dentro`, `alfa`, `hecha` y `palabra()` son públicas |
-| `nucleo/caja_dialogo.gd` (`class_name CajaDialogo`, `CanvasLayer` capa 12) | Caja abajo de la pantalla, dentro del área segura: quién habla y el texto letra por letra (`ticks_por_letra`, 2). `interactuar`, `saltar`, `atacar` o tocar la caja completan la línea y, completa, pasan a la siguiente; la pulsación que la abrió no cuenta. Las opciones de una pregunta van en fila encima de la caja: izquierda y derecha cambian la marcada y se toma con las mismas acciones o tocándola; con opciones a la vista, tocar la caja no elige. Emite `terminada(contar)` y, al tomar una opción, `opcion_elegida(linea, opcion)` antes de pasar a su destino. Corre con el juego: la pausa y el mapa la detienen. Mientras existe, `ControlesTactiles.hablando` es verdadero. `linea`, `letras_visibles`, `completa` y `elegida` son públicas |
-| `nucleo/ficha_dialogo.gd` (`class_name FichaDialogo`, `Resource`) y `nucleo/linea_dialogo.gd` (`class_name LineaDialogo`) | Una conversación: `lineas` y `recompensas`. Cada línea lleva `quien`, `texto` y, si pregunta, hasta `MAX_OPCIONES` (3) `opciones` con un `destino` cada una: otra línea, `FIN` (termina contando) o `CANCELAR` (termina sin contar). Sin opciones, avanzar pasa a la siguiente; la última termina contando. `fallos()` da la lista de problemas de forma. `LineaDialogo.nueva(quien, texto)` arma una línea sin opciones |
-| `nucleo/reto_preguntas.tscn` (`class_name RetoPreguntas`, `Interactuable`) | Reto de preguntas. Se habla como con un `Npc` (mismas condiciones, mismo `Jugador.empezar_a_hablar()`) y abre una `CajaDialogo` con las `preguntas` que faltan de la ronda, en orden, cada una seguida de `texto_correcto` o `texto_incorrecto` con la respuesta correcta. Cada respuesta (`responder(opcion)`) cuenta, se marca en el estado de su sala y autoguarda; un golpe corta la ronda donde iba. Al acabar la ronda con `meta` aciertos o más gana (`<id>` en `true`, `recompensa` una sola vez, señal `ganado`) y desde entonces solo dice `texto_ganado`; si no, la ronda vuelve a empezar en cero. Si lo guardado ya no cabe en la lista, empieza otra vez. `indice`, `aciertos`, `gano` y `caja` son públicas. Forma provisional: un atril |
-| `nucleo/ficha_pregunta.gd` (`class_name FichaPregunta`, `Resource`) | `pregunta`, de 2 a 3 `opciones` (las que caben en la fila de la caja) y `correcta`. `fallos()` da la lista de problemas de forma. `lineas_para(quien, en)` da sus dos líneas para una `FichaDialogo` (la pregunta en el índice `en`, con todas sus opciones hacia la siguiente, y la de la respuesta vacía) y `respuesta(acerto, correcto, incorrecto)` el texto de esa respuesta (por omisión `TEXTO_CORRECTO` y `TEXTO_INCORRECTO`, que también usa `RetoPreguntas`); los usan `RetoPreguntas` y `Mochila` |
-| `nucleo/mochila.gd` (`class_name Mochila`, `Interactuable`) | Lo perdido al morir. La crea `Sala._ready` si `Partida.mochila` es de esa sala, en su `x, y`; no usa el estado por sala. Se habla como con un `Npc` y abre una `CajaDialogo` con una línea de entrada y `preguntas_por_reto` preguntas sorteadas de la bolsa (`sorteadas`, públicas), cada una seguida de si acertó. Es una sola oportunidad: con `meta` aciertos o más llama `Partida.recuperar_mochila()`, y si no, `Partida.perder_mochila()` (`perdida`, pública); en los dos casos desaparece al cerrar la caja. Un golpe, un peligro o morir cortan el intento sin contar, y el siguiente sortea otra vez sin repetir las del cortado cuando la bolsa tiene al menos el doble de `preguntas_por_reto`. Sin bolsa (o con una mal formada), `interactuar` la recupera enseguida. Caja gris de 80×80 px apoyada en el suelo hasta que lleve un `CanvasItem` hijo, como el `Porton` |
-| `nucleo/bolsa_preguntas.gd` (`class_name BolsaPreguntas`, `Resource`) | La bolsa de la mochila: `preguntas`, `preguntas_por_reto` (3) y `meta` (2). Una sola para todo el juego, `contenido/preguntas_mochila.tres`, que la `Mochila` carga con `load()` solo si existe; si no, va sin reto. La de prueba (`herramientas/salas/preguntas_mochila_prueba.tres`) solo la pone la sala de prueba Lo Perdido, para que el paquete publicado nunca la muestre. `fallos()` da la lista de problemas de forma, y el validador la revisa en cada `.tres` |
-| `nucleo/tienda.gd` (`class_name Tienda`, `Interactuable`) | Tienda de PejeCoins, hija directa de una sala: `id` (único en la sala; el validador lo exige en las salas con id), `nombre` y `articulos`. Con el jugador encima, `interactuar` abre su `MenuTienda` (`abrir()`; con el menú abierto no sigue `cerca` ni dispara); no usa la `caja` de la base. `a_la_venta()` da lo no comprado cuyo requisito se cumple. `comprar(articulo)` da `false` si ya se compró, no está a la vista o no alcanzan las monedas; si no, cobra con `Partida.gastar_monedas`, marca `<id>_<articulo>` en el estado de su sala, entrega la `Recompensa`, emite `articulo_comprado` y autoguarda. Cada artículo se vende una vez. Caja gris de 160×200 px hasta que lleve un `CanvasItem` hijo |
-| `nucleo/articulo_tienda.gd` (`class_name ArticuloTienda`, `Resource`) | `id` (único en su tienda), `nombre`, `descripcion`, `precio` (mayor que 0), `recompensa` (una `Recompensa`) y `requisito`: una habilidad que hay que tener para que aparezca (vacío: siempre). El validador revisa cada uno y que las habilidades estén en `Habilidades.TODAS` |
-| `nucleo/icono_articulo.gd` (`class_name IconoArticulo`, `Control`) | Ícono de gis de una fila de la tienda, dibujado en código hasta tener arte: `forma` (`IconoArticulo.Forma`: `NINGUNA`, `MONEDA`, `VIDA`, `AMULETO`, `HABILIDAD`, `MAPA`) y `apagado` (en `Tema.GRIS_APAGADO`). `IconoArticulo.forma_de(articulo)` da la forma del tipo de su `Recompensa` (`MONEDAS` → `MONEDA`, `VIDA_MAXIMA` → `VIDA`, y las demás con su nombre; sin recompensa, `NINGUNA`). `IconoArticulo.crear(forma, lado, gris)` lo da sin agregar, sin toques ni foco. La moneda del precio es la forma `MONEDA`: el círculo del HUD vive en `interfaz/` |
-| `nucleo/lista_elegir.gd` (`class_name ListaElegir`, `VBoxContainer`) | La lista con foco de la tienda y del menú de estaciones: Volver arriba, un encabezado, filas con nombre y un dato a la derecha dentro de un `ScrollContainer` (`desliza`, con `follow_focus`) que va en una `BoxContainer` (`cuerpo`, nodo `Cuerpo`), y un pie. `armar(nombres, datos, apagar, foco)`; una fila apagada (por omisión, variaciones `Tema.FILA_APAGADA` y `Tema.DATO_APAGADO`) toma el foco para leer su descripción pero no se elige. Señales `elegida(indice)`, `enfocada(indice)` y `cerrada` (Volver). Opcional, fijado antes de `armar` (sin tocarlo se ve como siempre): `variacion_fila` y `variacion_fila_apagada`; `con_franja`, que pone en cada fila un `Panel` `Franja` (`Tema.FRANJA`, detrás de la fila) visible solo en la última fila que tuvo el foco, también tras un toque, cuando el foco no se dibuja (`con_franja_en()` la da); y `cuerpo`, donde quien la usa agrega algo junto a las filas |
-| `nucleo/confirmacion.gd` (`class_name Confirmacion`, `ColorRect`) | La confirmación Sí / No compartida, armada en código: un velo negro a pantalla completa (`set_anchors_and_offsets_preset(PRESET_FULL_RECT)`, detiene los toques) con la pregunta centrada, una línea opcional con la cantidad y Sí y No debajo, nodos `Caja/Pregunta`, `Caja/Cantidad` y `Caja/Botones/Si` y `No` (públicos como `pregunta`, `cantidad`, `si` y `no`). Empieza oculta. `abrir(pregunta, texto_si, texto_no, foco := Confirmacion.Foco.NO, texto_cantidad := "")` la muestra con el foco en Sí o en No (`Tema.dar_foco`); la línea de la cantidad (lo que cuesta, «50 PejeCoins») solo se ve si `texto_cantidad` no está vacío. Sí emite `confirmada` una vez por `abrir` y la deja a la vista: la cierra quien la abrió (`cerrar()`, sin señal). No y `cancelar()` la cierran y emiten `cancelada`; cerrada, no hacen nada. No lee la entrada: quien la abre llama a `cancelar()` desde su Atrás y pone el foco donde corresponde al recibir `cancelada`, y oculta lo de detrás mientras está abierta, para que el foco no se escape. El aspecto se fija antes de agregarla (se arma en `_ready`): `alfa_velo` (0,8), `separacion` entre pregunta y botones (32), `ancho_pregunta` (800, con ajuste de línea; 0, una línea), `variacion_pregunta` (`Tema.PREGUNTA`), `variacion_cantidad` (`Tema.TITULO`) y `variacion_boton` (vacía: el botón del tema con 300 px de ancho mínimo; otra, como `Tema.OPCION_CENTRADA`, sin ancho mínimo). La usan las ranuras (Borrar y Restaurar, con sus valores por omisión) y Salir del menú principal (velo 0,7, separación 24, una línea, `Tema.TITULO`), los dos con el nodo llamado `Confirmar` y el foco en No; y, con el aspecto del cobro de Silksong (sin velo propio: el `CobroEstacion` sobre `Tema.fondo_menu()` y el `MenuTienda` sobre su velo, que mientras pregunta cubre toda la pantalla; pregunta `Tema.DESTACADA`, el precio en la línea de la cantidad con el texto «PejeCoins», Sí y No con `Tema.OPCION_CENTRADA` y el foco en Sí), el `MenuTienda` y el `CobroEstacion`, con el nodo llamado `Confirmacion`. La moneda va en texto: el círculo del HUD se dibuja dentro de `interfaz/hud.gd` y el núcleo no depende de `interfaz/` |
-| `nucleo/menu_tienda.gd` (`class_name MenuTienda`, `CanvasLayer`) | El menú de una `Tienda` como los de Hollow Knight y Silksong, con el juego detenido y a la vista a la izquierda. La raíz `Fondo` (`Tema.fondo_menu(0.0)`, pública como `fondo`) es transparente a pantalla completa y detiene los toques sobre el juego; su hijo `Velo` (público como `velo`, negro con `Tema.VELO`) va de `MARGEN_VELO` (32) px antes del panel a la orilla derecha. El panel es la `ListaElegir` (`Fondo/Area/Lista`) en la mitad derecha del área útil (`Area`, con `Tema.ajustar`): Volver y el nombre de la tienda (baja de línea si no cabe), sin encabezado ni pie; las filas (`Tema.FILA_TIENDA`, en gris `Tema.FILA_TIENDA_APAGADA` lo que no alcanza) llevan el `IconoArticulo` de su recompensa (`Icono`), la moneda (`Moneda`) y el precio como texto, en una columna de `ANCHO_FILAS` (260) px con la franja en la elegida (`con_franja`); a su derecha, en `cuerpo`, el `Detalle`: el nombre en `Tema.TITULO` y la descripción (públicos como `nombre` y `descripcion`), que siguen a la fila con el foco. Si al detalle le quedan menos de `ANCHO_MINIMO_DETALLE` (240) px va debajo de las filas (`cuerpo.vertical`); con la vista de 1280 de ancho (4:3 y 16:9) le quedan 284 y va al lado. La lista no se desplaza bajo una franja fija: con `follow_focus` la fila con foco se trae a la vista y la franja va en ella (desplazar la lista al dar el foco movería la fila bajo el dedo antes de soltar y el toque no la elegiría). Sin nada a la venta queda una fila gris sin ícono y el detalle dice «Ya no hay nada a la venta». Las PejeCoins no van en el panel: al abrir emite `tienda_abierta` y al cerrar `tienda_cerrada`, y el HUD las muestra fijas. Elegir oculta la lista, el velo pasa a toda la pantalla y pide confirmar con la `Confirmacion` (`Fondo/Confirmacion`, pública como `confirmacion`): «¿Comprar <nombre>?», el precio en la línea de la cantidad y el foco en Sí. Sí compra una vez (`confirmar()`) y vuelve a la lista; No, `volver`, `pausa` y Atrás vuelven un nivel: de la confirmación a la lista sin comprar (`Confirmacion.cancelar()`) y de la lista al juego. Está en el grupo `pantalla_encima` |
-| `nucleo/estacion.gd` (`class_name Estacion`, `Interactuable`) | Estación del viaje rápido, hija directa de una sala con id: `id` (`estacion_<id de la sala>`), `costo` en PejeCoins (0, gratis) y `llegada` (dónde aparece el jugador, relativo a ella). Con el jugador encima (con el cobro o el menú abiertos no sigue `cerca` ni dispara; durante el fundido de un viaje no hace nada más), `interactuar(jugador)`, pública: cerrada, abre su `CobroEstacion` (público como `cobro`), que pregunta si paga con el juego detenido; con Sí, `pagar()` cobra una vez, la abre con `Partida.abrir_estacion` y autoguarda, y una `CajaDialogo` de una línea (pública como `caja`) dice «Estación abierta…» o «No te alcanza.»; gratis, se abre sola; abierta, abre el `MenuEstaciones`. `viajar(id)` funde a negro como una puerta y, en negro, pone `Sala.estacion_llegada`, emite `viaje_hecho` y cambia a la sala de esa estación. No cura, no guarda ni cambia el banco. `Estacion.tabla_de(id de sala)` da la tabla de la carpeta de la sala: `contenido/estaciones.tres` o, para la zona de pruebas, `herramientas/salas/zonas/estaciones_prueba.tres`, cada una con `load()` solo si existe. Caja gris de 240×200 px hasta que lleve un `CanvasItem` hijo |
-| `nucleo/cobro_estacion.gd` (`class_name CobroEstacion`, `CanvasLayer` capa 20) | El cobro de una `Estacion` cerrada, como el de un asiento de Silksong, con el juego detenido como el `MenuTienda`: sobre `Tema.fondo_menu()`, la `Confirmacion` (`Fondo/Confirmacion`, pública como `confirmacion`) con «¿Abrir esta estación? Tienes N PejeCoins.», el costo en la línea de la cantidad y el foco en Sí. Sí lo cierra y emite `pagar_pedido` (una vez); No, `volver`, `pausa` y Atrás lo cierran sin cobrar (`atras()`). Al cerrarse quita la pausa y emite `cerrado`. Corre en pausa, con `MarcoMenus.PRIORIDAD_FISICA`, y está en el grupo `pantalla_encima`. Lo crea la `Estacion` y se libera al cerrarse |
-| `nucleo/ficha_estaciones.gd` (`class_name FichaEstaciones`, `Resource`) y `nucleo/dato_estacion.gd` (`class_name DatoEstacion`) | La tabla de estaciones: una fila por estación con `id`, `nombre` (el del menú) y `sala` (su id), en el orden del menú. `buscar(id)`; `fallos()` revisa ids sin repetir, `id` = `estacion_<sala>` y nombre, y el validador la corre en cada `.tres` |
-| `nucleo/menu_estaciones.gd` (`class_name MenuEstaciones`, `CanvasLayer`) | El menú de destinos, con el juego detenido, como el del Ciervo de Hollow Knight: a la izquierda la `ListaElegir` (`Fondo/Lista`, título «Viajar») con las estaciones abiertas de la tabla, en su orden, con el foco en la actual («Aquí», en gris, no se elige); a la derecha, en su `cuerpo`, el `MapaEstaciones` (`mapa`, nodo `Mapa`); abajo a la derecha, en lugar del pie, las ayudas (`ayudas`, nodo `Ayudas`): dos `IconoBoton`, `ui_accept` «Viajar» y `volver` «Cancelar», que tras un toque no se ven (la fila guarda su alto). Las posiciones salen de `mapa/indice_salas.tres` (`RUTA_INDICE`; `ruta_indice` se fija antes de agregarlo): con `ResourceLoader.exists`, `load()` y `get(&"rectangulos")`, sin nombrar `IndiceSalas`, así que sin el bloque `mapa/` el núcleo sigue compilando y corriendo. Cada estación va en el centro del rectángulo de su sala (`centros_de(salas, rectangulos)`, vacío si a alguna le falta); sin índice o sin el rectángulo de alguna, `mapa` queda `null` y la lista va sola a lo ancho. Con mapa, la lista mide al menos `ANCHO_LISTA` (480) y el mapa `PROPORCION_MAPA` (1,2) veces la lista; si al mapa le quedan menos de `ANCHO_MINIMO_MAPA` (240) px se oculta y la lista va a lo ancho. Elegir otra cierra y la `Estacion` viaja; `volver`, `pausa` y Atrás lo cierran. Está en el grupo `pantalla_encima` |
-| `nucleo/mapa_estaciones.gd` (`class_name MapaEstaciones`, `Control`) | El mapa de gis del viaje rápido, dibujado en un `_draw` medido contra `size`, sin imágenes, que no toma el foco ni los toques: un círculo de gis por estación; una línea de gis (`EstiloGis.puntos`, `Tema.GIS_TENUE`) de cada estación a la siguiente en el orden de la tabla (`tramos`: 0-1, 1-2…; lo controla quien escribe la tabla, no la posición); la marcada (la del foco de la lista, por `enfocada`) con un anillo en `Tema.GIS`; la actual en `Tema.GRIS_APAGADO` con un punto dentro y «Aquí» debajo (al abrir, con el foco en ella, lleva las dos marcas). `poner(centros, actual)` recibe los centros del mundo; `centros_en_pantalla()` los encaja con la misma escala en los dos ejes en `size` menos `MARGEN` (72), centrados, y un eje sin largo (todas en fila o una sola) queda en medio. `marcar(indice)` redibuja solo si cambia. `centros_mundo`, `tramos`, `marcada` y `actual` son públicas para las pruebas |
-| `nucleo/vitrina_coleccionables.gd` (`class_name VitrinaColeccionables`, `Node2D`) | Dibuja `total_del_juego` lugares, llenos los `juntados` (leído al entrar): la sala donde se ven los coleccionables |
-| `nucleo/cortable.tscn` (`class_name Cortable`, `Area2D`) | Decoración que cortan el ataque y la bola del jugador (pasto y lo que cada zona quiera). `cortar()` oculta el hijo `Entero`, muestra `Cortado` y suelta `trozos` partículas; no da Inspiración, no rebota al jugador ni cuenta como enemigo. Se sacude al pasar el jugador (`sacudidas`). No se guarda: vuelve al entrar otra vez a la sala. `esta_cortado` es pública. Para otra forma, se hereda la escena y se cambian `Entero` y `Cortado` |
-| `nucleo/proyectil.tscn` (`class_name Proyectil`, `Area2D`) | La bola: avanza recto y sin gravedad (`velocidad` 900 px/s, `ticks_vida` 60) y golpea una vez, con su `dano` (2), a cada `Golpeable` que toca, sin detenerse. Corta cada `Cortable` que toca con su `cortar()`, como el ataque, y sigue: el pasto no la detiene. Desaparece contra un sólido, que busca con un rayo: movido por posición, no detectó los `StaticBody2D` de las salas (`docs/errores/2026-10-06-bola-atravesaba-paredes.md`); el rayo además cubre el paso de un tick. Si el jugador está pegado a una pared, no llega a salir (se cobra igual). No da Inspiración |
-| `nucleo/dano_contacto.gd` (`class_name DanoContacto`, `Area2D`) | Daña al jugador mientras lo toca (`dano`, 1 por omisión). Con `peligro = true` es un peligro (punto seguro); si no, un golpe normal (retroceso). Regla, como Silksong: lo fijo (pinchos, ácido, lava, vacío) es peligro; lo que se mueve (sierras que viajan, trampas, lo que lanza un jefe) solo golpea, y el validador falla si un `DanoContacto` con `peligro` está dentro de un `Vaiven`, un `Enemigo`, un `PathFollow2D` o un cuerpo que se mueve. Revisa el contacto cada tick: quien sigue dentro vuelve a recibir daño al acabarse la invulnerabilidad. No es sólido |
-| `nucleo/vaiven.gd` (`class_name Vaiven`, `Node2D`) | Pieza que va y viene en línea recta: `recorrido` en `ticks_ida` ticks, vuelta y repite; quieta durante el congelado común. Al entrar fija `peligro = false` en cada `DanoContacto` que lleva |
-
-## Sala
-
-Una sala es una escena cuya raíz es un `Node2D` con `nucleo/sala.gd` (`class_name Sala`).
-
-| Pieza | Qué es |
-|---|---|
-| Propiedad `id` (`String`, exportada) | `<zona>_<número>` (`celda_1`), igual al nombre del archivo. Es lo que guardan la partida y el mapa. Vacío solo en las salas de prueba sueltas de `herramientas/salas/`, que se nombran por su ruta |
-| Nodo `Entrada` (`Marker2D`, hijo de la raíz) | Donde aparece el jugador. Sin él, aparece en el origen de la sala |
-| Propiedad `limites` (`Rect2`, exportada) | Rectángulo de la sala en sus coordenadas. La cámara del jugador (`CamaraJugador`) sigue al jugador y no muestra nada fuera de él en cada eje donde la sala es al menos tan grande como la vista |
-| El jugador | No va dentro de la escena: la sala instancia `nucleo/jugador.tscn` en su `_ready` y le pasa `limites` |
-| Suelos y plataformas | `StaticBody2D` sólidos por todos lados: el núcleo no ofrece plataformas atravesables desde abajo (`one_way_collision`), decidido el 07-oct-2026 |
-| Controles, pausa, marco de menús, vibración, brillo, fundido, interfaz y mapa | También los crea la sala en su `_ready`: `ControlesTactiles`, `Pausa`, `Marco` (`MarcoMenus`), `Inventario` (`PaginaInventario`), `Amuletos` (`PantallaAmuletos`), `Vibracion`, `Fundido`, `Brillo` (`CanvasModulate`, ver «Ajustes y vibración») y, si existen, `interfaz/interfaz.tscn` y `mapa/pantalla_mapa.tscn` (con `load()`, para que el núcleo no dependa de esos bloques; ver «Interfaz» y «Mapa») |
-| Propiedad `posicion_mapa` (`Vector2`) | Esquina de la sala en el mapa del mundo, en px: el mapa la dibuja en `posicion_mapa + limites`. Las salas de una zona se acomodan como se recorren. Cambiarla obliga a regenerar el índice del mapa |
-| Propiedad `botones_por_ensenar` (`Array[StringName]`) | Acciones cuyo botón de la pantalla no se ve en esta sala hasta que un `AvisoAccion` lo enseña (la sala Pizarrones empieza sin saltar, atacar ni curar; pausa y mapa se ven siempre). El validador exige que cada una sea un botón de la pantalla (`ControlesTactiles.ACCIONES`) y que algún aviso de la sala la enseñe |
-| Propiedad `habilidades_de_prueba` (`Array[StringName]`) | Solo salas de prueba: habilidades que la sala da en silencio al entrar (sin aviso ni autoguardado). Las de `herramientas/salas/` dan `pluma`, salvo la de combate chico (donde se recoge), la del diálogo y la del reto. El validador la exige vacía en `contenido/` |
-| Puertas (opcionales) | Instancias de `nucleo/puerta.tscn` (`class_name Puerta`, `Area2D`), hijas directas de la raíz. Ver abajo |
-| Capas de fondo y de frente (opcionales) | Nodos `Parallax2D` hijos de la raíz. `scroll_scale` menor que 1 para el fondo (más lejos, más lento) y mayor que 1 para el frente; `z_index` negativo para el fondo y positivo para el frente |
-
-- Dónde vive cada sala: las del juego en `contenido/salas/<zona>/<id>.tscn`; las de las zonas de prueba en
-  `herramientas/salas/zonas/<zona>/<id>.tscn`. La zona es lo que va antes del primer guion bajo del id: una palabra
-  sin guion bajo (`celda`, `raices`).
-- Al entrar, la sala se anota en `Partida.salas_visitadas`. `Sala.clave_de(nodo)` (estática) da la clave de la sala a
-  la que pertenece un nodo de su escena.
-- `Sala.ruta_de(id)` (estática) da la escena de un id (primero `contenido/`, después la zona de prueba si existe);
-  una ruta `res://` pasa tal cual. `Sala.zona_de(id)` da su zona. `clave()` es el id de la sala o, si no tiene, su
-  ruta: lo que guardan `Partida.sala`, la clave de los enemigos fuertes y `cambio_de_sala`.
-- Los ids de sala no se renumeran nunca, aunque una sala se quite: los guardan la partida y el mapa. Una sala nueva
-  toma el siguiente número libre de su zona.
-- Convenciones de ids: puertas por su lado (`izquierda`, `derecha`, `arriba`, `abajo`; dos del mismo lado,
-  `derecha_2`); banco `banco_<id de la sala>`; objetos que se recuerdan, un nombre corto único dentro de la sala.
-- El validador revisa cada sala con id: id `<zona>_<número>` igual al archivo, en la carpeta de su zona y sin
-  repetir; `limites` con área; `Entrada` dentro de `limites`; cada puerta con id único y destino existente, nombrado por id; puertas
-  de ida y vuelta (si A lleva a la puerta P de B, P lleva de vuelta a la misma puerta de A); bancos con id
-  `banco_<id>`; la raíz de cada escena de esas carpetas es una `Sala`; suelos frágiles, muros rompibles, palancas, portones,
-  coleccionables, `Npc`, `RetoPreguntas` y `Tienda` con id (sin él, falla) único en la sala; cada ruta de `portones` de una
-  `Palanca` lleva a un `Porton` y cada ruta de `tapas` de un `MuroRompible` a un `CanvasItem`; en `contenido/`, `habilidades_de_prueba`
-  vacío. En cualquier escena, además, cada `Npc` tiene conversaciones, ninguna vacía, un id que no empieza con `coleccionable` ni
-  `entregado_` y fichas sin fallos (`FichaDialogo.fallos()`, que también revisa cada `.tres` de ficha suelto); cada
-  `RetoPreguntas`, un id igual de libre, `meta` entre 1 y el número de preguntas y preguntas sin fallos
-  (`FichaPregunta.fallos()`, también en cada `.tres` suelto); cada puerta lleva a un id de sala o a una ruta `res://`
-  que existen, y nunca a la ruta de una sala con id (una puerta en `contenido/` o en una zona de prueba nombra su
-  destino por id, así una sala se puede mover de carpeta); cada `Tienda` vende algo y cada artículo tiene id sin repetir
-  en su tienda, precio mayor que 0 y una `Recompensa`; cada `Estacion` va sola en su sala, es hija directa de una sala con id, se llama
-  `estacion_<id de la sala>`, cuesta 0 o más y está en la tabla de su sala (`Estacion.tabla_de`) con esa sala, y cada
-  `FichaEstaciones` no tiene ids repetidos ni mal nombrados (`FichaEstaciones.fallos()`); cada habilidad de un
-  `ObjetoHabilidad`, de una recompensa, del requisito de un artículo y de `habilidades_de_prueba` está en
-  `Habilidades.TODAS`; cada `AvisoAccion` enseña 1 o 2 acciones del InputMap y su id, si lo tiene, no se repite en la
-  escena ni con otro objeto que se recuerda en la sala, ni usa un prefijo reservado; cada acción de
-  `botones_por_ensenar` es un botón de la pantalla y algún aviso de la sala la enseña; cada puerta en el borde izquierdo
-  o derecho de `limites` lleva detrás su pared («Cambio de sala»). Esta es la lista completa de lo que revisa en las
-  salas (`herramientas/validar.gd`).
-- Una capa se desplaza en proporción a la cámara: su posición es el borde de la cámara por `1 - scroll_scale`
-  (medido en un guion el 06-oct-2026). Para que no queden huecos, el contenido de una capa cubre, en cada eje,
-  desde 0 hasta `(tamaño de la sala - tamaño de la pantalla) × scroll_scale + tamaño de la pantalla`. Con
-  `aspect=expand` la pantalla puede ser más ancha que 1280: la sala de prueba deja 2560 px de margen de cada lado.
-- Cámara, como en Hollow Knight: el nodo `Camara` del jugador (`nucleo/camara_jugador.gd`, `class_name CamaraJugador`)
-  se mueve a mano y recorta su objetivo a `limites` antes de suavizar, así se frena sola al acercarse al borde. No
-  tiene tick propio: el jugador la llama en su `_physics_process` (seguir al final de cada tick, también congelado; el
-  temblor al revisar el aterrizaje; colocarla al entrar a la sala y al reaparecer). Bajo el suelo basta el margen de siempre (40 px): sin jalón al caer
-  (`camara_caida.guion`, 07-oct-2026); las salas de caída larga dejan 120 px (16,7 % de 720 de suelo a la vista).
-  El margen casi no cambia el jalón (89,8 px/s por tick con 40 px, 93,1 con 120; umbral 100); las salas de 720 de
-  alto no crecen, porque su cámara empezaría a moverse en vertical al saltar. Si la vista es mayor que la sala en un eje, la cámara se centra en ese eje y
-  lo que sobra se ve por igual a los dos lados, como ya hacía `Camera2D` (`camara_centrada.guion`); sus `limit_*` quedan como seguro.
-- Fondo extendido: si la sala tiene un nodo `Fondo` (`ColorRect`) visible, al entrar crea detrás de todo
-  `FondoExtendido`, de su color y `MARGEN_FONDO` (280 px) más grande por lado: cubre el rango de la vista en una sala
-  mínima de 1280×720 (240) más el temblor de la cámara. Sin `Fondo` visible no crea nada y lo de fuera se ve negro, el color de borrado.
-- Fundido a negro (`nucleo/fundido.gd`, `class_name Fundido`, `CanvasLayer` capa 15: encima del juego, los controles y
-  la interfaz, que se oscurecen con él, y debajo de la pausa y el editor de botones): la sala lo crea en negro y aclara
-  en `TICKS_ACLARAR` ticks (0,25 s). Oscurece en `TICKS_OSCURECER` (0,15 s), sigue en negro los ticks que pida
-  (`TICKS_EN_NEGRO_PELIGRO`, 0,3 s; `TICKS_EN_NEGRO_PUERTA`, 0,1 s) y aclara cuando alguien emite `fundido_pedido`;
-  cuenta ticks de física, así los
-  guiones dan siempre lo mismo. Su `opacidad` (0 a 1) la leen los guiones
-  (`fundido_peligro`, `fundido_peligro_sostenido`, `fundido_puerta`). Muerte: en los últimos `TICKS_OSCURECER` de los 90 ticks oscuro, la sala
-  funde a negro y la sala siguiente (o la misma, recargada) aclara.
-
-Cambio de sala:
-
-| Propiedad de `Puerta` | Qué es |
-|---|---|
-| `id` | Texto único dentro de su sala |
-| `sala_destino` | Id de la sala a la que lleva (`prueba_2`); la puerta cambia a `Sala.ruta_de(sala_destino)`. Una ruta `res://` solo para ir a una sala de prueba suelta, sin id |
-| `puerta_destino` | `id` de la puerta de la sala destino donde aparece el jugador |
-| `llegada` | Dónde aparece el jugador al llegar por esta puerta, relativo a ella; fuera de su área para no rebotar |
-
-- Cuando el jugador entra al área de una puerta, la pantalla funde a negro (`Fundido.TICKS_OSCURECER` ticks, con el
-  jugador todavía en la sala), sigue en negro `Fundido.TICKS_EN_NEGRO_PUERTA` ticks y después la puerta guarda `puerta_destino` en `Sala.puerta_llegada` (variable
-  estática) y cambia de escena en diferido; la sala nueva empieza en negro y aclara. Si el jugador muere mientras
-  funde, la puerta no cambia de sala: manda la muerte. En un build de depuración, el primer tick de la sala nueva imprime
-  `SALA <clave> carga_ms=<n>`: lo que pasó desde que la puerta pidió el cambio (`Sala.cambio_pedido_ms`). Las salas no
-  se cargan en segundo plano; se reconsidera si una puerta pasa de ~0,5 s en el S50 con salas reales. La sala nueva pone al jugador en `llegada` de esa puerta. Si no la
-  encuentra, imprime un `ERROR:` y lo pone en `Entrada`. Ese error ocurre al correr: lo atrapa un guion que cruza
-  la puerta, no `validar.ps1`.
-- El viaje rápido llega igual que una puerta: la `Estacion` de salida pone el id de la de llegada en
-  `Sala.estacion_llegada` (estática) y la sala nueva pone al jugador en `position + llegada` de la `Estacion` con
-  ese id, sin emitir `cambio_de_sala`. Si una puerta y una estación piden a la vez, manda la estación; reaparecer en un banco manda sobre las dos.
-  Las dos estáticas se vacían al entrar a la sala y al reaparecer.
-- El área de la puerta mide 40×160 y el salto sube 230 px: una puerta en el borde de `limites` lleva detrás un
-  `StaticBody2D` invisible, fuera de los límites y del alto de la sala (`ParedTrasPuerta`). Sin él, un salto la
-  pasa por encima y el jugador cae fuera de la sala (`docs/errores/2026-10-14-salto-sobre-puerta.md`). El validador
-  lo exige: una puerta cuya área toca el borde izquierdo o derecho de `limites` necesita un `StaticBody2D` pegado a
-  ese borde por fuera, desde lo alto de `limites` hasta el pie del área.
-- Lo que sobrevive al cambio de sala vive en `Partida` (ver «Estado de la partida»).
-
-Bancos:
-
-- `nucleo/banco.tscn` (`class_name Banco`, `Interactuable` con `con_aviso` en falso: sin aviso ni dibujo propio),
-  hijo directo de la raíz de una sala. Con el jugador encima, en el suelo y vivo, la acción `interactuar` recién
-  pulsada y sin `Congelado.activo()` (el disparador de la base, como en el `Npc`) lo hace descansar: sienta al jugador sobre el banco (`sentarse(x)`:
-  queda en la x del banco, quieto y dibujado más bajo, `descansando`), llena las vidas, guarda en `Partida.banco` su
-  `id` y en `Partida.sala` la clave de la sala, guarda la partida (`Partida.guardar(ruta_guardado)`) y emite
-  `Eventos.descanso_en_banco(id)`. Sentado, `interactuar` no vuelve a descansar. Se levanta con `mover_izquierda`,
-  `mover_derecha`, `mover_abajo`, `saltar` o `atacar` recién presionadas, sin saltar ni atacar; un golpe también lo
-  levanta.
-- `id` es único en todo el juego. Con `ruta_guardado` en `Guardado.RUTA` (por omisión) guarda en
-  `Partida.ruta_guardado`; una sala de prueba puede fijar otro archivo.
-- `Sala.llegada_a_banco` (estática): la sala nueva (`Sala.ruta_de(Partida.sala)`) pone al jugador en el banco `Partida.banco`. La usan la
-  reaparición y entrar a una ranura con banco (`preparar_ranura` del menú). Sin ese banco en la sala, imprime un `ERROR:` y usa `Entrada`.
-
-Las salas de prueba viven en `herramientas/salas/`, y las pruebas de código, en `herramientas/pruebas/` (ver
-«Paquete de publicación»).
-
-## Enemigos
-
-Un enemigo es una instancia de `nucleo/enemigo.tscn` (`class_name Enemigo`, `CharacterBody2D`), hija directa de la raíz de
-una sala, con su ficha y un `id` único dentro de la sala. Un enemigo nuevo es una ficha `.tres`; cómo se mueve y
-ataca es un script que la ficha referencia (`comportamiento`), en `contenido/enemigos/` (los de prueba, en
-`herramientas/salas/comportamientos/`). El núcleo lo agrega sin saber cuál es; sin script, el enemigo se queda quieto.
-
-| Campo de `FichaEnemigo` (`nucleo/ficha_enemigo.gd`, `Resource`) | Qué es |
-|---|---|
-| `id` (`StringName`) | Id estable del tipo de enemigo; es lo que emite `enemigo_vencido` |
-| `vida` (2) | Vida al aparecer; cada golpe le resta su daño (ataque 1, bola 2) |
-| `dano_contacto` (1) | Vidas que le quita al jugador al tocarlo (golpe normal, con retroceso) |
-| `tamano` ((80, 80) px) | Su cuerpo, con los pies en el origen; las formas del golpe y del contacto se crean con él |
-| `color` | Color de la caja gris mientras no hay arte |
-| `reaparicion` | `AL_VOLVER_A_ENTRAR` (débil) o `AL_DESCANSAR` (fuerte: vuelve al descansar y al morir el jugador) |
-| `comportamiento` (`GDScript`) | Script que hereda de `ComportamientoEnemigo`; vacío, quieto |
-| `velocidad` (0) | Rapidez al moverse, en px/s, para su comportamiento |
-| `gravedad` (0) | En px/s²; 0: vuela (`MOTION_MODE_FLOATING`: sin suelo, todo choque cuenta como pared); con gravedad, `MOTION_MODE_GROUNDED` |
-| `caida_maxima` (1200) | Rapidez máxima al caer, en px/s |
-
-- El enemigo es un cuerpo en la capa `cuerpo_enemigo` que mira `escenario`: choca con suelos y paredes y el jugador
-  lo atraviesa (lo daña su `DanoContacto`). Su forma de cuerpo, hija directa, se crea con `tamano`. `mirando` (-1 o 1)
-  es pública.
-- Lo que se ajusta por tipo de enemigo va en la ficha: el comportamiento se crea con `.new()` desde la ficha, sin
-  datos por ejemplar, y sus valores fijos son `const`.
-
-- El enemigo lleva un `Golpeable` (recibe los golpes; público como `golpeable`) y un `DanoContacto` (su cuerpo, que
-  daña al jugador y nunca se para). A vida 0 emite `Eventos.enemigo_vencido(ficha.id)`, pide el congelado común y
-  desaparece.
-- `nucleo/comportamiento_enemigo.gd` (`class_name ComportamientoEnemigo`, `Node`): hijo del enemigo, con `enemigo`
-  fijado. Cada tick fuera del congelado llama `actuar()`, que cada comportamiento sobrescribe. Ofrece `jugador()`,
-  `atacar(rectangulo, ticks, dano, se_puede_parar)` (un `AtaqueEnemigo` hijo del enemigo, relativo a sus pies) y
-  `disparar(desplazamiento, direccion, dano, se_puede_parar)` (un `ProyectilEnemigo` en la sala). Para moverse:
-  `caer()` (la gravedad de la ficha con su tope), `mover()` (`move_and_slide`), `en_suelo()`, `pared_delante(sentido)`
-  y `orilla_delante(sentido)` (rayos contra `escenario` a media altura y desde la punta del pie, 12 px más allá del
-  cuerpo), `ve_al_jugador(radio)` (distancia entre centros y ningún sólido en medio), `centro()` y `girar()`.
-  `lanzar_en_arco(desplazamiento, objetivo, grados, gravedad, tope, dano, se_puede_parar)`: un `ProyectilEnemigo` en
-  arco que cae en `objetivo`.
-- El empuje de su `Golpeable` no saca de una orilla a un enemigo que camina y está en el suelo.
-- `nucleo/ataque_enemigo.gd` (`class_name AtaqueEnemigo`, hereda de `DanoContacto`): el ataque, separado del cuerpo;
-  daña mientras dura (`ticks`; 0, hasta que lo quiten) y no corre durante el congelado. Con `se_puede_parar` se
-  dibuja blanco (sin la marca, rojo). `parado` es pública.
-- `nucleo/proyectil_enemigo.gd` (`class_name ProyectilEnemigo`, hereda de `AtaqueEnemigo`): `crear_disparo` avanza
-  recto a `velocidad` (480 px/s); `crear_arco(velocidad_inicial, gravedad, ...)` cae con su propia `gravedad`. Los
-  dos, hasta un sólido (rayo que cubre el paso del tick) o 180 ticks. `velocidad_para(objetivo, grados, gravedad,
-  tope)` da la velocidad inicial con ángulo fijo y rapidez calculada (como Silksong), sin pasar de `tope`.
-- Parry: el ataque normal del jugador (en cualquier dirección) que toca un `AtaqueEnemigo` con `se_puede_parar` lo
-  para: el ataque desaparece sin dañar, el jugador queda `ticks_invulnerable_parry` (15) ticks sin daño de enemigos
-  (los peligros sí dañan), congelado común de `ticks_congelado_parry` (20) con un estallido de rayos blancos en el punto del choque, después el jugador sale empujado hacia atrás (`ticks_retroceso_parry`) y su carrera o voltereta se corta, el enemigo dueño del ataque recibe el golpe (su `Golpeable` lo empuja)
-  (con su Inspiración; un disparo no tiene dueño en la sala y nadie lo recibe) y se emite `parry`. Lo resuelve quien se procese primero: el jugador en su ataque o el
-  `AtaqueEnemigo` antes de dañar (`Jugador.intentar_parar`). `paradas` del jugador las cuenta.
-- Débil: reaparece solo, porque la sala se instancia de nuevo cada vez que se entra. Fuerte: al vencerlo,
-  `Partida.vencer(clave())` lo anota y, mientras siga anotado, no aparece al entrar a su sala. La lista se borra
-  al descansar en un banco y al morir el jugador (como los semipersistentes de Hollow Knight).
-- Enemigos nuevos (decisión del 14-oct-2026): con estas mismas piezas (`Golpeable`, `DanoContacto`, comportamiento en
-  la ficha); sus estados, con un `enum` mientras sean pocos; las zonas de golpe, formas invisibles aparte del dibujo;
-  la animación, con `AnimatedSprite2D`.
-- Jefes (misma fecha): sin base común hasta que exista el segundo. La arena se cierra con una pared que se quita al
-  vencerlo; morir en la arena lleva al banco, abre la arena y el jefe empieza de nuevo.
-
-## Contenido que viene
-
-Decisiones del 14-oct-2026 para lo que aún no existe; cada una se vuelve código con su primer caso.
-
-- Salas: Claude escribe cada sala completa como `.tscn` (formas, puertas, objetos y decoración); la persona la revisa
-  en el editor si quiere.
-- Audio: efectos en WAV y música en Ogg Vorbis; cada zona dice su música en su ficha y la toca un nodo que vive
-  fuera de las salas, para que no se corte al cruzar una puerta.
-- Exportación: APK directo; una sola máquina exporta las versiones; la clave de publicación la genera la persona y
-  se guarda fuera del repo.
-- Idioma: solo español en la v1; cada texto se escribe completo, sin frases armadas a pedazos.
-
-## Interfaz
-
-Bloque `interfaz/`: lo que se dibuja encima del juego. `interfaz/interfaz.tscn` (`CanvasLayer` `Interfaz`, capa 10)
-con un `Control` `Hud` (`interfaz/hud.gd`, `class_name Hud`). La sala lo carga con `load()` si la escena existe
-(`Sala.INTERFAZ`).
-
-- Se entera de todo por el bus (`vidas_cambiadas`, `inspiracion_cambiada`, `monedas_cambiadas`, `partida_guardada`,
-  `descanso_en_banco`, `jugador_muerto`, `tienda_abierta`, `tienda_cerrada`) y lee `Partida` una
-  sola vez al crearse, para el primer cuadro. Nunca lee al jugador.
-- Corazones arriba a la izquierda, uno por vida máxima, llenos o vacíos; debajo, la barra de Inspiración en bloques
-  de `Partida.INSPIRACION_POR_GOLPE` (11, lo que da un golpe por omisión) hasta `INSPIRACION_MAXIMA`, con el bloque
-  a medias dibujado a medias. Centro del grupo en (17 %, 12 %) de una pantalla 16:9 (`Vista.PROPORCION_BASE`),
-  anclado arriba a la izquierda y medido en el lado corto; una vida más crece hacia la derecha.
-- PejeCoins bajo la barra, como el contador de Silksong: un círculo gris (el ícono, hasta tener arte) y el número.
-  - Al entrar a la sala están ocultas.
-  - Con `monedas_cambiadas` aparecen en `TICKS_APARECER` (6) con el «+N» o «−N» al lado; las ganancias seguidas lo
-    suman.
-  - Esperan `TICKS_ESPERA_CONTEO` (60), y cada cambio reinicia la espera. Después cuentan hasta el valor nuevo en
-    unos `PASOS_CONTEO` (34) ticks y quitan el «+N».
-  - Con `jugador_muerto` y un «−N» pendiente, la espera baja a `TICKS_ESPERA_MUERTE` (20): el conteo llega a 0 antes
-    de que la sala oscurezca para reaparecer.
-  - Siguen `TICKS_A_LA_VISTA` (90) y se desvanecen en `TICKS_DESVANECER` (18).
-  - `descanso_en_banco` las muestra sin contar.
-  - Con una tienda abierta (`tienda_abierta`) aparecen y se quedan fijas (`monedas_fijas`), como en los dos juegos:
-    el panel de la tienda va en la mitad derecha y el HUD queda a la vista en la izquierda, en su capa 10, debajo del
-    menú. Mientras tanto el `Hud` corre con el árbol detenido (`process_mode` `PROCESS_MODE_ALWAYS`), así que lo que
-    se compra cuenta y el ícono de guardado gira. Con `tienda_cerrada` vuelve a `PROCESS_MODE_INHERIT` y, si ya no
-    cuenta, siguen `TICKS_A_LA_VISTA` y se desvanecen.
-  - El total siempre está en el inventario.
-  - Son un nodo propio, como el ícono de guardado: contar no redibuja corazones ni barra.
-- Ícono de guardado provisional (un rombo que gira) bajo las PejeCoins, alineado a la izquierda del grupo, durante
-  2 s después de `partida_guardada`. Es un nodo propio que gira con `rotation`: no redibuja el resto de la interfaz.
-- `vidas`, `vidas_maximas`, `inspiracion`, `inspiracion_maxima`, `bloques_llenos`, `monedas` (el valor real), `monedas_mostradas`, `monedas_pendientes`, `monedas_visibles`, `monedas_fijas` y `aviso_visible` son públicas: los
-  guiones las leen con `valor Interfaz/Hud`.
-
-## Mapa
-
-Bloque `mapa/`: no conoce ninguna zona; dibuja lo que hay y, si no hay nada, no dibuja. La sala carga
-`mapa/pantalla_mapa.tscn` con `load()` si existe (`Sala.MAPA`), y el `MenuEstaciones` del núcleo lee los
-`rectangulos` de `mapa/indice_salas.tres` con `load()` si existe y `get()`, sin nombrar `IndiceSalas` (ver
-«Componentes»): mover el índice o renombrar ese campo deja el viaje rápido sin mapa, con la lista sola. `mapa/` viaja
-en el paquete de publicación (el `exclude_filter` de «Publicacion» no lo nombra).
-
-- `PantallaMapa` (extiende `PaginaMarco`: capa 20, grupo `pagina_marco`, corre en pausa): la página Mapa del marco de menús
-  (ver «Marco de menús»); la acción `mapa` abre el marco en ella. `mapa_rapido` mantenida muestra el mapa encima sin
-  detener el juego (como en Hollow Knight y Silksong), solo si empezó a pulsarse con el juego andando; la pantalla
-  nueva de la sala siguiente lo sigue mostrando si se sostiene al cruzar una puerta. Corre en la física antes que el
-  marco y la pausa (prioridad 0 frente a `MarcoMenus.PRIORIDAD_FISICA`): en el tick en que cierran aún ve la pausa.
-- Dos estados del mapa completo: acercado (las salas de la zona actual con borde, o su dibujo) y alejado (cada zona
-  como la silueta rellena de sus salas, con su nombre); abre acercado, y los botones «–» y «+» cambian (raya corta U+2013: Cabin Sketch no tiene el signo menos). Si la zona
-  actual no tiene nada dibujado, se ve alejado. El mapa rápido siempre va acercado.
-- Se dibujan las salas de `Partida.salas_mapeadas` (las llena el banco: ver «Estado de la partida») que están en el
-  índice, solo con la habilidad `pluma_mapa`. El jugador se marca solo con el amuleto `brujula` en
-  `Partida.amuletos_equipados`, en `posicion_mapa + posición del jugador`.
-- La mochila (lo perdido al morir) se marca con un rombo, sin amuleto, si su sala está entre las dibujadas, en la
-  esquina del rectángulo de su sala más su `x, y` (todas las salas empiezan sus `limites` en `(0, 0)`), como el capullo
-  de Silksong. `mochila_visible` y `mochila_en_pantalla` del lienzo son públicas.
-- `mapa/objeto_mapa.tscn` (`class_name ObjetoMapa`): al tocarlo, su `zona` (vacía: la de la sala) pasa por
-  `Partida.obtener_mapa` (avisa con `mapa_obtenido` y autoguarda) y desaparece; si ya se tiene, no aparece.
-- `mapa/indice_salas.tres` (`IndiceSalas`): por cada sala con id, su rectángulo en el mundo, su ruta y, si existe
-  `<id>_mapa.png` junto a la sala, su dibujo (que reemplaza al rectángulo). Lo escribe
-  `herramientas/generar_mapa.tscn` y el validador falla si no coincide con las salas: el paquete exportado no deja
-  listar escenas con fiabilidad. No se edita a mano.
-- El dibujo y las cuentas van aparte: `mapa/lienzo_mapa.gd` (`class_name LienzoMapa`, `Control`, el `lienzo` de la
-  pantalla) recibe todo hecho y solo pinta los dos estados; `mapa/datos_mapa.gd` (`class_name DatosMapa`,
-  `RefCounted`, estático, sin dibujo) agrupa las salas por zona (`por_zona`), da el rectángulo que las abarca
-  (`abarca`), la transformación que lo encaja en la pantalla (`encajar`) y el nombre de cada zona
-  (`nombre_de_zona`). No conoce ninguna zona: trabaja con lo que diga el índice.
-- `abierta`, `rapido` y `acercado` de la pantalla, y `salas_dibujadas`, `zonas_dibujadas`, `marcador_visible`,
-  `quedo_acercado` y `marcador_en_pantalla` de su `lienzo`, son públicas para las pruebas. Con el mapa rápido a la vista,
-  cada tick solo se mueve el punto del jugador (un nodo aparte); el mapa se rehace al abrir, al cambiar de estado, al
-  equipar o quitar la brújula y al descansar. Los dibujos de las salas se cargan al preparar la vista, no al dibujar.
-
-## Marco de menús
-
-- `nucleo/marco_menus.gd` (`class_name MarcoMenus`, `CanvasLayer` capa 21, grupo `pantalla_encima`, corre en pausa),
-  creado por cada sala como `Marco`: páginas en ciclo, como el inventario de Hollow Knight, en el orden de
-  `MarcoMenus.ORDEN` (Inventario, Amuletos y Mapa; sin el bloque `mapa/`, las dos primeras). Abierto detiene el juego
-  (`get_tree().paused`); no se abre con el juego ya detenido (la pausa abierta).
-- `mapa` lo abre en Mapa; `inventario`, de pie en Inventario y sentado en un banco en Amuletos. Abierto,
-  `pagina_anterior` y `pagina_siguiente` (y tocar la vecina en la barra) cambian de página en ciclo; `pausa`, `mapa`,
-  `inventario`, Atrás y «Volver» lo cierran sin abrir la pausa (`bloquea_pausa()`, también en el tick en que se cerró).
-- Todo menú que quita la pausa (`MarcoMenus`, `Pausa`, `MenuTienda`, `MenuEstaciones`, `CobroEstacion` y cualquiera nuevo) lleva
-  `process_physics_priority = MarcoMenus.PRIORIDAD_FISICA` en su `_ready`. Así corre en la física después del
-  jugador (0) y de lo que cuelgue antes que él, y el botón que lo cierra no le llega al jugador en ese tick: B es
-  `volver` y también `curar`, y la pausa se mira nodo por nodo. La prioridad no se hereda a los hijos. Positiva porque
-  el puerto de depuración usa -100 para ir antes de todo.
-- La prioridad no cubre un `Button` que quita la pausa al pulsarse (Continuar, No del cobro, Volver): `ui_accept` lo
-  pulsa al despachar el evento, antes del tick, y A es también `saltar`. Eso lo resuelve el jugador: la pulsación de
-  `saltar` con la que se quitó la pausa fuera del tick no cuenta en su tick siguiente (`docs/jugador.md`, «Cerrar un
-  menú con A»). Para A/`saltar`, un menú nuevo que se cierra con un botón no necesita nada más. No cubre Espacio del
-  teclado, que es `ui_accept` y `atacar`: el ataque con la pulsación que cerró el menú no se filtra (ya pasaba antes
-  de este arreglo).
-- Barra de arriba, de alto `MarcoMenus.ALTO_BARRA`: «Volver» a la izquierda y, al centro, «‹ anterior», el título y
-  «siguiente ›», con el encabezado de los menús (`Tema.encabezado`: `Tema.VOLVER` con el botón de `volver`, `Tema.TITULO`
-  y la raya de `Tema.raya_abajo`); Anterior y Siguiente llevan los de `pagina_anterior` y `pagina_siguiente`.
-- Una página extiende `PaginaMarco` (`nucleo/pagina_marco.gd`, `CanvasLayer`). La base, en su `_ready`, la pone en la
-  capa `PaginaMarco.CAPA` (20), en el grupo `pagina_marco` (`MarcoMenus.GRUPO_PAGINAS`), con `PROCESS_MODE_ALWAYS` y
-  oculta; una página que define su `_ready` empieza con `super()`. Ofrece `abierta` (pública para las pruebas),
-  `id_pagina() -> StringName` y `titulo_pagina() -> String`, que cada página da, y `mostrar_en_marco()` y
-  `ocultar_de_marco()`, que por omisión ponen `abierta` y `visible` (Inventario y Amuletos llaman a `super()` y llenan;
-  Mapa los reemplaza, porque el mapa rápido también la muestra). El marco busca las páginas por el grupo y les habla con
-  llamadas tipadas a `PaginaMarco` (`Array[PaginaMarco]`); un nodo del grupo que no la extiende no cuenta. `PaginaMarco`
-  vive en el núcleo: `mapa/` la extiende y el núcleo no nombra clases de `mapa/`. Una página deja libre la franja de la barra.
-- `nucleo/pagina_inventario.gd` (`class_name PaginaInventario`, extiende `PaginaMarco`, creada como `Inventario`): solo para leer lo que ya
-  existe en `Partida`: vida, Inspiración, PejeCoins, arma (la habilidad `pluma`), habilidades, mapas y lo perdido al
-  morir (`PaginaInventario.perdido(mochila)`). Sin objetos: un inventario de objetos subiría el guardado a la versión 4.
-- `abierta`, `pagina` e `ids()` del marco y `valores` del inventario son públicos para las pruebas.
-
-## Amuletos
-
-- `nucleo/pantalla_amuletos.gd` (`class_name PantallaAmuletos`, extiende `PaginaMarco`: capa 20, grupo `pagina_marco`,
-  corre en pausa), creada por cada sala como `Amuletos`: la página Amuletos del marco de menús.
-- Lista los amuletos de `Partida.amuletos_tenidos`, cada uno «puesto» o «guardado». Como en Hollow Knight, solo
-  sentado en un banco (`Jugador.descansando` del `Jugador` de la sala) se ponen y se quitan (`alternar(id)`); de pie
-  se ven, sin responder. El que no cabe tampoco responde.
-- El aviso y la lista van centrados bajo la barra del marco dentro de un `ScrollContainer` (`Fondo/Desplazable`,
-  `follow_focus`, sin desplazamiento horizontal): si no caben a lo alto (a 1280×720, desde 5 amuletos) se desplazan
-  con el foco y con el dedo, y el aviso se va con la lista.
-- Nombre en pantalla: el id con mayúsculas (`nombre_de`), hasta que los amuletos tengan ficha con nombre. No se llama
-  «mochila»: `Partida.mochila` es lo que se pierde al morir. (Táctil: ver «Entrada».)
-- `abierta` y `botones` son públicas para las pruebas.
+- `nucleo/ficha_amuleto.gd` (`class_name FichaAmuleto`, `Resource`): `id`, `nombre`, `descripcion`, `costo` (1 a 3,
+  como los amuletos de Hollow Knight), `icono` (`Texture2D`, opcional, para cuando tenga arte) y, en
+  el grupo «Efectos», `velocidad_factor` (1), `invulnerable_extra` (ticks, 0), `inspiracion_extra` (por golpe, 0) y
+  `botin_factor` (1). Los valores por omisión no hacen nada.
+- `nucleo/ficha_util.gd` (`class_name FichaUtil`, `Resource`): `id`, `nombre`, `descripcion` e `icono`. Un útil no
+  tiene números: lo que hace lo lee quien lo necesita con `Partida.util_equipado(id)` (la brújula, la pantalla del
+  mapa), como las herramientas de Silksong (`compassTool.IsEquipped` en `GameMap`).
+- `nucleo/catalogo_equipo.gd` (`class_name CatalogoEquipo`, `Resource`): la lista oficial, `amuletos` y `utiles`.
+  Hay dos: el del juego (`contenido/equipo.tres`, `RUTA_JUEGO`) y el de la zona de pruebas
+  (`herramientas/salas/fichas/equipo_prueba.tres`, `RUTA_PRUEBAS`). `CatalogoEquipo.amuleto(id)` y `util(id)` buscan
+  primero en el del juego y dan `null` si el id no está en ninguno; un id fuera del catálogo no se puede poner. Cargan
+  cada vez con `Cargar.si_existe` (la copia que ya tiene el motor), sin caché estática, y leen el catálogo como
+  `Resource`, sin nombrar su propia clase: que el script se nombre a sí mismo dejaba recursos sin liberar al salir
+  (`docs/errores/2026-10-29-fuga-catalogo-equipo.md`).
+- Un amuleto o un útil nuevo es una entrada en un catálogo; su id no se renombra (lo guarda la partida).
+- Quién aplica cada efecto: el `Jugador` guarda `Partida.efectos_amuletos()` al aparecer y lo renueva con
+  `equipo_cambiado`; multiplica la velocidad al caminar (no la carrera, el impulso ni la caminata de una puerta), suma
+  `invulnerable_extra` a los ticks sin daño tras recibir un golpe (no tras el parry ni la picada) y `inspiracion_extra`
+  a cada golpe que da Inspiración (el del ataque y el del parry al enemigo; no un golpe bloqueado). El `Enemigo`, al
+  soltar su botín, lo multiplica por `botin_factor` (redondeado). Prueba: `herramientas/guiones/nucleo/efectos_amuletos`.
+- El validador falla una `Recompensa` de tipo `AMULETO` o `UTIL` (de una entrega, un reto, una tienda o una ficha de
+  diálogo) o un `ObjetoAmuleto` cuyo id no esté en un catálogo, y fuera de `herramientas/` uno que solo esté en el de pruebas: el juego no depende de datos de prueba (`validador-equipo`, `validador-objeto-amuleto`).
 
 ## Grupos
 
 | Grupo | Quién lo lleva | Quién lo usa |
 |---|---|---|
-| `jugador` | El cuerpo que controla la persona: el `Jugador` que crea la sala, o la caja gris (`sala_inicial`) | El puerto de depuración (posición y si está en el suelo), `ComportamientoEnemigo.jugador()`, `MuroRompible` (el rebote del jugador), los controles táctiles, el marco de menús, la pantalla de amuletos, la del mapa y, en pruebas, `herramientas/salas/medidor_camara.gd` y `herramientas/pruebas/prueba_peligro_anti_bucle.gd` |
+| `jugador` | El cuerpo que controla la persona: el `Jugador` que crea la sala | El puerto de depuración (posición y si está en el suelo), `ComportamientoEnemigo.jugador()`, `MuroRompible` (el rebote del jugador), los controles táctiles, el marco de menús, la pantalla de amuletos, la del mapa y, en pruebas, `herramientas/salas/medidor_camara.gd` y `herramientas/pruebas/prueba_peligro_anti_bucle.gd` |
 | `pantalla_encima` | Una pantalla abierta sobre el juego (hoy, `MarcoMenus`, `MenuTienda`, `MenuEstaciones` y `CobroEstacion`) con `bloquea_pausa() -> bool` | La `Pausa`: no se abre (con `pausa`, Atrás ni al perder el foco) mientras una diga que bloquea, ni en el tick en que se cerró |
-| `pagina_marco` | Las páginas del marco de menús, que extienden `PaginaMarco` (la base las pone en el grupo): `PaginaInventario`, `PantallaAmuletos` y `PantallaMapa` | `MarcoMenus`, que las ordena y las muestra (ver «Marco de menús») |
+| `pagina_marco` | Las páginas del marco de menús, que extienden `PaginaMarco` (la base las pone en el grupo): `PaginaInventario`, `PantallaAmuletos`, `PantallaUtiles` y `PantallaMapa` | `MarcoMenus`, que las ordena y las muestra (ver `docs/interfaz.md`, «Marco de menús») |
+| `colgantes_sala`, `fondos_sala`, `luces_sala`, `nieblas_sala` | Los `Colgante`, `FondoTapado`, `LuzSala` y `Niebla` de la sala | `PanelPruebas`, que apaga cada capa para medir |
 
 ## Capas de física
 
@@ -802,11 +264,11 @@ mascara)`: no se fijan en los `.tscn`, así una sala no puede olvidarlas. Así l
 
 | Capa | Nombre | Quién está en ella | Su máscara |
 |---|---|---|---|
-| 1 | `escenario` | Todo `StaticBody2D` (suelos, paredes, `SueloFragil`, `MuroRompible`) y el `Porton`. Es la capa por omisión: las formas de las salas no la fijan | — |
-| 2 | `jugador` | El cuerpo del `Jugador` y el de la caja gris | `escenario` |
+| 1 | `escenario` | Todo `StaticBody2D` (suelos, paredes, `SueloFragil`, `MuroRompible`, `PlataformaDelgada`), el `Porton` y el `AnimatableBody2D` con `Vaiven` (plataformas y elevadores). Toda pieza con script la fija con `Capas.poner`, máscara 0 (`Porton`, `Vaiven`, `PlataformaDelgada`, `MuroRompible`, `SueloFragil`). Es la capa por omisión: los suelos y paredes sin script de las salas no la fijan | — |
+| 2 | `jugador` | El cuerpo del `Jugador` | `escenario` |
 | 3 | `golpeable` | `Golpeable` y `Cortable` | `Golpeable`: ninguna; `Cortable`: `jugador` (se sacude al pasar) |
 | 4 | `danino` | `DanoContacto` y lo que hereda de él (`AtaqueEnemigo`, `ProyectilEnemigo`) | `jugador` |
-| 5 | `interaccion` | `Puerta`, `Banco`, `Coleccionable`, `ObjetoHabilidad`, `ObjetoMapa`, `Npc`, `RetoPreguntas`, `EntregaRecompensas`, `Mochila`, `Tienda`, `Estacion`, `AvisoAccion` y el interruptor de la brújula | `jugador` |
+| 5 | `interaccion` | `Puerta`, `Banco`, `Coleccionable`, `MonedasSueltas`, `ObjetoHabilidad`, `ObjetoAmuleto`, `ObjetoMapa`, `Npc`, `RetoPreguntas`, `EntregaRecompensas`, `Mochila`, `Tienda`, `Estacion`, `AvisoAccion`, `ZonaCamara`, `RegionMusica` y el interruptor de la brújula | `jugador` |
 | 6 | `ataque_jugador` | El área `Ataque` del jugador y su `Proyectil` | `Ataque`: `golpeable` y `danino` (parry y pogo); `Proyectil`: `golpeable` |
 | 7 | `cuerpo_enemigo` | El cuerpo de cada `Enemigo` (`CharacterBody2D`); nadie lo mira | `escenario` |
 
@@ -821,166 +283,47 @@ mascara)`: no se fijan en los `.tscn`, así una sala no puede olvidarlas. Así l
 
 | Capa | Qué | Dónde |
 |---|---|---|
-| 1 | `Interfaz` de la caja gris, con «Volver al menú» (capa por omisión) | `nucleo/caja_gris.tscn` |
 | 5 | `ControlesTactiles` | `nucleo/controles_tactiles.tscn` |
 | 10 | `Interfaz` (con una tienda abierta queda a la vista en la mitad izquierda, que el velo del menú no tapa) | `interfaz/interfaz.tscn` |
-| 11 | Medidor de FPS de la sala de arte (solo pruebas) | `herramientas/salas/sala_arte.gd` |
+| 11 | Botones «Frente» y «Anim» de la sala de arte (solo pruebas; los FPS los da `ContadorFps` y las partículas y la niebla, el panel de pruebas) | `herramientas/salas/sala_arte.gd` |
 | 12 | `CajaDialogo` | `nucleo/caja_dialogo.gd` |
+| 13 | `PanelPruebas`: la pestaña y la tarjeta del panel de pruebas (solo con el modo desarrollador) | `nucleo/panel_pruebas.gd` |
 | 15 | `Fundido` | `nucleo/fundido.gd` |
-| 20 | `Pausa`, las páginas del marco, los menús de la tienda y de las estaciones y el cobro de una estación (nunca hay dos abiertos a la vez) | `nucleo/pausa.tscn`, `nucleo/pagina_marco.gd` (`PaginaMarco.CAPA`, la de `nucleo/pagina_inventario.gd`, `nucleo/pantalla_amuletos.gd` y `mapa/pantalla_mapa.gd`), `nucleo/menu_tienda.gd`, `nucleo/menu_estaciones.gd`, `nucleo/cobro_estacion.gd` |
+| 20 | `Pausa`, las páginas del marco, los menús de la tienda y de las estaciones y el cobro de una estación (nunca hay dos abiertos a la vez) | `nucleo/modal_pausa.gd` (`ModalPausa.CAPA`, la fuente; `nucleo/pausa.tscn` repite el número), `nucleo/pagina_marco.gd` (`PaginaMarco.CAPA`, la de `nucleo/pagina_inventario.gd`, `nucleo/pantalla_amuletos.gd`, `nucleo/pantalla_utiles.gd` y `mapa/pantalla_mapa.gd`), `nucleo/menu_tienda.gd`, `nucleo/menu_estaciones.gd`, `nucleo/cobro_estacion.gd` |
 | 21 | La barra del marco de menús (`MarcoMenus`) | `nucleo/marco_menus.gd` |
 | 22 | Configuración abierta desde la pausa (`Pausa.CAPA_CONFIGURACION`) | `nucleo/pausa.gd` |
 | 23 | `EditorControles`, encima de Configuración | `nucleo/editor_controles.tscn` |
+| 24 | `ContadorFps`, encima de todo: se lee también con un menú abierto | `nucleo/contador_fps.gd` |
 
 Una capa nueva entra a esta tabla en el mismo cambio.
-
-## Guiones de entrada
-
-Formato, comando y condiciones de fallo: `docs/guiones.md`.
 
 ## Paquete de publicación
 
 El núcleo no depende de `herramientas/`: las únicas referencias son la carga condicional de `Arranque` (el puerto,
 solo en un build de depuración), `Sala.ruta_de` (busca una sala en `Sala.CARPETA_PRUEBAS` si no está en
 `contenido/salas/`), la tabla de estaciones de prueba, que `Estacion.tabla_de` carga solo para una sala de la zona de pruebas y solo si
-existe (`herramientas/salas/zonas/estaciones_prueba.tres`), y el botón «Zona de pruebas» del menú principal, que aparece con el modo
+existe (`herramientas/salas/zonas/estaciones_prueba.tres`), el catálogo de amuletos y útiles de prueba, que
+`CatalogoEquipo` carga solo si existe (`herramientas/salas/fichas/equipo_prueba.tres`, ver «Amuletos y útiles»), y el botón «Zona de pruebas» del menú principal, que aparece con el modo
 desarrollador encendido si `herramientas/salas/zona_pruebas.tscn` existe (`ResourceLoader.exists`, sin `preload`),
 en depuración y en publicación. Que la zona viaje en el paquete de publicación lo decide el `exclude_filter` del
 preset «Publicacion» de `export_presets.cfg`:
 
 - Viajan la zona de pruebas y sus salas jugables: `herramientas/salas/` completa, con `zonas/`, `fichas/`,
   `comportamientos/` y `arte/`.
-- No viajan (desde el 17-oct-2026): `*funciones.json`, `herramientas/pruebas/*` (las pruebas de código: `sala_*.tscn`
+- No viajan: `*funciones.json`, `herramientas/pruebas/*` (las pruebas de código: `sala_*.tscn`
   sin jugador, sus `prueba_*.gd` y `prueba_base.gd`), `herramientas/validar.*`, `herramientas/generar_mapa.*`,
-  `herramientas/generar_sprites.*` (desde el 21-oct-2026: genera el `SpriteFrames` del jugador, ver «Recursos») y
+  `herramientas/generar_sprites.*` (genera el `SpriteFrames` del jugador),
+  `herramientas/generar_trazo.*` (genera la textura de `TrazoAtaque`),
+  `herramientas/generar_efectos.*` (genera las hojas de `EfectoCuadros` del jugador, el ruido de la niebla y el montón de `MonedasSueltas`), `herramientas/arreglar_uids.*` y
   `herramientas/puerto_depuracion.*`. Los patrones van separados por coma, sin `res://`, y `*` cruza `/`. Los
   guiones (`.guion`, `.esperado`) no son recursos y no se exportan.
 - Por eso nada fuera de `herramientas/pruebas/` nombra una ruta `res://herramientas/pruebas/`: lo revisa el
   validador (`validador-pruebas-aparte`).
+- Los videos `.mp4` (`nucleo/video/`, `contenido/cinematicas/`) no los importa Godot: los dos presets los llevan con
+  `include_filter="*.mp4"` (ver `ReproductorVideo` en `docs/interfaz.md`, «Componentes de menú»). Los `.ogv` no pasan por el
+  importador (llevan solo su `.uid`) y los dos presets los dejan fuera con `exclude_filter` (son 12,4 MB que en el teléfono no se usan; si H.264 falla, el respaldo es la imagen `.jpg`). En la PC y en los guiones
+  sí están.
+- El preset «Desarrollo» lleva todo lo demás (su `exclude_filter` es solo `*.ogv`) y arranca con `--print-fps`; los dos exportan para
+  `armeabi-v7a` y `arm64-v8a`.
 - Se comprueba con `--export-pack "Publicacion" <archivo>.zip` y la lista de entradas bajo `herramientas/`: los
   scripts salen como `.gdc` y las escenas como `.remap`.
-
-## Menú
-
-`nucleo/menu.tscn` es la escena principal. Al abrir pasa `Guardado.RUTA` a la ranura 1. «Jugar» abre las ranuras
-(`nucleo/ranuras.gd`, `class_name Ranuras`, armada en código; `menu.ranuras`): una ficha por ranura, 4 en fila cuando
-caben (desde la vista de 1280) y si no 2×2, arriba del aviso de pocos toques. La vacía dice «Nueva partida»
-(`Partida.reiniciar()`, se escribe ya en su ranura y lleva a `sala_inicial`: hoy la caja gris, que tiene un botón
-«Volver al menú» porque no es una sala y no tiene pausa). La `VALIDA` dice dónde se quedó (la sala del banco, si no
-la última visitada, si no «Inicio»), las vidas máximas, el tiempo jugado y un cuadrito por habilidad, jefe y
-coleccionable; al entrar se copia (`respaldar`), se carga y lleva a la sala de su banco (sin banco, a `sala_inicial`).
-La `DANADA` y la `INCOMPATIBLE` no se abren. Entrar a una ranura fija `Partida.ruta_guardado` en ella
-(`preparar_ranura`). Una vacía abre antes «Nueva partida» (`nucleo/nueva_partida.gd`, `class_name NuevaPartida`):
-«Hombre» o «Mujer» (`Partida.personaje` = `hombre` o `mujer`), el nombre en un campo de texto y «Empezar», que no
-responde sin personaje. `NuevaPartida.limpiar_nombre` deja letras, números y espacios simples, hasta 12; vacío,
-«Alumno» o «Alumna». La ficha ocupada lleva el nombre (sin él, «Partida N»). «Borrar» (si no está vacía) y «Restaurar» (si hay copia: vuelve al inicio de la última sesión)
-piden confirmación (`Confirmacion`, en «Componentes», con el foco en «Cancelar»). «Configuración» (`nucleo/configuracion.tscn`, `class_name Configuracion`,
-instancia `Configuracion` del menú) reemplaza al panel central con, en orden de uso: «Audio» (`nucleo/panel_audio.gd`, `class_name PanelAudio`, el nodo `PanelAudio`: panel con el volumen general, de
-música y de efectos; cada uno con su barra ancha, su porcentaje y un altavoz que lo silencia y, con otro toque, lo
-devuelve al valor de antes, o a 50 si se bajó a 0 con la barra; mientras está abierto suena la música de prueba en su
-bus, salvo sin pantalla, y «Probar efecto» toca uno en el de efectos), «Brillo» (su pantalla, `nucleo/pantalla_brillo.gd`, `class_name PantallaBrillo`, que Configuración crea en código, nodo `PanelBrillo`; como en Hollow Knight:
-detrás la escena tenue; en una ventana la misma escena con un cuadro casi negro de calibración en la esquina; el texto
-«Ajusta el brillo hasta que el cuadro de la esquina apenas se vea.» y la barra ancha, de 50 % a 150 % en pasos de 5.
-La escena y el cuadro se modulan con el mismo color que la sala, porque el brillo no llega a las capas. La escena
-es la copia que tomó la pausa, con un shader que divide entre el brillo con que se tomó, o, desde el menú o sin
-copia, `EscenaMuestra` de `nucleo/escena_muestra.gd`, rectángulos de color), Vibración, Temblor, Recursos (cada toque
-pasa a automático, bajo o alto; ver «Recursos». Abierta desde la pausa se ve apagado, con `BotonValor.bloqueado`, y
-tocarlo no lo cambia: dice «Para cambiar los gráficos, sal al menú principal.», porque las salas leen el modo al entrar), FPS (60 o
-120, ajuste `fps`; solo aparece con Recursos en alto, elegido o por la detección, y una pantalla de 90 Hz o más,
-leída al abrir en `Configuracion.refresco`; se cambia también desde la pausa, porque no recarga nada), «Botones táctiles» (el mismo editor que la
-pausa; ver «Entrada»), «Botones del control» (reasignación con `Mando`: tocar una acción y presionar el botón del
-control; «Restablecer» los devuelve a los de `project.godot`; sin control conectado lo avisa, con `Input.joy_connection_changed`), Modo desarrollador
-(con él el menú muestra «Zona de pruebas»; no aparece abierta desde la pausa, `en_partida`) y «Créditos»;
-«Volver», arriba a la izquierda en cada pantalla. Cada opción es un `BotonValor` (`nucleo/boton_valor.gd`): el nombre
-a la izquierda y el valor a la derecha, en gis: con dos opciones (Sí / No, y 60 / 120 en FPS, `opciones`) se ven las dos y la que vale va en un óvalo; Recursos va solo en su óvalo,
-con la letra más chica si no cabe, y lo que abre otra pantalla, seguido de «›»; sin interruptores, y se toca el botón entero. Las barras anchas
-(variación `Tema.BARRA_ANCHA` de `HSlider`) saltan al punto tocado y se arrastran; con teclado o control, izquierda y
-derecha las mueven de 10 en 10. Cada
-cambio se guarda al momento; las barras, al soltarlas.
-Atrás y la acción `pausa` vuelven un nivel a la vez (`atras()` del menú y de la Configuración): cancelan el editor, la espera de un botón y la
-confirmación, de un subpanel vuelven a la lista, de «Nueva partida» a las ranuras, de la lista o de las ranuras al menú, y en el menú piden
-confirmación antes de cerrar la app (la misma `Confirmacion`, con el foco en «Seguir jugando»). La zona de pruebas es un nivel más: su «Volver», Atrás, `pausa` y `volver` (B) regresan al menú, y L1 / R1
-(`pagina_anterior` y `pagina_siguiente`) cambian de categoría con la vuelta en los extremos; al regresar, el menú queda con
-el foco en su entrada (`MenuPrincipal.volver_a_zona`, que el menú lee al entrar). Quien vuelve al menú (pausa, «Volver al
-menú» de la caja gris, zona de pruebas) usa `MenuPrincipal.RUTA`. Se maneja con toque, teclado y
-control (el foco empieza en la primera opción de cada pantalla). Las opciones nuevas de configuración se agregan a
-esa escena.
-
-Tamaños y aspecto (`nucleo/tema.gd`, `class_name Tema`): el tema de los menús se arma en código (`Tema.crear()`) y se asigna
-solo a sus raíces (menú, que lo hereda la Configuración, pausa, marco de menús y sus páginas, caja de diálogo, tienda, estaciones y zona de pruebas), no en `project.godot`; el HUD queda fuera.
-Es de gis (plan `nucleo-menus-gis`, 17-oct-2026): letra Cabin Sketch (`nucleo/fuentes/`, licencia OFL), gruesa en los títulos (variación
-`Tema.TITULO` de `Label`), que se carga con `load()` al armar el tema; opciones sin caja, en gis gastado (`Tema.GASTADO`) y en gis blanco (`Tema.GIS`) con el foco o presionadas;
-lo presionado o elegido (la categoría, el personaje) va subrayado. Variaciones de `Button`: `Tema.VOLVER` (flecha de gis hacia atrás),
-`Tema.TARJETA` (caja de gis con relleno oscuro: fichas de las ranuras, caja de diálogo y sus opciones), `Tema.PESTANA` (fila de categorías) y
-`Tema.CON_DETALLE` (lugar para una línea debajo: salas de la zona de pruebas), `Tema.OPCION_CHICA` (letra de 33: Zona de
-pruebas del menú principal), `Tema.SIMBOLO` (sale de `Tema.TARJETA`, con letra de 96, `LETRA_SIMBOLO`, y sin márgenes de arriba y abajo, `MARGEN_SIMBOLO`: botones de un solo símbolo, «–» y «+» del mapa, que caen encima de lo dibujado) y `Tema.OPCION_CENTRADA` (las opciones de la pausa y Sí y No de la confirmación de la tienda y del cobro de una estación; la `Confirmacion` la toma en `variacion_boton`: el mismo
-margen a los dos lados, sin subrayado, y con el foco una flechita de gis a cada lado, `EstiloGis.Forma.LADOS`; las
-flechitas van en las orillas del botón, así que el botón mide lo que su texto, sin ancho mínimo). Variaciones de
-`Label`: `Tema.TITULO_JUEGO` (96) y `Tema.TITULO_PAUSA` (72), que salen de `Tema.TITULO`; `Tema.DESTACADA` (letra de
-36: título de una ranura, pregunta de la tienda y del cobro de una estación), `Tema.PREGUNTA` (40: confirmación de las ranuras), `Tema.QUIEN`
-(dorado: quien habla) y `Tema.TENUE` (gis al 0,7: nombres del inventario). Las filas de la tienda usan `Tema.FILA_TIENDA` (`Button`: a la izquierda el lugar del ícono y la
-moneda, `LADO_ICONO_FILA` 56 y `LADO_MONEDA_FILA` 28 px con `SEPARACION_ICONO` 12, y el foco sin dibujo) y
-`Tema.FILA_TIENDA_APAGADA` (de ella, en `GRIS_APAGADO`); la fila elegida lleva detrás un `Panel` `Tema.FRANJA`
-(`EstiloGis.Forma.FRANJA`: relleno `RELLENO_FRANJA`, gis al 0,1, entre dos rayas a `ALTO_ORILLA_FRANJA` (20) px de las
-orillas y un adorno chico centrado en cada raya, todo dentro de la fila). Adornos de gis para arriba y abajo de una
-lista (la pausa): `Tema.adorno(Tema.ADORNO_ANCHO)` y `Tema.adorno(Tema.ADORNO_CHICO)` dan un
-`PanelContainer` sin hijos, que mide lo que dicen `Tema.TAMANO_ADORNO_ANCHO` y `TAMANO_ADORNO_CHICO` (los márgenes de
-su `EstiloGis.Forma.ADORNO`: raya con un rombo en medio y uno chico en cada punta) e ignora toques y foco. Un aspecto
-nuevo es una variación de `Tema`, no un `add_theme_*_override`, que queda solo para separaciones y márgenes. Cada pantalla lleva el mismo encabezado,
-`Tema.encabezado(arriba)`: «Volver» con su flecha y, dentro, el botón del control de `volver` (`IconoBoton`; otra acción con
-`encabezado(arriba, accion)` y ninguna con `&""`; no pone un segundo si Volver ya tiene su `Icono`), el título en gis grueso y una raya debajo (`Tema.raya_abajo`); lo usan `Tema.barra_arriba`,
-Configuración y sus paneles, ranuras, nueva partida, la tienda, las estaciones, la zona de pruebas y, con su barra de páginas, el marco. El menú principal
-(título grande, sin imagen de fondo) va en una columna a la izquierda. La pausa, como la de Silksong, va en una columna
-centrada en la pantalla (`Panel/Opciones`, centrada en las dos direcciones): el título «Pausa» (`Tema.TITULO_PAUSA`),
-el adorno ancho, Continuar, Configuración y Salir al menú con `Tema.OPCION_CENTRADA` (cada botón mide lo que su texto;
-Continuar, con el ícono de `volver`) y el adorno chico (los dos con `Tema.adorno`, agregados en `pausa.gd`). Sin caja alrededor de las opciones: detrás
-solo queda el velo `Panel` (negro al 0,7), que deja ver el juego. Los botones siguen en
-`Panel/Opciones/{Continuar,Configuracion,SalirAlMenu}`, en ese orden, y los adornos (`PanelContainer`) no son botones. Todo lo
-que se toca mide al menos 108 px de alto (48 dp en el Senwa S50);
-letra de 36 en botones y 33 en etiquetas (`Tema.ALTO_LETRA`, 43 px con Cabin Sketch, medido el 17-oct-2026). `Tema.ajustar(control)` pone un panel en el área segura menos 64 px a los
-lados y 16 arriba y abajo, y lo reacomoda al cambiar la ventana. `Tema.fondo_menu(alfa := Tema.VELO)` da el fondo de un menú armado en código (negro con `VELO`, 0.85, a pantalla completa, llamado `Fondo` y con el tema): lo usan las estaciones, el inventario, los amuletos, la Configuración de la pausa (0.9) y la tienda (0, transparente: su velo cubre solo la mitad derecha). `Tema.texto_centrado(lienzo, fuente, cadena, base, letra, color)` dibuja un texto centrado a lo ancho sobre su línea base (botones táctiles, editor de botones, `IconoBoton`, `AvisoAccion`). Las cuadrículas de la Configuración toman 2 columnas
-de 420 px en la vista de 1280 (4:3 y 16:9) y 3 desde 1440 (`Configuracion.columnas_para`), y se desplazan si no
-caben en alto. El foco es un `StyleBox` propio, `EstiloGis` (`nucleo/estilo_gis.gd`, `_draw` de `StyleBox`): una flechita de gis a la izquierda y el
-subrayado de lado a lado del contenido (un `StyleBox` no conoce el texto); en las barras, una caja de gis. Sus trazos tiemblan con una
-semilla que sale del tamaño, así no cambian al redibujar. Los menús ponen el foco con
-`Tema.dar_foco(control)`: si lo último que se usó fue el dedo o el ratón no se dibuja, aunque haya un control
-conectado, y la primera flecha o el primer movimiento del control lo muestra; si fue un control o el teclado, se ve
-desde que se abre el menú. Lo último que se usó lo anota `UltimaEntrada` (`nucleo/ultima_entrada.gd`, nodo que crea
-`Arranque`, también en pausa): `UltimaEntrada.con_control()`, que al arrancar da `true` si ya hay un control
-conectado. En Android, un clic de ratón real (el touchpad del DUALSHOCK 4; `UltimaEntrada.es_raton_real`: no trae
-`InputEvent.DEVICE_ID_EMULATION`, que llevan los que Godot emula desde el dedo) no cuenta como toque. Además
-`UltimaEntrada` esconde ahí el puntero del sistema (`Input.MOUSE_MODE_HIDDEN`) al arrancar y lo vuelve a pedir con
-el primer evento de ratón real tras cada toque: Godot en Android solo lo aplica si lo último que vio fue un ratón y
-no reintenta un modo ya pedido (código del motor, rama 4.5, `display_server_android.cpp` y `GodotInputHandler.java`;
-pide API 26 o más).
-
-`UltimaEntrada.dispositivo` dice qué se usó al último, con el `enum Mando.Dispositivo`: `TOQUE`, `TECLADO` o la
-familia del control (`XBOX` o `PLAYSTATION`, que da `Mando.familia`); `con_control()` es `dispositivo != TOQUE`, no un
-valor aparte. `UltimaEntrada.clasificar(evento, android)` dice qué dispositivo implica un evento sin anotarlo, o
-`UltimaEntrada.SIN_CAMBIO` (-1) si no cambia nada (soltar, arrastrar, mover el ratón, un stick bajo la mitad, en
-Android un clic de ratón real); `anotar` la usa. La familia de cada control (`device`) se calcula una vez y se guarda
-hasta que se conecta o desconecta cualquier control (`Input.joy_connection_changed`, conectada siempre). Con eso `IconoBoton` (`nucleo/icono_boton.gd`, un `Control`) dibuja el botón de una
-acción (`accion`, con lo reasignado): disco con el símbolo de PlayStation o la letra de Xbox, pastilla para laterales,
-gatillos, Start y Select, o la tecla con el teclado; tras un toque no se ve. Se dibuja con `_draw`, sin imágenes, y
-se recalcula con las señales del bus `dispositivo_cambiado` y `mando_cambiado`, no por cuadro: se conecta en
-`_enter_tree`, se desconecta en `_exit_tree` y al volver al árbol se pone al día con lo que cambió mientras estaba
-fuera. `Mando` y `UltimaEntrada` son estáticos: emiten con `Mando.bus()` (el nodo `Eventos`, o `null` si aún no
-está en el árbol) y `emit_signal`, no con el identificador `Eventos`, así compilan y no dan error sin autoloads (un
-`-s`); en el juego `Eventos` siempre está, porque es el primer autoload y los ajustes se cargan en `Arranque`, el
-tercero. `IconoBoton.en_boton(boton, accion)` lo
-pone dentro de un `Button` y le reserva su ancho con un ícono transparente. `dibujo_actual` (solo lectura, una copia)
-dice lo que dibuja ahora, en la forma de `IconoBoton.dibujo()`. Lo llevan los Volver de los menús
-(`volver`), Continuar de la pausa, Anterior y Siguiente del marco (`pagina_anterior` y `pagina_siguiente`), la
-barra de la zona de pruebas, las filas de «Botones del control» y, en la partida, solo los pizarrones (`AvisoAccion`).
-
-Los menús hechos de piezas repetidas (ranuras, nueva partida, marco y sus páginas, partes de Configuración como el
-brillo) se arman en código y no en un `.tscn`: las fichas son iguales y su número sale de los datos. El resto es
-escena (`menu.tscn`, `configuracion.tscn`, `pausa.tscn`). Fuera de la v1: accesibilidad para lector de pantalla
-(`accessibility_name`); los menús se manejan con toque, teclado y control.
-
-Aviso de pocos toques: `nucleo/toques.gd` (`class_name Toques`, estático) pregunta una vez a Android, con el singleton
-`AndroidRuntime` y `PackageManager.hasSystemFeature`, si la pantalla declara 5 o más toques a la vez
-(`android.hardware.touchscreen.multitouch.jazzhand`; Godot 4.7.2 entrega el boolean de Java como entero). Si no
-(`Toques.pocos()`), el menú pone una línea discreta abajo (`AvisoToques`, de `Toques.crear_aviso()`), visible en el menú
-y en la Configuración y tapada por la confirmación de salida. Fuera de Android o si la pregunta falla, no hay aviso. El
-juego no cambia por esto. Las pruebas usan `Toques.forzar()` y `Toques.olvidar()`.

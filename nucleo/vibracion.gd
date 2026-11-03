@@ -1,7 +1,7 @@
 class_name Vibracion
 extends Node
 # Vibracion del telefono: escucha el bus y vibra corto al pegar, al parar, al recibir dano, al curarse, al
-# descansar y al aterrizar duro o de la picada, cada uno con su duracion y su fuerza (docs/contrato.md, Ajustes y vibracion). La crea cada sala.
+# descansar y al aterrizar duro o de la picada, cada uno con su duracion y su fuerza (docs/audio.md, Vibracion). La crea cada sala.
 # Con el ajuste vibracion apagado no vibra. Nada mas vibra: moverse, saltar y los menus no.
 
 ## Duracion en ms y fuerza (0 a 1) de cada vibracion. En un telefono sin control de fuerza solo
@@ -62,8 +62,11 @@ func _al_descansar(_banco: StringName) -> void:
 	_vibrar(&"al_descansar", al_descansar)
 
 
-func _al_aterrizar(_velocidad: float) -> void:
-	_vibrar(&"al_aterrizar", al_aterrizar)
+# jugador_aterrizo sale en todo aterrizaje: solo vibran el duro y el de la picada; uno comun no vibra.
+# Se usa el dato duro y no un umbral de velocidad: una caida que llega al tope pocos ticks cae tan rapido como una dura.
+func _al_aterrizar(_velocidad: float, duro: bool, picada: bool) -> void:
+	if duro or picada:
+		_vibrar(&"al_aterrizar", al_aterrizar)
 
 
 func _vibrar(cual: StringName, patron: Vector2) -> void:

@@ -1,7 +1,8 @@
 class_name FichaDialogo
 extends Resource
-# Una conversacion completa y lo que se entrega la primera vez que se termina contando. Un Npc tiene una por etapa.
-# Es dato: el validador revisa que las opciones y sus destinos coincidan.
+# Una conversacion completa y sus recompensas para una etapa de Npc.
+# Es dato que se escribe sin tocar el nucleo.
+# El validador revisa que las opciones y sus destinos coincidan.
 
 ## Las lineas en orden; una con opciones salta a la que diga cada opcion.
 @export var lineas: Array[LineaDialogo] = []
@@ -36,7 +37,8 @@ func fallos() -> PackedStringArray:
 		var recompensa: Recompensa = recompensas[i]
 		if recompensa == null:
 			lista.append("recompensa %d vacia" % i)
-		elif recompensa.tipo in [Recompensa.Tipo.AMULETO, Recompensa.Tipo.HABILIDAD, Recompensa.Tipo.MAPA] and recompensa.id == &"":
+		elif recompensa.tipo in [Recompensa.Tipo.AMULETO, Recompensa.Tipo.UTIL, Recompensa.Tipo.HABILIDAD,
+				Recompensa.Tipo.MAPA] and recompensa.id == &"":
 			lista.append("recompensa %d sin id" % i)
 		elif recompensa.tipo == Recompensa.Tipo.HABILIDAD and not Habilidades.TODAS.has(recompensa.id):
 			lista.append("recompensa %d: %s no es una habilidad" % [i, recompensa.id])

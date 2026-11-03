@@ -1,0 +1,3 @@
+# Casos de herramientas/pruebas/prueba_trazo_ataque.gd: colocacion por direccion y lado, y ticks del trazo.
+escena res://herramientas/pruebas/sala_trazo_ataque.tscn
+fin 60

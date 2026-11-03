@@ -1,6 +1,6 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://cjl1mucrrwuen"]
 
-[ext_resource type="Script" path="res://mapa/pantalla_mapa.gd" id="1_pantalla"]
+[ext_resource type="Script" uid="uid://dx4vavbwludtw" path="res://mapa/pantalla_mapa.gd" id="1_pantalla"]
 
 [node name="PantallaMapa" type="CanvasLayer"]
 script = ExtResource("1_pantalla")

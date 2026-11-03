@@ -1,0 +1,5 @@
+escena res://herramientas/salas/enemigos/sala_muneco_que_ataca.tscn
+# Se acerca al frente del muneco y espera su primer golpe (a mitad del ciclo).
+2 mover_derecha press
+40 mover_derecha release
+fin 80

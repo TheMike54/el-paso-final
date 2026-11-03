@@ -1,4 +1,4 @@
-# Los 16 casos de herramientas/pruebas/prueba_amuletos.gd corrieron y ninguno fallo. Cada caso que falla imprime una
+# Los 28 casos de herramientas/pruebas/prueba_amuletos.gd corrieron y ninguno fallo. Cada caso que falla imprime una
 # linea "FALLO amuletos: <caso>".
-valor . casos 16
+valor . casos 28
 valor . fallos 0

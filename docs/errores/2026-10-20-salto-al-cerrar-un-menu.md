@@ -22,8 +22,7 @@
   `Input.is_action_just_pressed(&"saltar")` en `_avanzar_contadores` y en el congelado, y el banco no se levanta con
   esa pulsación. La marca se borra al final del `_physics_process` siguiente: una pulsación nueva en el tick de
   después sí salta. Un menú que se cierra leyendo una acción en su `_physics_process` (B, `pausa`) lo hace dentro de
-  la física y no la pone. La regla quedó en `docs/jugador.md` («Cerrar un menú con A») y en «Marco de menús» de
-  `docs/contrato.md`.
+  la física y no la pone. La regla quedó en `docs/jugador.md` («Cerrar un menú con A») y en «Marco de menús» de `docs/interfaz.md`.
 - **Hueco que encontró la revisión (120 FPS):** la primera versión del arreglo solo ponía la marca si, al llegar
   `NOTIFICATION_UNPAUSED`, `Input.is_action_just_pressed(&"saltar")` era verdadero. Fuera de la física eso compara con
   el cuadro de render: si A baja en un cuadro y sube en el siguiente sin un tick de física entre los dos (pasa con la

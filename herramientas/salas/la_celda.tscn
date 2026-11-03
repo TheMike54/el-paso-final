@@ -1,0 +1,5 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://contenido/cinematicas/cinematica_celda.tscn" id="1_cinematica"]
+
+[node name="LaCelda" instance=ExtResource("1_cinematica")]
