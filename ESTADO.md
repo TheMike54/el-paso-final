@@ -52,7 +52,7 @@
 - En la PC, Espacio es `ui_accept` y `atacar`: cerrar un menú con Espacio también ataca.
 - Guiones intermitentes: `habilidad_caida_en_picada_desde_suelo` y `sala_puerta_b_pared`.
 - `prueba_sonido` con ventana falla en «un paso suena por play_stream», también en `e4378ca`; sin ventana y en el CI pasa.
-- En el S50 el arranque pasa unos 12 s en negro antes del menú.
+
 
 ## Decisiones abiertas (la persona)
 
