@@ -21,7 +21,11 @@ skill `funcionalidad` (`.claude/skills/funcionalidad/SKILL.md`); esta receta lo 
 5. Programar. Antes de un `.gd`, la skill `gdscript4`; antes de interfaz táctil, física o arte, las skills que
    nombra `CLAUDE.md`, «Entorno y trampas». Cada `.gd` nuevo empieza con comentario de qué hace y por qué.
 6. Validar con `.\herramientas\validar.ps1` y correr la `"comprobacion"` de la entrada (un guion, una prueba o una
-   fila manual de `docs/pruebas.md`). Si algo falla se corrige la causa; no se cambia la comprobación.
+   fila manual de `docs/pruebas.md`). Si algo falla se corrige la causa; no se cambia la comprobación. Antes del PR,
+   lo mismo que corre el check `validar` del CI: `.\herramientas\correr-guiones.ps1` (`MALOS=0`),
+   `.\herramientas\revisar-enlaces.ps1` (`rotos=0`) y, si se agregó, movió o borró una escena de `nucleo/` o
+   `contenido/`, un autoload o una señal de `Eventos`, `.\herramientas\generar-tablas.ps1`, con el
+   `docs/manual/tablas-generadas.md` regenerado dentro del commit.
 7. Pedir el `revisor` solo en los puntos críticos que lista `CLAUDE.md`, «Modelos y revisión». Lo demás lo cubre
    `validar.ps1`.
 8. Con la evidencia a la vista, cambiar `"pasa"` a `true` en esa entrada de `funciones.json` y nada más del archivo.

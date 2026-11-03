@@ -1,6 +1,9 @@
-ACTIVO
+CERRADO
 
 # Arreglos del QA del #6
+
+Cerrado por la persona el 3-nov-2026: los pasos A1 a A7 están hechos. La única pieza abierta, la repetición de Vic
+de la fila 7 (LB/RB con el control de Xbox, sin capturar), sigue en la issue #9.
 
 Pedido por la persona el 24-oct-2026: el #6 se fusionó con dos fallos menores y varias observaciones del QA
 (issue #7, Galaxy Tab S9 FE con control Xbox; issue #8, Galaxy A55 5G con DUALSHOCK 4). Todo pasa a este PR, en

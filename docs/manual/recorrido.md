@@ -12,7 +12,7 @@ Hoy la campaña es una sola zona, La Celda, con cinco salas y sin enemigos. No t
 
 | Paso | Qué pasa | Dónde |
 |---|---|---|
-| Arranque | Sin logo del motor: negro mientras carga y después el menú. En el teléfono de gama baja son unos 12 s (máscara decidida, sin construir) | `nucleo/arranque.gd` |
+| Arranque | Sin logo del motor: negro mientras carga y después el menú. En el teléfono de gama baja son unos 12 s | `nucleo/arranque.gd` |
 | Menú | Fondo en video de ESCOM de noche, con Jugar, Configuración y, con el modo desarrollador, Zona de pruebas | `nucleo/menu.tscn` |
 | Ranuras | Cuatro. Una con partida continúa en su último banco; una dañada o de otra versión no se abre | `nucleo/ranuras.gd`, `nucleo/menu.gd` |
 | Partida nueva | Pide un nombre de hasta 12 caracteres, con letras, números y espacios. La elección de personaje está apagada: solo el hombre tiene arte | `nucleo/nueva_partida.gd` |
@@ -67,7 +67,7 @@ Nada de esta parte está construido.
 | Tramo | Qué se espera |
 |---|---|
 | Las Raíces | La Celda baja a esta zona, el punto más bajo del mundo. Plan de ocho salas, tres enemigos, raíces con espinas, pizarrón de curar antes del primer enemigo, sin jefe. Dos amuletos: Patas de Cucaracha en `raices_4` y Caparazón de Cucaracha, oculto en `raices_6` junto a un coleccionable. Tienda en `raices_3`, que vende la brújula. El impulso se obtiene con un objeto cerca del final, y un hueco obliga a usarlo |
-| Salir de Las Raíces | La primera versión cierra con una pantalla propia; su texto sigue pendiente (decisión 13) |
+| Salir de Las Raíces | La primera versión cierra con una pantalla propia: «Continuará» y, en chico, «Fin de la primera versión» |
 | Zonas 2 a 5 | Los Drenajes, El Barrio Otaku, La Ciudad Perdida y El Metro: cada una da una habilidad al vencer a su jefe |
 | El Estacionamiento | Sin enemigos: suena el teléfono, tus compañeros te esperan |
 | ESCOM y el salón | Recorrido sin enemigos y pelea final contra los tres sinodales, primero uno por uno y luego juntos |
@@ -79,10 +79,8 @@ El detalle de cada zona está en `diseno.md`.
 
 | Tema | Estado |
 |---|---|
-| Texto del Eterno en Las Raíces | Pendiente, decisión 10 |
 | Preguntas de la mochila: falta `contenido/preguntas_mochila.tres` | Tarjeta #28 |
 | La Celda con arte en el teléfono de gama baja y en el de pantalla alta | Falta la prueba manual `sala-celda-1-telefono` |
-| Animación del coleccionable y retoques de arte de `celda_4` | Pendiente de sesión de arte (`ESTADO.md`) |
 
 ## Diferencias entre lo diseñado y lo construido
 

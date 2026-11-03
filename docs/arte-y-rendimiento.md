@@ -64,15 +64,15 @@ que se decide mirando.
   lleva `scroll_scale.y` igual a su x: el frente (1,45; 1,45), la niebla (1,1; 1,1) y los fondos con su valor en los
   dos ejes (`classes/class_parallax2d.rst:22`). Las capas de fondo se exportan reducidas («Recursos», receta del
   arte).
-- Color: lo que lastima tiene puntas y es cálido; el turquesa queda para lo vivo (hongos, raíces que no dañan).
-  Excepción: las espinas de Las Raíces llevan puntas turquesa (`#5fe0c8`, brillo `#b8fff0`), como sus hongos. Un
-  peligro se distingue del fondo por valor y color, siempre tiene una señal que se ve entre una ráfaga y otra (una
+- Color: no hay un color fijo para lo que lastima; lo decide el arte de cada zona. En Las Raíces, las espinas llevan
+  puntas turquesa (`#5fe0c8`, brillo `#b8fff0`), como sus hongos. Un peligro tiene puntas o una forma que avisa,
+  se distingue del fondo por valor y color, siempre tiene una señal que se ve entre una ráfaga y otra (una
   `LuzSala` chica o el dibujo encendido, no solo chispas), y su forma de daño sigue al
   dibujo, un poco más chica.
 - Lo que se pisa o se salta: una pieza con colisión nunca
   reutiliza arte de decoración ni de fondo (en `celda_2` la columna que se salta era el pie de la columna de la pared
-  y se leía como fondo). Lleva arte propio de pieza jugable: contorno más grueso, la cara de arriba iluminada y un
-  acento cálido que la separa de la decoración. Se apoya en el piso con escombros o losa rota en la base, hundida unos
+  y se leía como fondo). Lleva arte propio de pieza jugable, y quien lo hace comprueba que su parte
+  principal no se mezcle con el fondo. Se apoya en el piso con escombros o losa rota en la base, hundida unos
   px y dibujada delante del canto del suelo, para que no parezca pegada encima. Detrás de ella, el fondo no repite su
   forma ni su tono.
 - Frente: las mismas piezas del kit teñidas de negro con un solo `modulate` casi negro en el nodo `Frente` y el

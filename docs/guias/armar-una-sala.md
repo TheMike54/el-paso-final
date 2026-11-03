@@ -106,7 +106,8 @@ y recursos») y, en `docs/arte-y-rendimiento.md`, «Arte de zona». Modelo real:
     subida (`docs/sala.md`, propiedad `posicion_mapa`). Si sale un `error=` distinto de 0, o N no sube con la sala nueva, la escena no carga o
     no tiene `id`: correr `validar.ps1` y leer su primer fallo.
 15. Validar con `.\herramientas\validar.ps1` (debe imprimir `fallos=0`). Los `AVISO` no fallan; uno dice si a la
-    sala le falta su guion (paso 16).
+    sala le falta su guion (paso 16). Una escena nueva cambia `docs/manual/tablas-generadas.md`: correr
+    `.\herramientas\generar-tablas.ps1` y subir ese archivo con la sala, o el CI falla.
 16. Escribir el guion de la sala en `herramientas/guiones/contenido/<id>_puertas.guion` con su `.esperado`: entra por
     la `Entrada`, llega a la puerta, la cruza y comprueba `escena` y `senal /root/Eventos cambio_de_sala`. Modelo:
     `celda_1_puertas`. Los cuadros se miden con una corrida, no se calculan (`docs/guiones.md`). Correrlo:

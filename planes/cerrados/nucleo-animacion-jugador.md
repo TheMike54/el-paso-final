@@ -188,4 +188,4 @@ Transiciones (frenar, aterrizar, despertar, doble salto, impacto de la picada, s
 
 ## Cierre (24-oct-2026)
 
-Primera vuelta probada: la persona en el Senwa S50 el 21-oct (pasa, con la pared y el blanco solo en el parry arreglados) y el QA del #6 en un Galaxy A55 5G con DUALSHOCK 4 (issue #8, pasa con observaciones). Fusionado en `main` con el #6. Lo que observó el QA (caminar con la carrera lenta, el aplastado al atacar arriba o abajo, el hueco al morir) sigue en `planes/activos/nucleo-arreglos-qa-6.md`; la segunda vuelta, en su propio plan cuando se pida.
+Primera vuelta probada: la persona en el Senwa S50 el 21-oct (pasa, con la pared y el blanco solo en el parry arreglados) y el QA del #6 en un Galaxy A55 5G con DUALSHOCK 4 (issue #8, pasa con observaciones). Fusionado en `main` con el #6. Lo que observó el QA (caminar con la carrera lenta, el aplastado al atacar arriba o abajo, el hueco al morir) pasó a `planes/cerrados/nucleo-arreglos-qa-6.md`; la segunda vuelta, en su propio plan cuando se pida.

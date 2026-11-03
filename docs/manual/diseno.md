@@ -127,4 +127,4 @@ Entran: inicio con nombre, cinemáticas, La Celda y Las Raíces completas sin je
 
 ## Pendiente de definir
 
-Números de precios, parte secreta del Barrio, NPC sin definir, qué es la bola en el mundo, moneda definitiva (PejeCoins es provisional en el diseño, aunque el código ya usa ese nombre) y texto de la pantalla de cierre de Las Raíces (decisión 13).
+Números de precios, parte secreta del Barrio, NPC sin definir, qué es la bola en el mundo, y moneda definitiva (PejeCoins es provisional en el diseño, aunque el código ya usa ese nombre).

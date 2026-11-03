@@ -26,6 +26,8 @@ resuelto: síntoma, causa, arreglo y guion que lo cubre).
 | Una imagen nueva no se ve o no tiene `.import` | Importar: `& $env:GODOT_PATH --headless --path . --import` y volver a validar |
 | Comportamiento raro tras cambiar de rama o de versión | `.godot/` es caché: no se edita ni se versiona, y nunca se borra con `git clean -x` ni `-X` (`CLAUDE.md`, «Entorno y trampas»). Reimportar con el comando de arriba |
 | El editor ofrece convertir el proyecto | Responder que no; la versión exacta de Godot es la que fija `README.md`, «Entorno» |
+| El check `validar` del PR falla en «Document links and generated tables» con `ROTO ...` | Un documento nombra entre comillas invertidas, o enlaza, un archivo que no existe. Corregir la ruta y repetir `.\herramientas\revisar-enlaces.ps1` hasta `rotos=0` |
+| El mismo paso dice que `docs/manual/tablas-generadas.md` no está al día | Se agregó, movió o borró una escena de `nucleo/` o `contenido/`, un autoload o una señal de `Eventos`. Correr `.\herramientas\generar-tablas.ps1` y agregar el archivo regenerado al commit |
 | No arranca nada | `.\herramientas\verificar-entorno.ps1` debe terminar con `ENTORNO OK` (`README.md`, «Ejecutar desde un clon limpio») |
 
 ## Cuando es un error nuevo

@@ -50,7 +50,7 @@ Lo que ya se decidió y por qué, para no volver a discutirlo sin una razón nue
 | 28-oct-2026 | El salto largo se enseña en la sala 1, y entrar por una puerta con un pizarrón con patas | Lo que tiene colisión lleva arte jugable propio |
 | 28-oct-2026 | El atlas del jugador lo rehace quien tiene las hojas originales | Ver [continuar.md](continuar.md) |
 | 29-oct-2026 | Hasta terminar el juego no se conservan las partidas viejas | Inferido: evita migraciones mientras el formato cambia |
-| 29-oct-2026 | El coleccionable es Azulito, a unos 64 px; su animación sigue pendiente | |
+| 29-oct-2026 | El coleccionable es Azulito, a unos 64 px | |
 | 29-oct-2026 | El parry suena; falta el archivo (`FichaSonidos.parry` ya lo toca) | |
 | 29-oct-2026 | Las espinas de la sala 4 pasan a Las Raíces | Faltaba un uso claro en el tiro |
 | 29-oct-2026 | Los guiones `celda_*` se reducen a uno de ruta por sala, más los de `docs/errores/` | Inferido: menos guiones que mantener, sin perder los fallos ya vistos |
@@ -61,7 +61,7 @@ Lo que ya se decidió y por qué, para no volver a discutirlo sin una razón nue
 | 1-nov-2026 | 5 útiles con 4 cupos, solo poner o quitar; Gato de la Suerte pasa de amuleto a útil | Siempre sobra uno. Sin construir: el código tiene 1 ranura |
 | 1-nov-2026 | La primera zona jugable no lleva jefes; el mapa sube hacia ESCOM | La zona todavía enseña a jugar |
 | 2-nov-2026 | El diseño del juego es público, con el manual en `docs/manual/` | Con licencia y aviso propios en `diseno.md` y `recorrido.md` |
-| 2-nov-2026 | Plan de Las Raíces aprobado por partes: estructura, #18, #19 y #22 | #20, #21, #25 y #26 siguen condicionadas |
+| 2-nov-2026 | Plan de Las Raíces aprobado por partes: estructura, #18, #19 y #22 | #20, #21, #25 y #26 se aprobaron el 3-nov-2026 |
 | 2-nov-2026 | Los 7 íconos de amuleto entran como PNG sueltos; decide quien los genera, con criterios escritos. Caché no se pinta | Cada ficha llega con su efecto |
 | 2-nov-2026 | Caída a Las Raíces sin repisa: unos 816 px, aterrizaje duro a propósito | No quita vida; lo fija un guion |
 | 2-nov-2026 | Sin regreso a La Celda en la primera versión | Se construye cuando exista el salto en pared |
@@ -77,14 +77,13 @@ Lo que ya se decidió y por qué, para no volver a discutirlo sin una razón nue
 | 2-nov-2026 | Las espinas de Las Raíces son azul turquesa | Decisión firme; no se reabre |
 | 2-nov-2026 | `raices_7`: hueco sin fondo. `raices_8`: el piso de abajo sigue bajo el hueco | Sin caso especial de caída sin daño |
 | 2-nov-2026 | `raices_7` se construye antes que `raices_6` y `raices_8` | `raices_7` no se puede recortar |
-| 2-nov-2026 | Máscara en el arranque del motor, sin construir | Unos 12 s en negro no dicen que carga |
 | 2-nov-2026 | En La Celda no hay banco donde está el Eterno | Se queda así; el único banco de la zona está en `celda_1` |
+| 3-nov-2026 | Texto de la pantalla de cierre de Las Raíces: «Continuará» y, en chico, «Fin de la primera versión» | Era la decisión abierta 13 |
+| 3-nov-2026 | Los peligros no tienen un color fijo | La regla «lo que lastima es cálido» no fue una decisión; el color lo da el arte de cada zona |
+| 3-nov-2026 | Las piezas jugables no llevan un color ni un contorno fijos | Quien hace el arte comprueba que la parte principal no se mezcle con el fondo |
+| 3-nov-2026 | Línea del Eterno en `raices_3`: «Ese mapa lo empecé cuando llegué. Con la pluma ya puedes terminarlo tú.» | Era la decisión abierta 10; la ficha entrega el mapa `raices` y `pluma_mapa` |
+| 3-nov-2026 | Plan de los menús de pausa aprobado; se construye después de la entrega del 9-nov | Toca el núcleo; no se mezcla con la actualización en Play |
 
 ## Decisiones abiertas
 
-Conservan su número de registro, por eso la numeración tiene huecos. El resto del manual las cita como «pendiente, decisión N».
-
-| # | Tema | Qué bloquea |
-|---|---|---|
-| 10 | Texto del Eterno en Las Raíces | Cerrar el banco con el Eterno |
-| 13 | Texto de la pantalla de cierre | Última sala de la zona |
+Ninguna desde el 3-nov-2026. Una nueva se agrega aquí con un número de registro nuevo; el resto del manual la cita como «pendiente, decisión N».
