@@ -104,7 +104,7 @@ PowerShell, desde la raíz del repo. `GODOT_PATH` es la ruta al ejecutable de co
 - Aquí las pruebas cubren guardado, cuentas (daño, amuletos), reglas, el validador y un guion corto por sala.
 - Las pruebas, los guiones y el validador imprimen el resumen y los fallos, no cada caso que pasa.
 - `.gitattributes` con `eol=lf`: los hooks de `sh` y el CI corren en Linux. `LICENSE` solo MIT; el arte queda fuera.
-- CI: `ci.yml` con `chickensoft-games/setup-godot@v2`, sin plantillas; el check que exige el ruleset se llama `validar`.
+- CI: `ci.yml` con `chickensoft-games/setup-godot` v2 fijada por SHA, sin plantillas; el check que exige el ruleset se llama `validar`. Publicar a Play: `release.yml`, solo a mano desde `main` y con aprobación (`docs/guias/publicar.md`).
 - Android: id `com.themike54.elpasofinal`, ARM de 32 (S50) y 64 bits. Video `.mp4` en el teléfono; `.ogv` solo para
   la PC y los guiones. «Publicacion» es el paquete sin herramientas; «Desarrollo» lleva lo demás y arranca con
   `--print-fps`.

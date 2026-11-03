@@ -73,13 +73,13 @@ Alternativa sin empacador: abrir el `SpriteFrames` en el editor y sumar cuadros 
 
 ## Publicar desde cero
 
-Estado: se exportó y se instaló un AAB de depuración de unos 110 MB. **Sin comprobar: el AAB firmado y su subida a Play.** Tampoco está cerrada la prueba manual `paquete-publicacion`. Esta lista se armó leyendo los presets y la documentación de Godot, no corriéndola de principio a fin.
+Estado: el 2-nov-2026 se exportó a mano el AAB firmado (105 MB) y se subió a la prueba cerrada de Play. **Sin comprobar: el workflow `Release`, que exporta en GitHub (`docs/guias/publicar.md`).** Tampoco está cerrada la prueba manual `paquete-publicacion`.
 
 1. **Herramientas.** JDK 17 y Android SDK, según `tutorials/export/exporting_for_android.rst`, y las plantillas de exportación de Godot 4.7.2. En Ajustes del editor, poner `Java SDK Path` y `Android SDK Path`.
 2. **Identidad.** En `export_presets.cfg`, cambiar `package/unique_name` en los dos presets por un id propio. Play no deja reutilizar el de otra publicación. Ajustar nombre e ícono si el juego cambia de autor.
 3. **Plantilla Gradle.** El preset «Publicacion» usa Gradle y formato AAB. Instalarla desde el menú Proyecto (`tutorials/export/android_gradle_build.rst`). Crea `android/`, que git ignora.
 4. **Clave.** Crearla con `keytool` (`tutorials/export/exporting_for_android.rst:149`), fuera del repositorio y con respaldo: sin ella no se puede actualizar el juego publicado. Pasarla al editor o por las variables `GODOT_ANDROID_KEYSTORE_RELEASE_PATH`, `_USER` y `_PASSWORD`.
-5. **Versión.** Subir `version/code` y `version/name` en `export_presets.cfg`: cada subida pide un `version/code` mayor.
+5. **Versión.** Cada subida pide un `version/code` mayor. El workflow `Release` lo recibe al lanzarlo; a mano, se cambia en `export_presets.cfg` sin hacer commit.
 6. **Validar.** `.\herramientas\validar.ps1` debe imprimir `fallos=0`, y `.\herramientas\correr-guiones.ps1`, `MALOS=0`.
 7. **Exportar.**
 

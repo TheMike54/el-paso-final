@@ -6,8 +6,9 @@ fallos.
 
 ## Automáticas
 
-Los comandos son de PowerShell, desde la raíz del repositorio. El validador y los guiones corren también en el
-CI (job `validar`); la batería del hook corre solo en local.
+Los comandos son de PowerShell, desde la raíz del repositorio. El validador, los guiones, la revisión de enlaces y la
+de `docs/manual/tablas-generadas.md` (que `generar-tablas.ps1` no la cambie) corren también en el CI (job `validar`),
+en cada PR, en cada push a `main` y cada lunes; la batería del hook corre solo en local.
 
 | Qué | Comando | Pasa si |
 |---|---|---|

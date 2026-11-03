@@ -18,7 +18,7 @@ así que ante una diferencia manda el documento al que remite.
 | `tienda.md` | Para vender artículos |
 | `retos.md` | Para crear un reto de preguntas |
 | `jefes.md` | Para armar una arena de jefe |
-| `publicar.md` | Para exportar y probar una versión Android |
+| `publicar.md` | Para exportar una versión Android y subirla a Play, con el workflow `Release` o a mano |
 | `arte.md` | Para incorporar al juego una pieza de arte ya aprobada |
 | `sonido-y-musica.md` | Para agregar un sonido, un tema de sala o una región de música |
 | `medir-en-el-telefono.md` | Para exportar el APK de desarrollo y medir en el teléfono |

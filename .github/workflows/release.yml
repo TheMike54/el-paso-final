@@ -1,0 +1,233 @@
+name: Release
+
+# Builds the signed AAB of the "Publicacion" preset and, only when asked and approved, uploads it to Google Play.
+# Never runs on push or pull_request: a person starts it from main. How to use it: docs/guias/publicar.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_code:
+        description: "versionCode, greater than every one already uploaded to Play"
+        required: true
+        type: number
+      version_name:
+        description: "Visible version, e.g. 1.1.0"
+        required: true
+        type: string
+      subir:
+        description: "Upload to Google Play after approval (environment play)"
+        required: false
+        type: boolean
+        default: false
+      track:
+        description: "Play track"
+        required: false
+        type: choice
+        options: [internal, alpha]
+        default: internal
+      status:
+        description: "Release status in Play"
+        required: false
+        type: choice
+        options: [draft, completed]
+        default: draft
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+env:
+  PAQUETE: com.themike54.elpasofinal
+  URL_PRIVACIDAD: https://github.com/TheMike54/el-paso-final/blob/main/docs/privacidad.md
+  BUNDLETOOL_VERSION: 1.18.3
+  BUNDLETOOL_SHA256: a099cfa1543f55593bc2ed16a70a7c67fe54b1747bb7301f37fdfd6d91028e29
+
+jobs:
+  construir:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    environment: firma
+    outputs:
+      sha256: ${{ steps.revisar.outputs.sha256 }}
+    steps:
+      - name: Only from main
+        if: github.ref != 'refs/heads/main'
+        run: |
+          echo "::error::Release runs only from main"
+          exit 1
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Check inputs, privacy page and release notes
+        shell: bash
+        env:
+          CODIGO: ${{ inputs.version_code }}
+          NOMBRE: ${{ inputs.version_name }}
+        run: |
+          if ! [[ "$CODIGO" =~ ^[0-9]+$ ]] || [ "$CODIGO" -lt 2 ] || [ "$CODIGO" -gt 2100000000 ]; then
+            echo "::error::version_code must be an integer from 2 to 2100000000"; exit 1
+          fi
+          if ! [[ "$NOMBRE" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::version_name must look like 1.1.0"; exit 1
+          fi
+          estado=$(curl -sS -o "$RUNNER_TEMP/privacidad.html" -w '%{http_code}' "$URL_PRIVACIDAD")
+          if [ "$estado" != 200 ] || ! grep -q 'Política de privacidad' "$RUNNER_TEMP/privacidad.html"; then
+            echo "::error::The privacy policy page does not answer 200 with its title (HTTP $estado)"; exit 1
+          fi
+          for notas in distribution/whatsnew/whatsnew-*; do
+            largo=$(tr -d '\n' < "$notas" | wc -m)
+            if [ "$largo" -eq 0 ] || [ "$largo" -gt 500 ]; then
+              echo "::error file=$notas::Release notes must have 1 to 500 characters (has $largo)"; exit 1
+            fi
+          done
+          [ -f distribution/whatsnew/whatsnew-es-419 ] || { echo "::error::Missing distribution/whatsnew/whatsnew-es-419"; exit 1; }
+
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: chickensoft-games/setup-godot@ac93246ea68518a384c1c280a496e5989341f2f6 # v2.4.3
+        with:
+          version: 4.7.2
+          use-dotnet: false
+          include-templates: true
+          cache: false
+
+      - name: Editor settings and keystores
+        shell: bash
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_ALIAS: ${{ secrets.ANDROID_KEYSTORE_ALIAS }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ] || [ -z "$KEYSTORE_ALIAS" ] || [ -z "$KEYSTORE_PASSWORD" ]; then
+            echo "::error::Missing keystore secrets in the environment firma"; exit 1
+          fi
+          mkdir -p "$HOME/.config/godot"
+          printf '[gd_resource type="EditorSettings" format=3]\n\n[resource]\nexport/android/java_sdk_path = "%s"\nexport/android/android_sdk_path = "%s"\n' \
+            "$JAVA_HOME" "$ANDROID_HOME" > "$HOME/.config/godot/editor_settings-4.7.tres"
+          keytool -genkeypair -keystore "$RUNNER_TEMP/debug.keystore" -alias androiddebugkey -storepass android \
+            -keypass android -keyalg RSA -keysize 2048 -validity 30 -dname "CN=Android Debug,O=Android,C=US" >/dev/null 2>&1
+          printf '%s' "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/subida.keystore"
+          if ! keytool -list -keystore "$RUNNER_TEMP/subida.keystore" -storepass:env KEYSTORE_PASSWORD -alias "$KEYSTORE_ALIAS" >/dev/null 2>&1; then
+            echo "::error::The upload keystore does not open with that password or has no such alias"; exit 1
+          fi
+
+      - name: Set the version only in this runner
+        shell: bash
+        env:
+          CODIGO: ${{ inputs.version_code }}
+          NOMBRE: ${{ inputs.version_name }}
+        run: |
+          [ "$(grep -c '^version/code=' export_presets.cfg)" = 1 ] || { echo "::error::Expected one version/code in export_presets.cfg"; exit 1; }
+          sed -i -e "s/^version\/code=.*/version\/code=$CODIGO/" -e "s/^version\/name=.*/version\/name=\"$NOMBRE\"/" export_presets.cfg
+          grep -E '^version/(code|name)=' export_presets.cfg
+
+      - name: Export the AAB
+        shell: bash
+        env:
+          GODOT_ANDROID_KEYSTORE_DEBUG_PATH: ${{ runner.temp }}/debug.keystore
+          GODOT_ANDROID_KEYSTORE_DEBUG_USER: androiddebugkey
+          GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD: android
+          GODOT_ANDROID_KEYSTORE_RELEASE_PATH: ${{ runner.temp }}/subida.keystore
+          GODOT_ANDROID_KEYSTORE_RELEASE_USER: ${{ secrets.ANDROID_KEYSTORE_ALIAS }}
+          GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        run: |
+          mkdir -p build
+          godot --headless --path . --import 2>&1 | tee exportar.log
+          godot --headless --path . --install-android-build-template --export-release "Publicacion" "$PWD/build/el-paso-final.aab" 2>&1 | tee -a exportar.log
+          if grep -nE 'SCRIPT ERROR|^[[:space:]]*ERROR:' exportar.log; then
+            echo "::error::The export printed errors"; exit 1
+          fi
+          [ -s build/el-paso-final.aab ] || { echo "::error::Godot did not write the AAB"; exit 1; }
+
+      - name: Check the package
+        id: revisar
+        shell: bash
+        env:
+          CODIGO: ${{ inputs.version_code }}
+          NOMBRE: ${{ inputs.version_name }}
+        run: |
+          aab=build/el-paso-final.aab
+          curl -sSfL -o "$RUNNER_TEMP/bundletool.jar" \
+            "https://github.com/google/bundletool/releases/download/$BUNDLETOOL_VERSION/bundletool-all-$BUNDLETOOL_VERSION.jar"
+          echo "$BUNDLETOOL_SHA256  $RUNNER_TEMP/bundletool.jar" | sha256sum -c --quiet
+          paquete=$(java -jar "$RUNNER_TEMP/bundletool.jar" dump manifest --bundle "$aab" --xpath /manifest/@package)
+          codigo=$(java -jar "$RUNNER_TEMP/bundletool.jar" dump manifest --bundle "$aab" --xpath /manifest/@android:versionCode)
+          [ "$paquete" = "$PAQUETE" ] || { echo "::error::Package is $paquete"; exit 1; }
+          [ "$codigo" = "$CODIGO" ] || { echo "::error::versionCode is $codigo, expected $CODIGO"; exit 1; }
+          if unzip -Z1 "$aab" | grep -E 'assets/herramientas/(pruebas/|validar\.|puerto_depuracion\.|arreglar_uids\.|generar_)|funciones\.json$|\.ogv$'; then
+            echo "::error::The package carries files the Publicacion preset excludes"; exit 1
+          fi
+          unzip -Z1 "$aab" | grep -q 'assets/herramientas/salas/' || { echo "::error::The test zone is missing from the package"; exit 1; }
+          bytes=$(stat -c %s "$aab")
+          mb=$((bytes / 1048576))
+          if [ "$mb" -gt 450 ]; then echo "::error::AAB is $mb MB, too close to the 500 MB Play limit"; exit 1; fi
+          if [ "$mb" -gt 300 ]; then echo "::warning::AAB is $mb MB"; fi
+          sha=$(sha256sum "$aab" | cut -d' ' -f1)
+          echo "sha256=$sha" >> "$GITHUB_OUTPUT"
+          {
+            echo "### AAB $NOMBRE ($CODIGO)"
+            echo ""
+            echo "| | |"
+            echo "|---|---|"
+            echo "| Commit | \`$GITHUB_SHA\` |"
+            echo "| Package | \`$paquete\` |"
+            echo "| Size | $mb MB |"
+            echo "| SHA-256 | \`$sha\` |"
+          } >> "$GITHUB_STEP_SUMMARY"
+          printf 'commit=%s\nversion_code=%s\nsha256=%s\n' "$GITHUB_SHA" "$CODIGO" "$sha" > build/resumen.txt
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: aab-${{ inputs.version_code }}
+          path: |
+            build/el-paso-final.aab
+            build/resumen.txt
+            distribution/whatsnew/
+          retention-days: 14
+          compression-level: 0
+          if-no-files-found: error
+
+      - name: Remove keystores
+        if: always()
+        shell: bash
+        run: rm -f "$RUNNER_TEMP/subida.keystore" "$RUNNER_TEMP/debug.keystore"
+
+  subir:
+    if: inputs.subir
+    needs: construir
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: play
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: aab-${{ inputs.version_code }}
+          path: paquete
+
+      - name: Same AAB that was built
+        shell: bash
+        env:
+          ESPERADO: ${{ needs.construir.outputs.sha256 }}
+        run: echo "$ESPERADO  paquete/build/el-paso-final.aab" | sha256sum -c --quiet
+
+      # changesNotSentForReview: the upload does not send the changes to review; the person does it in Play Console.
+      # The action never sets changesInReviewBehavior, whose API default cancels a review in progress:
+      # never run this job while Play shows changes in review (docs/guias/publicar.md).
+      - uses: r0adkll/upload-google-play@e738b9dd8f2476ea806d921b64aacd24f34515a5 # v1.1.5
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: ${{ env.PAQUETE }}
+          releaseFiles: paquete/build/el-paso-final.aab
+          releaseName: ${{ inputs.version_name }} (${{ inputs.version_code }})
+          track: ${{ inputs.track }}
+          status: ${{ inputs.status }}
+          whatsNewDirectory: paquete/distribution/whatsnew
+          changesNotSentForReview: true

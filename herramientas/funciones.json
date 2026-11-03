@@ -412,5 +412,11 @@
     "que": "Auditoria final de la documentacion contra el codigo, con cada hallazgo verificado por otro modelo antes de aplicarse",
     "comprobacion": "manual: herramientas/revisar-enlaces.ps1 con rotos=0 y validar.ps1 con fallos=0 sobre la documentacion corregida; plan en planes/activos/herramientas-auditoria-arranque.md",
     "pasa": true
+  },
+  {
+    "id": "release-play",
+    "que": "Workflow Release, solo manual desde main: arma el AAB firmado de Publicacion con la version pedida, lo revisa y, con aprobacion en el entorno play, lo sube a Google Play sin enviarlo a revision; CI semanal con enlaces, tablas, zizmor y gitleaks, y acciones fijadas por SHA",
+    "comprobacion": "manual: actionlint, zizmor y validar en verde en el PR; una corrida de Release en main con subir apagado deja el artefacto aab-<version_code> con el resumen; plan en planes/activos/herramientas-publicar-play.md",
+    "pasa": false
   }
 ]

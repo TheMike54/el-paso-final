@@ -25,7 +25,7 @@ function Test-Destino($texto, $documento, $esEnlace) {
     # Los ejemplos con huecos, variables o comodines no prometen un archivo existente.
     if ($ruta -match '[<>*?{}$]' -or $ruta.Contains('...') -or $ruta.Contains('AAAA-MM-DD')) { return }
     # La cache local no existe en un clon limpio.
-    if ($ruta -match '^\.godot/') { return }
+    if ($ruta -match '^\.godot[/\\]') { return }
     # Rutas que los documentos describen como opcionales o que viven en el telefono.
     if ($ruta -in @('contenido/preguntas_mochila.tres', 'contenido/estaciones.tres', 'files/prueba_partida.json')) { return }
     if (-not $esEnlace -and $ruta -notmatch '^(?:res://|\.?\.?[/\\])?[^\s`"|=]+(?:[/\\][^\s`"|=]+)*\.[a-zA-Z0-9_-]+(?::\d+(?:-\d+)?)?(?:#[^\s]*)?$') { return }
@@ -49,7 +49,8 @@ function Test-Destino($texto, $documento, $esEnlace) {
     $script:revisados++
     foreach ($base in $bases) {
         try {
-            $destino = [IO.Path]::GetFullPath((Join-Path $base $ruta.Replace('/', [IO.Path]::DirectorySeparatorChar)))
+            # Los documentos citan rutas con \ (PowerShell) o /; en Linux la \ no separa carpetas.
+            $destino = [IO.Path]::GetFullPath((Join-Path $base $ruta.Replace('\', '/').Replace('/', [IO.Path]::DirectorySeparatorChar)))
             if (-not $destino.StartsWith($raiz + [IO.Path]::DirectorySeparatorChar, [StringComparison]::OrdinalIgnoreCase) -and $destino -ne $raiz) { continue }
             if (Test-Path -LiteralPath $destino) { return }
         } catch { continue }
