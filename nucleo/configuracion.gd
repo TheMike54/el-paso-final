@@ -22,6 +22,8 @@ const AVISO_RECURSOS_EN_PARTIDA: String = "Para cambiar los gráficos, sal al me
 ## Aviso al tocar Luces 2D con Recursos en bajo (bloqueadas); en la partida suma donde se cambia Recursos.
 const AVISO_LUCES: String = "Luces 2D pide Recursos en alto."
 const AVISO_LUCES_EN_PARTIDA: String = "Luces 2D pide Recursos en alto, y Recursos se cambia desde el menú principal."
+## Pagina publica de la politica de privacidad (docs/privacidad.md); Google Play pide enlazarla dentro de la app.
+const URL_PRIVACIDAD: String = "https://github.com/TheMike54/el-paso-final/blob/main/docs/privacidad.md"
 
 ## Archivo de los ajustes: publico para que la prueba trabaje con el suyo.
 var ruta_ajustes: String = Ajustes.RUTA
@@ -102,6 +104,7 @@ var _boton_de: Dictionary[Seccion, Button] = {}
 @onready var _volver_mando: Button = $PanelMando/Arriba/Volver as Button
 @onready var _panel_creditos: Control = $PanelCreditos as Control
 @onready var _volver_creditos: Button = $PanelCreditos/Arriba/Volver as Button
+@onready var _privacidad: Button = $PanelCreditos/Centro/Columna/Privacidad as Button
 
 
 func _ready() -> void:
@@ -143,6 +146,7 @@ func _ready() -> void:
 	_por_omision.pressed.connect(_mando_por_omision)
 	_volver_mando.pressed.connect(atras)
 	_volver_creditos.pressed.connect(atras)
+	_privacidad.pressed.connect(_abrir_privacidad)
 	# Un boton por accion con su boton del control adentro («Saltar: A / Cruz»); si no cabe, en dos lineas.
 	for accion: StringName in Mando.REASIGNABLES:
 		var boton: Button = Button.new()
@@ -475,3 +479,10 @@ func _mando_por_omision() -> void:
 func _abrir_creditos() -> void:
 	_mostrar(Seccion.CREDITOS)
 	Tema.dar_foco(_volver_creditos)
+
+
+# Abre la politica en el navegador del sistema (OS.shell_open, implementado en Android); el juego sigue abierto.
+func _abrir_privacidad() -> void:
+	var error: Error = OS.shell_open(URL_PRIVACIDAD)
+	if error != OK:
+		push_warning("No se pudo abrir la politica de privacidad: %s" % error_string(error))

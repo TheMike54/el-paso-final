@@ -2,22 +2,14 @@
 
 ## Ahora (2-nov-2026)
 
-- Rama `feature/nucleo-cierre-auditoria`, solo en local, sale de `9f67615`. Último commit con la auditoría final de
-  documentación (`planes/cerrados/herramientas-auditoria-arranque.md`): 209 de 209 guiones, `fallos=0`, `rotos=0`.
-- PR #11 (`feature/contenido-celda`): abierto y aprobado sobre `9f67615`; el push de esta rama le quita la aprobación. Issue
-  #10: ya reportó, falta responder (lista abajo). Issue #9 (tablet): sin reporte.
-- Auditoría final (`planes/cerrados/nucleo-auditoria-final.md`): terminada; ver «Avance» del plan. El AAB firmado sigue en la lista de abajo.
-- Sigue, en orden: (1) subir todo a la rama del #11 (avance rápido), ponerle `Closes #13`, quitarle `Closes #9`, conseguir de nuevo la aprobación y fusionar; (2) AAB firmado y
-  prueba cerrada en Play. La cuenta de Play espera la revisión de identidad de Google.
-- Ruleset `main`: solo por PR, 1 aprobación, `validar` en verde, Squash and merge. Un push nuevo quita la aprobación.
-
-## Reporte de la issue #10, sin responder
-Se citan y se arreglan en el PR siguiente (decisión de la persona). Falta publicar la respuesta en la issue.
-- 5.1, «solo suena música en la primera sala»: La Celda es silenciosa a propósito. Se queda así (1-nov).
-- 3.3, el elevador deja encima al que aplasta: arreglado en el bloque 56, como `Bone_16` de Silksong. Pasa en el S50 (1-nov).
-- 2.2, el disparo enemigo no se ve y sí pega: correcto, aún no tiene arte. La prueba debió pedir «Ver hitbox» encendido.
-- 1.9, mancha oscura sobre el piso de la sala 4: casi seguro `pila_examenes_rota` en el primer plano, no un fallo.
-- 1.4, las aspas quitan vida sin mandar a un lugar seguro: empujan y no devuelven. Se queda así (1-nov).
+- `main` en `182e1cb`: PR #11 fusionado; cerró #10 y #13. Issue #9 (tablet): sin reporte, sigue abierta.
+- En `main`, sin rama: política de privacidad (`docs/privacidad.md`) y el botón «Política de privacidad» en Créditos
+  (`creditos-privacidad`, falta la prueba en el teléfono). Guiones 209 de 209, `fallos=0`, `rotos=0`.
+- Google Play: app creada, clasificación de contenido completa, ficha y Data safety llenos; faltan la URL de la
+  política (existe al subir este cambio) y el AAB.
+- Sigue, en orden: (1) probar el botón en el teléfono; (2) AAB firmado de la versión 1 desde `main`, sin Las Raíces, y
+  prueba cerrada en Play; (3) avisar a Ian que ya puede fusionar #18.
+- Ruleset `main`: PR, 1 aprobación, `validar` en verde, Squash and merge; el administrador del repo puede saltárselo.
 
 ## Decidido
 - 27-oct: `planes/cerrados/nucleo-piezas-celda.md` y `contenido-celda-salas.md`.
@@ -33,6 +25,9 @@ Se citan y se arreglan en el PR siguiente (decisión de la persona). Falta publi
 - 1-nov: decisiones de la persona en `planes/cerrados/nucleo-auditoria-final.md`. Patas de Cucaracha cuesta 1 y da 1,25.
 - 1-nov, menús: 5 útiles con 4 cupos, solo poner o quitar; Gato de la Suerte pasa de amuleto a útil. Plan: `nucleo-menus-pausa`, por aprobar. El arte de 7 amuletos va en el tablero (Caché no se pinta). 2-nov: el diseño del juego será público, con el manual en `docs/manual/`. Antes del manual: guías completas de todo lo construido, con el método que funcionó, cinemáticas incluidas.
 - 2-nov, Las Raíces: 2 amuletos, Patas (`raices_4`) y Caparazón (oculto de `raices_6`, junto a un coleccionable; costo 2 y valor 30 para probar; su ficha entra con #25); Caché fuera de la v1; Suela, Log y Cartera no se consiguen en la v1 y se definen después de publicar; la tienda de `raices_3` vende la brújula. Espinas turquesa, firme. Sin banco donde está el Eterno en La Celda: el único está en `celda_1`.
+- 2-nov, Google Play: público solo de 18 años en adelante; la ficha habla solo de La Celda (la versión 1 sale sin Las
+  Raíces); el gráfico destacado no muestra el letrero de la escuela. La política y su botón van directo a `main` por
+  decisión de la persona, sin cambiar la regla «una rama por PR» del `CLAUDE.md`.
 
 ## Pruebas manuales pendientes
 

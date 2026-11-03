@@ -1234,5 +1234,11 @@
     "que": "El juego arranca sin el logo de Godot: negro mientras carga y después el menú",
     "comprobacion": "manual: en el S50, abrir el juego; no sale el logo de Godot y se llega al menú",
     "pasa": false
+  },
+  {
+    "id": "creditos-privacidad",
+    "que": "Créditos tiene el botón «Política de privacidad», que abre docs/privacidad.md en el navegador (Google Play pide enlazarla dentro de la app)",
+    "comprobacion": "herramientas/guiones/nucleo/menu_configuracion.guion; manual: en el teléfono, Configuración, Créditos, «Política de privacidad» abre la página en el navegador y al volver el juego sigue en Créditos",
+    "pasa": false
   }
 ]

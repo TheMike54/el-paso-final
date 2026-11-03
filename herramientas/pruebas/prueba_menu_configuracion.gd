@@ -400,6 +400,11 @@ func _ready() -> void:
 
 	_boton(config, "Creditos").pressed.emit()
 	_caso("Creditos abre su panel", (config.get_node(^"PanelCreditos") as Control).visible)
+	# No se pulsa: abriria el navegador. Se comprueba que el boton esta a la vista y apunta a la pagina publica.
+	var privacidad: Button = config.get_node(^"PanelCreditos/Centro/Columna/Privacidad") as Button
+	_caso("Creditos muestra el boton de privacidad con la URL publica", privacidad.is_visible_in_tree()
+		and Configuracion.URL_PRIVACIDAD.begins_with("https://")
+		and Configuracion.URL_PRIVACIDAD.ends_with("/docs/privacidad.md"))
 	menu.notification(NOTIFICATION_WM_GO_BACK_REQUEST)
 	_caso("Atras en Creditos vuelve a la lista", lista.visible)
 

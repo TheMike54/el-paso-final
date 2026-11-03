@@ -337,7 +337,11 @@ vertical_alignment = 1
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="Texto" type="Label" parent="PanelCreditos/Centro"]
+[node name="Columna" type="VBoxContainer" parent="PanelCreditos/Centro"]
+layout_mode = 2
+theme_override_constants/separation = 32
+
+[node name="Texto" type="Label" parent="PanelCreditos/Centro/Columna"]
 custom_minimum_size = Vector2(800, 0)
 layout_mode = 2
 text = "El Paso Final
@@ -346,3 +350,9 @@ Desarrollo de Aplicaciones Móviles Nativas, ESCOM-IPN
 Hecho con Godot Engine (licencia MIT): godotengine.org/license"
 horizontal_alignment = 1
 autowrap_mode = 3
+
+[node name="Privacidad" type="Button" parent="PanelCreditos/Centro/Columna"]
+custom_minimum_size = Vector2(0, 108)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Política de privacidad"
