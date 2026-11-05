@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="FichaZona" format=3 uid="uid://beie45uxalhc4"]
+
+[ext_resource type="Script" uid="uid://b5npnm0mfwrdt" path="res://nucleo/ficha_zona.gd" id="1_zona"]
+
+[resource]
+script = ExtResource("1_zona")
+nombre = "Las Raíces"
+color = Color(0.37, 0.88, 0.78, 1)
+origen_mapa = Vector2(12600, 3814)

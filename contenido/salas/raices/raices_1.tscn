@@ -1,0 +1,86 @@
+[gd_scene format=3 uid="uid://ccrrtqa2xek20"]
+
+[ext_resource type="PackedScene" uid="uid://cpuog8152jjfx" path="res://contenido/zonas/raices/sala_raices.tscn" id="0_base"]
+[ext_resource type="Script" uid="uid://dglahbp5ygo3w" path="res://nucleo/aviso_accion.gd" id="1_aviso"]
+[ext_resource type="PackedScene" uid="uid://t0hl58kau0ro" path="res://contenido/objetos/celda/hueco_techo.tscn" id="2_hueco_techo"]
+[ext_resource type="PackedScene" uid="uid://snbg7ufyq4g6" path="res://contenido/objetos/celda/hueco_piso.tscn" id="3_hueco_piso"]
+[ext_resource type="PackedScene" uid="uid://c1mh87shrjl0d" path="res://nucleo/monedas_sueltas.tscn" id="4_monedas"]
+
+[sub_resource type="RectangleShape2D" id="forma_suelo"]
+size = Vector2(2400, 80)
+
+[sub_resource type="RectangleShape2D" id="forma_pared_izq"]
+size = Vector2(80, 1240)
+
+[sub_resource type="RectangleShape2D" id="forma_pared_der"]
+size = Vector2(80, 1240)
+
+[sub_resource type="RectangleShape2D" id="forma_techo_izq"]
+size = Vector2(1079, 80)
+
+[sub_resource type="RectangleShape2D" id="forma_techo_der"]
+size = Vector2(955, 80)
+
+[node name="Raices1" instance=ExtResource("0_base")]
+id = "raices_1"
+limites = Rect2(0, 0, 2400, 1240)
+posicion_mapa = Vector2(0, 0)
+
+[node name="Entrada" parent="." index="0"]
+position = Vector2(300, 1080)
+
+[node name="Suelo" type="StaticBody2D" parent="Terreno" index="0"]
+position = Vector2(1200, 1120)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/Suelo" index="0"]
+shape = SubResource("forma_suelo")
+
+[node name="ParedIzquierda" type="StaticBody2D" parent="Terreno" index="1"]
+position = Vector2(-40, 620)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/ParedIzquierda" index="0"]
+shape = SubResource("forma_pared_izq")
+
+[node name="ParedDerecha" type="StaticBody2D" parent="Terreno" index="2"]
+position = Vector2(2440, 620)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/ParedDerecha" index="0"]
+shape = SubResource("forma_pared_der")
+
+[node name="TechoIzquierda" type="StaticBody2D" parent="Terreno" index="3"]
+position = Vector2(539.5, -40)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/TechoIzquierda" index="0"]
+shape = SubResource("forma_techo_izq")
+
+[node name="TechoDerecha" type="StaticBody2D" parent="Terreno" index="4"]
+position = Vector2(1922.5, -40)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/TechoDerecha" index="0"]
+shape = SubResource("forma_techo_der")
+
+[node name="PuertaArriba" parent="." index="8" instance=ExtResource("2_hueco_techo")]
+position = Vector2(1262, 84)
+id = &"arriba"
+sala_destino = "celda_4"
+puerta_destino = &"abajo"
+llegada = Vector2(0, 180)
+punto_seguro = Vector2(0, 996)
+
+[node name="AvisoCurar" type="Area2D" parent="." index="9"]
+position = Vector2(1900, 1080)
+script = ExtResource("1_aviso")
+acciones = Array[StringName]([&"curar"])
+id = "aviso_curar"
+nota = "Golpea enemigos para ganar Inspiración"
+
+[node name="PuertaAbajo" parent="." index="10" instance=ExtResource("3_hueco_piso")]
+position = Vector2(2150, 1090)
+id = &"abajo"
+sala_destino = "celda_3"
+puerta_destino = &"derecha"
+llegada = Vector2(-150, -134)
+
+[node name="Monedas" parent="." index="11" instance=ExtResource("4_monedas")]
+position = Vector2(600, 1080)
+id = "monedas_raices_1"

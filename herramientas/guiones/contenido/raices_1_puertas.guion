@@ -1,0 +1,6 @@
+# Las Raíces, sala 1, ruta de puertas: desde la Entrada (x=300) camina a la derecha, pasa el pizarrón
+# y cruza el hueco ABAJO de andamio (x=2150) que lleva a celda_3.
+escena res://contenido/salas/raices/raices_1.tscn
+2 mover_derecha press
+340 mover_derecha release
+fin 450

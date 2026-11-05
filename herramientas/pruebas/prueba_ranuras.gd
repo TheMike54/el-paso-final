@@ -60,8 +60,8 @@ func _ready() -> void:
 	_caso("tiempo en minutos", Ranuras.tiempo_texto(0.0) == "0 min" and Ranuras.tiempo_texto(3599.0) == "59 min")
 	_caso("tiempo en horas y minutos", Ranuras.tiempo_texto(3600.0) == "1 h 00 min" and Ranuras.tiempo_texto(3900.0) == "1 h 05 min")
 	var con_banco: Dictionary = PARTIDA.duplicate(true)
-	con_banco["banco"] = {"sala": "raices_1", "id": "banco_1"}
-	_caso("la ubicacion es la sala del banco", Ranuras.ubicacion(con_banco) == "Raices 1")
+	con_banco["banco"] = {"sala": "sin_zona_1", "id": "banco_1"}
+	_caso("la ubicacion es la sala del banco", Ranuras.ubicacion(con_banco) == "Sin Zona 1")
 	_caso("sin banco, la ultima sala visitada", Ranuras.ubicacion(PARTIDA) == "Prueba 2")
 	con_banco["banco"] = {"sala": "celda_3", "id": "banco_1"}
 	_caso("el banco muestra el nombre de su zona", Ranuras.ubicacion(con_banco) == "La Celda")
