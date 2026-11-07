@@ -3,6 +3,7 @@
 en 290 escena res://contenido/salas/celda/celda_4.tscn
 en 425 valor Jugador aterrizando true
 escena res://contenido/salas/raices/raices_1.tscn
+x 1262 2
 y 1080 2
 en_suelo true
 valor Jugador transicion 0
