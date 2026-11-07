@@ -73,7 +73,7 @@
   },
   {
     "id": "sala-celda-4-ruta",
-    "que": "La sala 4 de La Celda se entra por el boquete de raices (LADO, ida y vuelta con el boquete derecho de celda_3), se baja por el tiro junto a la raiz movil (solida: aplasta sin dano y saca al jugador a un lado; subido en ella se llega de vuelta al pasillo o a la cornisa de las PejeCoins, y saltar pegado a las paredes del tiro bajo sus aleros no atora) y se sale cayendo por el boquete del piso (ABAJO, hacia Las Raices; mientras no exista, a celda_3 junto a su boquete derecho)",
+    "que": "La sala 4 de La Celda se entra por el boquete de raices (LADO, ida y vuelta con el boquete derecho de celda_3), se baja por el tiro junto a la raiz movil (solida: aplasta sin dano y saca al jugador a un lado; subido en ella se llega de vuelta al pasillo o a la cornisa de las PejeCoins, y saltar pegado a las paredes del tiro bajo sus aleros no atora) y se sale cayendo por el boquete del piso (ABAJO, hacia Las Raices, a raices_1 por la puerta arriba con aterrizaje duro y sin dano)",
     "comprobacion": "herramientas/guiones/contenido/celda_4_puertas.guion;herramientas/guiones/contenido/celda_4_tiro.guion;herramientas/guiones/contenido/celda_4_raiz.guion;herramientas/guiones/contenido/celda_4_subir.guion;herramientas/guiones/contenido/celda_4_cornisa.guion",
     "pasa": true
   },
@@ -87,6 +87,12 @@
     "id": "eterno-segunda-conversacion",
     "que": "Tras entregar la Pluma, hablar otra vez con el Eterno da su segunda conversacion (seguir subiendo), sin otra cinematica ni otra entrega; despues se repite esa",
     "comprobacion": "herramientas/guiones/contenido/celda_3_pluma.guion",
+    "pasa": true
+  },
+  {
+    "id": "sala-raices-1-ruta",
+    "que": "La sala 1 de Las Raices recibe la caida desde celda_4 por la puerta arriba con aterrizaje duro y sin dano, ensena a curar con el pizarron antes de la salida y se sale provisionalmente por el hueco abajo hacia celda_3",
+    "comprobacion": "herramientas/guiones/contenido/raices_1_puertas.guion",
     "pasa": true
   }
 ]

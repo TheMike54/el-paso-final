@@ -1,0 +1,10 @@
+# Llega por el hueco ABAJO de andamio a celda_3, en el piso (y=1080) junto a su boquete derecho.
+en 10 valor /root/Partida botones_ensenados []
+escena res://contenido/salas/celda/celda_3.tscn
+x 2826 2
+y 1080 2
+en_suelo true
+valor Jugador transicion 0
+valor /root/Partida botones_ensenados [&"curar"]
+senal /root/Eventos cambio_de_sala 1
+senal /root/Eventos jugador_danado 0
