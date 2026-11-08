@@ -1,5 +1,7 @@
 # Llega por el hueco ABAJO de andamio a celda_3, en el piso (y=1080) junto a su boquete derecho.
+# Antes del pizarron, curar aun no se ensena y la sala lo esconde (botones_por_ensenar); al cruzar queda ensenado.
 en 10 valor /root/Partida botones_ensenados []
+en 10 valor . botones_por_ensenar [&"curar"]
 escena res://contenido/salas/celda/celda_3.tscn
 x 2826 2
 y 1080 2
