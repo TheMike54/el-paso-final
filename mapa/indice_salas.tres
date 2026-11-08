@@ -15,7 +15,8 @@ rectangulos = Dictionary[String, Rect2]({
 "prueba_1": Rect2(0, 0, 1600, 720),
 "prueba_2": Rect2(1600, 0, 2400, 720),
 "prueba_3": Rect2(4000, 0, 1600, 720),
-"prueba_4": Rect2(5600, 0, 1600, 720)
+"prueba_4": Rect2(5600, 0, 1600, 720),
+"raices_1": Rect2(12600, 3814, 2400, 1240)
 })
 rutas = Dictionary[String, String]({
 "celda_1": "res://contenido/salas/celda/celda_1.tscn",
@@ -28,11 +29,14 @@ rutas = Dictionary[String, String]({
 "prueba_1": "res://herramientas/salas/zonas/prueba/prueba_1.tscn",
 "prueba_2": "res://herramientas/salas/zonas/prueba/prueba_2.tscn",
 "prueba_3": "res://herramientas/salas/zonas/prueba/prueba_3.tscn",
-"prueba_4": "res://herramientas/salas/zonas/prueba/prueba_4.tscn"
+"prueba_4": "res://herramientas/salas/zonas/prueba/prueba_4.tscn",
+"raices_1": "res://contenido/salas/raices/raices_1.tscn"
 })
 nombres_zona = Dictionary[String, String]({
-"celda": "La Celda"
+"celda": "La Celda",
+"raices": "Las Raíces"
 })
 colores_zona = Dictionary[String, Color]({
-"celda": Color(0.45, 0.55, 0.65, 1)
+"celda": Color(0.45, 0.55, 0.65, 1),
+"raices": Color(0.37, 0.88, 0.78, 1)
 })

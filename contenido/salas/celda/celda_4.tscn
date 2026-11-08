@@ -319,8 +319,8 @@ llegada = Vector2(64, 0)
 [node name="PuertaAbajo" parent="." instance=ExtResource("17_hueco_piso")]
 position = Vector2(2020, 1414)
 id = &"abajo"
-sala_destino = "celda_3"
-puerta_destino = &"derecha"
+sala_destino = "raices_1"
+puerta_destino = &"arriba"
 llegada = Vector2(-150, -134)
 
 [node name="Niebla" parent="." instance=ExtResource("15_niebla")]

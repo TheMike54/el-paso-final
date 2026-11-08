@@ -52,7 +52,7 @@ Alternativa sin empacador: abrir el `SpriteFrames` en el editor y sumar cuadros 
 
 **Del juego**
 
-- La campaña termina en un hueco provisional de `celda_4`, y no hay enemigos en `contenido/`.
+- La campaña termina en un hueco provisional de `raices_1`, y no hay enemigos en `contenido/`.
 - Solo español y solo Android; la PC sirve para desarrollar.
 - Dormido en el banco, el jugador animado se ve sentado en el aire.
 - En la PC, Espacio es `ui_accept` y `atacar`: cerrar un menú con Espacio también ataca.

@@ -30,7 +30,8 @@ El orden natural es 1, 2, 3 y 4; la sala 5 es opcional y cuelga de la 2.
 | `celda_2` | Dos fosos de varillas y cables pelados, que no se cruzan por el piso. La ruta va por escombros, columna rota, lámpara de una vía, plataforma que va y viene y elevador. PejeCoins sueltas | Plataformas y lectura del peligro | Izquierda a la 1, derecha a la 3, hueco del techo a la 5 |
 | `celda_5` | Pasillo de arriba: foso de varillas y aspas, que golpean con retroceso y no devuelven a un punto seguro. PejeCoins en repisa y un Azulito junto a la pared izquierda | Premio por explorar | Hueco del piso, cae sobre el elevador de la 2 |
 | `celda_3` | El Eterno, pilas y raíces que se cortan, aviso de atacar. Nicho escondido con un Azulito: se sube por caja, estante, lámpara y ducto, y el plafón se rompe desde abajo con la Pluma | Atacar | Izquierda a la 2, boquete derecho a la 4 |
-| `celda_4` | Tiro hacia abajo junto a una raíz móvil sólida, cuyo aplastamiento quita una vida y devuelve al último punto seguro; cornisa con PejeCoins | La bajada | Boquete izquierdo a la 3, hueco del piso |
+| `celda_4` | Tiro hacia abajo junto a una raíz móvil sólida, cuyo aplastamiento quita una vida y devuelve al último punto seguro; cornisa con PejeCoins | La bajada | Boquete izquierdo a la 3, hueco del piso a raices_1 |
+| `raices_1` | Primera sala de Las Raíces: caída libre desde celda_4, PejeCoins sueltas y pizarrón que enseña la curación. Al final, hueco provisional de andamio en el piso que regresa a celda_3 | Enseña a curar | Hueco del techo desde celda_4, hueco del piso a celda_3 |
 
 ### El Eterno y la Pluma
 
@@ -40,7 +41,7 @@ Hablar con él no parece obligatorio: en la escena no hay nada que cierre el pas
 
 ### Dónde termina hoy
 
-El hueco del piso de `celda_4` es provisional: lleva de vuelta a `celda_3`, por su boquete derecho, sin daño. Lo cubre el guion `herramientas/guiones/contenido/celda_4_tiro.guion`. En el juego final debe bajar a Las Raíces.
+El hueco del piso de `celda_4` baja a `raices_1`. La campaña termina provisionalmente en el hueco del piso de `raices_1`, que lleva de vuelta a `celda_3` por su boquete derecho mediante un andamio. Lo cubren los guiones `herramientas/guiones/contenido/celda_4_tiro.guion` y `herramientas/guiones/contenido/raices_1_puertas.guion`.
 
 ### Reglas que se viven en este tramo
 
