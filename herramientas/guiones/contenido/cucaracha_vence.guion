@@ -1,0 +1,15 @@
+# La Cucaracha: el jugador camina hacia ella, se entierra, avisa, sale y la vence.
+# Esquiva el aviso caminando a la derecha, vuelve y la golpea dos veces en RECUPERANDO.
+escena res://herramientas/salas/enemigos/sala_cucaracha.tscn
+habilidad pluma
+2 mover_derecha press
+30 mover_derecha release
+60 mover_derecha press
+80 mover_derecha release
+135 mover_izquierda press
+143 mover_izquierda release
+150 atacar press
+152 atacar release
+175 atacar press
+177 atacar release
+fin 300

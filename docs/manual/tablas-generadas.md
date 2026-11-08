@@ -8,6 +8,7 @@ Generadas por `herramientas/generar-tablas.ps1` desde los archivos del proyecto.
 |---|
 | `contenido/cinematicas/cinematica_celda.tscn` |
 | `contenido/cinematicas/cinematica_eterno_pluma.tscn` |
+| `contenido/enemigos/cucaracha/polvo_cucaracha.tscn` |
 | `contenido/npc/eterno/eterno.tscn` |
 | `contenido/objetos/celda/aspas.tscn` |
 | `contenido/objetos/celda/boquete_raices.tscn` |

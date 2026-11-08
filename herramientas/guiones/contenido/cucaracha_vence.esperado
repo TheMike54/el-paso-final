@@ -1,0 +1,9 @@
+# Camina, se entierra (invisible), avisa, el jugador esquiva sin dano, sale y queda quieta, y dos golpes la vencen.
+en 10 valor Enemigo/Comportamiento estado 0
+en 40 valor Enemigo/Comportamiento estado 1
+en 40 valor Enemigo visible false
+en 80 valor Enemigo/Comportamiento estado 2
+en 130 valor Enemigo/Comportamiento estado 3
+en 130 senal /root/Eventos jugador_danado 0
+senal /root/Eventos enemigo_vencido 1
+senal /root/Eventos jugador_danado 0
