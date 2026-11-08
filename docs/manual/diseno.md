@@ -83,7 +83,7 @@ Las zonas usan enemigos con referencia real reconocible, para que el arte salga 
 | Amuletos | 10, comprados o encontrados; carga de 3 a 11; cuestan de 1 a 3 | Hecho el sistema, con 4 efectos. En el catálogo, solo Patas de Cucaracha. Se ponen sentado en un banco. En la primera versión hay 2: Patas y Caparazón de Cucaracha |
 | Útiles | 5, en 4 cupos, sin gastar carga: siempre sobra uno | Hecho con 1 ranura y solo la Brújula. Los 4 cupos están en un plan por aprobar (`planes/activos/nucleo-menus-pausa.md`) |
 | Muerte | Sin pantalla de muerte. Reapareces en el banco; tus PejeCoins quedan en una mochila | Hecho. La mochila queda en el último punto seguro |
-| Reto de la mochila | Una pregunta con examen | Hecho el sistema: una sola oportunidad; sin la meta, lo perdido se va. Faltan las preguntas (tarjeta #28) |
+| Reto de la mochila | Una pregunta con examen | Hecho: una sola oportunidad; sin la meta, lo perdido se va. La bolsa tiene 12 preguntas (`contenido/preguntas_mochila.tres`) |
 | Enemigos que vuelven | Débiles al volver a entrar; fuertes al descansar | Hecho (`reaparicion` de `nucleo/ficha_enemigo.gd`) |
 | Retos de pregunta | Preguntas sencillas de programación o matemáticas que dan vida o monedas | Hecho el sistema; sin colocar |
 | Bancos | Mesas de ESCOM; guardar no abre recuadro | Hecho |
