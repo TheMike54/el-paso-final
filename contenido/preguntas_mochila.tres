@@ -47,7 +47,7 @@ correcta = 1
 
 [sub_resource type="Resource" id="pregunta_8"]
 script = ExtResource("2_pregunta")
-pregunta = "¿Cuánto es 1111 en binario?"
+pregunta = "¿Cuánto vale 1111 (binario) en decimal?"
 opciones = Array[String](["16", "11", "15"])
 correcta = 2
 
