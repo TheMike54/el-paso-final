@@ -1,0 +1,5 @@
+# Aviso sin dano mientras esta bajo tierra; al salir (estado 3) golpea al jugador que no se movio: un golpe.
+en 80 valor Enemigo/Comportamiento estado 2
+en 100 senal /root/Eventos jugador_danado 0
+en 130 valor Enemigo/Comportamiento estado 3
+senal /root/Eventos jugador_danado 1

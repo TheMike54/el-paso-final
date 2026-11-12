@@ -7,7 +7,7 @@ habilidad pluma
 60 mover_derecha press
 80 mover_derecha release
 135 mover_izquierda press
-143 mover_izquierda release
+138 mover_izquierda release
 150 atacar press
 152 atacar release
 175 atacar press

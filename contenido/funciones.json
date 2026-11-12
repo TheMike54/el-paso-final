@@ -97,13 +97,19 @@
   },
   {
     "id": "enemigo-cucaracha-vence",
-    "que": "La Cucaracha se entierra al ver al jugador, avisa con polvo donde estaba, sale ahi y queda quieta; caminar a la derecha durante el aviso lo esquiva sin dano y dos golpes la vencen",
+    "que": "La Cucaracha se entierra al ver al jugador, avisa con polvo bajo el jugador cuando aparece el polvo, sale ahi y queda quieta; caminar a la derecha durante el aviso lo esquiva sin dano y dos golpes la vencen",
     "comprobacion": "herramientas/guiones/contenido/cucaracha_vence.guion",
     "pasa": true
   },
   {
+    "id": "enemigo-cucaracha-quieto",
+    "que": "La Cucaracha sale bajo el jugador que se queda quieto despues de que se entierra, y lo golpea una vez; durante el aviso no le hace dano",
+    "comprobacion": "herramientas/guiones/contenido/cucaracha_quieto.guion",
+    "pasa": true
+  },
+  {
     "id": "enemigo-cucaracha-telefono",
-    "que": "En el telefono el aviso de la Cucaracha (polvo donde estaba) se lee a tiempo y se esquiva caminando",
+    "que": "En el telefono el aviso de la Cucaracha (polvo bajo el jugador) se lee a tiempo y se esquiva caminando",
     "comprobacion": "manual: docs/pruebas.md, «Cucaracha»",
     "pasa": false
   }

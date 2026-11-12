@@ -1,6 +1,6 @@
 extends ComportamientoEnemigo
 # Cucaracha: camina como el caminante; al ver al jugador cerca se entierra (invisible, sin danar ni recibir golpes),
-# avisa con polvo en el punto donde estaba el jugador, sale ahi y descansa antes de volver a caminar.
+# avisa con polvo bajo el jugador en el momento en que aparece el polvo, sale ahi y descansa antes de volver a caminar.
 # Si en ese punto no hay suelo o espacio para su cuerpo, sale donde se enterro. Parte de caminante.gd.
 
 const DatosCucaracha = preload("datos_cucaracha.gd")
@@ -85,13 +85,8 @@ func _caminar() -> void:
 	mover()
 
 
-# Anota donde esta el jugador (por ahi saldra), se queda quieta y desaparece.
+# Se queda quieta y desaparece; el punto de salida se decide despues, al empezar el aviso.
 func _enterrarse() -> void:
-	var objetivo: Jugador = jugador()
-	if objetivo == null:
-		return
-	_x_salida = objetivo.global_position.x
-	_y_salida = objetivo.global_position.y
 	entierros += 1
 	_ticks_quieto = 0
 	enemigo.velocity = Vector2.ZERO
@@ -101,8 +96,13 @@ func _enterrarse() -> void:
 	_ticks = _d.ticks_enterrada
 
 
-# Decide el punto de salida y pone el polvo ahi: es lo que el jugador ve para esquivar.
+# Anota donde esta el jugador ahora (por ahi saldra), decide el punto de salida y pone el polvo ahi: es lo que el
+# jugador ve para esquivar. Lo lee aqui y no al enterrarse, para que quien sigue caminando no quede muy atras.
 func _avisar() -> void:
+	var objetivo: Jugador = jugador()
+	var donde: Vector2 = objetivo.global_position if objetivo != null else enemigo.global_position
+	_x_salida = donde.x
+	_y_salida = donde.y
 	_punto_salida = _buscar_salida()
 	_polvo = ESCENA_POLVO.instantiate() as Node2D
 	enemigo.get_parent().add_child(_polvo)
@@ -134,7 +134,7 @@ func _recuperar() -> void:
 		estado = Estado.CAMINANDO
 
 
-# Punto del suelo bajo donde estaba el jugador, si ahi cabe su cuerpo; si no, donde se enterro.
+# Punto del suelo bajo donde esta el jugador al empezar el aviso, si ahi cabe su cuerpo; si no, donde se enterro.
 func _buscar_salida() -> Vector2:
 	var mitad: float = enemigo.ficha.tamano.x / 2.0
 	var alto: float = enemigo.ficha.tamano.y

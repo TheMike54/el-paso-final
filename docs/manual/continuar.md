@@ -17,7 +17,6 @@ Qué no viene en el repositorio y cómo suplirlo, qué límites ya se conocen y 
 | Plantilla Gradle (`android/`) y caché `.godot/` | Se regeneran | Paso 3 de «Publicar desde cero» y `--import` |
 | `contenido/preguntas_mochila.tres` | No existe todavía | Es opcional: sin él la mochila se recupera enseguida (tarjeta #28) |
 | `contenido/estaciones.tres` | No existe todavía | Opcional hasta colocar estaciones |
-| `contenido/enemigos/` | No existe todavía | Lo crea el primer enemigo (`docs/guias/agregar-un-enemigo.md`) |
 | Música de sala | Solo existe el tema del menú | `docs/guias/sonido-y-musica.md` |
 
 Las herramientas que sí vienen: `herramientas/generar_efectos.gd` (hojas de efectos, niebla y monedas), `herramientas/generar_trazo.gd` (trazo del ataque), `herramientas/generar_mapa.gd` (índice del mapa) y `herramientas/generar_sprites.gd` (animaciones del jugador).
@@ -52,7 +51,7 @@ Alternativa sin empacador: abrir el `SpriteFrames` en el editor y sumar cuadros 
 
 **Del juego**
 
-- La campaña termina en un hueco provisional de `raices_1`, y no hay enemigos en `contenido/`.
+- La campaña termina en un hueco provisional de `raices_1`, y en `contenido/enemigos/` solo hay una Cucaracha, sin arte.
 - Solo español y solo Android; la PC sirve para desarrollar.
 - Dormido en el banco, el jugador animado se ve sentado en el aire.
 - En la PC, Espacio es `ui_accept` y `atacar`: cerrar un menú con Espacio también ataca.
