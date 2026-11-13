@@ -15,7 +15,7 @@ Qué no viene en el repositorio y cómo suplirlo, qué límites ya se conocen y 
 | Montaje y sonido de las cinemáticas, y el escalado con Real-ESRGAN | Trabajo externo | Exportar `.mp4` H.264 y `.ogv` Theora con el mismo nombre (`docs/guias/cinematicas.md`) |
 | Clave de firma y credenciales | Nunca entran al repo (`.gitignore`) | Crear una propia: ver «Publicar desde cero» |
 | Plantilla Gradle (`android/`) y caché `.godot/` | Se regeneran | Paso 3 de «Publicar desde cero» y `--import` |
-| `contenido/preguntas_mochila.tres` | No existe todavía | Es opcional: sin él la mochila se recupera enseguida (tarjeta #28) |
+| `contenido/preguntas_mochila.tres` | Existe: 12 preguntas, 3 por intento, meta 2 | Es opcional: sin él la mochila se recupera enseguida |
 | `contenido/estaciones.tres` | No existe todavía | Opcional hasta colocar estaciones |
 | Música de sala | Solo existe el tema del menú | `docs/guias/sonido-y-musica.md` |
 

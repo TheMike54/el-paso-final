@@ -1,0 +1,82 @@
+[gd_resource type="Resource" script_class="BolsaPreguntas" format=3 uid="uid://twl1p3f7a1a5"]
+
+[ext_resource type="Script" uid="uid://bs1eh2wnp4w0v" path="res://nucleo/bolsa_preguntas.gd" id="1_bolsa"]
+[ext_resource type="Script" uid="uid://crw4un7sh1q72" path="res://nucleo/ficha_pregunta.gd" id="2_pregunta"]
+
+[sub_resource type="Resource" id="pregunta_1"]
+script = ExtResource("2_pregunta")
+pregunta = "¿Qué significan las siglas CPU?"
+opciones = Array[String](["Unidad de Control Personal", "Unidad Central de Proceso", "Computadora de Uso Personal"])
+correcta = 1
+
+[sub_resource type="Resource" id="pregunta_2"]
+script = ExtResource("2_pregunta")
+pregunta = "¿Cuál de estos es un lenguaje de programación?"
+opciones = Array[String](["Python", "JPEG", "PDF"])
+correcta = 0
+
+[sub_resource type="Resource" id="pregunta_3"]
+script = ExtResource("2_pregunta")
+pregunta = "¿Cuánto es 2 elevado a la 5?"
+opciones = Array[String](["16", "64", "32"])
+correcta = 2
+
+[sub_resource type="Resource" id="pregunta_4"]
+script = ExtResource("2_pregunta")
+pregunta = "¿Qué hace un ciclo for?"
+opciones = Array[String](["Borra una variable", "Repite un bloque de código", "Apaga el programa"])
+correcta = 1
+
+[sub_resource type="Resource" id="pregunta_5"]
+script = ExtResource("2_pregunta")
+pregunta = "¿Qué estructura saca primero lo que entró primero?"
+opciones = Array[String](["Pila", "Árbol", "Cola"])
+correcta = 2
+
+[sub_resource type="Resource" id="pregunta_6"]
+script = ExtResource("2_pregunta")
+pregunta = "¿Cuánto da 7 % 3 en la mayoría de los lenguajes?"
+opciones = Array[String](["1", "2", "3"])
+correcta = 0
+
+[sub_resource type="Resource" id="pregunta_7"]
+script = ExtResource("2_pregunta")
+pregunta = "¿Qué significan las siglas RAM?"
+opciones = Array[String](["Registro de Acceso Mínimo", "Memoria de Acceso Aleatorio", "Red de Almacenamiento Móvil"])
+correcta = 1
+
+[sub_resource type="Resource" id="pregunta_8"]
+script = ExtResource("2_pregunta")
+pregunta = "¿Cuánto vale 1111 (binario) en decimal?"
+opciones = Array[String](["16", "11", "15"])
+correcta = 2
+
+[sub_resource type="Resource" id="pregunta_9"]
+script = ExtResource("2_pregunta")
+pregunta = "¿Qué comando de Git guarda tus cambios en el historial?"
+opciones = Array[String](["git commit", "git clone", "git fetch"])
+correcta = 0
+
+[sub_resource type="Resource" id="pregunta_10"]
+script = ExtResource("2_pregunta")
+pregunta = "¿Qué complejidad tiene la búsqueda binaria?"
+opciones = Array[String](["O(n)", "O(log n)", "O(n al cuadrado)"])
+correcta = 1
+
+[sub_resource type="Resource" id="pregunta_11"]
+script = ExtResource("2_pregunta")
+pregunta = "¿Qué compuerta lógica invierte su entrada?"
+opciones = Array[String](["AND", "OR", "NOT"])
+correcta = 2
+
+[sub_resource type="Resource" id="pregunta_12"]
+script = ExtResource("2_pregunta")
+pregunta = "¿Qué protocolo se usa para enviar correo saliente?"
+opciones = Array[String](["SMTP", "FTP", "SSH"])
+correcta = 0
+
+[resource]
+script = ExtResource("1_bolsa")
+preguntas = Array[ExtResource("2_pregunta")]([SubResource("pregunta_1"), SubResource("pregunta_2"), SubResource("pregunta_3"), SubResource("pregunta_4"), SubResource("pregunta_5"), SubResource("pregunta_6"), SubResource("pregunta_7"), SubResource("pregunta_8"), SubResource("pregunta_9"), SubResource("pregunta_10"), SubResource("pregunta_11"), SubResource("pregunta_12")])
+preguntas_por_reto = 3
+meta = 2
