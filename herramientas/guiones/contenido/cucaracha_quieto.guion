@@ -1,0 +1,7 @@
+# La Cucaracha: el jugador camina hacia ella y se queda quieto al enterrarse. El polvo aparece bajo el jugador y,
+# al salir, la Cucaracha lo golpea (un solo golpe: el guion termina antes de que acabe su invulnerabilidad).
+escena res://herramientas/salas/enemigos/sala_cucaracha.tscn
+habilidad pluma
+2 mover_derecha press
+30 mover_derecha release
+fin 160

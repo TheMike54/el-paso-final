@@ -94,5 +94,23 @@
     "que": "La sala 1 de Las Raices recibe la caida desde celda_4 por la puerta arriba con aterrizaje duro y sin dano, ensena a curar con el pizarron antes de la salida y se sale provisionalmente por el hueco abajo hacia celda_3",
     "comprobacion": "herramientas/guiones/contenido/raices_1_puertas.guion",
     "pasa": true
+  },
+  {
+    "id": "enemigo-cucaracha-vence",
+    "que": "La Cucaracha se entierra al ver al jugador, avisa con polvo bajo el jugador cuando aparece el polvo, sale ahi y queda quieta; caminar a la derecha durante el aviso lo esquiva sin dano y dos golpes la vencen",
+    "comprobacion": "herramientas/guiones/contenido/cucaracha_vence.guion",
+    "pasa": true
+  },
+  {
+    "id": "enemigo-cucaracha-quieto",
+    "que": "La Cucaracha sale bajo el jugador que se queda quieto despues de que se entierra, y lo golpea una vez; durante el aviso no le hace dano",
+    "comprobacion": "herramientas/guiones/contenido/cucaracha_quieto.guion",
+    "pasa": true
+  },
+  {
+    "id": "enemigo-cucaracha-telefono",
+    "que": "En el telefono el aviso de la Cucaracha (polvo bajo el jugador) se lee a tiempo y se esquiva caminando",
+    "comprobacion": "manual: docs/pruebas.md, «Cucaracha»",
+    "pasa": false
   }
 ]

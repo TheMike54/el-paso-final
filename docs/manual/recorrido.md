@@ -55,7 +55,7 @@ El hueco del piso de `celda_4` baja a `raices_1`. La campaña termina provisiona
 
 Viven en el núcleo y se prueban en la zona de pruebas, pero ninguna sala de `contenido/` los usa hoy:
 
-- Enemigos: la carpeta `contenido/enemigos/` no existe. Sin enemigos no se gana Inspiración, porque cortar pilas y raíces no da.
+- Enemigos: la carpeta `contenido/enemigos/` solo trae la Cucaracha, sin arte, y ninguna sala de `contenido/` la coloca. Sin enemigos en la campaña no se gana Inspiración, porque cortar pilas y raíces no da.
 - Curación, bola, impulso, doble salto, salto en pared y caída en picada: no se obtienen.
 - Amuletos y útiles: el catálogo trae solo Patas de Cucaracha y la Brújula, y ninguna sala los entrega.
 - Mapa: sin el objeto de mapa y sin `pluma_mapa`, no se dibuja nada.
