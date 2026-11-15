@@ -112,5 +112,17 @@
     "que": "En el telefono el aviso de la Cucaracha (polvo bajo el jugador) se lee a tiempo y se esquiva caminando",
     "comprobacion": "manual: docs/pruebas.md, «Cucaracha»",
     "pasa": false
+  },
+  {
+    "id": "sala-raices-5-ruta",
+    "que": "En raices_5 el jugador cruza desde la Entrada hasta el Hongo A y lo vence; un golpe al Hongo cerrado rebota sin quitarle vida ni dar Inspiracion",
+    "comprobacion": "herramientas/guiones/contenido/raices_5_ruta.guion",
+    "pasa": true
+  },
+  {
+    "id": "enemigo-hongo-escupidor-telefono",
+    "que": "En el telefono el destello del Hongo escupidor avisa a tiempo, la espora se esquiva o se desvia, y cerrado se distingue de abierto",
+    "comprobacion": "manual: docs/pruebas.md, «Hongo escupidor»",
+    "pasa": false
   }
 ]

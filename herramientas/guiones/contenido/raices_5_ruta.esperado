@@ -1,0 +1,18 @@
+# Cruza la sala y vence al Hongo A. El primer golpe cuenta (vida 3 a 2, Inspiracion 11) y lo cierra; el segundo
+# llega cerrado y rebota: sin dano ni Inspiracion, con la senal bloqueado. Los dos golpes siguientes, al abrir, lo
+# vencen. Dos esporas alcanzan al jugador en el camino (medido).
+en 10 valor /root/Partida inspiracion 0
+en 10 valor HongoA vida 3
+en 360 valor HongoA vida 2
+en 360 valor HongoA/Comportamiento estado 2
+en 360 valor /root/Partida inspiracion 11
+en 440 valor HongoA vida 2
+en 440 valor /root/Partida inspiracion 11
+en 440 senal HongoA/Golpeable golpeado 1
+en 440 senal HongoA/Golpeable bloqueado 1
+en 520 valor HongoA vida 1
+escena res://contenido/salas/raices/raices_5.tscn
+senal HongoA vencido 1
+senal /root/Eventos enemigo_vencido 1
+senal /root/Eventos jugador_danado 2
+valor /root/Partida inspiracion 33

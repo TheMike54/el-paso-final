@@ -41,6 +41,7 @@ Generadas por `herramientas/generar-tablas.ps1` desde los archivos del proyecto.
 | `contenido/salas/celda/celda_4.tscn` |
 | `contenido/salas/celda/celda_5.tscn` |
 | `contenido/salas/raices/raices_1.tscn` |
+| `contenido/salas/raices/raices_5.tscn` |
 | `contenido/zonas/celda/sala_celda.tscn` |
 | `contenido/zonas/raices/sala_raices.tscn` |
 | `nucleo/banco.tscn` |

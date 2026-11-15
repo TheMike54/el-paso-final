@@ -51,7 +51,7 @@ Alternativa sin empacador: abrir el `SpriteFrames` en el editor y sumar cuadros 
 
 **Del juego**
 
-- La campaña termina en un hueco provisional de `raices_1`, y en `contenido/enemigos/` solo hay una Cucaracha, sin arte.
+- La campaña termina en un hueco provisional de `raices_1`, y en `contenido/enemigos/` hay una Cucaracha y un Hongo escupidor, sin arte. `raices_5` existe en caja gris, pero no se llega a ella hasta que `raices_4` le ponga puerta.
 - Solo español y solo Android; la PC sirve para desarrollar.
 - Dormido en el banco, el jugador animado se ve sentado en el aire.
 - En la PC, Espacio es `ui_accept` y `atacar`: cerrar un menú con Espacio también ataca.
