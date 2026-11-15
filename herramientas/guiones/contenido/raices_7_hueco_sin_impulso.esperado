@@ -1,0 +1,6 @@
+# Sin impulso, aun con Patas, el hueco no se cruza: no toma el impulso, cae una vez y vuelve antes del hueco.
+en 10 valor /root/Partida amuletos_equipados [&"patas_cucaracha"]
+escena res://contenido/salas/raices/raices_7.tscn
+valor /root/Partida habilidades []
+senal /root/Eventos jugador_danado 1
+x 1432 60

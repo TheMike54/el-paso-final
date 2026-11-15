@@ -1,0 +1,11 @@
+# Las Raices, sala 7: sin el impulso y con Patas de Cucaracha puestas (mas rapidez), corre desde la Entrada, salta
+# por encima del objeto del impulso para no tomarlo y salta desde la orilla del hueco (x=1500 a 2080) con el salto
+# completo. No llega: cae, pierde una vida y vuelve al ultimo suelo firme.
+escena res://contenido/salas/raices/raices_7.tscn
+amuleto patas_cucaracha
+2 mover_derecha press
+112 saltar press
+136 saltar release
+188 saltar press
+212 saltar release
+fin 300

@@ -124,5 +124,29 @@
     "que": "En el telefono el destello del Hongo escupidor avisa a tiempo, la espora se esquiva o se desvia, y cerrado se distingue de abierto",
     "comprobacion": "manual: docs/pruebas.md, «Hongo escupidor»",
     "pasa": true
+  },
+  {
+    "id": "sala-raices-7-ruta",
+    "que": "En raices_7 el objeto da el impulso una sola vez, el banco guarda, el hueco se cruza con el impulso y la salida lleva a la pantalla de cierre, que autoguarda y vuelve al menu",
+    "comprobacion": "herramientas/guiones/contenido/raices_7_ruta.guion",
+    "pasa": true
+  },
+  {
+    "id": "sala-raices-7-hueco-con-impulso",
+    "que": "El hueco de raices_7 se cruza con el impulso",
+    "comprobacion": "herramientas/guiones/contenido/raices_7_hueco_con_impulso.guion",
+    "pasa": true
+  },
+  {
+    "id": "sala-raices-7-hueco-sin-impulso",
+    "que": "El hueco de raices_7 no se cruza sin el impulso, aun con Patas de Cucaracha puestas",
+    "comprobacion": "herramientas/guiones/contenido/raices_7_hueco_sin_impulso.guion",
+    "pasa": true
+  },
+  {
+    "id": "pantalla-cierre-telefono",
+    "que": "En el telefono la pantalla de cierre se lee y su boton se usa con el dedo y con el control",
+    "comprobacion": "manual: docs/pruebas.md, «Pantalla de cierre»",
+    "pasa": false
   }
 ]

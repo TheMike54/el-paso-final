@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://uegrttg1t3ap"]
+
+[ext_resource type="Script" uid="uid://cc7e3c0qv0kdr" path="res://contenido/objetos/raices/salida_cierre.gd" id="1_salida"]
+
+[sub_resource type="RectangleShape2D" id="forma_salida"]
+size = Vector2(40, 160)
+
+[node name="SalidaCierre" type="Area2D"]
+script = ExtResource("1_salida")
+
+[node name="Forma" type="CollisionShape2D" parent="."]
+position = Vector2(0, -80)
+shape = SubResource("forma_salida")

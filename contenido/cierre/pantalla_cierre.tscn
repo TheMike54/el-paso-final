@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://axf1ummfky01"]
+
+[ext_resource type="Script" uid="uid://da33jpqkjwyx1" path="res://contenido/cierre/pantalla_cierre.gd" id="1_pantalla"]
+
+[node name="PantallaCierre" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_pantalla")
