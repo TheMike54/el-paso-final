@@ -7,20 +7,21 @@
 
 1. Tener el Android SDK con `platform-tools` y el teléfono conectado por USB. Revisar el entorno con
    `.\herramientas\verificar-entorno.ps1`, que avisa si falta `adb`.
-2. Definir `adb` (ruta que busca `herramientas/verificar-entorno.ps1`) y ver el teléfono:
+2. Definir `adb` (ruta que busca `herramientas/verificar-entorno.ps1`) y ver el teléfono con su serie:
    ```powershell
    $adb = "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe"
-   & $adb devices
+   & $adb devices -l
    ```
-   Con más de un teléfono, agregar `-s <serie>` a cada comando de `adb`.
-3. Exportar el APK del preset «Desarrollo» (lleva todo lo demás y arranca con `--print-fps`; «Publicacion» no sirve
-   para medir: `docs/contrato.md`, «Paquete de publicación»). `build/` está ignorado por git:
-   ```powershell
-   & $env:GODOT_PATH --headless --path . --export-debug "Desarrollo" build\desarrollo.apk
-   ```
-4. Instalar: `& $adb install -r build\desarrollo.apk`. Cada máquina firma con su propia clave: un APK exportado en
-   otra máquina no se instala encima del que ya está, y desinstalar borra partidas y ajustes (`docs/pruebas.md`,
-   «Casos manuales», encabezado).
+   Con más de un teléfono, agregar `-s <serie>` a cada comando de `adb`; `instalar-apk.ps1` y `medir-fps.ps1` exigen
+   `-Telefono <serie>` en ese caso.
+3. Exportar el preset «Desarrollo» (lleva todo lo demás y arranca con `--print-fps`; «Publicacion» no sirve para medir:
+   `docs/contrato.md`, «Paquete de publicación») e instalarlo: `.\herramientas\instalar-apk.ps1 -Telefono <serie>`.
+   Pasa solo si imprime `INSTALAR-APK OK` y una línea `INSTALADO ... lastUpdateTime=...` por teléfono. `build/` está
+   ignorado por git.
+4. Cada máquina firma con su propia clave: un APK exportado en otra máquina no se instala encima del que ya está
+   (el script falla y nunca desinstala) y desinstalar borra partidas y ajustes (`docs/pruebas.md`, «Casos manuales»,
+   encabezado). Con el juego ya en la sala a medir: `.\herramientas\medir-fps.ps1 -Telefono <serie> -Etiqueta <sala> -Recursos bajo`
+   (protocolo en la cabecera del script); sin el script, el paso 5.
 5. Ver los FPS de dos formas: `& $adb logcat -s godot` (por `--print-fps`) o el contador en pantalla, en
    Configuración > Avanzado > Mostrar FPS (`docs/interfaz.md`, «Menú»; ajuste `mostrar_fps` en `docs/ajustes-y-entrada.md`, «Ajustes»). Recursos y FPS en ese mismo panel cambian el modo de la prueba: anotar con cuál se midió.
 6. Elegir el caso en `docs/pruebas.md`, «Casos manuales» (filas «Rendimiento en el teléfono», «FPS en el teléfono»,

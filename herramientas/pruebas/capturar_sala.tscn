@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://herramientas/pruebas/capturar_sala.gd" id="1_capturar"]
+
+[node name="CapturarSala" type="Node"]
+script = ExtResource("1_capturar")

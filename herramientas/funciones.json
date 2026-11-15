@@ -418,5 +418,35 @@
     "que": "Workflow Release, solo manual desde main: arma el AAB firmado de Publicacion con la version pedida, lo revisa y, con aprobacion en el entorno play, lo sube a Google Play sin enviarlo a revision; CI semanal con enlaces, tablas, zizmor y gitleaks, y acciones fijadas por SHA",
     "comprobacion": "manual: actionlint, zizmor y validar en verde en el PR; una corrida de Release en main con subir apagado deja el artefacto aab-<version_code> con el resumen; plan en planes/activos/herramientas-publicar-play.md",
     "pasa": false
+  },
+  {
+    "id": "mutar-local",
+    "que": "mutar.ps1 aplica una mutacion de texto unico a un archivo, corre el caso (-Guiones o -Validar), restaura el archivo siempre (copia de respaldo, comparacion de hash y candado .godot/mutar.lock) e imprime MUTACION resultado=MATADA|SOBREVIVE|INVALIDA|NO_APLICA|BLOQUEADA restaurado=SI|NO|NO_TOCADO arbol=IGUAL|CAMBIADO|SIN_GIT; sale con 0 solo si el caso detecto la mutacion y el archivo volvio; si correr-guiones.ps1 sale con 3 (candado ocupado) el resultado es INVALIDA; igual en powershell.exe 5.1 y pwsh 7",
+    "comprobacion": "manual: mutar.ps1 -Archivo nucleo/entrega_recompensas.gd -Buscar 'dadas += 1' -Poner 'dadas += 2' -Guiones nucleo/sala_equipo imprime resultado=MATADA restaurado=SI arbol=IGUAL y git status queda como estaba; con -Poner igual que -Buscar, o con un guion que pasa pese a la mutacion, no sale 0",
+    "pasa": false
+  },
+  {
+    "id": "reemplazar-local",
+    "que": "reemplazar.ps1 hace reemplazos literales o con -Regex en varios archivos: sin -Aplicar muestra lineas y conteo por pareja; con -Aplicar -Esperado N respalda en .godot/reemplazar-respaldo, escribe, relee cada archivo e imprime REEMPLAZO archivos=A cambios=N aplicado=SI verificado=SI; si una escritura falla (aun a medias) o la relectura no coincide, devuelve todos los archivos tocados y sale 1 con aplicado=NO, o 3 con aplicado=PARCIAL si alguno no volvio; una pareja sin coincidencias o un conteo distinto de -Esperado cancela la escritura y sale con 1; igual en powershell.exe 5.1 y pwsh 7",
+    "comprobacion": "manual: reemplazar.ps1 sobre una copia de docs/ en vista previa no cambia git status; con -Aplicar -Esperado distinto del conteo no escribe y sale 1; con el conteo correcto imprime verificado=SI",
+    "pasa": false
+  },
+  {
+    "id": "validar-tope-estado",
+    "que": "validar.ps1 falla con una linea FALLO si ESTADO.md tiene mas de 60 lineas y sale con 1",
+    "comprobacion": "manual: copiar ESTADO.md a una copia del repo con 61 lineas, correr validar.ps1 -SinImportar y ver FALLO ESTADO.md tiene 61 lineas y salida 1; con 60 lineas, salida 0",
+    "pasa": false
+  },
+  {
+    "id": "correr-guiones-candado",
+    "que": "correr-guiones.ps1 se niega con salida 3 si otra corrida tiene el candado, y lo libera al terminar o al morir",
+    "comprobacion": "manual: lanzar dos correr-guiones.ps1; la segunda imprime que hay otra corrida y sale con 3; al terminar la primera no queda .godot/correr-guiones.lock",
+    "pasa": false
+  },
+  {
+    "id": "hook-al-compactar-decisiones",
+    "que": "Tras compactar, al-compactar.ps1 reinyecta ademas la seccion de decisiones de cada plan activo (## Decidido... o ## Decisiones cerradas..., hasta el siguiente ##) y recorta git status para que la salida quede por debajo de 10000 caracteres; si aun asi se pasa, la primera linea lo avisa",
+    "comprobacion": "manual: herramientas/probar-sin-commit.ps1 termina sin fallos con los casos de al-compactar (salida de menos de 10000 caracteres y la seccion de decisiones de cada plan activo que la tenga); tras /compact, Claude cita una decision de un plan activo sin leerlo",
+    "pasa": false
   }
 ]

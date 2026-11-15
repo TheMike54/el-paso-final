@@ -1,5 +1,5 @@
 # Valida el proyecto: importa, corre la escena validadora y revisa su salida.
-# Sale con 0 solo si la escena imprime "VALIDACION ... fallos=0" y no hay lineas de error.
+# Sale con 0 solo si la escena imprime "VALIDACION ... fallos=0", no hay lineas de error y ESTADO.md no pasa de 60 lineas.
 # Solo ASCII: powershell.exe 5.1 lee los .ps1 sin BOM como ANSI.
 param([switch]$SinImportar)
 
@@ -11,6 +11,17 @@ if (-not $godot -or -not (Test-Path -LiteralPath $godot)) {
 $raiz = Split-Path -Parent $PSScriptRoot
 $log = Join-Path $raiz '.godot\validar.log'
 New-Item -ItemType Directory -Force -Path (Split-Path -Parent $log) | Out-Null
+
+# Tope de ESTADO.md: el CLAUDE.md raiz dice "maximo 60 lineas". Se cuenta aqui para que el fallo salga al validar.
+$topeEstado = 60
+$estado = Join-Path $raiz 'ESTADO.md'
+$fallosEstado = @()
+if (Test-Path -LiteralPath $estado) {
+    $lineasEstado = @(Get-Content -LiteralPath $estado).Count
+    if ($lineasEstado -gt $topeEstado) {
+        $fallosEstado += ('FALLO ESTADO.md tiene {0} lineas y el maximo es {1}' -f $lineasEstado, $topeEstado)
+    }
+}
 
 # cmd /c une stdout y stderr sin que PowerShell 5.1 convierta stderr en errores.
 Set-Content -LiteralPath $log -Value '' -NoNewline
@@ -24,13 +35,14 @@ $lineas = @(Get-Content -LiteralPath $log)
 $errores = @($lineas | Where-Object { $_ -match 'SCRIPT ERROR|^\s*ERROR:|^FALLO ' })
 $resumen = @($lineas | Where-Object { $_ -match '^VALIDACION archivos=\d+ fallos=\d+$' })
 
-if ($errores.Count -eq 0 -and $codigo -eq 0 -and $resumen.Count -eq 1 -and $resumen[0] -match 'fallos=0$') {
+if ($fallosEstado.Count -eq 0 -and $errores.Count -eq 0 -and $codigo -eq 0 -and $resumen.Count -eq 1 -and $resumen[0] -match 'fallos=0$') {
     Write-Output ("OK  " + $resumen[0])
     # Los avisos (AVISO ...) no fallan: solo se cuenta cuantos hay; el detalle queda en el log.
     $avisos = @($lineas | Where-Object { $_ -match '^AVISOS total=\d+$' })
     if ($avisos.Count -eq 1 -and $avisos[0] -notmatch 'total=0$') { Write-Output ($avisos[0] + '  detalle en ' + $log) }
     exit 0
 }
+$fallosEstado | ForEach-Object { Write-Output $_ }
 $errores | Select-Object -First 20 | ForEach-Object { Write-Output $_ }
 if ($resumen.Count -eq 0) { Write-Output 'validar: la escena validadora no imprimio su resumen (no corrio completa)' }
 else { Write-Output $resumen[0] }
