@@ -1,12 +1,13 @@
 ---
 name: gdscript4
-description: Reglas de GDScript 4 con el tipado estricto de este proyecto (Godot 4.7.2) y las diferencias con Python y con Godot 3 que rompen la compilación. Usar antes de escribir o corregir cualquier archivo .gd, o cuando validar.ps1 muestre un Parse Error.
+description: Reglas de GDScript 4 con el tipado estricto de este proyecto (Godot 4.7.2) y las diferencias con Python y con Godot 3 que rompen la compilación. Usar antes de escribir o corregir cualquier archivo .gd (también una prueba de herramientas/pruebas o un script temporal), al leer JSON o un Dictionary o Array sin tipo, y cuando validar.ps1 o un guion muestren un Parse Error o un SCRIPT ERROR. Si el .gd es del jugador, un menú o arte, se carga junto con fisica-2d, ui-tactil o rendimiento-gama-baja. No usar sola para decidir reglas de física y entrada (eso es fisica-2d), de menús y HUD (eso es ui-tactil) ni de costo en el teléfono (eso es rendimiento-gama-baja).
 ---
 
 # GDScript 4 en este proyecto
 
-Todo lo de abajo se comprobó en Godot 4.7.2 contra este repo; lo demás se busca con Grep en `$env:GODOT_DOCS`
-(ruta `tutorials/...`). `project.godot` trata como error solo `untyped_declaration`, `unsafe_property_access`,
+Todo lo de abajo se comprobó en Godot 4.7.2 contra este repo; lo demás se busca con Grep en `GODOT_DOCS`
+(ruta `tutorials/...`). La variable solo existe en PowerShell (`$env:GODOT_DOCS`); en Bash, Grep o un agente se
+pasa la ruta ya escrita, que está en `CLAUDE.local.md`. `project.godot` trata como error solo `untyped_declaration`, `unsafe_property_access`,
 `unsafe_method_access` y `unsafe_call_argument`. Lo que no esté aquí se comprueba con `.\herramientas\validar.ps1`
 antes de darlo por bueno; no se supone.
 
@@ -132,6 +133,4 @@ antes de darlo por bueno; no se supone.
   al validador y a los guiones. Para un archivo que puede venir dañado: `var j: JSON = JSON.new()`, revisar
   `j.parse(texto) == OK` y leer `j.data`.
 - `super()` dentro de `_ready()` no compila si la clase padre es del motor y no define ese método en GDScript.
-- Acciones de entrada con `StringName`: `Input.is_action_pressed(&"saltar")`.
-- La física del jugador va en `_physics_process(delta: float) -> void`.
 - Indentación con tabuladores, como la escribe el editor.

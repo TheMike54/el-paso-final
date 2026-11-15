@@ -1,6 +1,6 @@
 ---
 name: fisica-2d
-description: Reglas de física 2D y entrada de este proyecto (Godot 4.7.2). Usar antes de tocar jugador.gd, enemigos, proyectiles, Area2D, rayos o formas de colisión, o al cambiar cómo el jugador lee las acciones.
+description: Reglas de física 2D y entrada de este proyecto (Godot 4.7.2). Usar antes de tocar jugador.gd, enemigos, proyectiles, Area2D, rayos o formas de colisión, o al cambiar cómo el jugador lee las acciones; también al planear movimiento, combate o un enemigo nuevo, y cuando algo atraviesa una pared o un guion de movimiento falla. Al escribir el .gd se carga junto con gdscript4. No usar para tipado o sintaxis de GDScript (eso es gdscript4), para dibujar los controles táctiles, menús o el HUD (eso es ui-tactil), para FPS o costo en el teléfono (eso es rendimiento-gama-baja) ni para saber cómo lo resuelve Hollow Knight (eso es referencia-hollow-knight).
 ---
 
 # Física 2D y entrada en este proyecto

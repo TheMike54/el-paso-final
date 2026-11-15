@@ -41,6 +41,8 @@ Lo que ya se decidió y por qué, para no volver a discutirlo sin una razón nue
 | `.gitattributes` con `eol=lf` | Hooks y CI corren en Linux |
 | `LICENSE` solo MIT; el arte queda fuera | Ver [permisos.md](permisos.md) |
 | Ningún asistente de IA hace commits ni los firma | Cada cambio lo sube quien responde por él |
+| `herramientas/instalar-apk.ps1` no borra partidas por omisión; solo con `-BorrarPartidas` | Cambio del 3-nov-2026. Inferido: quien corre el script a mano no pierde partidas sin pedirlo |
+| `herramientas/capturar.ps1` captura por omisión a 1280×720, 1920×1080 y 2560×1440; la de 2560×1440 la prueba la persona en su monitor | Cambio del 3-nov-2026. Son las de los monitores de 10" a 27"; en uno de 2560×1440 la ventana puede no caber y la captura falla (ver el encabezado de `herramientas/capturar.ps1`) |
 
 ## Del juego
 
@@ -54,6 +56,8 @@ Lo que ya se decidió y por qué, para no volver a discutirlo sin una razón nue
 | 29-oct-2026 | El parry suena; falta el archivo (`FichaSonidos.parry` ya lo toca) | |
 | 29-oct-2026 | Las espinas de la sala 4 pasan a Las Raíces | Faltaba un uso claro en el tiro |
 | 29-oct-2026 | Los guiones `celda_*` se reducen a uno de ruta por sala, más los de `docs/errores/` | Inferido: menos guiones que mantener, sin perder los fallos ya vistos |
+| 29-oct-2026 | Aprobadas D1, D2, D3, D4 y D8; D10 no entra | |
+| 29-oct-2026 | El color del foco va con el pulido de las páginas | |
 | 30-oct-2026 | Barra de Inspiración sin cambios; el pizarrón de curar va en Las Raíces, antes del primer enemigo | Las salas previas ocultan el botón de curar con `botones_ocultos` |
 | 1-nov-2026 | La Celda es silenciosa, salvo junto al banco | Es intencional, no un fallo de audio |
 | 1-nov-2026 | Las aspas empujan y no devuelven a un punto seguro | Son golpe normal, no peligro |
@@ -61,6 +65,8 @@ Lo que ya se decidió y por qué, para no volver a discutirlo sin una razón nue
 | 1-nov-2026 | 5 útiles con 4 cupos, solo poner o quitar; Gato de la Suerte pasa de amuleto a útil | Siempre sobra uno. Sin construir: el código tiene 1 ranura |
 | 1-nov-2026 | La primera zona jugable no lleva jefes; el mapa sube hacia ESCOM | La zona todavía enseña a jugar |
 | 2-nov-2026 | El diseño del juego es público, con el manual en `docs/manual/` | Con licencia y aviso propios en `diseno.md` y `recorrido.md` |
+| 2-nov-2026 | La política de privacidad y su botón fueron directo a `main`, sin PR | Decisión de la persona |
+| 2-nov-2026 | Créditos nombra al equipo por sus usuarios de GitHub | |
 | 2-nov-2026 | Plan de Las Raíces aprobado por partes: estructura, #18, #19 y #22 | #20, #21, #25 y #26 se aprobaron el 3-nov-2026 |
 | 2-nov-2026 | Los 7 íconos de amuleto entran como PNG sueltos; decide quien los genera, con criterios escritos. Caché no se pinta | Cada ficha llega con su efecto |
 | 2-nov-2026 | Caída a Las Raíces sin repisa: unos 816 px, aterrizaje duro a propósito | No quita vida; lo fija un guion |
@@ -80,9 +86,12 @@ Lo que ya se decidió y por qué, para no volver a discutirlo sin una razón nue
 | 2-nov-2026 | En La Celda no hay banco donde está el Eterno | Se queda así; el único banco de la zona está en `celda_1` |
 | 3-nov-2026 | Texto de la pantalla de cierre de Las Raíces: «Continuará» y, en chico, «Fin de la primera versión» | Era la decisión abierta 13 |
 | 3-nov-2026 | Los peligros no tienen un color fijo | La regla «lo que lastima es cálido» no fue una decisión; el color lo da el arte de cada zona |
+| 3-nov-2026 | Sin máscara en el arranque y sin sesión de arte: se quitan del pendiente | |
 | 3-nov-2026 | Las piezas jugables no llevan un color ni un contorno fijos | Quien hace el arte comprueba que la parte principal no se mezcle con el fondo |
 | 3-nov-2026 | Línea del Eterno en `raices_3`: «Ese mapa lo empecé cuando llegué. Con la pluma ya puedes terminarlo tú.» | Era la decisión abierta 10; la ficha entrega el mapa `raices` y `pluma_mapa` |
 | 3-nov-2026 | Plan de los menús de pausa aprobado; se construye después de la entrega del 9-nov | Toca el núcleo; no se mezcla con la actualización en Play |
+
+Planes cerrados con decisiones: `planes/cerrados/nucleo-piezas-celda.md` y `contenido-celda-salas.md` (27-oct); `nucleo-cierre-auditoria.md`, apartado «Tras las pruebas en el S50» (30-oct); `nucleo-auditoria-final.md` (1-nov).
 
 ## Decisiones abiertas
 

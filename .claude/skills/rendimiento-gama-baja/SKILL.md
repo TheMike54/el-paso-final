@@ -17,9 +17,8 @@ viven en `docs/contrato.md` («Configuración del proyecto») y `docs/arte-y-ren
   (`tutorials/scripting/logging.rst:33`). Los pasos y dónde anotar están en `docs/pruebas.md`, filas
   «Rendimiento en el teléfono», «Recursos (sala de medición)» y «Sala de arte (rendimiento)», y la sección
   «Medición de rendimiento» (la herramienta que mide una sala con y sin cada capa).
-- Medir A/B: con y sin lo sospechoso, en la misma sala y el mismo teléfono. No suponer que «el límite es el relleno»:
-  hay mediciones en contra en `docs/componentes.md` (fila de `MonedasSueltas`) y `docs/arte-y-rendimiento.md`
-  («Mediciones», la del 26-oct).
+- No suponer que «el límite es el relleno»: hay mediciones en contra en `docs/componentes.md` (fila de
+  `MonedasSueltas`) y `docs/arte-y-rendimiento.md` («Mediciones»).
 - Decir qué tipo de lentitud es: FPS bajos constantes, picos (tirones) o carga lenta
   (`tutorials/performance/general_optimization.rst:39`).
 - Decir si limita la CPU o la GPU: el cuadro dura lo que tarda el más lento, y optimizar el otro no sube nada
@@ -28,6 +27,42 @@ viven en `docs/contrato.md` («Configuración del proyecto») y `docs/arte-y-ren
   `docs/arte-y-rendimiento.md`, «Mediciones».
 - Rendimiento se mide en el S50 y en el S20; lo funcional, en uno
   (`tutorials/performance/general_optimization.rst:74`).
+
+### Protocolo A/B
+
+Una cifra solo se compara con otra tomada en las mismas condiciones. Si algo de esto cambió entre A y B, no vale y
+se repite.
+
+1. Fijo, y escrito junto al resultado: el teléfono por su serie (`adb devices -l`), el preset del APK, la sala y la
+   posición, Recursos efectivo (no el guardado: un «alto» guardado a mano hizo que el S50 midiera 10 FPS en La Celda),
+   luces 2D y «Ver hitbox» apagado (`medir-fps.ps1` falla si está encendido). El APK se instala con
+   `.\herramientas\instalar-apk.ps1 -Telefono <serie>`, que pasa solo si imprime `INSTALAR-APK OK` y la línea
+   `INSTALADO ... lastUpdateTime=...`.
+2. Tasa de refresco fija. Si la pantalla la adapta (el S21 saltó entre 50 y 94 FPS de una vuelta a otra), esas
+   vueltas no sirven.
+3. A y B salen del mismo APK, con un interruptor: un eje de `herramientas/pruebas/medicion.gd` (`--recursos`,
+   `--luces`, `--niebla`), o los botones de la sala de arte para sus capas. Si lo que se prueba no tiene eje, se
+   agrega uno en `medicion.gd`. No se edita un script del juego para exportar otro APK sin el efecto: así quedó
+   `jugador.gd` modificado mientras el teléfono se desconectaba. Una mutación para ver si un caso la detecta va con
+   `.\herramientas\mutar.ps1`, que restaura el archivo siempre, no con `sed` sobre el archivo real.
+4. Cada vuelta es una corrida de
+   `.\herramientas\medir-fps.ps1 -Telefono <serie> -Etiqueta <a|b> -Segundos <n> -Recursos <auto|bajo|alto> -Abrir`,
+   repetida en este orden: A, B, A, B, A, B (al menos tres de cada una), con la misma serie, los mismos `-Segundos` y
+   el mismo `-Recursos`. `-Recursos` no cambia el ajuste: comprueba que el teléfono tiene el pedido y falla si no.
+   `-Abrir` cierra y abre el juego de cero, así que mide lo que sale al arrancar; para medir una sala se quita
+   `-Abrir` y se deja el juego en esa sala antes de cada corrida (cabecera de `medir-fps.ps1`, paso 3).
+5. Antes de contar, comprobar con una captura o con el log que pasó lo que se mide (que curó, que la capa está
+   encendida). Si no, la vuelta se descarta.
+6. `medir-fps.ps1` guarda el log mientras corre y falla si la app pierde el primer plano; no se rearma un script de
+   medición en el scratchpad. Cada corrida deja `build\fps-<serie>-<fecha>.txt`.
+7. De cada corrida se toma la `mediana=` de su línea `FPS ...`. Se reporta la mediana de esas medianas por variante,
+   el `minimo=` más bajo y el ruido (cuánto varían las medianas de A entre sus corridas). Una diferencia menor que el
+   ruido no es resultado. `medir-fps.ps1` no da el peor cuadro (`--print-fps` no lo imprime); si hace falta
+   `peor_ms`, se mide con `medicion.tscn` (`MEDICION_DATO ... peor_ms=`), con la misma duración en todas las vueltas
+   (`--calentar` y `--muestra`), tres corridas y los resultados leídos de `adb logcat -s godot` mientras corre, no
+   con `logcat -d` al final: el búfer del S50 solo guarda las últimas líneas.
+8. Si el criterio del plan no se cumple, se reportan la mediana y los bajones y decide Miguel; el umbral no se cambia
+   sin su aceptación escrita.
 
 ## Convenciones que el repo ya sigue
 

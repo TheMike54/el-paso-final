@@ -1,6 +1,6 @@
 ---
 name: ui-tactil
-description: Reglas de interfaz táctil de este proyecto (Godot 4.7.2). Usar antes de crear o cambiar un menú, una página del marco, el HUD, Tema, ControlesTactiles, una capa CanvasLayer o cualquier Control dibujado a mano o armado en código.
+description: Reglas de interfaz táctil de este proyecto (Godot 4.7.2) y la revisión con capturas antes y después en 1280×720, 1920×1080 y 2560×1440. Usar antes de crear o cambiar un menú, una página del marco, el HUD, Tema, ControlesTactiles, una capa CanvasLayer o cualquier Control dibujado a mano o armado en código, y antes de dar por buena una pantalla o mostrar un mockup de menús. No usar para el costo de dibujo, capas translúcidas o shaders en el teléfono (eso es rendimiento-gama-baja), para cómo el jugador lee las acciones (eso es fisica-2d), ni para cómo resuelve Hollow Knight un menú o el HUD (eso es referencia-hollow-knight).
 ---
 
 # Interfaz táctil en este proyecto
@@ -12,6 +12,45 @@ repiten aquí: viven en `nucleo/tema.gd`, en `docs/interfaz.md` («Menú», «Ma
 
 Como `validar.ps1` no ejecuta `_ready` (`CLAUDE.md` raíz, «Entorno y trampas»), el acomodo, el foco, las capas y el
 toque los comprueba un guion o una prueba manual en el teléfono.
+
+## Capturas antes y después
+
+Los guiones no ven solapes, textos cortados ni letra ilegible; una captura sí. Todo cambio que se vea en pantalla
+pasa por estos pasos antes de marcar `"pasa"` o de mostrárselo a la persona:
+
+1. **Elegir cómo capturar** según lo que cambió. `capturar.ps1` carga una sala y no abre menús ni páginas del
+   marco, así que no sirve para ellos:
+   - **Sala o HUD** (lo que se ve con la sala cargada: barras, contadores, `ControlesTactiles`): `capturar.ps1`.
+   - **Menú, pausa, página del marco, mapa o cualquier pantalla que se abre con una acción**: en una copia del
+     repo en el scratchpad, correr `& $env:GODOT_PATH --path <copia> --windowed --resolution <ancho>x<alto>` con
+     una escena que abra esa pantalla (instanciando la escena del menú, o emitiendo la acción que la abre), la
+     deje en el estado donde se ve el cambio, espere un fotograma dibujado y la guarde con
+     `get_viewport().get_texture().get_image().save_png()`. La escena de captura no entra al repo. No vale
+     capturar una sala «cercana».
+   - Un cambio que toca las dos cosas pide las dos capturas.
+   Antes de seguir se decide qué elemento cambiado debe verse en cada captura (el botón, la barra, la página).
+2. **Antes**, sin haber tocado nada, en 1280×720, 1920×1080 y 2560×1440. Con sala o HUD:
+   `.\herramientas\capturar.ps1 -Sala <sala> -Salida <scratchpad>\antes` (esas tres son sus resoluciones por
+   omisión; sin `-Salida` guarda en `build\capturas\`). Saca una imagen por punto de la rejilla de cámara;
+   `-Puntos "x:y"` deja solo el que muestra el cambio. Con menú o página, la escena del paso 1. Pantalla
+   nueva: no hay «antes» y se dice así.
+3. **Después**, la misma llamada con `-Salida <scratchpad>\despues`. `capturar.ps1` nombra cada imagen
+   `<sala>_<ancho>x<alto>_x<X>_y<Y>.png`; las capturas no van al repo.
+4. Abrir cada captura con Read y comparar el par. Primero comprobar que **la captura muestra el elemento
+   cambiado**: si no aparece (la pantalla no se abrió, la cámara apunta a otro lado), esa captura no cuenta y
+   se repite. Luego: nada encimado ni cortado, letra legible, lo tocable con `Tema.ALTO_TOQUE`, el foco visible.
+   Si hay un defecto, se corrige y se vuelve a capturar esa pantalla.
+5. En el reporte, una línea por resolución con lo que se vio y lo que se corrigió, y las rutas de las capturas
+   antes y después (por cada pantalla distinta, si el cambio toca varias). Sin capturas leídas que muestren el
+   cambio, la pantalla no se da por buena: se escribe «sin revisión visual» y por qué.
+
+En un monitor de 2560×1440 la ventana de 2560×1440 puede no caber por la barra de título: `capturar.ps1` falla con
+«la imagen midió …», y la imagen de la escena de menús puede salir más chica (se mide antes de leerla). Esa
+resolución queda «sin revisión visual (no cupo)», no comprobada, y la prueba Miguel en su monitor.
+
+Un mockup de menús (HTML o en una copia del juego) pasa por los pasos 4 y 5 antes de mostrarse. Si el cambio
+toca el acomodo por ancho (columnas, márgenes, área útil), también la fila «Menús en cada ancho» de
+`docs/pruebas.md`. `--resolution` no cambia la vista en headless: las capturas se toman con ventana.
 
 ## Tema y variaciones
 
