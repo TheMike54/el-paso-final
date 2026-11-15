@@ -61,6 +61,7 @@ propósito: Peligro (el foso de pinchos) e Impulso (los bloques altos).
 | Escupidor | `herramientas/salas/enemigos/sala_escupidor.tscn`: 1600×720, un escupidor en una repisa 120 px sobre el suelo, a 700 px de la entrada | pluma | Aviso y disparo en arco desde una altura hacia el jugador |
 | Muñeco que ataca | `herramientas/salas/enemigos/sala_muneco_que_ataca.tscn`: 1600×720, un muñeco y suelo libre para acercarse a su frente | pluma | Aviso y golpe al acercarse; parry y disparo al esperar un ciclo |
 | Cucaracha | `herramientas/salas/enemigos/sala_cucaracha.tscn`: 1600×720, una cucaracha a 440 px de la entrada y suelo libre | pluma | Se entierra al ver al jugador, avisa con polvo bajo el jugador, sale ahí y descansa; el aviso se esquiva caminando |
+| Hongo escupidor | `herramientas/salas/enemigos/sala_hongo_escupidor.tscn`: 1600×720, un hongo a 840 px de la entrada y suelo libre | pluma | Fijo; al ver al jugador destella y lanza una espora en arco; un golpe que cuenta lo cierra 1,5 s y los golpes siguientes rebotan |
 
 ## Mundo
 
