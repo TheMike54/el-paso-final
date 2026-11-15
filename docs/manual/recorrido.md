@@ -80,7 +80,6 @@ El detalle de cada zona está en `diseno.md`.
 
 | Tema | Estado |
 |---|---|
-| Preguntas de la mochila: falta `contenido/preguntas_mochila.tres` | Tarjeta #28 |
 | La Celda con arte en el teléfono de gama baja y en el de pantalla alta | Falta la prueba manual `sala-celda-1-telefono` |
 
 ## Diferencias entre lo diseñado y lo construido
