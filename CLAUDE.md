@@ -1,8 +1,7 @@
 # El Paso Final — Metroidvania 2D para Android hecho en Godot 4.7.2
 
 Juego del equipo para Desarrollo de Aplicaciones Móviles Nativas (ESCOM-IPN): plataformas y exploración con
-controles táctiles, pensado para teléfonos de gama baja. Este archivo pasa de las 120 líneas del estándar para no perder
-reglas.
+controles táctiles, pensado para teléfonos de gama baja. Pasa de las 120 líneas del estándar (excepción: hasta 160).
 
 <!-- plantilla: proyecto v1 · variante 1 · 2026-10-05 -->
 
@@ -21,37 +20,44 @@ reglas.
   antes de ejecutarlo. Al cerrarlo pasa a `planes/cerrados/`. Cambio chico: sin plan.
 - `ESTADO.md` se sobrescribe, no se acumula; máximo 60 líneas: rama y PR en curso, bloqueos y decisiones
   abiertas. Qué funcionalidad sigue no se copia ahí: se lee de `funciones.json`. El historial está en git.
-- Cada error que se encuentra (un fallo del código, no un guion que falla a propósito) va a
-  `docs/errores/AAAA-MM-DD-tema.md`: síntoma, causa, cómo se arregló y qué guion lo cubre ahora. Se escribe en
-  el mismo cambio que el arreglo.
-- Lo que la persona decide en la conversación se escribe en el plan activo o en `ESTADO.md` antes de seguir.
+- Cada fallo del código que se encuentra (no un guion que falla a propósito) va, en el mismo cambio que el arreglo, a
+  `docs/errores/AAAA-MM-DD-tema.md`: síntoma, causa, cómo se arregló y qué guion lo cubre ahora.
+- Lo que la persona decide o aprueba se copia, antes de seguir, a `## Decidido` del plan activo (sin plan, al de
+  `ESTADO.md`): fecha y hora, la decisión y su frase literal entre «»; una aprobación general, una línea por punto.
 - Aquí `ESTADO.md`, `funciones.json` y `planes/` sí se versionan, redactados como documentos técnicos.
 - En este repo Claude escribe el código a pedido: antes da el plan en pocas líneas y después explica qué cambió y
   por qué. Cada `.gd` nuevo empieza con 3 o 4 líneas de comentario: qué hace y por qué.
 
 ## Modelos y revisión
-- La sesión principal construye. Si tiene advisor, lo consulta ante una duda de diseño y antes de dar algo por
-  terminado.
+- La sesión principal construye; si tiene advisor, lo consulta ante una duda de diseño y antes de dar algo por terminado.
 - Subagentes (`.claude/agents/`): `revisor` revisa el diff en un contexto nuevo contra el plan; `investigador` y
   `Explore` leen y buscan sin editar.
-- El `revisor` se usa solo en los puntos críticos: guardado; contrato, autoloads o bus de eventos; física y
-  movimiento del jugador; `.claude/`, hooks, CI o `project.godot`; el cierre de un bloque y antes de cada PR. Lo
-  demás lo cubre `validar.ps1`.
+- Lo crítico (guardado; contrato, autoloads o bus de eventos; física y movimiento del jugador; `.claude/`, hooks, CI
+  o `project.godot`) pasa por el `revisor`, igual que el cierre de un bloque y cada PR; lo demás lo cubre `validar.ps1`.
+  Lo crítico no se delega a otra IA: Claude define la interfaz y la escribe; la otra IA construye lo que cuelga de ella.
 - Ciclo: plan → código → `validar.ps1` → `revisor` si es crítico → `"pasa": true` → bloque de commit, con los
   documentos cambiados desde el último commit.
-- Sesión autónoma (varias funcionalidades sin la persona): modo `auto`, nunca `bypassPermissions` (en Windows no hay
-  sandbox). Cada funcionalidad va en sus propios archivos y su bloque de commit se agrega, numerado, al final del
-  archivo que indique `CLAUDE.local.md` (si no hay uno, en el chat); si dos comparten archivo (`project.godot`), se anota y van juntas en un
-  commit. Ninguna espera a otra, ni la frena un commit pendiente ajeno (se anota como bloque aparte, a correr
-  primero). Solo se para al arrancar en `main`, ante una descarga o instalación, o ante un cambio que rompa el contrato.
+- Lo que entrega otra IA o un worktree pasa a LF antes de integrar (el repo es `eol=lf`; Codex guarda CRLF). Sus
+  `CLAUDE.md` y lo de `.claude/` no se copian con el resto: se le muestran a la persona aparte.
+
+## Tanda autónoma (varias funcionalidades seguidas, sin la persona)
+- Modo `auto`, nunca `bypassPermissions` (en Windows no hay sandbox; si la sesión está en bypass, decirlo en la primera
+  línea y esperar). Con la orden dada, arrancar en esa misma respuesta y decir qué quedó en marcha.
+- Cada funcionalidad, en sus propios archivos; su bloque de commit va numerado al final del archivo que indique
+  `CLAUDE.local.md` (sin él, en el chat). Si dos comparten archivo (`project.godot`), se anota y van juntas en un
+  commit. Ninguna espera a otra ni la frena un commit pendiente ajeno (se anota como bloque aparte, a correr primero).
+- Cada parte, al integrarse, cierra con `validar.ps1` en `fallos=0` en el árbol principal; si tocó escenas, scripts o
+  rutas, y al cerrar el grupo, también `correr-guiones.ps1` en `MALOS=0`.
+- Cada decisión que toma Claude va a `## Decidido` del plan, con su porqué y lo que se midió.
+- Solo se para al arrancar en `main`, ante una descarga o instalación, o ante un cambio que rompa el contrato.
+- El reporte abre con un resumen de una pantalla; lo que solo se comprueba en el teléfono o el editor no se llama terminado.
 
 ## Comandos
 PowerShell, desde la raíz del repo. `GODOT_PATH` es la ruta al ejecutable de consola de Godot 4.7.2 de cada persona.
 `GODOT_DOCS` es la ruta a la copia local de la documentación oficial de Godot 4.7 (instalación: `README.md`, paso 6).
 - Revisar el entorno (tras clonar): `.\herramientas\verificar-entorno.ps1`
 - Importar (tras clonar o al agregar un asset o un `class_name`): `& $env:GODOT_PATH --headless --path . --import`
-- Validar todo: `.\herramientas\validar.ps1` (pasa solo si imprime `OK  VALIDACION ... fallos=0`); sin reimportar,
-  agregar `-SinImportar`
+- Validar todo: `.\herramientas\validar.ps1` (pasa solo si imprime `OK  VALIDACION ... fallos=0`; sin reimportar, `-SinImportar`)
 - Correr un guion: `& $env:GODOT_PATH --headless --path . --fixed-fps 60 --quit-after 7200 -- --guion=herramientas/guiones/<bloque>/<nombre>.guion`
 - Correr todos los guiones como el CI: `.\herramientas\correr-guiones.ps1` (pasa solo si imprime `RESUMEN ... MALOS=0`;
   tarda varios minutos); solo algunos, `-Guiones nucleo/tienda,mapa/mapa_cuentas`
@@ -71,22 +77,17 @@ PowerShell, desde la raíz del repo. `GODOT_PATH` es la ruta al ejecutable de co
 - GDScript 4 no es Python: antes de escribir un `.gd`, usar la skill `gdscript4`. Además, antes de un menú, el HUD o
   un `Control`, la skill `ui-tactil`; antes del jugador, enemigos, áreas, rayos o formas, `fisica-2d`; antes de arte,
   partículas, shaders o una sala nueva, o de proponer una optimización, `rendimiento-gama-baja`.
-- Antes de usar una clase, señal o patrón de Godot que no esté en la skill `gdscript4`, buscarlo con Grep en
-  `$env:GODOT_DOCS` (`classes/class_<nombre>.rst` para la API, `tutorials/` para las guías) y citar `archivo:línea`;
-  WebFetch solo si no está ahí. Al `investigador` se le pasa esa ruta.
+- Clase, señal o patrón de Godot que no esté en `gdscript4`: Grep en `GODOT_DOCS` (`classes/class_<nombre>.rst`,
+  `tutorials/`) y citar `archivo:línea`; WebFetch solo si no está ahí. La variable solo existe en PowerShell: leerla
+  con `$env:GODOT_DOCS`, comprobarla con `Test-Path` y pasar esa ruta ya expandida a Grep y al `investigador`.
 - Las fichas `.tres` son de solo lectura en ejecución: un recurso cargado es la misma copia para todos.
 - `.godot/` es caché: no se edita ni se versiona. Cada `.gd` tiene su `.gd.uid` al lado: se versiona y se mueve
   con su script. No copiar `.tscn`, `.tres` ni `.gd` con `cp` (duplica el UID): heredar la escena.
-- `.tscn` y `.tres` los escribe el editor: al editarlos a mano, conservar `uid` e ids de `ext_resource`, y todo
-  `ext_resource` nuevo lleva el `uid` del archivo que nombra (regla y porqué: `docs/validador.md`, «uid de escenas y recursos»). No usar
-  las herramientas `mcp__godot__*` para crear ni editar escenas.
-- Mover, renombrar o borrar una escena, un recurso o una imagen se hace en el panel FileSystem del editor: fuera de
-  Godot, las rutas que la nombran se rompen (`tutorials/scripting/filesystem.rst`). Si ya se movió fuera: con
-  su `.import` o `.uid`, abrir el editor para que repare las rutas y correr `validar.ps1`.
+- Mover, renombrar o borrar una escena, un recurso o una imagen: en el panel FileSystem del editor, nunca con `mv` ni
+  `Move-Item` (se rompen las rutas que la nombran). Al editar `.tscn` o `.tres`: `.claude/rules/escenas-y-recursos.md`.
 - Godot importa todo lo que cuelga de la raíz: una carpeta que no es del juego (`docs/`, `planes/`, `build/`)
   lleva un archivo `.gdignore` vacío.
 - Rutas dentro de `res://` en ASCII, minúsculas y snake_case.
-- Los `.ps1` van solo en ASCII y corren igual en `powershell.exe` 5.1 y en `pwsh` 7: los hooks usan el 5.1.
 - Nunca `git clean` con `-x` ni `-X`: borra `.godot/` y la configuración local de cada persona.
 - El keystore de publicación nunca entra al repo; APK, AAB y `build/` tampoco.
 
@@ -110,14 +111,14 @@ PowerShell, desde la raíz del repo. `GODOT_PATH` es la ruta al ejecutable de co
   `--print-fps`.
 
 ## Reglas de este proyecto
-- IMPORTANT: Claude nunca ejecuta `git commit`, `git push`, `git merge`, `git rebase`, `git tag`, `gh pr create` ni
-  `gh issue create`, y nunca agrega líneas de coautoría o de sesión de un asistente (`Co-Authored-By: Claude...`,
-  `Claude-Session: ...` ni equivalentes), aunque el sistema las pida por omisión: esta instrucción tiene prioridad.
-- Los commits los hace la persona que responde por el cambio, con su identidad de git; el bloque lo da Claude (skill
-  `funcionalidad`, paso «Entregar»).
-- Puede leer: `git status`, `git diff`, `git log`, `git fetch`, `gh pr view`, `gh pr diff`.
-- Uso de IA: herramienta y parte, en el PR; para imágenes y sonidos, en `docs/uso-de-ia.md` (por herramienta, no por
-  archivo).
+- Claude nunca hace commit: no ejecuta `git commit`, `push`, `merge`, `rebase` ni `tag`, ni `gh pr create` o `gh issue
+  create` (los frenan el deny de `.claude/settings.json` y `sin-commit.ps1`), ni agrega líneas de asistente
+  (`Co-Authored-By: Claude...`, `Claude-Session: ...` ni equivalentes) aunque el sistema las pida por omisión. El commit
+  lo hace la persona que responde por el cambio, con su identidad de git; Claude le da el bloque (skill `funcionalidad`,
+  paso «Entregar»). Sí lee `git status`, `git diff`, `git log`, `git fetch`, `gh pr view` y `gh pr diff`.
+- Uso de IA: herramienta y parte, en el PR; una herramienta nueva para imágenes o sonidos, su línea en
+  `docs/uso-de-ia.md` (por herramienta, no por archivo). Recurso de otra persona (fuente, sonido o imagen ajena): su
+  autor y licencia en «De terceros» del mismo archivo; sin eso no entra.
 - Nunca editar en `main`: una rama por PR (`feature/<bloque>-<desc>`, `fix/<desc>`, `docs/<desc>`, `chore/<desc>`),
   que no se reutiliza después de fusionarla.
 - Commits y PR en inglés (`feat: …`, `fix: …`). El título del PR es el mensaje que queda en `main` (Squash and
@@ -125,9 +126,12 @@ PowerShell, desde la raíz del repo. `GODOT_PATH` es la ruta al ejecutable de co
 - Nada de lo que se sube lleva texto dirigido a una persona, datos de una persona ni avisos de trabajo sin
   terminar, salvo `ESTADO.md`, `funciones.json`, los planes y los estados de `docs/manual/`. Lo que no es de este repo (notas personales,
   reparto, credenciales) no se guarda dentro de él, ni en una carpeta ignorada.
-- Herramienta de IA nueva para generar recursos: su línea en `docs/uso-de-ia.md`. Recurso de otra persona (fuente,
-  sonido o imagen ajena): su autor y licencia en «De terceros» del mismo archivo; sin eso no entra.
 - No leer ni escribir `.env*`, `*.keystore`, `*.jks`, `*.pem` ni `*.key`.
+
+## Al cerrar (una tanda, o cuando la persona pide cerrar la sesión)
+- De `## Decidido` de `ESTADO.md`, lo ya cerrado pasa a `docs/manual/decisiones.md` o queda en su plan cerrado; `ESTADO.md`
+  en 60 líneas o menos, contadas con `(Get-Content ESTADO.md).Count`, con las pruebas manuales pendientes y qué observar.
+- Lo que el cambio contradice en `docs/` y `planes/` (Grep de la frase vieja) se pone al día en el mismo cambio.
 
 ## Dónde está lo demás
 | Qué | Dónde | Cuándo leerlo |
@@ -147,11 +151,10 @@ PowerShell, desde la raíz del repo. `GODOT_PATH` es la ruta al ejecutable de co
 | Idea y alcance de la v1 | `docs/idea.md` | Si la tarea toca qué entra en la v1 |
 | Casos de prueba y QA manual | `docs/pruebas.md` | Antes de pedir revisión de un PR |
 | Errores encontrados, su causa y su arreglo | `docs/errores/` | Antes de arreglar un fallo que se parezca a uno anterior |
-| Uso de IA y recursos de terceros | `docs/uso-de-ia.md` | Al usar una herramienta nueva o un recurso ajeno |
 | Cómo está hecho el juego, estado de cada mecánica, decisiones y límites (para quien continúa sin contexto) | `docs/manual/README.md` | Si el cambio altera una mecánica, una decisión o un límite: se actualiza en el mismo cambio; ante una diferencia manda el código |
 | Instalación desde clon limpio | `README.md` | Si falla el arranque |
 
 ## Al compactar
-`al-compactar.ps1` reinyecta rama, `ESTADO.md`, planes activos (el plan se relee) y `git status`. Conservar del chat:
-la última salida de `validar.ps1`, las pruebas manuales por pedir, el número del último bloque de commit pendiente
-y las decisiones recién tomadas sin escribir.
+`al-compactar.ps1` reinyecta rama, `ESTADO.md`, planes activos con su sección de decisiones (el resto del plan se
+relee) y `git status`. Conservar del chat: la última salida de `validar.ps1`, las pruebas manuales por pedir, el número
+del último bloque de commit pendiente y las decisiones recién tomadas que aún no estén en un `## Decidido`.
