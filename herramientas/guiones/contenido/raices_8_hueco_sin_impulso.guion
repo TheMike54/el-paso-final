@@ -1,0 +1,16 @@
+# Las Raices, sala 8: sin el impulso, sube por los escalones al nivel de arriba (y=561) y salta desde la orilla del
+# hueco (x=2360 a 2940) con el salto completo. No llega: cae al piso de abajo (y=1080), que sigue bajo el hueco.
+escena res://contenido/salas/raices/raices_8.tscn
+2 mover_derecha press
+170 saltar press
+194 saltar release
+200 mover_derecha release
+214 mover_derecha press
+218 saltar press
+242 saltar release
+262 saltar press
+286 saltar release
+383 saltar press
+407 saltar release
+470 mover_derecha release
+fin 520

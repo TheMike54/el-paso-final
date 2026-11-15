@@ -1,0 +1,11 @@
+# Sube por la plataforma y los escalones hasta el nivel de arriba (y=561), vence al Hongo A y la puerta derecha lo
+# lleva a raices_7, entrando por su puerta izquierda (y=560). Una espora lo alcanza al subir (medido).
+en 160 valor Vaiven position:x 1200 30
+en 264 y 734 2
+en 340 y 561 2
+escena res://contenido/salas/raices/raices_7.tscn
+x 300 80
+y 560 2
+senal /root/Eventos cambio_de_sala 1
+senal /root/Eventos enemigo_vencido 1
+senal /root/Eventos jugador_danado 1

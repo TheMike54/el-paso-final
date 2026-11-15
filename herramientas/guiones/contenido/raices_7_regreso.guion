@@ -1,0 +1,9 @@
+# Las Raices, sala 7: toma el objeto del impulso (x=1100), vuelve a la izquierda y cruza la puerta izquierda a
+# raices_6; ahi regresa en seguida por su puerta derecha a raices_7 y pasa otra vez por donde estaba el objeto.
+escena res://contenido/salas/raices/raices_7.tscn
+2 mover_derecha press
+170 mover_derecha release
+172 mover_izquierda press
+360 mover_izquierda release
+362 mover_derecha press
+fin 640

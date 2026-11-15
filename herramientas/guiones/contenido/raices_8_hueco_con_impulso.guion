@@ -1,0 +1,20 @@
+# Las Raices, sala 8: con el impulso dado por el guion, sube por los escalones al nivel de arriba (y=561), salta
+# desde la orilla del hueco (x=2360 a 2940) y lo cruza con el impulso hasta la pared alta del final, donde toma el
+# coleccionable.
+escena res://contenido/salas/raices/raices_8.tscn
+habilidad impulso
+2 mover_derecha press
+170 saltar press
+194 saltar release
+200 mover_derecha release
+214 mover_derecha press
+218 saltar press
+242 saltar release
+262 saltar press
+286 saltar release
+383 saltar press
+397 impulso press
+399 impulso release
+407 saltar release
+470 mover_derecha release
+fin 520

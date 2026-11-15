@@ -1,0 +1,8 @@
+# Sin impulso el hueco no se cruza: cae al piso de abajo, antes de la pared del final (x=2940), sin dano porque bajo
+# el hueco no hay vacio, y sin el coleccionable.
+escena res://contenido/salas/raices/raices_8.tscn
+y 1080 2
+en_suelo true
+valor /root/Partida habilidades []
+senal /root/Eventos coleccionable_obtenido 0
+senal /root/Eventos jugador_danado 0

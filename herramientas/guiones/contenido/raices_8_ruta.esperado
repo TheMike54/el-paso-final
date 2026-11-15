@@ -1,0 +1,8 @@
+# Llega arriba, frente a la salida; interactuar abre la pantalla de cierre y volver regresa al menu con un autoguardado.
+en 358 y 561 2
+en 358 x 2200 40
+en 420 escena res://contenido/cierre/pantalla_cierre.tscn
+en 420 valor /root/Partida autoguardados 0
+escena res://nucleo/menu.tscn
+valor /root/Partida autoguardados 1
+senal /root/Eventos jugador_danado 0

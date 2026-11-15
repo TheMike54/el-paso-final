@@ -127,7 +127,7 @@
   },
   {
     "id": "sala-raices-7-ruta",
-    "que": "En raices_7 el objeto da el impulso una sola vez, el banco guarda, el hueco se cruza con el impulso y la salida lleva a la pantalla de cierre, que autoguarda y vuelve al menu",
+    "que": "En raices_7 el objeto da el impulso una sola vez, el banco guarda, el hueco se cruza con el impulso y la puerta derecha lleva a raices_8",
     "comprobacion": "herramientas/guiones/contenido/raices_7_ruta.guion",
     "pasa": true
   },
@@ -147,6 +147,60 @@
     "id": "pantalla-cierre-telefono",
     "que": "En el telefono la pantalla de cierre se lee y su boton se usa con el dedo y con el control",
     "comprobacion": "manual: docs/pruebas.md, «Pantalla de cierre»",
+    "pasa": false
+  },
+  {
+    "id": "sala-raices-7-regreso",
+    "que": "Volver a raices_7 desde raices_6 no da el impulso otra vez",
+    "comprobacion": "herramientas/guiones/contenido/raices_7_regreso.guion",
+    "pasa": true
+  },
+  {
+    "id": "sala-raices-6-ruta",
+    "que": "En raices_6 se sube por la plataforma de vaiven y los escalones al nivel de arriba, se vence al Hongo y la puerta derecha lleva a raices_7",
+    "comprobacion": "herramientas/guiones/contenido/raices_6_ruta.guion",
+    "pasa": true
+  },
+  {
+    "id": "sala-raices-6-puertas",
+    "que": "El par de puertas raices_5 y raices_6 funciona en los dos sentidos",
+    "comprobacion": "herramientas/guiones/contenido/raices_6_puertas.guion",
+    "pasa": true
+  },
+  {
+    "id": "sala-raices-6-oculta",
+    "que": "El techo oculto de raices_6 se rompe y la zona oculta da Caparazon de Cucaracha una sola vez y un coleccionable",
+    "comprobacion": "herramientas/guiones/contenido/raices_6_oculta.guion",
+    "pasa": true
+  },
+  {
+    "id": "sala-raices-8-ruta",
+    "que": "En raices_8 se sube al nivel de arriba y la salida, con interactuar, lleva a la pantalla de cierre, que autoguarda y vuelve al menu",
+    "comprobacion": "herramientas/guiones/contenido/raices_8_ruta.guion",
+    "pasa": true
+  },
+  {
+    "id": "sala-raices-8-puertas",
+    "que": "La puerta izquierda de raices_8 lleva a raices_7",
+    "comprobacion": "herramientas/guiones/contenido/raices_8_puertas.guion",
+    "pasa": true
+  },
+  {
+    "id": "sala-raices-8-hueco-con-impulso",
+    "que": "El hueco de raices_8 se cruza con el impulso y al otro lado esta el coleccionable",
+    "comprobacion": "herramientas/guiones/contenido/raices_8_hueco_con_impulso.guion",
+    "pasa": true
+  },
+  {
+    "id": "sala-raices-8-hueco-sin-impulso",
+    "que": "El hueco de raices_8 no se cruza sin el impulso; quien cae llega al piso de abajo sin dano",
+    "comprobacion": "herramientas/guiones/contenido/raices_8_hueco_sin_impulso.guion",
+    "pasa": true
+  },
+  {
+    "id": "raices-segunda-mitad-telefono",
+    "que": "En el telefono la segunda mitad de Las Raices se recorre con controles tactiles y nunca hay mas de 4 enemigos en pantalla",
+    "comprobacion": "manual: docs/pruebas.md, «Las Raíces, segunda mitad»",
     "pasa": false
   }
 ]

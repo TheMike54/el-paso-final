@@ -1,6 +1,6 @@
 # Las Raices, sala 5: desde la Entrada (x=134) camina a la derecha, deja atras a la Cucaracha, salta el foso 1 y
 # sube al bloque 1, baja frente al Hongo A (x=1900) y lo golpea: un golpe que cuenta lo cierra, el siguiente
-# rebota, y dos golpes mas, cada uno al abrir, lo vencen. Sin puerta todavia: termina dentro de la sala.
+# rebota, y dos golpes mas, cada uno al abrir, lo vencen. Termina dentro de la sala, antes de la puerta derecha.
 escena res://contenido/salas/raices/raices_5.tscn
 habilidad pluma
 2 mover_derecha press

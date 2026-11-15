@@ -18,7 +18,9 @@ rectangulos = Dictionary[String, Rect2]({
 "prueba_4": Rect2(5600, 0, 1600, 720),
 "raices_1": Rect2(12600, 3814, 2400, 1240),
 "raices_5": Rect2(24000, 3294, 3600, 720),
-"raices_7": Rect2(30000, 2774, 2400, 720)
+"raices_6": Rect2(27600, 2774, 2400, 1240),
+"raices_7": Rect2(30000, 2774, 2400, 720),
+"raices_8": Rect2(32400, 2254, 3200, 1240)
 })
 rutas = Dictionary[String, String]({
 "celda_1": "res://contenido/salas/celda/celda_1.tscn",
@@ -34,7 +36,9 @@ rutas = Dictionary[String, String]({
 "prueba_4": "res://herramientas/salas/zonas/prueba/prueba_4.tscn",
 "raices_1": "res://contenido/salas/raices/raices_1.tscn",
 "raices_5": "res://contenido/salas/raices/raices_5.tscn",
-"raices_7": "res://contenido/salas/raices/raices_7.tscn"
+"raices_6": "res://contenido/salas/raices/raices_6.tscn",
+"raices_7": "res://contenido/salas/raices/raices_7.tscn",
+"raices_8": "res://contenido/salas/raices/raices_8.tscn"
 })
 nombres_zona = Dictionary[String, String]({
 "celda": "La Celda",

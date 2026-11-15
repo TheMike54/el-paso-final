@@ -1,0 +1,8 @@
+# Llega a raices_7 por su puerta derecha, en el suelo del otro lado del hueco (y=560).
+escena res://contenido/salas/raices/raices_7.tscn
+x 2200 80
+y 560 2
+en_suelo true
+valor Jugador transicion 0
+senal /root/Eventos cambio_de_sala 1
+senal /root/Eventos jugador_danado 0

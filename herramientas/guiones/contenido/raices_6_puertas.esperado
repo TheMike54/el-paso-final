@@ -1,0 +1,10 @@
+# El par de puertas raices_5 y raices_6 funciona en los dos sentidos: llega a raices_5 en el piso (y=560) y vuelve a
+# raices_6 por su puerta izquierda, en el piso de abajo (y=1080).
+en 66 escena res://contenido/salas/raices/raices_5.tscn
+en 66 y 560 2
+en 66 x 3380 80
+escena res://contenido/salas/raices/raices_6.tscn
+y 1080 2
+en_suelo true
+senal /root/Eventos cambio_de_sala 2
+senal /root/Eventos jugador_danado 0

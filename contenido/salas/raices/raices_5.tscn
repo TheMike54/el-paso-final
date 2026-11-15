@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://hns1ccb8qa15"]
 
 [ext_resource type="PackedScene" uid="uid://cpuog8152jjfx" path="res://contenido/zonas/raices/sala_raices.tscn" id="0_base"]
+[ext_resource type="PackedScene" uid="uid://cantrdqq1cwy8" path="res://nucleo/puerta.tscn" id="p_puerta"]
 [ext_resource type="PackedScene" uid="uid://dgy2sncgkvcml" path="res://nucleo/enemigo.tscn" id="1_enemigo"]
 [ext_resource type="Resource" uid="uid://x0c4gbjhmp80" path="res://contenido/enemigos/hongo_escupidor/hongo_escupidor.tres" id="2_hongo"]
 [ext_resource type="Resource" uid="uid://cqhfn8xjqq1p1" path="res://contenido/enemigos/cucaracha/cucaracha.tres" id="3_cucaracha"]
@@ -20,9 +21,6 @@ size = Vector2(960, 80)
 [sub_resource type="RectangleShape2D" id="forma_ParedIzquierda"]
 size = Vector2(80, 720)
 
-[sub_resource type="RectangleShape2D" id="forma_ParedDerecha"]
-size = Vector2(80, 720)
-
 [sub_resource type="RectangleShape2D" id="forma_Techo"]
 size = Vector2(3600, 80)
 
@@ -34,6 +32,9 @@ size = Vector2(300, 140)
 
 [sub_resource type="RectangleShape2D" id="forma_Bloque3"]
 size = Vector2(250, 140)
+
+[sub_resource type="RectangleShape2D" id="forma_ParedTrasPuertaDerecha"]
+size = Vector2(80, 720)
 
 [node name="Raices5" instance=ExtResource("0_base")]
 id = "raices_5"
@@ -100,19 +101,6 @@ offset_bottom = 360
 mouse_filter = 2
 color = Color(0.3, 0.3, 0.32, 1)
 
-[node name="ParedDerecha" type="StaticBody2D" parent="Terreno"]
-position = Vector2(3560, 360)
-
-[node name="Forma" type="CollisionShape2D" parent="Terreno/ParedDerecha"]
-shape = SubResource("forma_ParedDerecha")
-
-[node name="Dibujo" type="ColorRect" parent="Terreno/ParedDerecha"]
-offset_left = -40
-offset_top = -360
-offset_right = 40
-offset_bottom = 360
-mouse_filter = 2
-color = Color(0.3, 0.3, 0.32, 1)
 
 [node name="Techo" type="StaticBody2D" parent="Terreno"]
 position = Vector2(1800, 0)
@@ -198,3 +186,16 @@ id = &"hongo_b"
 [node name="Monedas" parent="." instance=ExtResource("6_monedas")]
 position = Vector2(2250, 280)
 id = "monedas_raices_5"
+
+[node name="ParedTrasPuertaDerecha" type="StaticBody2D" parent="Terreno"]
+position = Vector2(3640, 360)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/ParedTrasPuertaDerecha"]
+shape = SubResource("forma_ParedTrasPuertaDerecha")
+
+[node name="PuertaDerecha" parent="." instance=ExtResource("p_puerta")]
+position = Vector2(3530, 560)
+id = &"derecha"
+sala_destino = "raices_6"
+puerta_destino = &"izquierda"
+llegada = Vector2(-64, 0)

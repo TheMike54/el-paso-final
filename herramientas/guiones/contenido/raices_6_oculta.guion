@@ -1,0 +1,24 @@
+# Las Raices, sala 6, zona oculta: entra desde raices_7 por la puerta derecha (llega a x=2266, nivel de arriba), se
+# para bajo el techo rompible, lo rompe con cinco golpes hacia arriba (cuatro cuentan), salta por el hueco a la
+# repisa oculta y toma Caparazon de Cucaracha y el coleccionable. El Hongo A dispara mientras tanto.
+escena res://contenido/salas/raices/raices_7.tscn
+habilidad pluma
+2 mover_izquierda press
+44 mover_izquierda release
+50 mover_arriba press
+56 atacar press
+58 atacar release
+80 atacar press
+82 atacar release
+104 atacar press
+106 atacar release
+128 atacar press
+130 atacar release
+152 atacar press
+154 atacar release
+158 mover_arriba release
+162 saltar press
+178 mover_derecha press
+186 saltar release
+220 mover_derecha release
+fin 260

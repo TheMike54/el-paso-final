@@ -1,0 +1,7 @@
+# Con el impulso el hueco se cruza: queda arriba de la pared del final (y=561) con el coleccionable, sin dano.
+escena res://contenido/salas/raices/raices_8.tscn
+x 3040 60
+y 561 2
+en_suelo true
+senal /root/Eventos coleccionable_obtenido 1
+senal /root/Eventos jugador_danado 0
