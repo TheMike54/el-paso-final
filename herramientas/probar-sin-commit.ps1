@@ -1,7 +1,9 @@
-# Bateria del hook .claude/hooks/sin-commit.ps1: le pasa ordenes simuladas por stdin, igual que
-# Claude Code, y compara el codigo de salida (2 = bloquea, 0 = deja pasar). No ejecuta ninguna orden.
+# Bateria de los hooks de .claude/hooks/: les pasa entradas simuladas por stdin, igual que Claude Code.
+# sin-commit.ps1: compara el codigo de salida (2 = bloquea, 0 = deja pasar). No ejecuta ninguna orden.
+# al-compactar.ps1: que su salida quepa en 10000 caracteres y traiga lo decidido de cada plan activo.
 # Imprime solo los casos que fallan y un resumen; sale con 1 si alguno falla. Solo ASCII.
-$hook = Join-Path (Split-Path -Parent $PSScriptRoot) '.claude\hooks\sin-commit.ps1'
+$hooks = Join-Path (Split-Path -Parent $PSScriptRoot) '.claude\hooks'
+$hook = Join-Path $hooks 'sin-commit.ps1'
 
 $bloquea = @(
     'git -C "carpeta con espacios" push',
@@ -97,6 +99,23 @@ if ((Salida 'esto no es json') -ne 2) { $fallos++; Write-Output 'FALLO  deberia 
 $total++
 if ((Salida '{"tool_name":"Bash","tool_input":{}}') -ne 0) { $fallos++; Write-Output 'FALLO  deberia dejar pasar: orden vacia' }
 
-Write-Output ("PRUEBAS sin-commit total=$total fallos=$fallos")
+function Respuesta([string]$script, [string]$texto) {
+    $sale = $texto | powershell.exe -NoProfile -ExecutionPolicy Bypass -File $script 2>$null
+    return [pscustomobject]@{ codigo = $LASTEXITCODE; texto = (@($sale) -join "`n") }
+}
+function Fallo([string]$mensaje) { $script:fallos++; Write-Output ("FALLO  " + $mensaje) }
+
+# al-compactar.ps1 sobre el repo real: cabe en 10000 caracteres y trae la seccion de decisiones de cada plan activo.
+$total++
+$r = Respuesta (Join-Path $hooks 'al-compactar.ps1') '{}'
+if ($r.codigo -ne 0 -or $r.texto.Length -ge 10000 -or $r.texto -notmatch '--- ESTADO.md ---') { Fallo ("al-compactar: salida " + $r.texto.Length + " caracteres, codigo " + $r.codigo) }
+foreach ($plan in @(Get-ChildItem -LiteralPath (Join-Path (Split-Path -Parent $PSScriptRoot) 'planes\activos') -Filter '*.md' -File -ErrorAction SilentlyContinue)) {
+    if (Select-String -LiteralPath $plan.FullName -Pattern '^## (Decidido|Decisiones cerradas)' -Quiet) {
+        $total++
+        if ($r.texto -notmatch [regex]::Escape("--- planes/activos/$($plan.Name): ")) { Fallo ("al-compactar no trae lo decidido de " + $plan.Name) }
+    }
+}
+
+Write-Output ("PRUEBAS hooks total=$total fallos=$fallos")
 if ($fallos -gt 0) { exit 1 }
 exit 0

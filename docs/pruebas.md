@@ -15,7 +15,7 @@ en cada PR, en cada push a `main` y cada lunes; la batería del hook corre solo 
 | Validador: carga cada script, escena y recurso, y revisa cada `funciones.json` | `.\herramientas\validar.ps1` | Imprime `OK  VALIDACION archivos=N fallos=0` |
 | Guion de una sala | `& $env:GODOT_PATH --headless --path . --fixed-fps 60 --quit-after 7200 -- --guion=<ruta>` | Pasa únicamente con `GUION OK`, salida 0 y ninguna línea `SCRIPT ERROR` ni `ERROR:` |
 | Todos los guiones, como el CI (o solo algunos con `-Guiones nucleo/tienda,mapa/mapa_cuentas`) | `.\herramientas\correr-guiones.ps1` | Imprime `RESUMEN total=N OK=N MALOS=0` |
-| Hook que impide al asistente publicar o reescribir el historial | `.\herramientas\probar-sin-commit.ps1` | Imprime `PRUEBAS sin-commit total=N fallos=0` |
+| Hooks de Claude Code: no publicar ni reescribir el historial, y la salida de `al-compactar` (cabe en 10000 caracteres y trae las decisiones de cada plan activo) | `.\herramientas\probar-sin-commit.ps1` | Imprime `PRUEBAS hooks total=N fallos=0` |
 
 El validador no ejecuta `_ready`: un error que solo ocurre al correr lo atrapa un guion.
 
