@@ -84,6 +84,14 @@ const LETRA_PREGUNTA: int = 40
 const QUIEN: StringName = &"Quien"
 const TENUE: StringName = &"Tenue"
 const GIS_TENUE: Color = Color(GIS, 0.7)
+## Nombre en el panel de detalle de las paginas del marco (DetalleMenu): gis grueso, mas chico que TITULO para que un
+## nombre largo quepa en dos lineas.
+const NOMBRE_DETALLE: StringName = &"NombreDetalle"
+const LETRA_NOMBRE_DETALLE: int = 40
+## Texto de una ficha en las listas de Amuletos y Utiles (Label), en LETRA_DETALLE para que quepan tres lineas en una
+## fila de ALTO_TOQUE; la apagada, en gris (lo que no cabe).
+const TEXTO_FICHA: StringName = &"TextoFicha"
+const TEXTO_FICHA_APAGADO: StringName = &"TextoFichaApagado"
 ## Opcion con la letra de las etiquetas (Button): la Zona de pruebas del menu principal.
 const OPCION_CHICA: StringName = &"OpcionChica"
 ## Boton de un solo simbolo (Button, de TARJETA): + y - del mapa, en Cabin Sketch. La caja lo separa de lo dibujado
@@ -329,5 +337,13 @@ static func _etiquetas(tema: Theme) -> void:
 	tema.set_color(&"font_color", QUIEN, DORADO)
 	tema.set_type_variation(TENUE, &"Label")
 	tema.set_color(&"font_color", TENUE, GIS_TENUE)
+	tema.set_type_variation(NOMBRE_DETALLE, TITULO)
+	tema.set_font_size(&"font_size", NOMBRE_DETALLE, LETRA_NOMBRE_DETALLE)
+	tema.set_type_variation(TEXTO_FICHA, &"Label")
+	tema.set_font_size(&"font_size", TEXTO_FICHA, LETRA_DETALLE)
+	# Cabin Sketch deja mucho aire entre lineas: tres lineas de 28 no cabian en una fila de ALTO_TOQUE.
+	tema.set_constant(&"line_spacing", TEXTO_FICHA, -6)
+	tema.set_type_variation(TEXTO_FICHA_APAGADO, TEXTO_FICHA)
+	tema.set_color(&"font_color", TEXTO_FICHA_APAGADO, GRIS_APAGADO)
 	tema.set_type_variation(OPCION_CHICA, &"Button")
 	tema.set_font_size(&"font_size", OPCION_CHICA, LETRA_CHICA)

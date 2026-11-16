@@ -187,6 +187,13 @@ func _al_ser_golpeado(_atacante: Node2D, dano: int) -> void:
 	queue_free()
 
 
+## PejeCoins que suelta un botin de la ficha: con el Gato de la Suerte puesto, por Utiles.FACTOR_BOTIN_GATO, redondeado.
+static func cantidad_botin(botin: int) -> int:
+	if Partida.util_equipado(Utiles.GATO_SUERTE):
+		return roundi(botin * Utiles.FACTOR_BOTIN_GATO)
+	return botin
+
+
 # Las PejeCoins de la ficha, como un MonedasSueltas hijo de la sala que salta desde su centro y cae al suelo de abajo.
 # Si las de este ejemplar ya se tomaron (su marca en la sala), nada. El golpe puede llegar dentro de una senal de
 # fisica (la bola, por area_entered): ahi no se puede agregar un Area2D, asi que se agrega con call_deferred y el
@@ -202,7 +209,7 @@ func _soltar_botin() -> void:
 	var monedas: MonedasSueltas = ESCENA_MONEDAS.instantiate() as MonedasSueltas
 	monedas.id = id_botin
 	monedas.name = id_botin
-	monedas.cantidad = roundi(ficha.botin * Partida.efectos_amuletos().botin_factor)
+	monedas.cantidad = cantidad_botin(ficha.botin)
 	monedas.position = sala.to_local(inicio)
 	sala.add_child.call_deferred(monedas)
 	# En ticks de fisica y por subpropiedad, en coordenadas de la sala (classes/class_tween.rst). Atado

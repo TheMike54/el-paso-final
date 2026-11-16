@@ -107,7 +107,7 @@ Valores de `project.godot`. No se cambian sin actualizar esta tabla.
 | `botones_ensenados` | lista | Acciones cuyo botón de la pantalla ya enseñó un pizarrón (`Sala.botones_por_ensenar`). Campo de `NUEVOS`: una partida sin él carga con `[]` |
 | `carga_maxima` | número | Carga para amuletos, de `Partida.CARGA_INICIAL` a `Partida.CARGA_TOPE`. Campo de `NUEVOS` |
 | `inspiracion_maxima` | número | Capacidad de la barra, de `Partida.INSPIRACION_INICIAL` a `Partida.INSPIRACION_TOPE`. Campo de `NUEVOS`: si falta, carga con `Partida.INSPIRACION_INICIAL` |
-| `utiles_tenidos`, `utiles_equipados` | listas | Ids de los útiles (la brújula). Campos de `NUEVOS`: una partida sin ellos carga con `[]` |
+| `utiles_tenidos`, `utiles_equipados` | listas | Ids de los útiles (constantes de `Utiles`). Campos de `NUEVOS`: una partida sin ellos carga con `[]`; con más de `MAX_UTILES` puestos, `desde_diccionario` se queda con los primeros |
 | `salas` | objeto | Estado por sala: `{clave de la sala: {id del objeto: true o número}}` |
 | `personaje`, `nombre` | texto | Elegidos en Nueva partida; vacíos si no se eligieron |
 | `tiempo_jugado` | número | Segundos con el juego corriendo dentro de una sala |
@@ -133,7 +133,7 @@ Autoload `Partida` (`nucleo/partida.gd`): lo que sobrevive al cambio de sala. Un
 | `gastar_monedas(cantidad)` | Cobra (la `Tienda`): devuelve `false` y no cambia nada si no alcanzan o si `cantidad` es negativa |
 | `estaciones`, `abrir_estacion(id)`, `estacion_abierta(id)` | Ids de las estaciones del viaje rápido ya pagadas. `abrir_estacion` no repite un id ni guarda: guarda la `Estacion` |
 | `botones_ensenados`, `ensenar_boton(accion)` | Acciones cuyo botón de la pantalla ya enseñó un `AvisoAccion`. `ensenar_boton` no repite ni guarda |
-| `dejar_mochila(sala, punto)`, `monto_mochila()`, `punto_de_mochila()`, `recuperar_mochila()`, `perder_mochila()` | Lo perdido al morir, como el capullo de Silksong. El jugador, al morir y antes de emitir `jugador_muerto`, llama `dejar_mochila` con la clave de su sala y su `ultimo_punto_seguro()`, así el autoguardado de la muerte ya la lleva: con PejeCoins, `mochila = {sala, x, y, monto}` y `monedas` en 0, y una mochila anterior se pierde; sin PejeCoins no cambia nada. `monto_mochila()` y `punto_de_mochila()` leen el JSON aunque haya vuelto `float` (un eje que no es número, 0). `recuperar_mochila()` suma el monto, la vacía, emite `mochila_recuperada` y autoguarda; `perder_mochila()` (perder el reto) la vacía sin devolver nada y autoguarda |
+| `dejar_mochila(sala, punto)`, `monto_mochila()`, `punto_de_mochila()`, `recuperar_mochila()`, `perder_mochila()` | Lo perdido al morir, como el capullo de Silksong. El jugador, al morir y antes de emitir `jugador_muerto`, llama `dejar_mochila` con la clave de su sala y su `ultimo_punto_seguro()`, así el autoguardado de la muerte ya la lleva: con PejeCoins, `mochila = {sala, x, y, monto}` y `monedas` en 0 (con la Cartera de Emergencia, `monto` es la mitad redondeada hacia arriba y `monedas` conserva el resto), y una mochila anterior se pierde; sin PejeCoins no cambia nada. `monto_mochila()` y `punto_de_mochila()` leen el JSON aunque haya vuelto `float` (un eje que no es número, 0). `recuperar_mochila()` suma el monto, la vacía, emite `mochila_recuperada` y autoguarda; `perder_mochila()` (perder el reto) la vacía sin devolver nada y autoguarda |
 | `salas_visitadas`, `visitar(clave)` | Claves de las salas visitadas; la sala se anota al entrar |
 | `salas_mapeadas` | Al oír `descanso_en_banco`, con la habilidad `pluma_mapa`, pasan aquí las visitadas cuya zona está en `mapas` (como la Pluma de Hollow Knight y Silksong) |
 | `salas`, `estado_de(sala, objeto)`, `estado_entero(sala, objeto, por_omision)`, `marcar(sala, objeto, valor := true)` | Estado por sala. `estado_de` da `null` si no hay nada; `estado_entero` da un número aunque el JSON lo haya vuelto `float`, o `por_omision`. Lo usan `SueloFragil`, `MuroRompible`, `Palanca`, `Porton`, `Coleccionable`, `Tienda`, `AvisoAccion`, `EntregaRecompensas`, `Npc` y `RetoPreguntas` (`<id>`, `<id>_indice` y `<id>_aciertos`) con su `id` y la clave de su sala (`Sala.clave_de(nodo)`) |
@@ -141,7 +141,7 @@ Autoload `Partida` (`nucleo/partida.gd`): lo que sobrevive al cambio de sala. Un
 | `obtener_habilidad(id)`, `obtener_amuleto(id)`, `obtener_mapa(zona)` | Suman y emiten `habilidad_obtenida`, `amuleto_obtenido` o `mapa_obtenido` (si ya estaba, nada). Nada escribe `mapas` directo: el `ObjetoMapa` y `dar_recompensa` pasan por `obtener_mapa` |
 | `CARGA_INICIAL`, `CARGA_TOPE`, `carga_maxima`, `carga_usada()`, `puede_equipar(id)`, `equipar(id)`, `desequipar(id)`, `esta_equipado(id)` | Poner un amuleto exige que esté en el catálogo (`CatalogoEquipo.amuleto`, ver «Amuletos y útiles»), tenerlo, que no esté puesto y que su `costo` quepa en la carga que queda: `carga_usada()` suma los costos de los puestos y no pasa de `carga_maxima` (de `CARGA_INICIAL` a `CARGA_TOPE`, como las muescas de Hollow Knight). La recompensa `CARGA` suma su `monto` en muescas y se recorta al tope; las mejoras de una muesca crecen de una en una. La capacidad se guarda y al reiniciar vuelve a `CARGA_INICIAL`. `equipar` y `desequipar` devuelven `false` si no pueden y, si cambian algo, emiten `equipo_cambiado` y autoguardan. Dónde se puede (sentado en un banco) lo decide la pantalla de los amuletos: `Partida` no conoce al jugador. Nada escribe `amuletos_equipados` directo |
 | `efectos_amuletos()` | Lo que hacen juntos los amuletos puestos, como una `FichaAmuleto` nueva: factores multiplicados y extras sumados; sin amuletos, neutra. Se calcula al llamarla: quien la lee cada tick la guarda y la renueva al oír `equipo_cambiado` |
-| `utiles_tenidos`, `utiles_equipados`, `MAX_UTILES`, `obtener_util(id)`, `util_equipado(id)`, `puede_equipar_util(id)`, `equipar_util(id)`, `desequipar_util(id)` | Los útiles (la brújula), como las herramientas de Silksong: aparte de los amuletos, sin carga y con `MAX_UTILES` puestos a la vez. Mismas reglas que los amuletos (catálogo, tenerlo, no repetir); `obtener_util` emite `util_obtenido`, que autoguarda, y poner o quitar emite `equipo_cambiado` y autoguarda. Nada escribe `utiles_equipados` directo |
+| `utiles_tenidos`, `utiles_equipados`, `MAX_UTILES`, `obtener_util(id)`, `util_equipado(id)`, `puede_equipar_util(id)`, `equipar_util(id)`, `desequipar_util(id)` | Los útiles, como las herramientas de Silksong: aparte de los amuletos, sin carga y con `MAX_UTILES` (4 cupos) puestos a la vez; son 5, así que siempre sobra uno. Mismas reglas que los amuletos (catálogo, tenerlo, no repetir); `obtener_util` emite `util_obtenido`, que autoguarda, y poner o quitar emite `equipo_cambiado` y autoguarda. Nada escribe `utiles_equipados` directo |
 | `dar_recompensa(recompensa)` | Entrega una `Recompensa` (PejeCoins, vida máxima, amuleto, habilidad, el mapa de una zona, con `obtener_mapa`, un útil, con `obtener_util`, capacidad de Inspiración (`INSPIRACION_MAXIMA`, puntos) o carga (`CARGA`, muescas)). Las dos mejoras de capacidad se recortan a sus topes y autoguardan; la de carga emite `equipo_cambiado` |
 | `ruta_guardado` | Archivo del banco y del autoguardado: `RUTA_PRUEBAS` (`user://prueba_partida.json`) por omisión, para que guiones y zona de pruebas no pisen la partida real; entrar a una ranura lo cambia a la ruta de esa ranura |
 | `autoguardar()`, `autoguardados` | Guarda en `ruta_guardado` sin tocar el banco y emite `partida_guardada`; `autoguardados` los cuenta. Dos formas: por el bus, para lo que tiene evento (`Partida` escucha en `_ready` `habilidad_obtenida`, `amuleto_obtenido`, `util_obtenido`, `mapa_obtenido`, `coleccionable_obtenido`, `jefe_vencido` —que además anota el jefe— y `jugador_muerto`), y por llamada directa (`Partida.autoguardar()`, o `guardar(ruta)` en el banco), para lo que `Partida` no escucha; un cambio nuevo usa la que le corresponda. Además se autoguarda en: «Salir al menú» de la pausa; la entrega de recompensas; poner o quitar un amuleto o un útil; terminar contando una conversación de un `Npc`; cada respuesta de un `RetoPreguntas`; recuperar o perder la mochila; comprar en una `Tienda`; abrir una `Estacion` (también la gratis); y `NOTIFICATION_APPLICATION_PAUSED` o `NOTIFICATION_APPLICATION_FOCUS_OUT` con una sala abierta. Lo demás se escribe en el siguiente guardado: las marcas de `MuroRompible`, `Palanca`, `Porton`, `SueloFragil`, `AvisoAccion` y `MonedasSueltas` (con sus PejeCoins), `salas_visitadas` y `botones_ensenados` |
@@ -225,11 +225,15 @@ Las pantallas del marco para ponerlos y quitarlos (`PantallaAmuletos`, `Pantalla
 
 - `nucleo/ficha_amuleto.gd` (`class_name FichaAmuleto`, `Resource`): `id`, `nombre`, `descripcion`, `costo` (1 a 3,
   como los amuletos de Hollow Knight), `icono` (`Texture2D`, opcional, para cuando tenga arte) y, en
-  el grupo «Efectos», `velocidad_factor` (1), `invulnerable_extra` (ticks, 0), `inspiracion_extra` (por golpe, 0) y
-  `botin_factor` (1). Los valores por omisión no hacen nada.
+  el grupo «Efectos», `velocidad_factor` (1), `invulnerable_extra` (ticks, 0) e `inspiracion_extra` (por golpe, 0).
+  Los valores por omisión no hacen nada. El botín no es de un amuleto: lo multiplica el útil Gato de la Suerte.
 - `nucleo/ficha_util.gd` (`class_name FichaUtil`, `Resource`): `id`, `nombre`, `descripcion` e `icono`. Un útil no
   tiene números: lo que hace lo lee quien lo necesita con `Partida.util_equipado(id)` (la brújula, la pantalla del
   mapa), como las herramientas de Silksong (`compassTool.IsEquipped` en `GameMap`).
+- `nucleo/utiles.gd` (`class_name Utiles`): los ids de los 5 útiles (`BRUJULA`, `GATO_SUERTE`, `LOG_ERRORES`,
+  `CARTERA_EMERGENCIA`, `SUELA_ANTIDERRAPANTE`) y `TODOS`, en el orden del catálogo del juego. Quien lee un útil usa
+  la constante, no el texto; los ids se guardan y no se renombran. Guarda también los números de sus efectos:
+  `FACTOR_BOTIN_GATO` (1,5) y `FACTOR_EMPUJE_SUELA` (0,5).
 - `nucleo/catalogo_equipo.gd` (`class_name CatalogoEquipo`, `Resource`): la lista oficial, `amuletos` y `utiles`.
   Hay dos: el del juego (`contenido/equipo.tres`, `RUTA_JUEGO`) y el de la zona de pruebas
   (`herramientas/salas/fichas/equipo_prueba.tres`, `RUTA_PRUEBAS`). `CatalogoEquipo.amuleto(id)` y `util(id)` buscan
@@ -241,8 +245,14 @@ Las pantallas del marco para ponerlos y quitarlos (`PantallaAmuletos`, `Pantalla
 - Quién aplica cada efecto: el `Jugador` guarda `Partida.efectos_amuletos()` al aparecer y lo renueva con
   `equipo_cambiado`; multiplica la velocidad al caminar (no la carrera, el impulso ni la caminata de una puerta), suma
   `invulnerable_extra` a los ticks sin daño tras recibir un golpe (no tras el parry ni la picada) y `inspiracion_extra`
-  a cada golpe que da Inspiración (el del ataque y el del parry al enemigo; no un golpe bloqueado). El `Enemigo`, al
-  soltar su botín, lo multiplica por `botin_factor` (redondeado). Prueba: `herramientas/guiones/nucleo/efectos_amuletos`.
+  a cada golpe que da Inspiración (el del ataque y el del parry al enemigo; no un golpe bloqueado). Prueba:
+  `herramientas/guiones/nucleo/efectos_amuletos`.
+- Quién aplica cada útil, preguntando `Partida.util_equipado`: el mapa, la Brújula; `Enemigo.cantidad_botin`, el Gato
+  de la Suerte (botín × `FACTOR_BOTIN_GATO`, redondeado); `Jugador.recibir_dano`, el Log de Errores (un bloque de
+  Inspiración, `Partida.INSPIRACION_POR_GOLPE`, por golpe con `de_enemigo`; los peligros y el escenario no dan) y la
+  Suela Antiderrapante (retroceso × `FACTOR_EMPUJE_SUELA`); `Partida.dejar_mochila`, la Cartera de Emergencia (la
+  mochila se lleva la mitad redondeada hacia arriba y quedan las demás; sin monedas no hay mochila). Prueba:
+  `herramientas/guiones/nucleo/efectos_utiles`.
 - El validador falla una `Recompensa` de tipo `AMULETO` o `UTIL` (de una entrega, un reto, una tienda o una ficha de
   diálogo) o un `ObjetoAmuleto` cuyo id no esté en un catálogo, y fuera de `herramientas/` uno que solo esté en el de pruebas: el juego no depende de datos de prueba (`validador-equipo`, `validador-objeto-amuleto`).
 

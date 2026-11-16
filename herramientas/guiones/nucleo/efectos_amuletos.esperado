@@ -1,4 +1,4 @@
-# Cuatro fichas, ocho cambios de equipo y treinta cuentas con los nodos reales.
-# Incluye golpes normales, parry, objetos, escudos enemigos, repeticion y botin cero.
-valor . casos 42
+# Tres fichas, seis cambios de equipo y veinticuatro cuentas con los nodos reales.
+# Incluye golpes normales, parry, objetos, escudos enemigos y repeticion. El botin es del Gato: efectos_utiles.
+valor . casos 33
 valor . fallos 0

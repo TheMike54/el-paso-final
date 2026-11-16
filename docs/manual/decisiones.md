@@ -62,7 +62,7 @@ Lo que ya se decidió y por qué, para no volver a discutirlo sin una razón nue
 | 1-nov-2026 | La Celda es silenciosa, salvo junto al banco | Es intencional, no un fallo de audio |
 | 1-nov-2026 | Las aspas empujan y no devuelven a un punto seguro | Son golpe normal, no peligro |
 | 1-nov-2026 | Patas de Cucaracha cuesta 1 y da 1,25 | Ver `contenido/equipo.tres` |
-| 1-nov-2026 | 5 útiles con 4 cupos, solo poner o quitar; Gato de la Suerte pasa de amuleto a útil | Siempre sobra uno. Sin construir: el código tiene 1 ranura |
+| 1-nov-2026 | 5 útiles con 4 cupos, solo poner o quitar; Gato de la Suerte pasa de amuleto a útil | Siempre sobra uno. Los 4 cupos y las 5 fichas ya están (`utiles-cuatro-cupos`) |
 | 1-nov-2026 | La primera zona jugable no lleva jefes; el mapa sube hacia ESCOM | La zona todavía enseña a jugar |
 | 2-nov-2026 | El diseño del juego es público, con el manual en `docs/manual/` | Con licencia y aviso propios en `diseno.md` y `recorrido.md` |
 | 2-nov-2026 | La política de privacidad y su botón fueron directo a `main`, sin PR | Decisión de la persona |

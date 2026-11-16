@@ -1,15 +1,14 @@
 extends "res://herramientas/pruebas/prueba_base.gd"
 # Comprueba los efectos de amuletos en escenas reales, con la fisica del jugador detenida para aislar las cuentas.
-# Equipar y quitar cada amuleto verifica que el cache se renueva y que se recuperan los valores base.
-# Espera la creacion diferida del botin y comprueba su recogida con guardado aislado de la partida habitual.
+# Equipar y quitar cada amuleto verifica que el cache se renueva y que se recuperan los valores base, con guardado
+# aislado de la partida habitual. El botin ya no es de un amuleto: lo prueba prueba_efectos_utiles.gd (Gato).
 
 const ESCENA_JUGADOR: PackedScene = preload("res://nucleo/jugador.tscn")
 const ESCENA_ENEMIGO: PackedScene = preload("res://nucleo/enemigo.tscn")
 const FICHA_ENEMIGO: FichaEnemigo = preload("res://herramientas/salas/fichas/enemigo_debil.tres")
 const AMULETOS: Array[StringName] = [
-	&"amuleto_velocidad", &"amuleto_escudo", &"amuleto_inspiracion", &"amuleto_botin",
+	&"amuleto_velocidad", &"amuleto_escudo", &"amuleto_inspiracion",
 ]
-const BOTIN_BASE: int = 5
 
 var _mundo: Node2D
 var _numero_enemigo: int = 0
@@ -52,8 +51,6 @@ func _tiene_efecto(amuleto: StringName, ficha: FichaAmuleto) -> bool:
 			return ficha.invulnerable_extra > 0
 		&"amuleto_inspiracion":
 			return ficha.inspiracion_extra > 0
-		&"amuleto_botin":
-			return ficha.botin_factor > 1.0
 	return false
 
 
@@ -72,8 +69,6 @@ func _comprobar(amuleto: StringName, jugador: Jugador, efecto: FichaAmuleto, eta
 					and jugador.ticks_sin_dano == jugador.ticks_invulnerable + efecto.invulnerable_extra)
 		&"amuleto_inspiracion":
 			_comprobar_inspiracion(jugador, efecto, etapa)
-		&"amuleto_botin":
-			await _comprobar_botin(jugador, efecto, etapa)
 
 
 func _crear_enemigo(botin: int = 0) -> Enemigo:
@@ -130,29 +125,3 @@ func _comprobar_inspiracion(jugador: Jugador, efecto: FichaAmuleto, etapa: Strin
 	_caso("el parry conserva su invulnerabilidad propia: %s" % etapa,
 			jugador.ticks_sin_dano == jugador.ticks_invulnerable_parry)
 	enemigo.free()
-
-
-func _comprobar_botin(jugador: Jugador, efecto: FichaAmuleto, etapa: String) -> void:
-	var enemigo: Enemigo = _crear_enemigo(BOTIN_BASE)
-	var id_botin: String = Enemigo.PREFIJO_BOTIN + String(enemigo.id)
-	var esperado: int = roundi(BOTIN_BASE * efecto.botin_factor)
-	var antes: int = Partida.monedas
-	# _soltar_botin consulta el suelo: se vence en fisica y se espera el add_child diferido.
-	await get_tree().physics_frame
-	enemigo.golpeable.recibir_golpe(jugador, enemigo.ficha.vida)
-	await _esperar_cuadros(2)
-	var monedas: MonedasSueltas = _mundo.get_node_or_null(NodePath(id_botin)) as MonedasSueltas
-	var cantidad: int = monedas.cantidad if monedas != null else -1
-	if monedas != null:
-		monedas._al_entrar(jugador)
-	_caso("vencer y recoger el botin: %s" % etapa,
-			cantidad == esperado and Partida.monedas - antes == esperado)
-
-	enemigo = _crear_enemigo(0)
-	id_botin = Enemigo.PREFIJO_BOTIN + String(enemigo.id)
-	antes = Partida.monedas
-	await get_tree().physics_frame
-	enemigo.golpeable.recibir_golpe(jugador, enemigo.ficha.vida)
-	await _esperar_cuadros(2)
-	_caso("botin cero no crea monedas: %s" % etapa,
-			not _mundo.has_node(NodePath(id_botin)) and Partida.monedas == antes)

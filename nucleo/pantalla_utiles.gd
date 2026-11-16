@@ -1,27 +1,48 @@
 class_name PantallaUtiles
 extends PaginaMarco
-# Pagina Utiles del marco, armada en codigo como Amuletos: consulta el catalogo y lo que tiene Partida.
-# Solo deja poner y quitar sentado en un banco; los utiles ocupan ranuras y no gastan carga de amuletos.
-# La lista se desplaza con el dedo y el foco, cuya ficha da la descripcion; sin arte usa una brujula de gis.
+# Pagina Utiles del marco, encima del juego detenido: a la izquierda la mochila de gis con sus 4 cupos y la cuenta en
+# circulos, al centro la lista y a la derecha el detalle. Tocar una fila o un cupo lleno solo elige; poner o quitar va
+# en el boton del detalle, y solo sentado en un banco, como en Silksong. Los utiles no gastan carga de amuletos.
+# Armada en codigo; Partida cuida el catalogo, la posesion y los cupos (MAX_UTILES).
 
-## Botones por id del util, publicos para las pruebas.
+## Botones de la lista por id del util; publicos para las pruebas.
 var botones: Dictionary[StringName, Button] = {}
+## Los 4 cupos de la mochila, en orden; publicos para las pruebas.
+var cupos: Array[Button] = []
+## Publicos para las pruebas.
+var cuenta: Circulos = null
+var vacio: Label = null
 
-var _descripcion: Label = null
+var _cuerpo: HBoxContainer = null
+var _rejilla: GridContainer = null
 
 
 func _ready() -> void:
 	super()
 	var panel: ColorRect = Tema.fondo_menu()
 	add_child(panel)
-	var columna: VBoxContainer = _crear_columna_equipo(panel)
-	_descripcion = Label.new()
-	_descripcion.name = "Descripcion"
-	_descripcion.custom_minimum_size.x = Tema.CELDA.x
-	_descripcion.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_descripcion.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	columna.add_child(_descripcion)
-	_crear_lista_equipo(columna)
+	_cuerpo = HBoxContainer.new()
+	_cuerpo.name = "Cuerpo"
+	_cuerpo.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	# Mas junto que Amuletos: con la mochila, la lista se queda angosta y «Antiderrapante» no cabia en una linea.
+	_cuerpo.add_theme_constant_override(&"separation", int(Tema.SEPARACION))
+	panel.add_child(_cuerpo)
+	_acomodar_en_contenido(_cuerpo)
+	_cuerpo.add_child(_crear_bolsa())
+	var lista: VBoxContainer = VBoxContainer.new()
+	lista.name = "Lista"
+	lista.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	lista.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	lista.add_theme_constant_override(&"separation", int(Tema.SEPARACION))
+	_cuerpo.add_child(lista)
+	var desplazable: ScrollContainer = _crear_desplazable(1)
+	_rejilla = desplazable.get_node(^"Fichas") as GridContainer
+	lista.add_child(desplazable)
+	lista.add_child(_indicador_mas(desplazable))
+	_crear_detalle(_cuerpo)
+	vacio = _crear_vacio("Todavía no tienes útiles.")
+	panel.add_child(vacio)
+	_acomodar_en_contenido(vacio)
 
 
 func id_pagina() -> StringName:
@@ -37,75 +58,167 @@ func mostrar_en_marco() -> void:
 	_mostrar()
 
 
-## Pone o quita solo sentado; Partida comprueba catalogo, posesion y ranura.
+## Pone o quita solo sentado; Partida comprueba catalogo, posesion y cupo libre. Lo usa el boton del detalle.
 func alternar(util: StringName) -> bool:
 	if not puede_cambiar():
 		return false
 	var cambio: bool = Partida.desequipar_util(util) if Partida.util_equipado(util) else Partida.equipar_util(util)
 	_actualizar()
-	_describir(util)
 	return cambio
 
 
+## Elige un util (desde la lista o desde su cupo) y llena el detalle. No cambia nada.
+func elegir(util: StringName) -> void:
+	super(util)
+	_marcar_elegido(botones)
+	for i: int in range(cupos.size()):
+		cupos[i].set_pressed_no_signal(i < Partida.utiles_equipados.size() and Partida.utiles_equipados[i] == elegido)
+	var ficha: FichaUtil = CatalogoEquipo.util(util)
+	var nombre: String = ficha.nombre if ficha != null else String(util).capitalize()
+	var descripcion: String = ficha.descripcion if ficha != null else ""
+	detalle.mostrar(nombre, _icono(ficha, DetalleMenu.LADO_IMAGEN), descripcion, motivo(util), rotulo(util))
+
+
+## Lo que dice el detalle abajo: por que no se puede cambiar, o si esta en un cupo.
+func motivo(util: StringName) -> String:
+	if CatalogoEquipo.util(util) == null:
+		return ""
+	if not puede_cambiar():
+		return "Siéntate en un banco para cambiarlos."
+	if Partida.util_equipado(util):
+		return "En un cupo"
+	if not Partida.puede_equipar_util(util):
+		return "Cupos llenos: toca un cupo de la mochila y quítalo primero."
+	return "Sin usar"
+
+
+## El texto del boton del detalle; vacio si no se puede cambiar (de pie, cupos llenos o fuera del catalogo).
+func rotulo(util: StringName) -> String:
+	if not puede_cambiar() or CatalogoEquipo.util(util) == null:
+		return ""
+	if Partida.util_equipado(util):
+		return "Quitar"
+	return "Poner" if Partida.puede_equipar_util(util) else ""
+
+
+func _crear_bolsa() -> VBoxContainer:
+	var bolsa: VBoxContainer = VBoxContainer.new()
+	bolsa.name = "Bolsa"
+	bolsa.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	bolsa.alignment = BoxContainer.ALIGNMENT_CENTER
+	var dibujo: DibujoMochila = DibujoMochila.new()
+	dibujo.name = "Mochila"
+	bolsa.add_child(dibujo)
+	for i: int in range(Partida.MAX_UTILES):
+		var cupo: Button = Button.new()
+		cupo.name = "Cupo%d" % i
+		cupo.theme_type_variation = Tema.TARJETA
+		cupo.toggle_mode = true
+		var rect: Rect2 = DibujoMochila.cupo_rect(i)
+		cupo.position = rect.position
+		cupo.size = rect.size
+		cupo.custom_minimum_size = rect.size
+		cupo.pressed.connect(_al_tocar_cupo.bind(i))
+		cupo.focus_entered.connect(_al_enfocar_cupo.bind(i))
+		dibujo.add_child(cupo)
+		cupos.append(cupo)
+	var fila: HBoxContainer = HBoxContainer.new()
+	fila.name = "Cuenta"
+	fila.alignment = BoxContainer.ALIGNMENT_CENTER
+	fila.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	fila.add_theme_constant_override(&"separation", int(Tema.SEPARACION_FILAS))
+	bolsa.add_child(fila)
+	var rotulo_cupos: Label = Label.new()
+	rotulo_cupos.name = "Rotulo"
+	rotulo_cupos.text = "cupos"
+	rotulo_cupos.theme_type_variation = Tema.TENUE
+	rotulo_cupos.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	fila.add_child(rotulo_cupos)
+	cuenta = Circulos.new()
+	cuenta.name = "Circulos"
+	fila.add_child(cuenta)
+	return bolsa
+
+
 func _mostrar() -> void:
-	for hijo: Node in _lista.get_children():
+	for hijo: Node in _rejilla.get_children():
 		hijo.free()
 	botones.clear()
-	_descripcion.text = ""
+	var hay: bool = not Partida.utiles_tenidos.is_empty()
+	vacio.visible = not hay
+	_cuerpo.visible = hay
 	for util: StringName in Partida.utiles_tenidos:
 		var ficha: FichaUtil = CatalogoEquipo.util(util)
-		var fila: HBoxContainer = HBoxContainer.new()
-		fila.name = String(util)
-		fila.add_theme_constant_override(&"separation", int(Tema.SEPARACION_ICONO))
-		_lista.add_child(fila)
-		if ficha != null and ficha.icono != null:
-			var icono: TextureRect = TextureRect.new()
-			icono.name = "Icono"
-			icono.texture = ficha.icono
-			icono.custom_minimum_size = Vector2.ONE * Tema.LADO_ICONO_FILA
-			icono.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-			icono.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-			icono.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			fila.add_child(icono)
-		else:
-			fila.add_child(IconoArticulo.crear(IconoArticulo.Forma.UTIL, Tema.LADO_ICONO_FILA, false))
-		var boton: Button = Button.new()
-		boton.name = String(util)
-		boton.custom_minimum_size = Tema.CELDA
-		boton.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-		boton.pressed.connect(alternar.bind(util))
-		boton.focus_entered.connect(_describir.bind(util))
-		boton.mouse_entered.connect(_describir.bind(util))
-		boton.gui_input.connect(_al_tocar.bind(util))
-		fila.add_child(boton)
-		botones[util] = boton
+		var nombre: String = ficha.nombre if ficha != null else String(util).capitalize()
+		botones[util] = _fila_equipo(util, nombre, _icono(ficha, Tema.LADO_ICONO_FILA), 0)
+		_rejilla.add_child(botones[util])
 	_actualizar()
-	if not botones.is_empty():
-		_describir(Partida.utiles_tenidos[0])
-		Tema.dar_foco(botones[Partida.utiles_tenidos[0]])
+	if not hay:
+		elegido = &""
+		detalle.limpiar()
+		return
+	if not botones.has(elegido):
+		elegido = Partida.utiles_tenidos[0]
+	elegir(elegido)
+	Tema.dar_foco(botones[elegido])
 
 
 func _actualizar() -> void:
 	var sentado: bool = puede_cambiar()
-	if Partida.utiles_tenidos.is_empty():
-		_aviso.text = "Todavía no tienes útiles."
-	else:
-		_aviso.text = _aviso_equipo(sentado, "ranuras", Partida.utiles_equipados.size(), Partida.MAX_UTILES)
+	cuenta.poner(Partida.utiles_equipados.size(), Partida.MAX_UTILES)
+	for i: int in range(cupos.size()):
+		_pintar_cupo(cupos[i], Partida.utiles_equipados[i] if i < Partida.utiles_equipados.size() else &"")
 	for util: StringName in botones:
-		var ficha: FichaUtil = CatalogoEquipo.util(util)
-		var nombre: String = ficha.nombre if ficha != null else String(util).capitalize()
 		var puesto: bool = Partida.util_equipado(util)
-		botones[util].text = "%s: %s" % [nombre, "puesto" if puesto else "guardado"]
-		botones[util].disabled = not sentado or (not puesto and not Partida.puede_equipar_util(util))
+		var apagada: bool = (CatalogoEquipo.util(util) == null
+				or (sentado and not puesto and not Partida.puede_equipar_util(util)))
+		_pintar_fila(botones[util], "En un cupo" if puesto else "Sin usar", puesto, apagada)
+	if botones.has(elegido):
+		elegir(elegido)
 
 
-func _describir(util: StringName) -> void:
-	var ficha: FichaUtil = CatalogoEquipo.util(util)
-	_descripcion.text = ficha.descripcion if ficha != null else ""
+# Un cupo lleno muestra el icono de su util y se toca para elegirlo; uno vacio dice «vacío» y no se toca ni toma foco.
+func _pintar_cupo(cupo: Button, util: StringName) -> void:
+	for hijo: Node in cupo.get_children():
+		hijo.free()
+	var lleno: bool = not util.is_empty()
+	cupo.focus_mode = Control.FOCUS_ALL if lleno else Control.FOCUS_NONE
+	cupo.mouse_filter = Control.MOUSE_FILTER_STOP if lleno else Control.MOUSE_FILTER_IGNORE
+	var contenido: Control = null
+	if lleno:
+		contenido = _icono(CatalogoEquipo.util(util), DibujoMochila.LADO_CUPO * 0.72)
+		contenido.name = "Icono"
+	else:
+		var texto: Label = Label.new()
+		texto.name = "Vacio"
+		texto.text = "vacío"
+		texto.theme_type_variation = Tema.TENUE
+		texto.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		texto.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		contenido = texto
+	contenido.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	cupo.add_child(contenido)
+	contenido.set_anchors_and_offsets_preset(Control.PRESET_CENTER if lleno else Control.PRESET_FULL_RECT)
+	if lleno:
+		contenido.position = (cupo.size - contenido.custom_minimum_size) / 2.0
+		contenido.size = contenido.custom_minimum_size
 
 
-# Tambien permite consultar una fila deshabilitada (de pie o sin ranura) al tocarla.
-func _al_tocar(evento: InputEvent, util: StringName) -> void:
-	if ((evento is InputEventScreenTouch and (evento as InputEventScreenTouch).pressed)
-			or (evento is InputEventMouseButton and (evento as InputEventMouseButton).pressed)):
-		_describir(util)
+func _al_tocar_cupo(indice: int) -> void:
+	if indice < Partida.utiles_equipados.size():
+		_al_pulsar(Partida.utiles_equipados[indice])
+
+
+func _al_enfocar_cupo(indice: int) -> void:
+	if indice < Partida.utiles_equipados.size():
+		elegir(Partida.utiles_equipados[indice])
+
+
+func _al_accion() -> void:
+	alternar(elegido)
+	if not detalle.accion.visible and botones.has(elegido):
+		Tema.dar_foco(botones[elegido])
+
+
+func _icono(ficha: FichaUtil, lado: float) -> Control:
+	return _icono_equipo(ficha.icono if ficha != null else null, IconoArticulo.Forma.UTIL, lado)

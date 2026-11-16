@@ -34,5 +34,11 @@
     "que": "El mapa alejado usa el nombre y color de FichaZona copiados al indice; sin ficha conserva el nombre desde el id y la paleta alternada; los rectangulos suman el origen de zona y el generador imprime la siguiente franja libre",
     "comprobacion": "herramientas/guiones/mapa/mapa_cuentas.guion",
     "pasa": true
+  },
+  {
+    "id": "mapa-boton-vista",
+    "que": "En el marco, un solo boton abajo a la derecha cambia la vista y dice a cual pasa: Ver todo acercado a la zona actual, Ver zona con todas; reemplaza a los botones - y +",
+    "comprobacion": "herramientas/guiones/mapa/mapa_cuentas.guion",
+    "pasa": true
   }
 ]

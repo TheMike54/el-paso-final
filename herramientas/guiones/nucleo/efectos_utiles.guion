@@ -1,0 +1,4 @@
+# Efecto de cada util con y sin el puesto: Gato (botin), Log de Errores (Inspiracion solo por golpes de enemigo),
+# Suela (retroceso a la mitad) y Cartera (mochila con 0, 1, impar y par).
+escena res://herramientas/pruebas/sala_efectos_utiles.tscn
+fin 120

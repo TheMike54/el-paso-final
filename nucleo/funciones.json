@@ -1240,5 +1240,47 @@
     "que": "Créditos tiene el botón «Política de privacidad», que abre docs/privacidad.md en el navegador (Google Play pide enlazarla dentro de la app)",
     "comprobacion": "herramientas/guiones/nucleo/menu_configuracion.guion; manual: en el teléfono, Configuración, Créditos, «Política de privacidad» abre la página en el navegador y al volver el juego sigue en Créditos",
     "pasa": false
+  },
+  {
+    "id": "marco-flechas",
+    "que": "El marco de menús cambia de página con una flecha a cada lado, a media altura y dentro del área segura (zona de 108×240, con el botón del control); la barra nombra las vecinas sin «‹ ›» y siguen tocables",
+    "comprobacion": "herramientas/guiones/nucleo/marco.guion",
+    "pasa": true
+  },
+  {
+    "id": "utiles-cuatro-cupos",
+    "que": "Los útiles ocupan 4 cupos (Partida.MAX_UTILES): el quinto no entra, los puestos se guardan y se leen en orden y un archivo con más de 4 se lee con los primeros 4. Los ids viven en Utiles; el catálogo trae los 5 útiles con ícono y la sala «Equipo» los da",
+    "comprobacion": "herramientas/guiones/nucleo/utiles.guion; herramientas/guiones/nucleo/sala_equipo.guion",
+    "pasa": true
+  },
+  {
+    "id": "utiles-efectos",
+    "que": "Efectos de los útiles: Gato de la Suerte multiplica el botín ×1,5 (redondeado; sale botin_factor de FichaAmuleto); Log de Errores da un bloque de Inspiración por golpe de enemigo (DanoContacto.de_enemigo), no por el escenario ni por peligros; Suela Antiderrapante deja el retroceso a la mitad; Cartera de Emergencia deja en la mochila la mitad redondeada hacia arriba y conserva el resto",
+    "comprobacion": "herramientas/guiones/nucleo/efectos_utiles.guion; herramientas/guiones/nucleo/efectos_amuletos.guion",
+    "pasa": true
+  },
+  {
+    "id": "detalle-de-menu",
+    "que": "Panel de detalle común de las páginas del marco (DetalleMenu): nombre, imagen, texto, motivo abajo y botón de acción que se esconde si no hay acción; Circulos y MarcaUso para costo, carga, cupos y lo que está en uso",
+    "comprobacion": "herramientas/guiones/nucleo/amuletos.guion",
+    "pasa": true
+  },
+  {
+    "id": "pagina-amuletos-d",
+    "que": "Página Amuletos según el mockup aprobado: lo puesto y la carga en círculos arriba, lista en dos columnas con costo en círculos y marca de en uso, tocar solo elige, Poner o Quitar en el detalle solo sentado, motivo de no cabe o de sentarse, estado sin amuletos e indicador de más abajo",
+    "comprobacion": "herramientas/guiones/nucleo/amuletos.guion",
+    "pasa": true
+  },
+  {
+    "id": "pagina-utiles-d",
+    "que": "Página Útiles según el mockup aprobado: mochila de gis con 4 cupos (lleno con icono y tocarlo elige su útil, vacío sin toque), cupos en círculos, lista con marca de en uso, tocar solo elige, Poner o Quitar en el detalle solo sentado y motivo de cupos llenos",
+    "comprobacion": "herramientas/guiones/nucleo/utiles.guion",
+    "pasa": true
+  },
+  {
+    "id": "pagina-inventario-d",
+    "que": "Página Inventario según el mockup aprobado: vida, Inspiración con número y bloques y PejeCoins arriba; carta del arma La Pluma, lo perdido con el nombre de la zona, habilidades con símbolo de gis y detalle del elegido, mapas por zona; solo lo que se toca lleva marco",
+    "comprobacion": "herramientas/guiones/nucleo/inventario.guion",
+    "pasa": true
   }
 ]

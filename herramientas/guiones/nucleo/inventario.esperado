@@ -1,0 +1,4 @@
+# Los 11 casos de herramientas/pruebas/prueba_inventario.gd corrieron y ninguno fallo. Cada caso que falla imprime una
+# linea "FALLO inventario: <caso>".
+valor . casos 11
+valor . fallos 0

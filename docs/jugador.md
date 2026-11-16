@@ -92,7 +92,10 @@ Combate:
 - El ataque es el área `Ataque` del jugador, hacia donde mira (el último lado al que caminó); con `mover_arriba`
   mantenida, encima de la cabeza (`posicion_ataque_arriba`, sin rebote hacia atrás). Golpea una sola vez a cada
   `Golpeable` que toca durante un ataque y corta cada `Cortable` que toca.
-- `recibir_dano(dano: int, origen_x: float, peligro := false)` es lo único que quita vidas. Durante la
+- `recibir_dano(dano: int, origen_x: float, peligro := false, de_enemigo := false)` es lo único que quita vidas.
+  Con el Log de Errores puesto, un golpe de enemigo (`de_enemigo`, no un peligro) da un bloque de Inspiración
+  (`Partida.INSPIRACION_POR_GOLPE`); con la Suela Antiderrapante, el retroceso se multiplica por
+  `Utiles.FACTOR_EMPUJE_SUELA` (0,5). Durante la
   invulnerabilidad y la caída en picada (con su saltito y su carga) un golpe no quita vidas; un peligro, sí. Emite `jugador_danado` con las vidas que quedan y, al llegar a 0,
   deja la mochila (`Partida.dejar_mochila`) y emite `jugador_muerto`.
 - Golpe normal (enemigo, cuerpo dañino): retroceso e invulnerabilidad. Durante el retroceso el jugador no camina

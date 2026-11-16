@@ -3,7 +3,7 @@ extends Area2D
 # no lo lleva o lo quita si lo lleva, sin banco (en el juego se comprara y se pondra sentado en un banco, en la
 # pantalla de los utiles). Asi se prueba el mapa con y sin el marcador del jugador.
 
-const BRUJULA: StringName = &"brujula"
+const BRUJULA: StringName = Utiles.BRUJULA
 ## Aviso sobre el interruptor: en el telefono no se notaba si se puso o se quito.
 const TICKS_AVISO: int = 120
 const ALTO_AVISO: float = 220.0

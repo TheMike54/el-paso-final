@@ -34,14 +34,13 @@ descripcion = "Cada golpe a un enemigo da más Inspiración."
 costo = 1
 inspiracion_extra = 5
 
-[sub_resource type="Resource" id="amuleto_botin"]
+[sub_resource type="Resource" id="amuleto_pesado"]
 script = ExtResource("2_amuleto")
-id = &"amuleto_botin"
-nombre = "Alcancía de prueba"
-descripcion = "Los enemigos sueltan más PejeCoins."
+id = &"amuleto_pesado"
+nombre = "Mochila de prueba"
+descripcion = "Sin efecto: cuesta 2, para probar la carga."
 costo = 2
-botin_factor = 1.5
 
 [resource]
 script = ExtResource("1_catalogo")
-amuletos = Array[ExtResource("2_amuleto")]([SubResource("amuleto_prueba"), SubResource("amuleto_velocidad"), SubResource("amuleto_escudo"), SubResource("amuleto_inspiracion"), SubResource("amuleto_botin")])
+amuletos = Array[ExtResource("2_amuleto")]([SubResource("amuleto_prueba"), SubResource("amuleto_velocidad"), SubResource("amuleto_escudo"), SubResource("amuleto_inspiracion"), SubResource("amuleto_pesado")])

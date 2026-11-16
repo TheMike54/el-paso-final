@@ -18,8 +18,8 @@ const INSPIRACION_POR_GOLPE: int = 11
 ## Carga con la que se empieza: los amuletos puestos no pueden costar mas que carga_maxima (Hollow Knight empieza
 ## con 3 muescas).
 const CARGA_INICIAL: int = 3
-## Utiles puestos a la vez: una ranura por ahora.
-const MAX_UTILES: int = 1
+## Utiles puestos a la vez: los 4 cupos de la mochila de la pagina Utiles.
+const MAX_UTILES: int = 4
 ## Los ids de los coleccionables empiezan asi: el total se cuenta con las marcas de las salas.
 const PREFIJO_COLECCIONABLE: String = "coleccionable"
 ## Archivo donde se guarda fuera de una partida empezada en el menu (guiones, zona de pruebas): asi
@@ -270,7 +270,6 @@ func efectos_amuletos() -> FichaAmuleto:
 		suma.velocidad_factor *= ficha.velocidad_factor
 		suma.invulnerable_extra += ficha.invulnerable_extra
 		suma.inspiracion_extra += ficha.inspiracion_extra
-		suma.botin_factor *= ficha.botin_factor
 	return suma
 
 
@@ -415,12 +414,17 @@ func _al_morir() -> void:
 
 
 ## Al morir, como el capullo de Silksong: con monedas, todas pasan a la mochila en ese punto de esa sala y una mochila
-## anterior se pierde; sin monedas no hace nada y la anterior sigue donde estaba. No guarda: lo hace quien llama.
+## anterior se pierde; sin monedas no hace nada y la anterior sigue donde estaba. Con la Cartera de Emergencia puesta
+## se conserva la mitad: la mochila se lleva el redondeo hacia arriba, asi siempre lleva algo (con 1, la moneda) y
+## un monto guardado nunca es 0. No guarda: lo hace quien llama.
 func dejar_mochila(clave_sala: String, punto: Vector2) -> void:
 	if monedas <= 0 or clave_sala.is_empty():
 		return
-	mochila = {"sala": clave_sala, "x": punto.x, "y": punto.y, "monto": monedas}
-	monedas = 0
+	var monto: int = monedas
+	if util_equipado(Utiles.CARTERA_EMERGENCIA):
+		monto = ceili(monedas / 2.0)
+	mochila = {"sala": clave_sala, "x": punto.x, "y": punto.y, "monto": monto}
+	monedas -= monto
 
 
 ## Monto de la mochila como numero: el JSON devuelve los enteros como float. 0 si no hay mochila.
@@ -527,6 +531,10 @@ func desde_diccionario(partida: Dictionary) -> void:
 	inspiracion_maxima = Guardado.entero(partida.get("inspiracion_maxima"), INSPIRACION_INICIAL)
 	utiles_tenidos = _ids(partida.get("utiles_tenidos", []) as Array)
 	utiles_equipados = _ids(partida.get("utiles_equipados", []) as Array)
+	# Un archivo editado a mano con mas utiles puestos que cupos se queda con los primeros MAX_UTILES: asi nunca hay
+	# un cupo de mas que la pagina no sepa dibujar.
+	if utiles_equipados.size() > MAX_UTILES:
+		utiles_equipados.resize(MAX_UTILES)
 	Eventos.equipo_cambiado.emit()
 	salas.clear()
 	var leidas: Dictionary = partida["salas"]

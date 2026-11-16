@@ -27,6 +27,11 @@ static func crear(rectangulo: Rect2, ticks_que_dura: int, dano_del_golpe: int, p
 	return ataque
 
 
+func _init() -> void:
+	# Todo ataque o proyectil enemigo es golpe de enemigo (DanoContacto.de_enemigo).
+	de_enemigo = true
+
+
 func _ready() -> void:
 	super()
 	if not se_puede_parar or not con_trazo:

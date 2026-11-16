@@ -14,5 +14,6 @@ script = ExtResource("2_golpeable")
 
 [node name="DanoContacto" type="Area2D" parent="."]
 script = ExtResource("3_dano")
+de_enemigo = true
 
 [node name="Forma" type="CollisionShape2D" parent="DanoContacto"]

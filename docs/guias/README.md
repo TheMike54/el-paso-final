@@ -36,7 +36,7 @@ Piezas y términos que las guías nombran sin explicar:
 | `ZonaCamara` | Área que, mientras el jugador está dentro, limita lo que muestra la cámara además de los límites de la sala (`nucleo/zona_camara.gd`) |
 | `Terreno`, `Peligros`, `Encima`, `Luces`, `Frente` | Nodos contenedores de la base de una zona, no grupos de Godot |
 | Ficha | Recurso `.tres` de solo lectura con datos (`FichaEnemigo`, `FichaDialogo`, `FichaSonidos`, `FichaAmuleto`, `FichaUtil`) |
-| Carga, ranura | La carga es cuánto pueden costar juntos los amuletos puestos (3 al empezar); un útil ocupa una ranura y no gasta carga (`docs/contrato.md`, «Amuletos y útiles») |
+| Carga, ranura | La carga es cuánto pueden costar juntos los amuletos puestos (3 al empezar); un útil ocupa uno de los 4 cupos y no gasta carga (`docs/contrato.md`, «Amuletos y útiles») |
 | Guion | Entradas por cuadro y estado esperado para correr el juego sin ventana (`docs/guiones.md`); no es un script de GDScript |
 
 Los fragmentos de código de las guías son copias, extractos o resúmenes de archivos reales del repo (los recortados lo dicen en su texto): ante una diferencia manda el archivo.

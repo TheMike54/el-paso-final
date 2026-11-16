@@ -1,3 +1,4 @@
-# Casos de Partida y de la pagina Utiles: de pie, sentado, ranura llena y desplazamiento con foco.
+# Casos de Partida y de la pagina Utiles: los 4 cupos (el quinto no entra; se guardan y se leen), de pie, sentado,
+# cupos llenos y desplazamiento con foco.
 escena res://herramientas/pruebas/sala_utiles.tscn
 fin 60

@@ -15,6 +15,10 @@ const GRUPO_PAGINAS: StringName = &"pagina_marco"
 const CAPA: int = 21
 ## Alto de la barra de arriba: una pagina deja libre esa franja.
 const ALTO_BARRA: float = Tema.ALTO_TOQUE + 2.0 * Tema.MARGEN_VERTICAL
+## Zona de toque de cada flecha lateral (FlechaPagina), pegada al borde del area segura y a media altura. El
+## contenido de una pagina empieza despues de ella (area_contenido).
+const ANCHO_FLECHA: float = Tema.ALTO_TOQUE
+const ALTO_FLECHA: float = 240.0
 ## Paginas en orden del ciclo: scripts del nucleo y escenas opcionales de otros bloques.
 ## Las escenas conservan su nombre de nodo; los scripts reciben el nombre indicado. Los scripts van con preload: el
 ## nombre de una clase global no es una expresion constante.
@@ -37,6 +41,8 @@ var _siguiente: Button = null
 var _titulo: Label = null
 var _barra: HBoxContainer = null
 var _contrapeso: Control = null
+var _flecha_anterior: FlechaPagina = null
+var _flecha_siguiente: FlechaPagina = null
 
 
 func _ready() -> void:
@@ -58,9 +64,9 @@ func _ready() -> void:
 	_volver.name = "Volver"
 	_volver.custom_minimum_size.x = Tema.ANCHO_VOLVER
 	barra.add_child(_relleno())
+	# Las vecinas, tocables y sin «‹ ›»: la flecha y el boton del control van en las flechas laterales.
 	_anterior = _boton(barra, "", cambiar.bind(-1))
 	_anterior.name = "Anterior"
-	IconoBoton.en_boton(_anterior, &"pagina_anterior")
 	_titulo = Label.new()
 	_titulo.name = "Titulo"
 	_titulo.custom_minimum_size.y = Tema.ALTO_TOQUE
@@ -69,7 +75,6 @@ func _ready() -> void:
 	barra.add_child(_titulo)
 	_siguiente = _boton(barra, "", cambiar.bind(1))
 	_siguiente.name = "Siguiente"
-	IconoBoton.en_boton(_siguiente, &"pagina_siguiente", true)
 	barra.add_child(_relleno())
 	# Hasta el ancho de Volver, para que el titulo quede al centro de la pantalla (_acomodar_contrapeso).
 	_contrapeso = Control.new()
@@ -80,7 +85,42 @@ func _ready() -> void:
 	barra.minimum_size_changed.connect(_acomodar_contrapeso, CONNECT_DEFERRED)
 	get_viewport().size_changed.connect(_acomodar_contrapeso)
 	_acomodar_contrapeso()
+	_flecha_anterior = _flecha(-1, "FlechaAnterior")
+	_flecha_siguiente = _flecha(1, "FlechaSiguiente")
+	get_viewport().size_changed.connect(_acomodar_flechas)
+	_acomodar_flechas()
 	visible = false
+
+
+## Zona de toque de una flecha lateral (paso -1 a la izquierda, 1 a la derecha) en una vista con su area segura: pegada
+## al borde del area segura y centrada en alto. Publica y pura para la prueba de proporciones.
+static func rect_flecha(vista: Vector2, segura: Rect2, paso: int) -> Rect2:
+	var x: float = segura.position.x if paso < 0 else segura.end.x - ANCHO_FLECHA
+	return Rect2(x, vista.y / 2.0 - ALTO_FLECHA / 2.0, ANCHO_FLECHA, ALTO_FLECHA)
+
+
+## Lo que le queda a una pagina: el area segura sin las flechas de los lados ni la franja de la barra.
+static func area_contenido(vista: Vector2, segura: Rect2) -> Rect2:
+	var arriba: float = maxf(segura.position.y, ALTO_BARRA)
+	return Rect2(segura.position.x + ANCHO_FLECHA, arriba,
+			segura.size.x - 2.0 * ANCHO_FLECHA, minf(segura.end.y, vista.y) - arriba)
+
+
+func _flecha(paso: int, nombre: String) -> FlechaPagina:
+	var flecha: FlechaPagina = FlechaPagina.new(paso)
+	flecha.name = nombre
+	flecha.pressed.connect(cambiar.bind(paso))
+	add_child(flecha)
+	return flecha
+
+
+func _acomodar_flechas() -> void:
+	var vista: Vector2 = get_viewport().get_visible_rect().size
+	var segura: Rect2 = DisposicionControles.area_segura(vista)
+	for flecha: FlechaPagina in [_flecha_anterior, _flecha_siguiente]:
+		var caja: Rect2 = rect_flecha(vista, segura, flecha.paso)
+		flecha.position = caja.position
+		flecha.size = caja.size
 
 
 func _boton(barra: HBoxContainer, texto: String, al_tocar: Callable) -> Button:
@@ -188,8 +228,10 @@ func _ver(id: StringName) -> void:
 	_titulo.text = _paginas[i].titulo_pagina()
 	_anterior.visible = n > 1
 	_siguiente.visible = n > 1
-	_anterior.text = "‹ " + _paginas[posmod(i - 1, n)].titulo_pagina()
-	_siguiente.text = _paginas[posmod(i + 1, n)].titulo_pagina() + " ›"
+	_flecha_anterior.visible = n > 1
+	_flecha_siguiente.visible = n > 1
+	_anterior.text = _paginas[posmod(i - 1, n)].titulo_pagina()
+	_siguiente.text = _paginas[posmod(i + 1, n)].titulo_pagina()
 	# Si la pagina no tomo el foco (sin nada que tocar), lo toma Volver: con el control siempre hay foco.
 	var foco: Control = get_viewport().gui_get_focus_owner()
 	if foco == null or not foco.is_visible_in_tree():

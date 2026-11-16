@@ -2,11 +2,11 @@ class_name PantallaMapa
 extends PaginaMarco
 # Pantalla del mapa, como en Hollow Knight y Silksong: es la pagina Mapa del marco de menus (MarcoMenus, que la
 # abre con la accion mapa y detiene el juego) y mapa_rapido, mantenida, la muestra encima mientras se camina. Dos
-# estados, alejado y acercado, con + y -. Sin la habilidad pluma_mapa no hay nada dibujado; el jugador se ve solo
+# estados, alejado y acercado, con un solo boton que dice a cual pasa. Sin la habilidad pluma_mapa no hay nada dibujado; el jugador se ve solo
 # con el util brujula equipado. La carga la sala con load() si existe: el nucleo no depende de este bloque.
 
 const PLUMA: StringName = Habilidades.PLUMA_MAPA
-const BRUJULA: StringName = &"brujula"
+const BRUJULA: StringName = Utiles.BRUJULA
 
 ## Mapa rapido a la vista (el mapa completo en el marco es abierta, de PaginaMarco). Publica para los guiones.
 var rapido: bool = false
@@ -15,9 +15,10 @@ var acercado: bool = true
 ## El lienzo; publico para que la prueba lea lo dibujado.
 var lienzo: LienzoMapa = null
 
+## El boton de vista: «Ver todo» acercado, «Ver zona» alejado. Publico para la prueba.
+var boton_vista: Button = null
+
 var _indice: IndiceSalas = null
-var _botones: HBoxContainer = null
-var _menos: Button = null
 # Si la ultima vista se dibujo con la brujula equipada: equiparla o quitarla con el mapa rapido a la vista rehace todo.
 var _con_brujula: bool = false
 # Si mapa_rapido empezo a sostenerse con el juego andando. LB es tambien pagina_anterior: sostenido desde el marco o
@@ -40,27 +41,19 @@ func _ready() -> void:
 	lienzo.set_anchors_preset(Control.PRESET_FULL_RECT)
 	lienzo.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	fondo.add_child(lienzo)
-	_botones = HBoxContainer.new()
-	_botones.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
-	_botones.grow_horizontal = Control.GROW_DIRECTION_BEGIN
-	_botones.grow_vertical = Control.GROW_DIRECTION_BEGIN
-	_botones.position = Vector2(-24.0, -24.0)
-	_botones.add_theme_constant_override(&"separation", int(Tema.SEPARACION))
-	fondo.add_child(_botones)
-	# Raya corta (U+2013) y no el signo menos (U+2212): Cabin Sketch no tiene el menos y salia en otra fuente.
-	_menos = _boton("–", alejar)
-	_boton("+", acercar)
+	# Un solo boton que dice lo que hace (hallazgo 2 del estudio de UX: «–» y «+» no decian que vista estaba activa y en
+	# Cabin Sketch parecian manchas). Abajo a la derecha, donde cae el pulgar.
+	boton_vista = Button.new()
+	boton_vista.name = "Vista"
+	boton_vista.theme_type_variation = Tema.TARJETA
+	boton_vista.custom_minimum_size = Vector2(Tema.CELDA.x / 1.5, Tema.ALTO_TOQUE)
+	boton_vista.pressed.connect(cambiar_vista)
+	fondo.add_child(boton_vista)
+	# Anclas y bordes juntos: solo con las anclas y position el boton quedaba fuera de la pantalla en el S50.
+	boton_vista.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT, Control.PRESET_MODE_MINSIZE, int(Tema.SEPARACION) + 8)
+	boton_vista.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	boton_vista.grow_vertical = Control.GROW_DIRECTION_BEGIN
 	Eventos.descanso_en_banco.connect(_al_descansar)
-
-
-func _boton(texto: String, al_tocar: Callable) -> Button:
-	var boton: Button = Button.new()
-	boton.text = texto
-	boton.custom_minimum_size = Vector2(120.0, Tema.ALTO_TOQUE)
-	boton.theme_type_variation = Tema.SIMBOLO
-	boton.pressed.connect(al_tocar)
-	_botones.add_child(boton)
-	return boton
 
 
 # El mapa rapido lee su accion: lo muestran igual el teclado, el control y un guion. Con el juego detenido (el marco
@@ -96,7 +89,7 @@ func mostrar_en_marco() -> void:
 	rapido = false
 	acercado = true
 	_mostrar()
-	Tema.dar_foco(_menos)
+	Tema.dar_foco(boton_vista)
 
 
 func ocultar_de_marco() -> void:
@@ -114,6 +107,14 @@ func acercar() -> void:
 func alejar() -> void:
 	acercado = false
 	_mostrar()
+
+
+## Alterna entre la zona actual y todas las zonas: lo que hace el boton de vista.
+func cambiar_vista() -> void:
+	if acercado:
+		alejar()
+	else:
+		acercar()
 
 
 # Con el mapa rapido a la vista, cada tick solo se mueve el marcador: el mapa no se rehace ni se redibuja. Equipar o
@@ -137,7 +138,8 @@ func _al_descansar(_banco: StringName) -> void:
 
 func _mostrar() -> void:
 	visible = abierta or rapido
-	_botones.visible = abierta
+	boton_vista.visible = abierta
+	boton_vista.text = "Ver todo" if acercado else "Ver zona"
 	# En el marco, la barra de arriba tapa esa franja: el mapa se encaja debajo.
 	lienzo.offset_top = MarcoMenus.ALTO_BARRA if abierta else 0.0
 	_con_brujula = Partida.util_equipado(BRUJULA)

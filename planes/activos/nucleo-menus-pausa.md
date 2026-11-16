@@ -30,6 +30,85 @@ se comporta; su HTML no se copia. Sus 10 reglas de UX son criterio de aceptació
    solo se prueba en la sala «Equipo». Su definición final y dónde se consiguen quedan para después de publicar.
 7. La imagen de la katana está aprobada: puede entrar al repo.
 
+## Decidido
+
+- 15-nov-2026: se empieza el plan en la rama `feature/nucleo-menus-pausa`, desde `main` en `bfe55ad`, con su PR al
+  final. «adelante con el #24».
+- 15-nov-2026, noche: tanda autónoma de las partes 2 a 8, sin la persona; la 9 (cierre y APK) espera a la persona.
+  «Te dejo en sesión autónoma, Claude, me voy a dormir. Entonces, pues tú continúa» y «Adelante». No arrancó: la
+  sesión seguía en bypass de permisos, y la tanda autónoma solo corre en modo `auto`.
+- 15-nov-2026, noche: la persona, ya avisada de que la sesión sigue en bypass, ordena arrancar igual; excepción a la
+  regla de modo `auto` solo para esta tanda. «ADELANTE ADELANTE».
+- 15-nov-2026, Claude, parte 1 `marco-flechas`:
+  - El `IconoBoton` de la flecha va dentro de un `Control` intermedio. Con un `Button` de padre, el ícono le reserva
+    el lugar como a un texto y se mueve de su sitio.
+  - La flecha se aclara solo mientras se oprime, no al pasar el puntero: en táctil, el último toque la dejaría encendida.
+  - Las páginas actuales solo se apartan de las flechas. La columna de equipo y la descripción de Amuletos quedan a 108
+    del borde. Cuentan el recorte cuando las partes 5 a 7 las rehagan con `area_contenido`.
+  - `marco.guion` pasa de `fin 120` a `fin 180`: los casos nuevos esperan cuadros, y con 120 se cortaba en el caso 38.
+- 15-nov-2026, Claude, parte 2 `utiles-cuatro-cupos`:
+  - Ids `gato_suerte`, `log_errores`, `cartera_emergencia` y `suela_antiderrapante`, cortos como `patas_cucaracha`.
+    Se guardan: no se renombran después.
+  - Un archivo con más de 4 útiles puestos se lee con los primeros 4 (`desde_diccionario`): así ninguna página
+    tiene que dibujar un cupo de más. No sube `Guardado.VERSION`: la forma del campo no cambia.
+  - Los íconos llenan los 112 px como Patas (recorte al contenido y escala), con mipmaps, y se revisaron a 56 px
+    sobre fondo oscuro. El de Caparazón no entra aquí: llega con su ficha en #25.
+  - Sin regla nueva del validador para `Utiles.TODOS`: el guion `utiles` compara el catálogo del juego con esa lista.
+  - La página Útiles actual ya dice «cupos» en lugar de «ranuras» (la palabra se usa también para las partidas).
+- 15-nov-2026, Claude, parte 3 `utiles-efectos`:
+  - `DanoContacto.de_enemigo` es un `@export` apagado por omisión: lo encienden el `DanoContacto` de `enemigo.tscn` y
+    `AtaqueEnemigo._init` (cubre los proyectiles). Así todo lo del escenario (aspas, cables, fosos y los dañinos de
+    las salas de prueba) queda fuera sin tocar sus escenas.
+  - Log de Errores: un bloque es `Partida.INSPIRACION_POR_GOLPE` (11, lo mismo que un golpe dado). No se da si el golpe
+    mata (la muerte vacía la Inspiración) ni con un peligro.
+  - Suela Antiderrapante: la mitad del retroceso en x y en y. No toca el rebote del parry ni del pogo, que no son golpes
+    recibidos.
+  - Los números de los útiles (`FACTOR_BOTIN_GATO` 1,5 y `FACTOR_EMPUJE_SUELA` 0,5) viven en `Utiles`, junto a sus
+    ids: la ficha de un útil no lleva números (contrato).
+  - Sale `amuleto_botin` del catálogo de pruebas y de la sala «Equipo»; entra `amuleto_pesado` (costo 2, sin efecto)
+    para que `prueba_amuletos` siga probando un amuleto que no cabe. La entrada vieja `amuletos-efectos` de
+    `funciones.json` nombra el botín y no se reescribe (regla del repo); la nueva `utiles-efectos` la reemplaza en eso.
+- 16-nov-2026, Claude, partes 4 y 5 `detalle-de-menu` y `pagina-amuletos-d`:
+  - El detalle es una clase propia (`DetalleMenu`) que llena quien la usa con `mostrar()`; el botón se esconde con
+    un rótulo vacío. Así Útiles e Inventario lo reutilizan sin saber de amuletos.
+  - La fila elegida queda encendida (caja de gis blanca, `toggle_mode`); lo que está en uso lleva una palomita de gis
+    (`MarcaUso`). Así elegido y en uso se distinguen sin leer ni depender del color.
+  - El costo de cada fila va solo en círculos, sin la palabra «costo»: no cabía junto a «En uso» en 220 px. El número
+    sale en el motivo de «No cabe».
+  - Texto de las filas en 28 con interlineado -6: con el de Cabin Sketch, tres líneas no cabían en 108 y la elipsis con
+    el nombre en dos líneas cortaba a una sola (visto en la captura de 1920×1080). Se quitó la elipsis; el nombre
+    queda en hasta 2 líneas.
+  - El indicador de más abajo se apaga con el alfa, no con `visible`, para que la lista no brinque.
+  - Uno fuera del catálogo se ve con su id con mayúsculas y sin motivo: no hay texto real que darle.
+  - Capturas en 1280×720, 1440×1080 (4:3), 1760×720 (22:9) y 2560×1440; la de 1920×1080 se pasó del tiempo la segunda
+    vez, y la primera mostró el corte de nombres que se arregló.
+- 16-nov-2026, Miguel, partes 5 a 8 seguidas: «termina el trabajo para q podamos pobar todo termina de la 5 a la 8»;
+  y en modo bypass: «ADELANTE NO PARES».
+- 16-nov-2026, Claude, parte 6 `pagina-utiles-d`:
+  - La mochila se dibuja en código (`DibujoMochila`) con trazos propios; el mockup guía, no se copia su SVG.
+  - Un cupo vacío dice «vacío» y no se toca: no hay útil que elegir.
+  - Barra de desplazamiento oculta y separación de 16: la barra tapaba las marcas y «Suela Antiderrapante» se cortaba
+    (visto en la captura de 1440×1080). `MasAbajo` avisa que hay más.
+- 16-nov-2026, Claude, parte 7 `pagina-inventario-d`:
+  - La katana aprobada el 2-nov entra como `nucleo/arte/katana.png` (sin el croma, 512 px), en la carta y en el
+    detalle; en `nucleo/` y no en `contenido/` porque el núcleo no depende de `contenido/`.
+  - Azulitos no se muestran: no existen en `Partida` (serían un campo nuevo del guardado). Queda en «Fuera de este
+    plan» y se le pregunta a Miguel; la decisión 2 del 1-nov los pedía.
+  - Los nombres y textos de las habilidades viven en `SimboloHabilidad` (escritos, no sacados del id); la prueba usa
+    «Caída en picada» porque «Impulso» saldría igual del id (una mutación sobrevivió hasta agregarla).
+  - Sin arma, la carta queda plana y sin toque: solo lleva marco lo que se toca (visto en la captura de 1760×720).
+  - Los mapas y lo perdido dicen el nombre de la zona con `Sala.nombre_de`.
+- 16-nov-2026, Miguel, tras probar en el S50: «vamos a arreglar nosotros de una vez» (el botón del mapa y el detalle
+  cortados). Arreglo en `docs/errores/2026-11-16-menus-cortados-s50.md`; las capturas de cada página se hacen también
+  a 960×480 (el S50) con el texto más largo.
+- 16-nov-2026, Miguel, orden de los PR: primero se revisa y fusiona el #36 de Vic, luego bloque 89, traer `main`,
+  validar e instalar, y al final este PR: «va me gusta adelante».
+- 16-nov-2026, Miguel, prueba en el S50 del arreglo (Útiles con cupos llenos y botón del mapa): «ya quedo ya se ve bien».
+- 16-nov-2026, Claude, parte 8 `mapa-boton-vista`: el botón usa la variación `TARJETA` y el texto dice a qué vista pasa.
+- 15-nov-2026, Claude, commits: cada parte toca `nucleo/funciones.json`, el plan y `docs/pruebas.md`, así que no se
+  pueden separar por parte sin que la persona corra cada bloque antes de seguir. Mientras dure la tanda hay un solo
+  bloque de commit para la rama, que crece con cada parte (regla de archivos compartidos del `CLAUDE.md` raíz).
+
 ## Choques con el código
 
 1. **Bloques 59 y 60 ya corridos** (resuelto el 2-nov-2026). El 58 está en `790ea37`, la documentación del 59 en
@@ -102,11 +181,28 @@ mochila, Inventario y Mapa; todo con el dedo y con el control. El S21 no está d
 ## Fuera de este plan
 
 Los otros 8 amuletos, el arte de 7 de ellos (Caché no se pinta), las mecánicas nuevas, el sonido de toque, mover Volver
-(hallazgo 8) y dar útiles en salas de zonas que aún no existen.
+(hallazgo 8), dar útiles en salas de zonas que aún no existen y la carta de Azulitos del Inventario (falta el campo
+en `Partida` y el guardado; pendiente de que Miguel lo confirme).
 
 Esos 7 íconos entran antes que este plan como PNG sueltos, sin ficha: cada ficha llega con su efecto. Mientras tanto
 `validar.ps1` da 7 `AVISO` de imagen sin uso, esperados y que no cuentan como fallos.
 
 ## Avance
 
-Sin empezar.
+- Parte 1 `marco-flechas` (15-nov-2026): hecha en la PC. `FlechaPagina` nueva; `MarcoMenus.rect_flecha` y
+  `area_contenido`; la barra sin «‹ ›» ni botones del control en las vecinas. Falta la prueba en el teléfono: que las
+  flechas sean cómodas y no se toquen por error.
+- Parte 2 `utiles-cuatro-cupos` (15-nov-2026): `MAX_UTILES` 4, clase `Utiles`, las 5 fichas con ícono en
+  `contenido/equipo.tres` y la sala «Equipo» da los 5. `utiles.guion` (30 casos) y `sala_equipo.guion` en verde;
+  6 mutaciones muertas; `revisor`: dos fallos de documentos, corregidos.
+- Parte 3 `utiles-efectos` (15-nov-2026): Gato, Log de Errores, Suela y Cartera con efecto; `DanoContacto.de_enemigo`;
+  sale `botin_factor`. `efectos_utiles.guion` nuevo (24 casos), `validar.ps1` con 430 archivos y `fallos=0`, batería
+  completa 214/214 y 10 mutaciones muertas. `revisor`: el código sin fallos; dos fallos de documentos (conteo de
+  `sala_equipo` en `docs/pruebas.md` y el comentario de su guion), corregidos. Sin prueba: que el Log no dé
+  Inspiración cuando el golpe mata (el código lo cumple; la entrada no lo pide).
+- Partes 4 y 5 (16-nov-2026): `DetalleMenu`, `Circulos`, `MarcaUso` y la página Amuletos nueva. `amuletos.guion`
+  (35 casos) y los guiones de marco, efectos, sala Equipo, útiles y pausa en verde; 2 mutaciones muertas. Falta en el
+  teléfono: leer la letra 28 de las filas y que tocar elija sin poner.
+- Partes 6, 7 y 8 (16-nov-2026): Útiles con mochila (`utiles.guion`, 34 casos, 2 mutaciones muertas), Inventario
+  (`SimboloHabilidad`, `inventario.guion` nuevo, 11 casos, 2 mutaciones muertas) y el botón de vista del mapa
+  (`mapa_cuentas`, 41 casos, 1 mutación muerta). Falta en el teléfono: cupos de la mochila, símbolos legibles y el botón.
