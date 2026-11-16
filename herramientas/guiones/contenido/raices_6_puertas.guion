@@ -1,0 +1,7 @@
+# Las Raices, sala 6: desde la Entrada (x=200, abajo) camina a la izquierda y cruza la puerta izquierda a raices_5;
+# ahi da la vuelta y cruza de regreso la puerta derecha de raices_5 a raices_6.
+escena res://contenido/salas/raices/raices_6.tscn
+2 mover_izquierda press
+24 mover_izquierda release
+70 mover_derecha press
+fin 150

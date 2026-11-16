@@ -1,0 +1,10 @@
+# Volver a raices_7 no da el impulso otra vez: una sola habilidad_obtenida en todo el guion, aunque pasa dos veces
+# por el punto del objeto. Cruza dos puertas (7 a 6 y 6 a 7).
+en 200 valor /root/Partida habilidades [&"impulso"]
+en 390 escena res://contenido/salas/raices/raices_6.tscn
+escena res://contenido/salas/raices/raices_7.tscn
+x 1250 80
+valor /root/Partida habilidades [&"impulso"]
+senal /root/Eventos habilidad_obtenida 1
+senal /root/Eventos cambio_de_sala 2
+senal /root/Eventos jugador_danado 0

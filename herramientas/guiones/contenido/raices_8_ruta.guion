@@ -1,0 +1,19 @@
+# Las Raices, sala 8, ruta: desde la Entrada (x=200, abajo) sube por los escalones al nivel de arriba (y=561), se
+# para frente a la salida (x=2200) y la usa con interactuar: lleva a la pantalla de cierre, y volver (B o Esc)
+# autoguarda y regresa al menu.
+escena res://contenido/salas/raices/raices_8.tscn
+2 mover_derecha press
+170 saltar press
+194 saltar release
+200 mover_derecha release
+214 mover_derecha press
+218 saltar press
+242 saltar release
+262 saltar press
+286 saltar release
+352 mover_derecha release
+360 interactuar press
+362 interactuar release
+430 volver press
+432 volver release
+fin 480

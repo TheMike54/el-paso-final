@@ -9,6 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://cfpr8c2wfq1bu" path="res://contenido/objetos/equipo/log_de_errores.png" id="7_log"]
 [ext_resource type="Texture2D" uid="uid://foe8k2arhaac" path="res://contenido/objetos/equipo/cartera_de_emergencia.png" id="8_cartera"]
 [ext_resource type="Texture2D" uid="uid://svsyy41ief7s" path="res://contenido/objetos/equipo/suela_antiderrapante.png" id="9_suela"]
+[ext_resource type="Texture2D" uid="uid://b0fux1mowmyfd" path="res://contenido/objetos/equipo/caparazon_de_cucaracha.png" id="5_caparazon"]
 
 [sub_resource type="Resource" id="util_brujula"]
 script = ExtResource("2_util")
@@ -54,7 +55,16 @@ costo = 1
 icono = ExtResource("4_patas")
 velocidad_factor = 1.25
 
+[sub_resource type="Resource" id="amuleto_caparazon_cucaracha"]
+script = ExtResource("3_amuleto")
+id = &"caparazon_cucaracha"
+nombre = "Caparazón de Cucaracha"
+descripcion = "Tras un golpe quedas invulnerable más tiempo."
+costo = 2
+icono = ExtResource("5_caparazon")
+invulnerable_extra = 30
+
 [resource]
 script = ExtResource("1_catalogo")
-amuletos = Array[ExtResource("3_amuleto")]([SubResource("amuleto_patas_cucaracha")])
+amuletos = Array[ExtResource("3_amuleto")]([SubResource("amuleto_patas_cucaracha"), SubResource("amuleto_caparazon_cucaracha")])
 utiles = Array[ExtResource("2_util")]([SubResource("util_brujula"), SubResource("util_gato_suerte"), SubResource("util_log_errores"), SubResource("util_cartera_emergencia"), SubResource("util_suela_antiderrapante")])

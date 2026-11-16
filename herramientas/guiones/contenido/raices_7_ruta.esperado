@@ -1,12 +1,11 @@
 # Toma el impulso una sola vez y descansa en el banco de la sala; cruza el hueco con el impulso sin danarse y la
-# salida lo lleva a la pantalla de cierre; volver autoguarda y regresa al menu.
+# puerta derecha lo lleva a raices_8, entrando por su puerta izquierda (y=1080).
 en 10 valor /root/Partida habilidades []
 en 200 valor /root/Partida habilidades [&"impulso"]
 en 280 valor /root/Partida banco banco_raices_7
-en 430 escena res://contenido/cierre/pantalla_cierre.tscn
-en 430 valor /root/Partida autoguardados 1
-escena res://nucleo/menu.tscn
+escena res://contenido/salas/raices/raices_8.tscn
+y 1080 2
 valor /root/Partida habilidades [&"impulso"]
 senal /root/Eventos habilidad_obtenida 1
+senal /root/Eventos cambio_de_sala 1
 senal /root/Eventos jugador_danado 0
-valor /root/Partida autoguardados 2

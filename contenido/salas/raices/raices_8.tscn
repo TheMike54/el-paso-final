@@ -1,0 +1,158 @@
+[gd_scene format=3 uid="uid://26njs1t231c6"]
+
+[ext_resource type="PackedScene" uid="uid://cpuog8152jjfx" path="res://contenido/zonas/raices/sala_raices.tscn" id="0_base"]
+[ext_resource type="PackedScene" uid="uid://cantrdqq1cwy8" path="res://nucleo/puerta.tscn" id="p_puerta"]
+[ext_resource type="PackedScene" uid="uid://uegrttg1t3ap" path="res://contenido/objetos/raices/salida_cierre.tscn" id="1_salida"]
+[ext_resource type="PackedScene" uid="uid://cktp3d3amsb88" path="res://nucleo/coleccionable.tscn" id="2_coleccionable"]
+
+[sub_resource type="RectangleShape2D" id="forma_Suelo"]
+size = Vector2(3200, 80)
+
+[sub_resource type="RectangleShape2D" id="forma_Escalon1"]
+size = Vector2(120, 173)
+
+[sub_resource type="RectangleShape2D" id="forma_Escalon2"]
+size = Vector2(120, 40)
+
+[sub_resource type="RectangleShape2D" id="forma_Arriba"]
+size = Vector2(540, 40)
+
+[sub_resource type="RectangleShape2D" id="forma_ParedFinal"]
+size = Vector2(180, 519)
+
+[sub_resource type="RectangleShape2D" id="forma_ParedDerecha"]
+size = Vector2(80, 1240)
+
+[sub_resource type="RectangleShape2D" id="forma_Techo"]
+size = Vector2(3200, 80)
+
+[sub_resource type="RectangleShape2D" id="forma_ParedTrasPuertaIzquierda"]
+size = Vector2(80, 1240)
+
+[node name="Raices8" instance=ExtResource("0_base")]
+id = "raices_8"
+botones_ocultos = Array[StringName]([])
+limites = Rect2(0, 0, 3200, 1240)
+posicion_mapa = Vector2(19800, -1560)
+
+[node name="Entrada" parent="."]
+position = Vector2(200, 1080)
+
+[node name="Suelo" type="StaticBody2D" parent="Terreno"]
+position = Vector2(1600, 1120)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/Suelo"]
+shape = SubResource("forma_Suelo")
+
+[node name="Dibujo" type="ColorRect" parent="Terreno/Suelo"]
+offset_left = -1600
+offset_top = -40
+offset_right = 1600
+offset_bottom = 40
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="Escalon1" type="StaticBody2D" parent="Terreno"]
+position = Vector2(1360, 993.5)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/Escalon1"]
+shape = SubResource("forma_Escalon1")
+
+[node name="Dibujo" type="ColorRect" parent="Terreno/Escalon1"]
+offset_left = -60
+offset_top = -86.5
+offset_right = 60
+offset_bottom = 86.5
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="Escalon2" type="StaticBody2D" parent="Terreno"]
+position = Vector2(1620, 754)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/Escalon2"]
+shape = SubResource("forma_Escalon2")
+
+[node name="Dibujo" type="ColorRect" parent="Terreno/Escalon2"]
+offset_left = -60
+offset_top = -20
+offset_right = 60
+offset_bottom = 20
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="Arriba" type="StaticBody2D" parent="Terreno"]
+position = Vector2(2090, 581)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/Arriba"]
+shape = SubResource("forma_Arriba")
+
+[node name="Dibujo" type="ColorRect" parent="Terreno/Arriba"]
+offset_left = -270
+offset_top = -20
+offset_right = 270
+offset_bottom = 20
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="ParedFinal" type="StaticBody2D" parent="Terreno"]
+position = Vector2(3030, 820.5)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/ParedFinal"]
+shape = SubResource("forma_ParedFinal")
+
+[node name="Dibujo" type="ColorRect" parent="Terreno/ParedFinal"]
+offset_left = -90
+offset_top = -259.5
+offset_right = 90
+offset_bottom = 259.5
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="ParedDerecha" type="StaticBody2D" parent="Terreno"]
+position = Vector2(3160, 620)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/ParedDerecha"]
+shape = SubResource("forma_ParedDerecha")
+
+[node name="Dibujo" type="ColorRect" parent="Terreno/ParedDerecha"]
+offset_left = -40
+offset_top = -620
+offset_right = 40
+offset_bottom = 620
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="Techo" type="StaticBody2D" parent="Terreno"]
+position = Vector2(1600, 0)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/Techo"]
+shape = SubResource("forma_Techo")
+
+[node name="Dibujo" type="ColorRect" parent="Terreno/Techo"]
+offset_left = -1600
+offset_top = -40
+offset_right = 1600
+offset_bottom = 40
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="ParedTrasPuertaIzquierda" type="StaticBody2D" parent="Terreno"]
+position = Vector2(-40, 620)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/ParedTrasPuertaIzquierda"]
+shape = SubResource("forma_ParedTrasPuertaIzquierda")
+
+[node name="PuertaIzquierda" parent="." instance=ExtResource("p_puerta")]
+position = Vector2(70, 1080)
+id = &"izquierda"
+sala_destino = "raices_7"
+puerta_destino = &"derecha"
+llegada = Vector2(64, 0)
+
+[node name="Salida" parent="." instance=ExtResource("1_salida")]
+position = Vector2(2200, 561)
+con_interactuar = true
+
+[node name="Coleccionable" parent="." instance=ExtResource("2_coleccionable")]
+position = Vector2(3030, 561)
+id = "coleccionable_raices_8"

@@ -1,6 +1,6 @@
 # Las Raices, sala 7: desde la Entrada (x=134) camina a la derecha, toma el objeto del impulso (x=1100), descansa en
 # el banco (x=1300), se levanta, salta desde la orilla del hueco (x=1500 a 2080) y lo cruza con el impulso; al otro
-# lado la salida lleva a la pantalla de cierre, y volver (B o Esc) regresa al menu.
+# lado cruza la puerta derecha a raices_8.
 escena res://contenido/salas/raices/raices_7.tscn
 2 mover_derecha press
 212 mover_derecha release
@@ -11,6 +11,4 @@ escena res://contenido/salas/raices/raices_7.tscn
 342 impulso press
 344 impulso release
 352 saltar release
-440 volver press
-442 volver release
-fin 500
+fin 440
