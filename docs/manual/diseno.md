@@ -56,7 +56,7 @@ Las zonas usan enemigos con referencia real reconocible, para que el arte salga 
 | Habilidad | Se obtiene en | Estado en código |
 |---|---|---|
 | La Pluma (arma) | La Celda | Hecho, en la campaña |
-| Impulso | Las Raíces | Hecho en el núcleo; sin colocar |
+| Impulso | Las Raíces | Hecho en el núcleo; lo da `raices_7`, a la que todavía no se llega jugando |
 | Salto en pared | Los Drenajes | Hecho en el núcleo; sin colocar |
 | Doble salto | El Barrio Otaku | Hecho en el núcleo; sin colocar |
 | Caída en picada | La Ciudad Perdida | Hecho en el núcleo; sin colocar |

@@ -56,7 +56,7 @@ El hueco del piso de `celda_4` baja a `raices_1`. La campaña termina provisiona
 Viven en el núcleo y se prueban en la zona de pruebas, pero ninguna sala de `contenido/` los usa hoy:
 
 - Enemigos: la carpeta `contenido/enemigos/` trae la Cucaracha y el Hongo escupidor, sin arte; solo `raices_5` los coloca, y a esa sala todavía no se llega jugando. Sin enemigos en la campaña no se gana Inspiración, porque cortar pilas y raíces no da.
-- Curación, bola, impulso, doble salto, salto en pared y caída en picada: no se obtienen.
+- Curación, bola, doble salto, salto en pared y caída en picada: no se obtienen. El impulso lo da `raices_7`, a la que todavía no se llega jugando.
 - Amuletos y útiles: el catálogo trae Patas de Cucaracha y los cinco útiles, y ninguna sala del juego los entrega (solo la sala «Equipo» de la zona de pruebas).
 - Mapa: sin el objeto de mapa y sin `pluma_mapa`, no se dibuja nada.
 - Tienda, estaciones, retos de preguntas y jefes. Las PejeCoins se juntan, pero hoy no hay en qué gastarlas.

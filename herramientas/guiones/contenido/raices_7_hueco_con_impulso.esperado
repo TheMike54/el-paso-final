@@ -1,0 +1,5 @@
+# Con el impulso el hueco se cruza: queda en el suelo del otro lado, sin dano y todavia en la sala.
+escena res://contenido/salas/raices/raices_7.tscn
+x 2150 70
+en_suelo true
+senal /root/Eventos jugador_danado 0
