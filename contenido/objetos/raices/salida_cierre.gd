@@ -1,7 +1,6 @@
 extends Area2D
 # Salida de la primera version: al cruzarla, el jugador pasa a la pantalla de cierre. Una Puerta solo lleva a otra
-# sala (Sala.ruta_de), y la pantalla no lo es; por eso va como pieza aparte, pegada a la pared del final de raices_7.
-# Cuando exista raices_8, raices_7 cambia esta pieza por su puerta derecha y raices_8 la usa en su salida.
+# sala (Sala.ruta_de), y la pantalla no lo es; por eso va como pieza aparte, pegada a la pared del final de la sala.
 
 const PANTALLA: String = "res://contenido/cierre/pantalla_cierre.tscn"
 
