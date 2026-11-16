@@ -1,5 +1,6 @@
 extends "res://herramientas/pruebas/prueba_base.gd"
-# Prueba del marco de menus: en que pagina abre de pie y sentado, el ciclo con las acciones y con la barra, que cierre
+# Prueba del marco de menus: en que pagina abre de pie y sentado, el ciclo con las acciones, con la barra y con las
+# flechas laterales (toque, zona de toque, nada bajo ellas y cuatro proporciones con recorte), que cierre
 # con pausa, Atras, Volver y la misma accion sin abrir la pausa, que detenga el juego, tres paginas sin el bloque mapa,
 # que LB o mapa_rapido sostenidos al cerrar no muestren el mapa rapido, la pagina Inventario, la pausa con Configuracion
 # encima y los botones del control. Deja casos y fallos para marco.guion.
@@ -56,9 +57,37 @@ func _ready() -> void:
 	var titulo: Label = marco.get_node(^"Barra/Titulo") as Label
 	var anterior: Button = marco.get_node(^"Barra/Anterior") as Button
 	var siguiente: Button = marco.get_node(^"Barra/Siguiente") as Button
-	_caso("la barra nombra la pagina y sus vecinas", titulo.text == "Mapa" and anterior.text == "‹ Útiles" and siguiente.text == "Inventario ›")
+	_caso("la barra nombra la pagina y sus vecinas, sin flechas en el texto", titulo.text == "Mapa" and anterior.text == "Útiles" and siguiente.text == "Inventario")
 	siguiente.pressed.emit()
 	_caso("tocar la vecina de la barra cambia de pagina", marco.pagina == &"inventario" and not mapa.abierta)
+
+	# Flechas laterales: un toque real (presionar y soltar en su centro) cambia de pagina, encima de cada pagina.
+	var flecha_anterior: FlechaPagina = marco.get_node(^"FlechaAnterior") as FlechaPagina
+	var flecha_siguiente: FlechaPagina = marco.get_node(^"FlechaSiguiente") as FlechaPagina
+	_caso("hay una flecha a cada lado, a la vista y sin tomar el foco", flecha_anterior.is_visible_in_tree() and flecha_siguiente.is_visible_in_tree() and flecha_anterior.focus_mode == Control.FOCUS_NONE and flecha_siguiente.focus_mode == Control.FOCUS_NONE)
+	var vista: Vector2 = get_viewport().get_visible_rect().size
+	var segura: Rect2 = DisposicionControles.area_segura(vista)
+	_caso("cada flecha ocupa su zona de toque en la vista", flecha_anterior.get_global_rect().is_equal_approx(MarcoMenus.rect_flecha(vista, segura, -1)) and flecha_siguiente.get_global_rect().is_equal_approx(MarcoMenus.rect_flecha(vista, segura, 1)))
+	await _tocar(flecha_siguiente)
+	var tras_siguiente: StringName = marco.pagina
+	await _tocar(flecha_anterior)
+	await _tocar(flecha_anterior)
+	_caso("tocar las flechas cambia de pagina y da la vuelta (siguiente: %s, dos anteriores: %s)" % [tras_siguiente, marco.pagina], tras_siguiente == &"amuletos" and marco.pagina == &"mapa")
+	var pisan: PackedStringArray = []
+	for i: int in range(marco.ids().size()):
+		await _esperar_cuadros(2)
+		pisan.append_array(_bajo_flechas(marco, [flecha_anterior, flecha_siguiente] as Array[Control]))
+		marco.cambiar(1)
+	_caso("ningun boton ni lista de las paginas queda bajo una flecha (%s)" % ", ".join(pisan), pisan.is_empty())
+	# Proporciones 4:3, 16:9, 2:1 y 22:9 con un recorte de 40 px a la izquierda y 24 a la derecha.
+	var malas: PackedStringArray = []
+	for prueba: Vector2 in [Vector2(1280, 960), Vector2(1280, 720), Vector2(1440, 720), Vector2(1760, 720)]:
+		var recorte: Rect2 = Rect2(Vector2(40.0, 0.0), prueba - Vector2(64.0, 0.0))
+		if not _flechas_bien(prueba, recorte):
+			malas.append("%dx%d" % [int(prueba.x), int(prueba.y)])
+	_caso("en cada proporcion las flechas caben en el area segura, a media altura, bajo la barra y fuera del contenido (mal: %s)" % ", ".join(malas), malas.is_empty())
+	marco.cerrar()
+	marco.abrir(&"inventario")
 	await _presionar(&"inventario")
 	_caso("inventario otra vez lo cierra y el juego sigue", not marco.abierta and not inventario.visible and not get_tree().paused)
 	await _presionar(&"mapa")
@@ -185,16 +214,18 @@ func _ready() -> void:
 	Partida.monedas = 120
 	Partida.habilidades.append_array([&"pluma", &"impulso"] as Array[StringName])
 	marco.abrir(&"inventario")
-	_caso("Inventario muestra vida, PejeCoins, arma y habilidades sin repetir el arma", inventario.valores["Vida"] == "4 de 4" and inventario.valores["PejeCoins"] == "120" and inventario.valores["Arma"] == "Pluma" and inventario.valores["Habilidades"] == "Impulso")
+	_caso("Inventario muestra vida, PejeCoins, arma y habilidades sin repetir el arma", inventario.valores["Vida"] == "4 de 4" and inventario.valores["PejeCoins"] == "120" and inventario.valores["Arma"] == "La Pluma" and inventario.valores["Habilidades"] == "Impulso")
 	_caso("sin nada perdido dice Nada", inventario.valores["Lo perdido"] == "Nada")
 	marco.cerrar()
-	_caso("lo perdido dice cuanto y donde", PaginaInventario.perdido({"sala": "prueba_1", "x": 10.0, "y": 20.0, "monto": 30.0}) == "30 PejeCoins en prueba_1" and PaginaInventario.perdido({"monto": 0}) == "Nada")
+	_caso("lo perdido dice cuanto y en que zona, sin el id de la sala", PaginaInventario.perdido({"sala": "prueba_1", "x": 10.0, "y": 20.0, "monto": 30.0}) == "30 PejeCoins en %s" % Sala.nombre_de("prueba_1") and not PaginaInventario.perdido({"sala": "prueba_1", "monto": 30}).contains("prueba_1") and PaginaInventario.perdido({"monto": 0}) == "Nada")
 
-	# Botones del control en la barra (Volver, Anterior y Siguiente) y en Continuar de la pausa.
+	# Botones del control: Volver en la barra, L1 y R1 en las flechas laterales (no en las vecinas) y volver en Continuar.
 	var iconos: Array[IconoBoton] = _iconos(marco)
+	var en_flechas: int = _iconos(flecha_anterior).size() + _iconos(flecha_siguiente).size()
+	var en_vecinas: int = _iconos(anterior).size() + _iconos(siguiente).size()
 	var continuar: Array[IconoBoton] = _iconos(pausa.get_node(^"Panel/Opciones/Continuar"))
 	await _usar(true)
-	_caso("con el control la barra muestra Volver, L1 y R1, y Continuar el de volver", iconos.size() == 3 and _iconos_en(iconos, true) and continuar.size() == 1 and _iconos_en(continuar, true))
+	_caso("con el control se ven Volver y L1 y R1 en las flechas (no en las vecinas), y Continuar el de volver", iconos.size() == 3 and en_flechas == 2 and en_vecinas == 0 and _iconos_en(iconos, true) and continuar.size() == 1 and _iconos_en(continuar, true))
 	# En Utiles las vecinas son Amuletos y Mapa; comprobar tambien el ancho con control.
 	marco.abrir(&"utiles")
 	await _esperar_cuadros(2)
@@ -210,3 +241,46 @@ func _ready() -> void:
 	get_tree().paused = false
 	_restaurar_partida()
 	_resumen()
+
+
+# Un toque con el mouse en el centro del control, en coordenadas de la vista: presionar y soltar.
+func _tocar(control: Control) -> void:
+	var centro: Vector2 = control.get_global_rect().get_center()
+	for oprimido: bool in [true, false]:
+		var evento: InputEventMouseButton = InputEventMouseButton.new()
+		evento.button_index = MOUSE_BUTTON_LEFT
+		evento.pressed = oprimido
+		evento.position = centro
+		evento.global_position = centro
+		get_viewport().push_input(evento, true)
+		await get_tree().process_frame
+
+
+# Botones y listas a la vista que se cruzan con una flecha: el toque caeria en la flecha.
+func _bajo_flechas(marco: MarcoMenus, flechas: Array[Control]) -> PackedStringArray:
+	var nombres: PackedStringArray = []
+	for nodo: Node in get_tree().get_nodes_in_group(MarcoMenus.GRUPO_PAGINAS):
+		for hijo: Node in nodo.find_children("*", "", true, false):
+			var control: Control = hijo as Control
+			if control == null or not control.is_visible_in_tree():
+				continue
+			if not (control is BaseButton or control is ScrollContainer) or marco.is_ancestor_of(control):
+				continue
+			for flecha: Control in flechas:
+				if control.get_global_rect().intersects(flecha.get_global_rect()):
+					nombres.append("%s/%s" % [marco.pagina, control.name])
+	return nombres
+
+
+# Las dos flechas y el area del contenido en una vista con su area segura.
+func _flechas_bien(vista: Vector2, segura: Rect2) -> bool:
+	var izquierda: Rect2 = MarcoMenus.rect_flecha(vista, segura, -1)
+	var derecha: Rect2 = MarcoMenus.rect_flecha(vista, segura, 1)
+	var contenido: Rect2 = MarcoMenus.area_contenido(vista, segura)
+	var tamano: Vector2 = Vector2(MarcoMenus.ANCHO_FLECHA, MarcoMenus.ALTO_FLECHA)
+	return (segura.encloses(izquierda) and segura.encloses(derecha)
+			and izquierda.size.is_equal_approx(tamano) and derecha.size.is_equal_approx(tamano)
+			and is_equal_approx(izquierda.position.x, segura.position.x) and is_equal_approx(derecha.end.x, segura.end.x)
+			and is_equal_approx(izquierda.get_center().y, vista.y / 2.0) and izquierda.position.y >= MarcoMenus.ALTO_BARRA
+			and not izquierda.intersects(derecha) and contenido.position.y >= MarcoMenus.ALTO_BARRA
+			and not contenido.intersects(izquierda) and not contenido.intersects(derecha) and segura.encloses(contenido))

@@ -328,6 +328,8 @@ var _efectos: FichaAmuleto:
 var _ticks_destello: int = 0
 var _ticks_retrocediendo: int = 0
 var _sentido_retroceso: float = 0.0
+## Multiplica el retroceso del ultimo golpe: 1, o Utiles.FACTOR_EMPUJE_SUELA con la Suela Antiderrapante puesta.
+var _factor_retroceso: float = 1.0
 var _ticks_rebote: int = 0
 var _sentido_rebote: float = 0.0
 var _velocidad_rebote: float = 0.0
@@ -813,7 +815,7 @@ func _caer(en_suelo: bool, delta: float) -> void:
 func _mover_en_horizontal(eje: float) -> void:
 	if _ticks_retrocediendo > 0:
 		_ticks_retrocediendo -= 1
-		velocity.x = _sentido_retroceso * retroceso.x
+		velocity.x = _sentido_retroceso * retroceso.x * _factor_retroceso
 	elif _ticks_impulsando > 0:
 		_ticks_impulsando -= 1
 		velocity.x = _mirando * velocidad_impulso
@@ -1373,8 +1375,10 @@ func _rebotar_pogo() -> void:
 ## Lo llama lo que dana al jugador. origen_x: de donde viene el golpe, para el retroceso.
 ## peligro: pinchos, acido, fosas. Quita vidas aunque el jugador sea invulnerable (como Hollow Knight) y
 ## lleva al ultimo punto seguro, sin retroceso; si llega antes de ticks_anti_bucle de volver de otro
-## peligro, lleva al punto de llegada a la sala sin quitar vida.
-func recibir_dano(dano: int, origen_x: float, peligro: bool = false) -> void:
+## peligro, lleva al punto de llegada a la sala sin quitar vida. de_enemigo: el golpe es de un enemigo
+## (DanoContacto.de_enemigo); con el Log de Errores puesto da un bloque de Inspiracion. La Suela Antiderrapante
+## reduce el retroceso (Utiles.FACTOR_EMPUJE_SUELA).
+func recibir_dano(dano: int, origen_x: float, peligro: bool = false, de_enemigo: bool = false) -> void:
 	# Mientras la pantalla funde a negro por un peligro o se cruza una puerta (ya se pidio el cambio de sala), nada
 	# mas cuenta, ni un peligro.
 	if muerto or en_transicion or _ticks_hasta_reaparecer > 0 or (peligro and _reapareciendo):
@@ -1407,12 +1411,15 @@ func recibir_dano(dano: int, origen_x: float, peligro: bool = false) -> void:
 	if peligro:
 		_volver_al_punto_seguro()
 		return
+	if de_enemigo and Partida.util_equipado(Utiles.LOG_ERRORES):
+		Partida.ganar_inspiracion(Partida.INSPIRACION_POR_GOLPE)
 	# Como Hollow Knight: el golpe congela todo el juego unos ticks y despues empieza el retroceso.
 	Congelado.pedir(ticks_hit_stop)
 	_ticks_retrocediendo = ticks_retroceso
 	var lado: float = signf(global_position.x - origen_x)
 	_sentido_retroceso = lado if lado != 0.0 else -_mirando
-	velocity.y = -retroceso.y
+	_factor_retroceso = Utiles.FACTOR_EMPUJE_SUELA if Partida.util_equipado(Utiles.SUELA_ANTIDERRAPANTE) else 1.0
+	velocity.y = -retroceso.y * _factor_retroceso
 
 
 func _morir() -> void:

@@ -8,6 +8,9 @@ extends Area2D
 @export var dano: int = 1
 ## Peligro del entorno: en vez de empujar, devuelve al jugador al ultimo suelo firme.
 @export var peligro: bool = false
+## El golpe es de un enemigo (su cuerpo o su ataque), no del escenario (aspas, cables): lo lee el Log de Errores, que
+## da Inspiracion solo por golpes de enemigos. Lo encienden enemigo.tscn y AtaqueEnemigo.
+@export var de_enemigo: bool = false
 ## Pieza que aplasta contra esta zona fija, en el extremo de su recorrido: solo dana al que esta en el suelo mientras la
 ## pieza viene hacia aca y lo alcanza (como los Hero Squasher de Silksong). Vacio: dana siempre.
 @export var aplastador: Vaiven = null
@@ -28,7 +31,7 @@ func _physics_process(_delta: float) -> void:
 		if aplastador != null:
 			jugador.no_recordar_punto_seguro()
 		if _alcanza(jugador):
-			jugador.recibir_dano(dano, global_position.x, peligro)
+			jugador.recibir_dano(dano, global_position.x, peligro, de_enemigo)
 
 
 func _alcanza(jugador: Jugador) -> bool:

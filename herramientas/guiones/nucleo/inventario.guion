@@ -1,0 +1,4 @@
+# La escena de prueba de la pagina Inventario corre sus casos al entrar: inicio vacio, arma y habilidades con nombres
+# escritos, detalle del elegido, y lo perdido y los mapas con el nombre de su zona. Deja la cuenta en sus propiedades.
+escena res://herramientas/pruebas/sala_inventario.tscn
+fin 60

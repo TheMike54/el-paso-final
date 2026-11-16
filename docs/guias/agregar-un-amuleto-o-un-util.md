@@ -1,7 +1,7 @@
 # Agregar un amuleto o un útil
 
-**Para qué sirve:** sumar al juego un amuleto (gasta carga y cambia números del jugador o del botín) o un útil (va
-en su propia ranura y lo lee una pieza concreta, como la brújula), y darlo en una sala.
+**Para qué sirve:** sumar al juego un amuleto (gasta carga y cambia números del jugador) o un útil (va
+en uno de los 4 cupos y lo lee una pieza concreta, como la brújula), y darlo en una sala.
 
 **Antes de empezar:** haber hecho `docs/guias/empezar.md` y `docs/guias/como-trabajamos.md`; leer en `docs/contrato.md` la sección «Amuletos y útiles» y, en «Estado de la partida», las filas de carga y útiles; las pantallas, en `docs/interfaz.md`, «Pantallas de amuletos y útiles».
 
@@ -30,7 +30,7 @@ en su propia ranura y lo lee una pieza concreta, como la brújula), y darlo en u
    porque es el id del script en el catálogo de pruebas. Conservar el `uid` de la cabecera y los ids y `uid`
    de los `ext_resource` existentes (`docs/validador.md`, «uid de escenas y recursos»).
 3. Validar enseguida: `.\herramientas\validar.ps1` tiene que imprimir `OK  VALIDACION ... fallos=0`.
-4. Los efectos que hay son los cuatro de la ficha. Un efecto nuevo (alcance, curar más rápido) no es una ficha: es
+4. Los efectos que hay son los tres de la ficha. Un efecto nuevo (alcance, curar más rápido) no es una ficha: es
    un campo nuevo en `nucleo/ficha_amuleto.gd`, su suma en `Partida.efectos_amuletos()` y quien lo aplica; es un
    cambio de más de un archivo y lleva plan (`docs/guias/como-trabajamos.md`).
 5. Icono: una imagen importada en el campo `icono` (cómo entra una imagen al juego: `docs/guias/arte.md`). Sin él,
@@ -38,11 +38,12 @@ en su propia ranura y lo lee una pieza concreta, como la brújula), y darlo en u
 
 ## Útil
 
-1. Id estable, como el amuleto.
-2. Su ficha en `contenido/equipo.tres`, lista `utiles`, como `FichaUtil`: `id`, `nombre`, `descripcion` e `icono`.
-   Modelo: la brújula, en ese mismo archivo.
-3. Un útil no tiene números: lo que hace lo programa la pieza que lo usa, preguntando `Partida.util_equipado(id)`
-   (la brújula: `mapa/pantalla_mapa.gd`). Eso es código nuevo y lleva plan.
+1. Id estable, como el amuleto, y su constante en `nucleo/utiles.gd` (`Utiles`), también en `TODOS`.
+2. Su ficha en `contenido/equipo.tres`, lista `utiles`, como `FichaUtil`: `id`, `nombre`, `descripcion` e `icono`,
+   en el mismo orden que `Utiles.TODOS` (lo revisa `herramientas/guiones/nucleo/utiles.guion`). Modelo: la brújula,
+   en ese mismo archivo.
+3. Un útil no tiene números: lo que hace lo programa la pieza que lo usa, preguntando
+   `Partida.util_equipado(Utiles.<ID>)` (la brújula: `mapa/pantalla_mapa.gd`). Eso es código nuevo y lleva plan.
 
 ## Darlo en una sala
 
@@ -53,8 +54,8 @@ en su propia ranura y lo lee una pieza concreta, como la brújula), y darlo en u
   partida ya lo tiene, no aparece.
 - `.\herramientas\validar.ps1` falla si el id no está en un catálogo, o si una sala de `contenido/` usa uno que solo
   está en el de pruebas (`validador-equipo`, `validador-objeto-amuleto`): así se atrapa un id mal escrito antes de jugar.
-- Probarlo: la sala «Equipo» de la zona de pruebas (categoría Partida) da los amuletos de prueba; uno del juego se
-  prueba en su sala. La fila «Amuletos y útiles en el banco» de `docs/pruebas.md` dice qué mirar en el teléfono.
+- Probarlo: la sala «Equipo» de la zona de pruebas (categoría Partida) da los amuletos de prueba y los cinco útiles;
+  un amuleto del juego se prueba en su sala. La fila «Amuletos y útiles en el banco» de `docs/pruebas.md` dice qué mirar en el teléfono.
 
 ## Si algo falla
 
@@ -62,4 +63,4 @@ en su propia ranura y lo lee una pieza concreta, como la brújula), y darlo en u
   recompensa) y que el id de la ficha sea idéntico al de la recompensa.
 - Aparece con su id y no responde: no está en ningún catálogo.
 - No se puede poner: de pie no se cambian (hay que sentarse en un banco); un amuleto que no cabe en la carga o un
-  útil con la ranura llena tampoco responden.
+  útil con los 4 cupos llenos tampoco responden.

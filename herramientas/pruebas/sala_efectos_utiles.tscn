@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://b2lsmcn47b4ua"]
+
+[ext_resource type="Script" uid="uid://b8ptqy4yjet4r" path="res://herramientas/pruebas/prueba_efectos_utiles.gd" id="1_prueba"]
+
+[node name="SalaEfectosUtiles" type="Node"]
+script = ExtResource("1_prueba")

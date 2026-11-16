@@ -46,11 +46,15 @@ func _ready() -> void:
 	Partida.utiles_tenidos.append(&"brujula")
 	Partida.equipar_util(&"brujula")
 	marco.abrir(&"mapa")
-	mapa.alejar()
+	_caso("abre acercado con un solo boton que dice Ver todo", mapa.boton_vista.visible and mapa.boton_vista.text == "Ver todo")
+	await get_tree().process_frame
+	_caso("el boton de vista se ve completo en la pantalla", get_viewport().get_visible_rect().encloses(mapa.boton_vista.get_global_rect()))
+	mapa.boton_vista.pressed.emit()
 	_caso("alejado muestra todas las zonas dibujadas", not mapa.lienzo.quedo_acercado and mapa.lienzo.salas_dibujadas == 3 and mapa.lienzo.zonas_dibujadas == 2)
+	_caso("alejado el boton dice Ver zona", mapa.boton_vista.text == "Ver zona")
 	_caso("con la brujula equipada se ve al jugador", mapa.lienzo.marcador_visible)
-	mapa.acercar()
-	_caso("+ vuelve a acercar", mapa.lienzo.quedo_acercado)
+	mapa.boton_vista.pressed.emit()
+	_caso("el mismo boton vuelve a acercar", mapa.lienzo.quedo_acercado and mapa.boton_vista.text == "Ver todo")
 	_caso("sin mochila no hay icono de lo perdido", not mapa.lienzo.mochila_visible)
 	Partida.mochila = {"sala": "mapa_2", "x": 300.0, "y": 600.0, "monto": 40}
 	mapa.acercar()

@@ -4,6 +4,11 @@
 [ext_resource type="Script" uid="uid://bkps75534o0wk" path="res://nucleo/ficha_util.gd" id="2_util"]
 [ext_resource type="Script" uid="uid://c41xt1vprgy0k" path="res://nucleo/ficha_amuleto.gd" id="3_amuleto"]
 [ext_resource type="Texture2D" uid="uid://ddxjko2ns7d5o" path="res://contenido/objetos/equipo/patas_de_cucaracha.png" id="4_patas"]
+[ext_resource type="Texture2D" uid="uid://d1o2impso7yjr" path="res://contenido/objetos/equipo/brujula.png" id="5_brujula"]
+[ext_resource type="Texture2D" uid="uid://bi1px21hhlwlo" path="res://contenido/objetos/equipo/gato_de_la_suerte.png" id="6_gato"]
+[ext_resource type="Texture2D" uid="uid://cfpr8c2wfq1bu" path="res://contenido/objetos/equipo/log_de_errores.png" id="7_log"]
+[ext_resource type="Texture2D" uid="uid://foe8k2arhaac" path="res://contenido/objetos/equipo/cartera_de_emergencia.png" id="8_cartera"]
+[ext_resource type="Texture2D" uid="uid://svsyy41ief7s" path="res://contenido/objetos/equipo/suela_antiderrapante.png" id="9_suela"]
 [ext_resource type="Texture2D" uid="uid://b0fux1mowmyfd" path="res://contenido/objetos/equipo/caparazon_de_cucaracha.png" id="5_caparazon"]
 
 [sub_resource type="Resource" id="util_brujula"]
@@ -11,6 +16,35 @@ script = ExtResource("2_util")
 id = &"brujula"
 nombre = "Brújula"
 descripcion = "Con ella puesta, el mapa muestra dónde estás."
+icono = ExtResource("5_brujula")
+
+[sub_resource type="Resource" id="util_gato_suerte"]
+script = ExtResource("2_util")
+id = &"gato_suerte"
+nombre = "Gato de la Suerte"
+descripcion = "Los enemigos sueltan más PejeCoins."
+icono = ExtResource("6_gato")
+
+[sub_resource type="Resource" id="util_log_errores"]
+script = ExtResource("2_util")
+id = &"log_errores"
+nombre = "Log de Errores"
+descripcion = "Cada golpe que te da un enemigo te da Inspiración. Los peligros, como las espinas, no."
+icono = ExtResource("7_log")
+
+[sub_resource type="Resource" id="util_cartera_emergencia"]
+script = ExtResource("2_util")
+id = &"cartera_emergencia"
+nombre = "Cartera de Emergencia"
+descripcion = "Al morir conservas la mitad de tus PejeCoins; la otra mitad se queda donde caíste."
+icono = ExtResource("8_cartera")
+
+[sub_resource type="Resource" id="util_suela_antiderrapante"]
+script = ExtResource("2_util")
+id = &"suela_antiderrapante"
+nombre = "Suela Antiderrapante"
+descripcion = "Los golpes te empujan la mitad."
+icono = ExtResource("9_suela")
 
 [sub_resource type="Resource" id="amuleto_patas_cucaracha"]
 script = ExtResource("3_amuleto")
@@ -33,4 +67,4 @@ invulnerable_extra = 30
 [resource]
 script = ExtResource("1_catalogo")
 amuletos = Array[ExtResource("3_amuleto")]([SubResource("amuleto_patas_cucaracha"), SubResource("amuleto_caparazon_cucaracha")])
-utiles = Array[ExtResource("2_util")]([SubResource("util_brujula")])
+utiles = Array[ExtResource("2_util")]([SubResource("util_brujula"), SubResource("util_gato_suerte"), SubResource("util_log_errores"), SubResource("util_cartera_emergencia"), SubResource("util_suela_antiderrapante")])

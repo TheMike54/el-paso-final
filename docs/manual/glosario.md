@@ -38,7 +38,7 @@ Términos del juego y del proyecto. Las piezas de escena (`FondoTapado`, `LuzSal
 | Reto de preguntas | Preguntas de opción múltiple que dan una recompensa (`nucleo/reto_preguntas.gd`) |
 | Salto en cola | Pulsar saltar justo antes de aterrizar y que el salto salga al tocar el suelo |
 | Sinodales | Los tres antagonistas de la historia |
-| Útil | Objeto que se pone sin gastar carga (`nucleo/ficha_util.gd`). El código tiene hoy una ranura |
+| Útil | Objeto que se pone sin gastar carga, en uno de los 4 cupos (`nucleo/ficha_util.gd`, ids en `nucleo/utiles.gd`) |
 
 ## Del proyecto
 
