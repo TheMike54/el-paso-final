@@ -15,6 +15,7 @@ los ids, las puertas, los bancos y lo que revisa el validador.
 | Base de zona | `zonas/<zona>/sala_<zona>.tscn`: grupos de capas, oscuridad, tinte y música comunes (la niebla va en cada sala); cada sala de la zona la hereda («Arte de zona» de `docs/arte-y-rendimiento.md`) |
 | Objeto propio de una zona | `objetos/<zona>/`: piezas (puertas con arte, luces, peligros) heredadas de una escena del núcleo; la sala instancia la pieza, no sus partes |
 | Amuletos y útiles | `equipo.tres`: una entrada por ficha («Amuletos y útiles» de `docs/contrato.md`) |
+| Pantalla de cierre | `cierre/pantalla_cierre.tscn`: la pantalla final de la primera versión; no es una sala, se llega con `objetos/raices/salida_cierre.tscn` |
 | Cinemática | `cinematicas/cinematica_<nombre>.tscn` (raíz `Cinematica`, con `video` y `sala_destino`) junto a su `<nombre>.mp4` y `<nombre>.ogv` |
 
 ## Piezas de la sala

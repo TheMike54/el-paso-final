@@ -1,0 +1,140 @@
+[gd_scene format=3 uid="uid://ppe13c2bpihy"]
+
+[ext_resource type="PackedScene" uid="uid://cpuog8152jjfx" path="res://contenido/zonas/raices/sala_raices.tscn" id="0_base"]
+[ext_resource type="PackedScene" uid="uid://dljj3hd7ldowx" path="res://nucleo/banco.tscn" id="1_banco"]
+[ext_resource type="PackedScene" uid="uid://ru6ttknobjs5" path="res://nucleo/objeto_habilidad.tscn" id="2_habilidad"]
+[ext_resource type="Script" uid="uid://dglahbp5ygo3w" path="res://nucleo/aviso_accion.gd" id="3_aviso"]
+[ext_resource type="PackedScene" uid="uid://uegrttg1t3ap" path="res://contenido/objetos/raices/salida_cierre.tscn" id="4_salida"]
+[ext_resource type="CanvasItemMaterial" uid="uid://cbonitpbsi8a6" path="res://nucleo/arte/sin_luz.tres" id="6_sin_luz"]
+
+[sub_resource type="RectangleShape2D" id="forma_SueloIzquierda"]
+size = Vector2(1500, 80)
+
+[sub_resource type="RectangleShape2D" id="forma_SueloDerecha"]
+size = Vector2(320, 80)
+
+[sub_resource type="RectangleShape2D" id="forma_ParedIzquierda"]
+size = Vector2(80, 720)
+
+[sub_resource type="RectangleShape2D" id="forma_ParedDerecha"]
+size = Vector2(80, 720)
+
+[sub_resource type="RectangleShape2D" id="forma_Techo"]
+size = Vector2(2400, 80)
+
+[node name="Raices7" instance=ExtResource("0_base")]
+id = "raices_7"
+botones_por_ensenar = Array[StringName]([&"impulso"])
+botones_ocultos = Array[StringName]([])
+limites = Rect2(0, 0, 2400, 720)
+posicion_mapa = Vector2(17400, -1040)
+
+[node name="Entrada" parent="."]
+position = Vector2(134, 560)
+
+[node name="HongoBorde1" type="ColorRect" parent="SueloPintado"]
+offset_left = 1455.0
+offset_top = 500.0
+offset_right = 1495.0
+offset_bottom = 560.0
+mouse_filter = 2
+material = ExtResource("6_sin_luz")
+color = Color(0.372549, 0.878431, 0.784314, 1)
+
+[node name="HongoBorde2" type="ColorRect" parent="SueloPintado"]
+offset_left = 2085.0
+offset_top = 500.0
+offset_right = 2125.0
+offset_bottom = 560.0
+mouse_filter = 2
+material = ExtResource("6_sin_luz")
+color = Color(0.372549, 0.878431, 0.784314, 1)
+
+[node name="SueloIzquierda" type="StaticBody2D" parent="Terreno"]
+position = Vector2(750, 600)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/SueloIzquierda"]
+shape = SubResource("forma_SueloIzquierda")
+
+[node name="Dibujo" type="ColorRect" parent="Terreno/SueloIzquierda"]
+offset_left = -750
+offset_top = -40
+offset_right = 750
+offset_bottom = 40
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="SueloDerecha" type="StaticBody2D" parent="Terreno"]
+position = Vector2(2240, 600)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/SueloDerecha"]
+shape = SubResource("forma_SueloDerecha")
+
+[node name="Dibujo" type="ColorRect" parent="Terreno/SueloDerecha"]
+offset_left = -160
+offset_top = -40
+offset_right = 160
+offset_bottom = 40
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="ParedIzquierda" type="StaticBody2D" parent="Terreno"]
+position = Vector2(40, 360)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/ParedIzquierda"]
+shape = SubResource("forma_ParedIzquierda")
+
+[node name="Dibujo" type="ColorRect" parent="Terreno/ParedIzquierda"]
+offset_left = -40
+offset_top = -360
+offset_right = 40
+offset_bottom = 360
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="ParedDerecha" type="StaticBody2D" parent="Terreno"]
+position = Vector2(2360, 360)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/ParedDerecha"]
+shape = SubResource("forma_ParedDerecha")
+
+[node name="Dibujo" type="ColorRect" parent="Terreno/ParedDerecha"]
+offset_left = -40
+offset_top = -360
+offset_right = 40
+offset_bottom = 360
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="Techo" type="StaticBody2D" parent="Terreno"]
+position = Vector2(1200, 0)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/Techo"]
+shape = SubResource("forma_Techo")
+
+[node name="Dibujo" type="ColorRect" parent="Terreno/Techo"]
+offset_left = -1200
+offset_top = -40
+offset_right = 1200
+offset_bottom = 40
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="Impulso" parent="." instance=ExtResource("2_habilidad")]
+position = Vector2(1100, 560)
+id = "impulso_raices_7"
+habilidad = &"impulso"
+
+[node name="Banco" parent="." instance=ExtResource("1_banco")]
+position = Vector2(1300, 560)
+id = "banco_raices_7"
+
+[node name="AvisoImpulso" type="Area2D" parent="."]
+position = Vector2(1380, 560)
+script = ExtResource("3_aviso")
+acciones = Array[StringName]([&"impulso"])
+id = "aviso_impulso"
+nota = "Salta y usa el impulso para cruzar"
+
+[node name="SalidaCierre" parent="." instance=ExtResource("4_salida")]
+position = Vector2(2300, 560)

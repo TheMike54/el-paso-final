@@ -6,6 +6,7 @@ Generadas por `herramientas/generar-tablas.ps1` desde los archivos del proyecto.
 
 | Escena |
 |---|
+| `contenido/cierre/pantalla_cierre.tscn` |
 | `contenido/cinematicas/cinematica_celda.tscn` |
 | `contenido/cinematicas/cinematica_eterno_pluma.tscn` |
 | `contenido/enemigos/cucaracha/polvo_cucaracha.tscn` |
@@ -35,6 +36,7 @@ Generadas por `herramientas/generar-tablas.ps1` desde los archivos del proyecto.
 | `contenido/objetos/celda/puerta_salida_b.tscn` |
 | `contenido/objetos/celda/puerta_salon.tscn` |
 | `contenido/objetos/celda/raices_cortables.tscn` |
+| `contenido/objetos/raices/salida_cierre.tscn` |
 | `contenido/salas/celda/celda_1.tscn` |
 | `contenido/salas/celda/celda_2.tscn` |
 | `contenido/salas/celda/celda_3.tscn` |
@@ -42,6 +44,7 @@ Generadas por `herramientas/generar-tablas.ps1` desde los archivos del proyecto.
 | `contenido/salas/celda/celda_5.tscn` |
 | `contenido/salas/raices/raices_1.tscn` |
 | `contenido/salas/raices/raices_5.tscn` |
+| `contenido/salas/raices/raices_7.tscn` |
 | `contenido/zonas/celda/sala_celda.tscn` |
 | `contenido/zonas/raices/sala_raices.tscn` |
 | `nucleo/banco.tscn` |
