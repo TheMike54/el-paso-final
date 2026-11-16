@@ -1,4 +1,4 @@
-# Con el impulso el hueco se cruza: queda en el suelo del otro lado, sin dano y todavia en la sala.
+# Con el impulso el hueco se cruza: queda en el suelo del otro lado, sin dano y sin llegar a la puerta derecha.
 escena res://contenido/salas/raices/raices_7.tscn
 x 2150 70
 en_suelo true

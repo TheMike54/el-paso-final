@@ -1,0 +1,13 @@
+# El techo rompible cae, la zona oculta da Caparazon de Cucaracha una sola vez y el coleccionable, y el jugador queda
+# en la repisa oculta (y=360). Una espora lo alcanza mientras golpea (medido).
+en 40 escena res://contenido/salas/raices/raices_6.tscn
+en 40 valor Terreno/TechoOculto quedan 4
+en 40 valor /root/Partida amuletos_tenidos []
+escena res://contenido/salas/raices/raices_6.tscn
+valor /root/Partida amuletos_tenidos [&"caparazon_cucaracha"]
+senal /root/Eventos amuleto_obtenido 1
+senal /root/Eventos coleccionable_obtenido 1
+y 360 2
+en_suelo true
+senal /root/Eventos muro_roto 1
+senal /root/Eventos jugador_danado 1

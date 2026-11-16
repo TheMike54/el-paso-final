@@ -1,0 +1,29 @@
+# Las Raices, sala 6, ruta de puertas: desde la Entrada (x=200, abajo) salta el foso 1, deja atras a la Cucaracha, sube
+# a la plataforma de vaiven sobre las espinas, salta al escalon 1, cruza el foso 2 al escalon 2 y sube al nivel de
+# arriba. Vence al Hongo A (un golpe, uno que rebota cerrado y dos al abrir) y cruza la puerta derecha a raices_7.
+escena res://contenido/salas/raices/raices_6.tscn
+habilidad pluma
+2 mover_derecha press
+18 saltar press
+42 saltar release
+104 saltar press
+128 saltar release
+172 saltar press
+184 saltar release
+190 mover_derecha release
+210 mover_derecha press
+222 saltar press
+246 saltar release
+268 saltar press
+292 saltar release
+340 mover_derecha release
+344 atacar press
+346 atacar release
+360 atacar press
+362 atacar release
+440 atacar press
+442 atacar release
+533 atacar press
+535 atacar release
+545 mover_derecha press
+fin 680
