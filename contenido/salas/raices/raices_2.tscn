@@ -1,0 +1,130 @@
+[gd_scene format=3 uid="uid://bqa74fs7dhxr4"]
+
+[ext_resource type="PackedScene" uid="uid://cpuog8152jjfx" path="res://contenido/zonas/raices/sala_raices.tscn" id="0_base"]
+[ext_resource type="PackedScene" uid="uid://cantrdqq1cwy8" path="res://nucleo/puerta.tscn" id="1_puerta"]
+[ext_resource type="PackedScene" uid="uid://dgy2sncgkvcml" path="res://nucleo/enemigo.tscn" id="2_enemigo"]
+[ext_resource type="Resource" uid="uid://cqhfn8xjqq1p1" path="res://contenido/enemigos/cucaracha/cucaracha.tres" id="3_cucaracha"]
+[ext_resource type="PackedScene" uid="uid://cmgjowpy37sen" path="res://nucleo/piezas/foso.tscn" id="4_foso"]
+
+[sub_resource type="RectangleShape2D" id="forma_SueloIzquierda"]
+size = Vector2(1500, 80)
+
+[sub_resource type="RectangleShape2D" id="forma_SueloDerecha"]
+size = Vector2(1910, 80)
+
+[sub_resource type="RectangleShape2D" id="forma_Techo"]
+size = Vector2(3600, 80)
+
+[sub_resource type="RectangleShape2D" id="forma_Bloque"]
+size = Vector2(300, 140)
+
+[sub_resource type="RectangleShape2D" id="forma_ParedTrasPuertaIzquierda"]
+size = Vector2(80, 720)
+
+[sub_resource type="RectangleShape2D" id="forma_ParedDerecha"]
+size = Vector2(80, 720)
+
+[node name="Raices2" instance=ExtResource("0_base")]
+id = "raices_2"
+botones_ocultos = Array[StringName]([])
+limites = Rect2(0, 0, 3600, 720)
+posicion_mapa = Vector2(2400, 520)
+
+[node name="Entrada" parent="."]
+position = Vector2(134, 560)
+
+[node name="SueloIzquierda" type="StaticBody2D" parent="Terreno"]
+position = Vector2(750, 600)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/SueloIzquierda"]
+shape = SubResource("forma_SueloIzquierda")
+
+[node name="Dibujo" type="ColorRect" parent="Terreno/SueloIzquierda"]
+offset_left = -750
+offset_top = -40
+offset_right = 750
+offset_bottom = 40
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="SueloDerecha" type="StaticBody2D" parent="Terreno"]
+position = Vector2(2645, 600)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/SueloDerecha"]
+shape = SubResource("forma_SueloDerecha")
+
+[node name="Dibujo" type="ColorRect" parent="Terreno/SueloDerecha"]
+offset_left = -955
+offset_top = -40
+offset_right = 955
+offset_bottom = 40
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="Techo" type="StaticBody2D" parent="Terreno"]
+position = Vector2(1800, 0)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/Techo"]
+shape = SubResource("forma_Techo")
+
+[node name="Dibujo" type="ColorRect" parent="Terreno/Techo"]
+offset_left = -1800
+offset_top = -40
+offset_right = 1800
+offset_bottom = 40
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="Bloque" type="StaticBody2D" parent="Terreno"]
+position = Vector2(2300, 490)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/Bloque"]
+shape = SubResource("forma_Bloque")
+
+[node name="Dibujo" type="ColorRect" parent="Terreno/Bloque"]
+offset_left = -150
+offset_top = -70
+offset_right = 150
+offset_bottom = 70
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="ParedTrasPuertaIzquierda" type="StaticBody2D" parent="Terreno"]
+position = Vector2(-40, 360)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/ParedTrasPuertaIzquierda"]
+shape = SubResource("forma_ParedTrasPuertaIzquierda")
+
+[node name="ParedDerecha" type="StaticBody2D" parent="Terreno"]
+position = Vector2(3560, 360)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/ParedDerecha"]
+shape = SubResource("forma_ParedDerecha")
+
+[node name="Dibujo" type="ColorRect" parent="Terreno/ParedDerecha"]
+offset_left = -40
+offset_top = -360
+offset_right = 40
+offset_bottom = 360
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="Foso" parent="Peligros" instance=ExtResource("4_foso")]
+position = Vector2(1595, 560)
+
+[node name="CucarachaA" parent="." instance=ExtResource("2_enemigo")]
+position = Vector2(700, 560)
+ficha = ExtResource("3_cucaracha")
+id = &"cucaracha_2a"
+
+[node name="CucarachaB" parent="." instance=ExtResource("2_enemigo")]
+position = Vector2(2700, 560)
+ficha = ExtResource("3_cucaracha")
+id = &"cucaracha_2b"
+
+[node name="PuertaIzquierda" parent="." instance=ExtResource("1_puerta")]
+position = Vector2(70, 560)
+id = &"izquierda"
+sala_destino = "raices_1"
+puerta_destino = &"derecha"
+llegada = Vector2(64, 0)

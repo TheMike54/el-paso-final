@@ -202,5 +202,11 @@
     "que": "En el telefono la segunda mitad de Las Raices se recorre con controles tactiles y nunca hay mas de 4 enemigos en pantalla",
     "comprobacion": "manual: docs/pruebas.md, «Las Raíces, segunda mitad»",
     "pasa": false
+  },
+  {
+    "id": "sala-raices-2-puertas",
+    "que": "La puerta derecha de raices_1 lleva a raices_2 y la puerta izquierda de raices_2 lleva de vuelta a raices_1, sin dano; raices_1 ya no tiene el hueco del piso hacia celda_3",
+    "comprobacion": "herramientas/guiones/contenido/raices_2_puertas.guion",
+    "pasa": true
   }
 ]
