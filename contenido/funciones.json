@@ -202,5 +202,17 @@
     "que": "En el telefono la segunda mitad de Las Raices se recorre con controles tactiles y nunca hay mas de 4 enemigos en pantalla",
     "comprobacion": "manual: docs/pruebas.md, «Las Raíces, segunda mitad»",
     "pasa": false
+  },
+  {
+    "id": "banco-raices-7-arte",
+    "que": "El banco de raices_7 lleva la mesa con sillas de Las Raices y sienta al jugador mirando a la derecha, para que la pose de sentarse y de dormir se apoye en la mesa (issue #27)",
+    "comprobacion": "herramientas/guiones/contenido/raices_7_ruta.guion",
+    "pasa": true
+  },
+  {
+    "id": "banco-raices-7-telefono",
+    "que": "En el telefono, dormido en el banco de raices_7 el jugador se ve sentado en la silla con los brazos sobre la mesa",
+    "comprobacion": "manual: docs/pruebas.md, «Banco de Las Raíces»",
+    "pasa": false
   }
 ]
