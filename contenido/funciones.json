@@ -208,5 +208,23 @@
     "que": "La puerta derecha de raices_1 lleva a raices_2 y la puerta izquierda de raices_2 lleva de vuelta a raices_1, sin dano; raices_1 ya no tiene el hueco del piso hacia celda_3",
     "comprobacion": "herramientas/guiones/contenido/raices_2_puertas.guion",
     "pasa": true
+  },
+  {
+    "id": "sala-raices-3-puertas",
+    "que": "La puerta izquierda de raices_3 lleva de vuelta a raices_2, sin dano",
+    "comprobacion": "herramientas/guiones/contenido/raices_3_puertas.guion",
+    "pasa": true
+  },
+  {
+    "id": "sala-raices-2-ruta",
+    "que": "En raices_2 se salta el foso y el bloque, se pasa a las dos Cucarachas sin dano y la puerta derecha lleva a raices_3",
+    "comprobacion": "herramientas/guiones/contenido/raices_2_ruta.guion",
+    "pasa": true
+  },
+  {
+    "id": "sala-raices-3-banco",
+    "que": "En raices_3 se llega al banco, se descansa con interactuar y se guarda la sala raices_3 y el banco banco_raices_3",
+    "comprobacion": "herramientas/guiones/contenido/raices_3_banco.guion",
+    "pasa": true
   }
 ]

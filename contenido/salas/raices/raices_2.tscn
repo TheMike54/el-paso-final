@@ -21,7 +21,7 @@ size = Vector2(300, 140)
 [sub_resource type="RectangleShape2D" id="forma_ParedTrasPuertaIzquierda"]
 size = Vector2(80, 720)
 
-[sub_resource type="RectangleShape2D" id="forma_ParedDerecha"]
+[sub_resource type="RectangleShape2D" id="forma_ParedTrasPuertaDerecha"]
 size = Vector2(80, 720)
 
 [node name="Raices2" instance=ExtResource("0_base")]
@@ -95,19 +95,11 @@ position = Vector2(-40, 360)
 [node name="Forma" type="CollisionShape2D" parent="Terreno/ParedTrasPuertaIzquierda"]
 shape = SubResource("forma_ParedTrasPuertaIzquierda")
 
-[node name="ParedDerecha" type="StaticBody2D" parent="Terreno"]
-position = Vector2(3560, 360)
+[node name="ParedTrasPuertaDerecha" type="StaticBody2D" parent="Terreno"]
+position = Vector2(3640, 360)
 
-[node name="Forma" type="CollisionShape2D" parent="Terreno/ParedDerecha"]
-shape = SubResource("forma_ParedDerecha")
-
-[node name="Dibujo" type="ColorRect" parent="Terreno/ParedDerecha"]
-offset_left = -40
-offset_top = -360
-offset_right = 40
-offset_bottom = 360
-mouse_filter = 2
-color = Color(0.3, 0.3, 0.32, 1)
+[node name="Forma" type="CollisionShape2D" parent="Terreno/ParedTrasPuertaDerecha"]
+shape = SubResource("forma_ParedTrasPuertaDerecha")
 
 [node name="Foso" parent="Peligros" instance=ExtResource("4_foso")]
 position = Vector2(1595, 560)
@@ -128,3 +120,10 @@ id = &"izquierda"
 sala_destino = "raices_1"
 puerta_destino = &"derecha"
 llegada = Vector2(64, 0)
+
+[node name="PuertaDerecha" parent="." instance=ExtResource("1_puerta")]
+position = Vector2(3530, 560)
+id = &"derecha"
+sala_destino = "raices_3"
+puerta_destino = &"izquierda"
+llegada = Vector2(-64, 0)

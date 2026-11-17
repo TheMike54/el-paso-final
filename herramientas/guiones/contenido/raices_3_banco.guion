@@ -1,0 +1,8 @@
+# Las Raices, sala 3: desde la Entrada (x=134) camina a la derecha hasta el banco (x=700) y descansa con interactuar:
+# guarda en Partida la sala y el banco. La curacion en el banco ya la cubre herramientas/guiones/nucleo/banco.guion.
+escena res://contenido/salas/raices/raices_3.tscn
+2 mover_derecha press
+96 mover_derecha release
+110 interactuar press
+112 interactuar release
+fin 140
