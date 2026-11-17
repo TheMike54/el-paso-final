@@ -32,7 +32,7 @@ func _ready() -> void:
 	# juego andando, sigue mostrandolo. Con el marco o la pausa abiertos la sala no cambia, asi que no reabre el fallo.
 	_armado = Input.is_action_pressed(&"mapa_rapido") and not get_tree().paused
 	_indice = IndiceSalas.cargar()
-	# El fondo lleva el tema de los menus y es la raiz de la rama de UI: el lienzo y + y - cuelgan de el. No detiene
+	# El fondo lleva el tema de los menus y es la raiz de la rama de UI: el lienzo y el boton de vista cuelgan de el. No detiene
 	# los toques: el mapa rapido se ve mientras se juega.
 	var fondo: ColorRect = Tema.fondo_menu()
 	fondo.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -104,17 +104,10 @@ func acercar() -> void:
 	_mostrar()
 
 
-func alejar() -> void:
-	acercado = false
-	_mostrar()
-
-
 ## Alterna entre la zona actual y todas las zonas: lo que hace el boton de vista.
 func cambiar_vista() -> void:
-	if acercado:
-		alejar()
-	else:
-		acercar()
+	acercado = not acercado
+	_mostrar()
 
 
 # Con el mapa rapido a la vista, cada tick solo se mueve el marcador: el mapa no se rehace ni se redibuja. Equipar o

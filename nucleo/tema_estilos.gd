@@ -25,15 +25,8 @@ static func tarjeta(tema: Theme) -> void:
 	tema.set_color(&"font_color", Tema.TARJETA, Tema.GIS)
 
 
-## Variacion SIMBOLO: las cajas de TARJETA con margenes de arriba y abajo de MARGEN_SIMBOLO y LETRA_SIMBOLO.
-static func simbolo(tema: Theme) -> void:
-	tema.set_type_variation(Tema.SIMBOLO, Tema.TARJETA)
-	_cajas_tarjeta(tema, Tema.SIMBOLO, Tema.MARGEN_SIMBOLO)
-	tema.set_font_size(&"font_size", Tema.SIMBOLO, Tema.LETRA_SIMBOLO)
-
-
-# Las cajas de gis de una tarjeta para la variacion nombre; vertical menor que 0 deja los margenes de _margenes.
-static func _cajas_tarjeta(tema: Theme, nombre: StringName, vertical: float = -1.0) -> void:
+# Las cajas de gis de una tarjeta para la variacion nombre, con los margenes de _margenes.
+static func _cajas_tarjeta(tema: Theme, nombre: StringName) -> void:
 	var normal: EstiloGis = estilo_gis(EstiloGis.Forma.CAJA, Color(Tema.GASTADO, 0.7), Tema.MARGEN_DERECHO)
 	normal.fondo = Tema.FONDO_TARJETA
 	normal.grosor = 2.4
@@ -41,10 +34,6 @@ static func _cajas_tarjeta(tema: Theme, nombre: StringName, vertical: float = -1
 	clara.fondo = Tema.FONDO_TARJETA
 	var foco: EstiloGis = estilo_gis(EstiloGis.Forma.CAJA, Tema.GIS, Tema.MARGEN_DERECHO)
 	foco.grosor = 3.4
-	if vertical >= 0.0:
-		for estilo: EstiloGis in [normal, clara, foco]:
-			estilo.content_margin_top = vertical
-			estilo.content_margin_bottom = vertical
 	tema.set_stylebox(&"normal", nombre, normal)
 	tema.set_stylebox(&"hover", nombre, clara)
 	tema.set_stylebox(&"pressed", nombre, clara)

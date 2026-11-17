@@ -84,6 +84,9 @@ con 0 solo si `MALOS=0`. Un guion está bien con el criterio del CI: su salida t
   `herramientas/pruebas/prueba_base.gd`: cuenta con `_caso(nombre, bien)`, imprime solo los fallos y
   `_resumen()`, y su guion lee `valor . casos` y `valor . fallos`. La base trae además estos ayudantes:
   - `_esperar(ticks)`: espera ticks de física.
+  - `_esperar_cuadros(cuadros)`: espera cuadros de dibujo, para el trabajo diferido de la interfaz.
+  - `_poner(jugador, punto)`: pone al jugador en un punto y lo deja sin velocidad.
+  - `_esperar_fundido(extra)`: espera hasta la recolocación por peligro; `extra` conserva el margen de cada prueba.
   - `_presionar(accion)`: presiona una acción dos ticks y la suelta, como un toque corto.
   - `_acciones_del_boton(boton)`: las acciones del `InputMap` que dispara un botón del control (B es `volver` y
     `curar`; LB, `mapa_rapido` y `pagina_anterior`), leídas del `InputMap`.
@@ -102,5 +105,6 @@ con 0 solo si `MALOS=0`. Un guion está bien con el criterio del CI: su salida t
     lo borra ella.
   - `_restaurar_partida()`: lo deshace al final: reinicia la partida, devuelve la ruta de antes y borra el archivo
     de prueba y su `.tmp`.
+  - `_borrar_archivos(base)`: borra el archivo y su temporal `.tmp` (`Archivo.escribir_atomico`), si existen.
 
-  `prueba_control.gd`, `prueba_vista.gd` y `prueba_foco.gd` no heredan de ella.
+  `prueba_vista.gd`, `prueba_foco.gd` y `prueba_validador.gd` no heredan de ella.
