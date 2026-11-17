@@ -1,0 +1,2 @@
+# La Polilla persigue al jugador quieto y los golpes la vencen.
+senal /root/Eventos enemigo_vencido 1
