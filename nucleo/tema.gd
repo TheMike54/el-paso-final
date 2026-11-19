@@ -94,12 +94,6 @@ const TEXTO_FICHA: StringName = &"TextoFicha"
 const TEXTO_FICHA_APAGADO: StringName = &"TextoFichaApagado"
 ## Opcion con la letra de las etiquetas (Button): la Zona de pruebas del menu principal.
 const OPCION_CHICA: StringName = &"OpcionChica"
-## Boton de un solo simbolo (Button, de TARJETA): + y - del mapa, en Cabin Sketch. La caja lo separa de lo dibujado
-## debajo. Letra de 96 sin margenes de arriba y abajo: el + mide 35 px de ancho y el boton 113 de alto (a la letra de
-## los botones el + mide unos 12 px).
-const SIMBOLO: StringName = &"Simbolo"
-const LETRA_SIMBOLO: int = 96
-const MARGEN_SIMBOLO: float = 0.0
 ## Opcion centrada (Button), como la pausa de Silksong: sin flechita fija a la izquierda ni subrayado, y con el foco una
 ## flechita de gis a cada lado (EstiloGis.Forma.LADOS). Las flechas van en las orillas del boton, no del texto: el boton
 ## mide lo que su texto (sin ancho minimo) para que queden pegadas a el.
@@ -157,7 +151,6 @@ static func crear() -> Theme:
 	tema.set_font_size(&"font_size", TITULO, LETRA_TITULO)
 	TemaEstilos.volver(tema)
 	TemaEstilos.tarjeta(tema)
-	TemaEstilos.simbolo(tema)
 	TemaEstilos.pestana(tema)
 	TemaEstilos.con_detalle(tema)
 	var caja_foco: EstiloGis = TemaEstilos.estilo_gis(EstiloGis.Forma.CAJA, GIS, 0.0)

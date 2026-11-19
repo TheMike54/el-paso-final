@@ -38,7 +38,9 @@ func _ready() -> void:
 	_caso("las habilidades van con simbolo en el orden de la aventura, sin el arma",
 			pagina.simbolos.keys() == [Habilidades.IMPULSO, Habilidades.CAIDA_EN_PICADA, Habilidades.PROYECTIL]
 			and (pagina.simbolos[Habilidades.IMPULSO].get_node(^"Simbolo") as SimboloHabilidad).habilidad == Habilidades.IMPULSO)
-	_caso("los nombres son los escritos, no el id", pagina.valores["Habilidades"] == "Impulso, Caída en picada, Proyectil"
+	_caso("los nombres son los escritos, no el id",
+			pagina.simbolos.keys().map(func(h: StringName) -> String: return SimboloHabilidad.nombre_de(h))
+				== ["Impulso", "Caída en picada", "Proyectil"]
 			and SimboloHabilidad.nombre_de(Habilidades.CAIDA_EN_PICADA) == "Caída en picada")
 	pagina.simbolos[Habilidades.PROYECTIL].pressed.emit()
 	_caso("tocar una habilidad la elige y muestra su texto", pagina.elegido == Habilidades.PROYECTIL

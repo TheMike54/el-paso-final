@@ -1,4 +1,4 @@
-# Los 46 casos de herramientas/pruebas/prueba_marco.gd corrieron y ninguno fallo. Cada caso que falla imprime una
+# Los 45 casos de herramientas/pruebas/prueba_marco.gd corrieron y ninguno fallo. Cada caso que falla imprime una
 # linea "FALLO marco: <caso>".
-valor . casos 46
+valor . casos 45
 valor . fallos 0

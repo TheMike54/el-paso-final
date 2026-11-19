@@ -53,7 +53,8 @@ Alternativa sin empacador: abrir el `SpriteFrames` en el editor y sumar cuadros 
 
 - La campaña termina en un hueco provisional de `raices_1`, y en `contenido/enemigos/` hay una Cucaracha y un Hongo escupidor, sin arte. `raices_5` a `raices_8` existen en caja gris y unidas por sus puertas, pero no se llega a ellas jugando hasta que `raices_4` le ponga puerta a `raices_5`. `raices_6` esconde Caparazón de Cucaracha, `raices_7` da el impulso y la salida de `raices_8` lleva a la pantalla de cierre (`contenido/cierre/pantalla_cierre.tscn`). La Polilla todavía no existe: `raices_6` y `raices_8` van sin ella.
 - Solo español y solo Android; la PC sirve para desarrollar.
-- Dormido en el banco, el jugador animado se ve sentado en el aire.
+- Un banco sin su mesa con sillas deja al jugador dormido con los brazos en el aire: todo banco de una sala del juego
+  lleva el dibujo como hijo y `mirando = 1` (`docs/errores/2026-11-17-banco-sin-mesa.md`). Los de las salas de prueba no.
 - En la PC, Espacio es `ui_accept` y `atacar`: cerrar un menú con Espacio también ataca.
 - Corazones y barra del HUD siguen en gris, sin arte final.
 - Hasta terminar el juego las partidas viejas no se conservan al cambiar la versión de guardado.

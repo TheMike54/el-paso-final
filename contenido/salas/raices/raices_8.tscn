@@ -151,7 +151,6 @@ llegada = Vector2(64, 0)
 
 [node name="Salida" parent="." instance=ExtResource("1_salida")]
 position = Vector2(2200, 561)
-con_interactuar = true
 
 [node name="Coleccionable" parent="." instance=ExtResource("2_coleccionable")]
 position = Vector2(3030, 561)

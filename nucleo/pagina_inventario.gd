@@ -60,7 +60,7 @@ func _ready() -> void:
 	carta_arma.focus_entered.connect(elegir.bind(ARMA))
 	carta_arma.pressed.connect(_al_pulsar.bind(ARMA))
 	par.add_child(carta_arma)
-	var texto_arma: Control = _dato_texto("Arma", "", null)
+	var texto_arma: Control = _dato_texto("Arma", null)
 	carta_arma.add_child(texto_arma)
 	texto_arma.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	texto_arma.offset_left = Tema.MARGEN_DERECHO
@@ -71,7 +71,7 @@ func _ready() -> void:
 	miniatura.set_anchors_and_offsets_preset(Control.PRESET_RIGHT_WIDE)
 	miniatura.offset_left = -0.55 * DetalleMenu.ANCHO
 	miniatura.offset_right = -Tema.SEPARACION
-	par.add_child(_dato_texto("Lo perdido", "", IconoArticulo.crear(IconoArticulo.Forma.MONEDA, LADO_DATO, false)))
+	par.add_child(_dato_texto("Lo perdido", IconoArticulo.crear(IconoArticulo.Forma.MONEDA, LADO_DATO, false)))
 	var rotulo: Label = Label.new()
 	rotulo.name = "RotuloHabilidades"
 	rotulo.text = "Habilidades"
@@ -91,7 +91,7 @@ func _ready() -> void:
 	izquierda.add_child(_ninguna)
 	var par_abajo: HBoxContainer = _fila_par("Abajo")
 	izquierda.add_child(par_abajo)
-	par_abajo.add_child(_dato_texto("Mapas", "", IconoArticulo.crear(IconoArticulo.Forma.MAPA, LADO_DATO, false)))
+	par_abajo.add_child(_dato_texto("Mapas", IconoArticulo.crear(IconoArticulo.Forma.MAPA, LADO_DATO, false)))
 	_crear_detalle(abajo)
 
 
@@ -125,16 +125,11 @@ func elegir(id: StringName) -> void:
 
 func _llenar() -> void:
 	var tiene_arma: bool = Partida.tiene(ARMA)
-	var nombres_habilidades: PackedStringArray = []
-	for habilidad: StringName in SimboloHabilidad.ORDEN:
-		if Partida.tiene(habilidad):
-			nombres_habilidades.append(SimboloHabilidad.nombre_de(habilidad))
 	valores = {
 		"Vida": "%d de %d" % [Partida.vidas, Partida.vidas_maximas],
 		"Inspiración": "%d de %d" % [Partida.inspiracion, Partida.inspiracion_maxima],
 		"PejeCoins": str(Partida.monedas),
 		"Arma": NOMBRE_ARMA if tiene_arma else "Sin arma",
-		"Habilidades": ", ".join(nombres_habilidades) if not nombres_habilidades.is_empty() else "Ninguna",
 		"Mapas": _mapas(),
 		"Lo perdido": perdido(Partida.mochila),
 	}
@@ -196,8 +191,8 @@ func _crear_estado() -> HBoxContainer:
 	estado.custom_minimum_size.y = Tema.ALTO_TOQUE
 	estado.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	Tema.raya_abajo(estado)
-	estado.add_child(_dato_texto("Vida", "", IconoArticulo.crear(IconoArticulo.Forma.VIDA, LADO_DATO, false)))
-	var inspiracion: Control = _dato_texto("Inspiración", "", null)
+	estado.add_child(_dato_texto("Vida", IconoArticulo.crear(IconoArticulo.Forma.VIDA, LADO_DATO, false)))
+	var inspiracion: Control = _dato_texto("Inspiración", null)
 	_bloques = Control.new()
 	_bloques.name = "Bloques"
 	_bloques.custom_minimum_size = Vector2(160.0, 14.0)
@@ -205,7 +200,7 @@ func _crear_estado() -> HBoxContainer:
 	_bloques.draw.connect(_dibujar_bloques)
 	inspiracion.get_node(^"Textos").add_child(_bloques)
 	estado.add_child(inspiracion)
-	estado.add_child(_dato_texto("PejeCoins", "", IconoArticulo.crear(IconoArticulo.Forma.MONEDA, LADO_DATO, false)))
+	estado.add_child(_dato_texto("PejeCoins", IconoArticulo.crear(IconoArticulo.Forma.MONEDA, LADO_DATO, false)))
 	return estado
 
 
@@ -225,7 +220,7 @@ func _dibujar_bloques() -> void:
 
 
 # Un dato: icono opcional, el valor y debajo su nombre en tenue. Guarda la etiqueta del valor en _datos.
-func _dato_texto(nombre: String, valor: String, icono: Control) -> HBoxContainer:
+func _dato_texto(nombre: String, icono: Control) -> HBoxContainer:
 	var dato: HBoxContainer = HBoxContainer.new()
 	dato.name = nombre.replace("ó", "o").replace(" ", "")
 	dato.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -252,7 +247,6 @@ func _dato_texto(nombre: String, valor: String, icono: Control) -> HBoxContainer
 	textos.add_child(etiqueta_nombre)
 	var etiqueta_valor: Label = Label.new()
 	etiqueta_valor.name = "Valor"
-	etiqueta_valor.text = valor
 	etiqueta_valor.theme_type_variation = Tema.DESTACADA
 	etiqueta_valor.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	etiqueta_valor.max_lines_visible = 2
