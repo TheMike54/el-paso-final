@@ -232,5 +232,11 @@
     "que": "En raices_3 se llega al banco, se descansa con interactuar y se guarda la sala raices_3 y el banco banco_raices_3",
     "comprobacion": "herramientas/guiones/contenido/raices_3_banco.guion",
     "pasa": true
+  },
+  {
+    "id": "sala-raices-3-tienda",
+    "que": "En raices_3 se llega a la tienda tienda_raices_3 y se abre con interactuar; sin PejeCoins no se compra ni se danya al jugador",
+    "comprobacion": "herramientas/guiones/contenido/raices_3_tienda.guion",
+    "pasa": true
   }
 ]

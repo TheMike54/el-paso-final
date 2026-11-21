@@ -8,6 +8,22 @@
 [ext_resource type="Script" uid="uid://dycfvji2i3yph" path="res://nucleo/ficha_dialogo.gd" id="5_ficha"]
 [ext_resource type="Resource" uid="uid://dp2ygfgygm27x" path="res://contenido/npc/guia_raices/guia_raices_1.tres" id="6_guia_1"]
 [ext_resource type="Resource" uid="uid://cvj8jdxih0n8x" path="res://contenido/npc/guia_raices/guia_raices_2.tres" id="7_guia_2"]
+[ext_resource type="Script" uid="uid://c3lhvqqfjbyds" path="res://nucleo/tienda.gd" id="8_tienda"]
+[ext_resource type="Script" uid="uid://c60eotphujpye" path="res://nucleo/articulo_tienda.gd" id="9_articulo"]
+[ext_resource type="Script" uid="uid://cltshx6hm4a3b" path="res://nucleo/recompensa.gd" id="10_recompensa"]
+
+[sub_resource type="Resource" id="recompensa_brujula"]
+script = ExtResource("10_recompensa")
+tipo = 5
+id = &"brujula"
+
+[sub_resource type="Resource" id="articulo_brujula"]
+script = ExtResource("9_articulo")
+id = "brujula"
+nombre = "Brújula"
+descripcion = "Con ella puesta, el mapa muestra dónde estás."
+precio = 30
+recompensa = SubResource("recompensa_brujula")
 
 [sub_resource type="RectangleShape2D" id="forma_SueloBajo"]
 size = Vector2(2000, 80)
@@ -129,8 +145,12 @@ conversaciones = Array[ExtResource("5_ficha")]([ExtResource("6_guia_1"), ExtReso
 position = Vector2(700, 1080)
 id = "banco_raices_3"
 
-[node name="LugarTienda" type="Marker2D" parent="."]
+[node name="Tienda" type="Area2D" parent="."]
 position = Vector2(1050, 1080)
+script = ExtResource("8_tienda")
+id = "tienda_raices_3"
+nombre = "Tienda"
+articulos = Array[ExtResource("9_articulo")]([SubResource("articulo_brujula")])
 
 [node name="PuertaIzquierda" parent="." instance=ExtResource("1_puerta")]
 position = Vector2(70, 1080)
