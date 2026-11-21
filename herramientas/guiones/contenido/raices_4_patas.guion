@@ -1,0 +1,24 @@
+# Las Raíces, sala 4, zona oculta: llega desde raices_5 por la puerta derecha de raices_4 (x=2746, sobre el saliente, justo
+# bajo el techo rompible), lo rompe con cinco golpes hacia arriba (cuatro cuentan), salta por el hueco a la repisa oculta
+# y toma Patas de Cucaracha. Los cuadros se copiaron de raices_6_oculta: se miden.
+escena res://contenido/salas/raices/raices_5.tscn
+habilidad pluma
+2 mover_izquierda press
+10 mover_izquierda release
+50 mover_arriba press
+56 atacar press
+58 atacar release
+80 atacar press
+82 atacar release
+104 atacar press
+106 atacar release
+128 atacar press
+130 atacar release
+152 atacar press
+154 atacar release
+158 mover_arriba release
+162 saltar press
+186 mover_derecha press
+194 saltar release
+240 mover_derecha release
+fin 280
