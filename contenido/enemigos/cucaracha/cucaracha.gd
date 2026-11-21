@@ -18,8 +18,6 @@ var giros: int = 0
 
 var _ticks: int = 0
 var _ticks_quieto: int = 0
-var _x_salida: float = 0.0
-var _y_salida: float = 0.0
 var _punto_salida: Vector2 = Vector2.ZERO
 var _polvo: Node2D = null
 var _d: DatosCucaracha = null
@@ -56,11 +54,6 @@ func actuar() -> void:
 ## Bajo tierra (enterrada o avisando) ningun golpe le entra.
 func bloquea_golpe(_atacante: Node2D) -> bool:
 	return estado == Estado.ENTERRADA or estado == Estado.AVISANDO
-
-
-## Si esta en la pausa antes de voltearse.
-func esta_quieto() -> bool:
-	return _ticks_quieto > 0
 
 
 # Igual que el caminante, pero antes de nada se entierra si ve al jugador cerca.
@@ -101,9 +94,7 @@ func _enterrarse() -> void:
 func _avisar() -> void:
 	var objetivo: Jugador = jugador()
 	var donde: Vector2 = objetivo.global_position if objetivo != null else enemigo.global_position
-	_x_salida = donde.x
-	_y_salida = donde.y
-	_punto_salida = _buscar_salida()
+	_punto_salida = _buscar_salida(donde)
 	_polvo = ESCENA_POLVO.instantiate() as Node2D
 	enemigo.get_parent().add_child(_polvo)
 	_polvo.global_position = _punto_salida
@@ -135,10 +126,10 @@ func _recuperar() -> void:
 
 
 # Punto del suelo bajo donde esta el jugador al empezar el aviso, si ahi cabe su cuerpo; si no, donde se enterro.
-func _buscar_salida() -> Vector2:
+func _buscar_salida(donde: Vector2) -> Vector2:
 	var mitad: float = enemigo.ficha.tamano.x / 2.0
 	var alto: float = enemigo.ficha.tamano.y
-	var desde: Vector2 = Vector2(_x_salida, _y_salida - _d.margen_suelo)
+	var desde: Vector2 = Vector2(donde.x, donde.y - _d.margen_suelo)
 	var suelo: Dictionary = Capas.rayo_a_escenario(enemigo, desde, desde + Vector2(0.0, ALCANCE_SALIDA))
 	if suelo.is_empty():
 		return enemigo.global_position

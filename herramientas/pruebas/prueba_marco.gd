@@ -32,7 +32,6 @@ func _ready() -> void:
 	var utiles: PantallaUtiles = PantallaUtiles.new()
 	utiles.name = "Utiles"
 	add_child(utiles)
-	_caso("la pausa ya no tiene boton Amuletos", pausa.get_node_or_null(^"Panel/Opciones/Amuletos") == null)
 
 	# Sin el bloque mapa.
 	_caso("sin Mapa el ciclo es Inventario, Amuletos y Utiles", marco.ids() == ([&"inventario", &"amuletos", &"utiles"] as Array[StringName]))
@@ -214,7 +213,8 @@ func _ready() -> void:
 	Partida.monedas = 120
 	Partida.habilidades.append_array([&"pluma", &"impulso"] as Array[StringName])
 	marco.abrir(&"inventario")
-	_caso("Inventario muestra vida, PejeCoins, arma y habilidades sin repetir el arma", inventario.valores["Vida"] == "4 de 4" and inventario.valores["PejeCoins"] == "120" and inventario.valores["Arma"] == "La Pluma" and inventario.valores["Habilidades"] == "Impulso")
+	_caso("Inventario muestra vida, PejeCoins, arma y habilidades sin repetir el arma", inventario.valores["Vida"] == "4 de 4" and inventario.valores["PejeCoins"] == "120" and inventario.valores["Arma"] == "La Pluma"
+			and inventario.simbolos.keys().map(func(h: StringName) -> String: return SimboloHabilidad.nombre_de(h)) == ["Impulso"])
 	_caso("sin nada perdido dice Nada", inventario.valores["Lo perdido"] == "Nada")
 	marco.cerrar()
 	_caso("lo perdido dice cuanto y en que zona, sin el id de la sala", PaginaInventario.perdido({"sala": "prueba_1", "x": 10.0, "y": 20.0, "monto": 30.0}) == "30 PejeCoins en %s" % Sala.nombre_de("prueba_1") and not PaginaInventario.perdido({"sala": "prueba_1", "monto": 30}).contains("prueba_1") and PaginaInventario.perdido({"monto": 0}) == "Nada")

@@ -241,7 +241,7 @@
   },
   {
     "id": "sala-raices-3-ruta",
-    "que": "En raices_3 se sube por las tres plataformas a la cornisa, sin dano, y la puerta derecha lleva a raices_4",
+    "que": "En raices_3 se sube por los tres bloques a la cornisa, sin dano, y la puerta derecha lleva a raices_4",
     "comprobacion": "herramientas/guiones/contenido/raices_3_ruta.guion",
     "pasa": true
   },
@@ -262,5 +262,17 @@
     "que": "La puerta izquierda de raices_5 lleva de vuelta a raices_4, al saliente de su puerta derecha, sin dano",
     "comprobacion": "herramientas/guiones/contenido/raices_5_puerta_izquierda.guion",
     "pasa": true
+  },
+  {
+    "id": "banco-raices-7-arte",
+    "que": "El banco de raices_7 lleva la mesa con sillas de Las Raices y sienta al jugador mirando a la derecha, para que la pose de sentarse y de dormir se apoye en la mesa (issue #27)",
+    "comprobacion": "herramientas/guiones/contenido/raices_7_ruta.guion",
+    "pasa": true
+  },
+  {
+    "id": "banco-raices-7-telefono",
+    "que": "En el telefono, dormido en el banco de raices_7 el jugador se ve sentado en la silla con los brazos sobre la mesa",
+    "comprobacion": "manual: docs/pruebas.md, «Banco de Las Raíces»",
+    "pasa": false
   }
 ]

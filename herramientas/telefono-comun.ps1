@@ -1,4 +1,4 @@
-# Funciones que comparten instalar-apk.ps1 y medir-fps.ps1. No se corre solo: se carga con ". .\telefono-comun.ps1".
+# Junta las funciones de adb de instalar-apk.ps1 y medir-fps.ps1; algunas las usa uno solo. No se corre solo: se carga con ". .\telefono-comun.ps1".
 # Ninguna imprime: devuelven el resultado y dejan el motivo de un fallo en $script:Motivo; quien las llama imprime.
 # Solo ASCII: debe correr igual en powershell.exe 5.1 y en pwsh 7.
 

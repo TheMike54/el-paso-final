@@ -3,6 +3,9 @@
 en 10 valor /root/Partida habilidades []
 en 200 valor /root/Partida habilidades [&"impulso"]
 en 280 valor /root/Partida banco banco_raices_7
+# El banco lleva su mesa con sillas y sienta al jugador mirando a la derecha: la pose de dormir se apoya en la mesa.
+en 280 valor Banco/Silla visible true
+en 280 valor Banco mirando 1 0
 escena res://contenido/salas/raices/raices_8.tscn
 y 1080 2
 valor /root/Partida habilidades [&"impulso"]

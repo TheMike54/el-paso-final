@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://ru6ttknobjs5" path="res://nucleo/objeto_habilidad.tscn" id="2_habilidad"]
 [ext_resource type="Script" uid="uid://dglahbp5ygo3w" path="res://nucleo/aviso_accion.gd" id="3_aviso"]
 [ext_resource type="CanvasItemMaterial" uid="uid://cbonitpbsi8a6" path="res://nucleo/arte/sin_luz.tres" id="6_sin_luz"]
+[ext_resource type="Texture2D" uid="uid://dnprxwwqeirhx" path="res://contenido/salas/raices/arte/banco.png" id="7_banco_arte"]
 
 [sub_resource type="RectangleShape2D" id="forma_SueloIzquierda"]
 size = Vector2(1500, 80)
@@ -102,6 +103,14 @@ habilidad = &"impulso"
 [node name="Banco" parent="." instance=ExtResource("1_banco")]
 position = Vector2(1300, 560)
 id = "banco_raices_7"
+mirando = 1
+
+[node name="Silla" type="Sprite2D" parent="Banco"]
+z_index = -20
+material = ExtResource("6_sin_luz")
+position = Vector2(-66, -78.72)
+texture = ExtResource("7_banco_arte")
+centered = false
 
 [node name="AvisoImpulso" type="Area2D" parent="."]
 position = Vector2(1380, 560)
