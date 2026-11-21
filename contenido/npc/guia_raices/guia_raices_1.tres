@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="FichaDialogo" format=3 uid="uid://dp2ygfgygm27x"]
+
+[ext_resource type="Script" uid="uid://dycfvji2i3yph" path="res://nucleo/ficha_dialogo.gd" id="1_ficha"]
+[ext_resource type="Script" uid="uid://cvgtxxidjsdxl" path="res://nucleo/linea_dialogo.gd" id="2_linea"]
+[ext_resource type="Script" uid="uid://cltshx6hm4a3b" path="res://nucleo/recompensa.gd" id="3_recompensa"]
+
+[sub_resource type="Resource" id="linea_1"]
+script = ExtResource("2_linea")
+quien = "Guía"
+texto = "Ese mapa lo empecé cuando llegué. Con la pluma ya puedes terminarlo tú."
+
+[sub_resource type="Resource" id="recompensa_pluma"]
+script = ExtResource("3_recompensa")
+tipo = 3
+id = &"pluma_mapa"
+
+[sub_resource type="Resource" id="recompensa_mapa"]
+script = ExtResource("3_recompensa")
+tipo = 4
+id = &"raices"
+
+[resource]
+script = ExtResource("1_ficha")
+lineas = Array[ExtResource("2_linea")]([SubResource("linea_1")])
+recompensas = Array[ExtResource("3_recompensa")]([SubResource("recompensa_pluma"), SubResource("recompensa_mapa")])

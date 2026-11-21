@@ -204,6 +204,66 @@
     "pasa": false
   },
   {
+    "id": "sala-raices-2-puertas",
+    "que": "La puerta derecha de raices_1 lleva a raices_2 y la puerta izquierda de raices_2 lleva de vuelta a raices_1, sin dano; raices_1 ya no tiene el hueco del piso hacia celda_3",
+    "comprobacion": "herramientas/guiones/contenido/raices_2_puertas.guion",
+    "pasa": true
+  },
+  {
+    "id": "sala-raices-3-guia",
+    "que": "El guia de raices_3 entrega el mapa de Las Raices y la pluma del mapa una sola vez; su segunda conversacion no repite los premios",
+    "comprobacion": "herramientas/guiones/contenido/raices_3_guia.guion",
+    "pasa": true
+  },
+  {
+    "id": "sala-raices-3-puertas",
+    "que": "La puerta izquierda de raices_3 lleva de vuelta a raices_2, sin dano",
+    "comprobacion": "herramientas/guiones/contenido/raices_3_puertas.guion",
+    "pasa": true
+  },
+  {
+    "id": "sala-raices-2-ruta",
+    "que": "En raices_2 se salta el foso y el bloque, se pasa a las dos Cucarachas sin dano y la puerta derecha lleva a raices_3",
+    "comprobacion": "herramientas/guiones/contenido/raices_2_ruta.guion",
+    "pasa": true
+  },
+  {
+    "id": "sala-raices-3-banco",
+    "que": "En raices_3 se llega al banco, se descansa con interactuar y se guarda la sala raices_3 y el banco banco_raices_3",
+    "comprobacion": "herramientas/guiones/contenido/raices_3_banco.guion",
+    "pasa": true
+  },
+  {
+    "id": "sala-raices-3-tienda",
+    "que": "En raices_3 se llega a la tienda tienda_raices_3 y se abre con interactuar; sin PejeCoins no se compra ni se danya al jugador",
+    "comprobacion": "herramientas/guiones/contenido/raices_3_tienda.guion",
+    "pasa": true
+  },
+  {
+    "id": "sala-raices-3-ruta",
+    "que": "En raices_3 se sube por los tres bloques a la cornisa, sin dano, y la puerta derecha lleva a raices_4",
+    "comprobacion": "herramientas/guiones/contenido/raices_3_ruta.guion",
+    "pasa": true
+  },
+  {
+    "id": "sala-raices-4-puertas",
+    "que": "La puerta izquierda de raices_4 lleva de vuelta a raices_3, a la cornisa de su puerta derecha, sin dano",
+    "comprobacion": "herramientas/guiones/contenido/raices_4_puertas.guion",
+    "pasa": true
+  },
+  {
+    "id": "sala-raices-4-ruta",
+    "que": "En raices_4 se sube por los dos bloques al saliente, con la Cucaracha y las Polillas en el camino, y la puerta derecha lleva a raices_5",
+    "comprobacion": "herramientas/guiones/contenido/raices_4_ruta.guion",
+    "pasa": true
+  },
+  {
+    "id": "sala-raices-5-puerta-izquierda",
+    "que": "La puerta izquierda de raices_5 lleva de vuelta a raices_4, al saliente de su puerta derecha, sin dano",
+    "comprobacion": "herramientas/guiones/contenido/raices_5_puerta_izquierda.guion",
+    "pasa": true
+  },
+  {
     "id": "banco-raices-7-arte",
     "que": "El banco de raices_7 lleva la mesa con sillas de Las Raices y sienta al jugador mirando a la derecha, para que la pose de sentarse y de dormir se apoye en la mesa (issue #27)",
     "comprobacion": "herramientas/guiones/contenido/raices_7_ruta.guion",

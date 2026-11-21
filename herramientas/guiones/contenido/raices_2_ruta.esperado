@@ -1,0 +1,11 @@
+# Ruta de raices_2 por la puerta derecha: salta el foso y el bloque, pasa las dos Cucarachas sin dano y llega a raices_3
+# (x, y y en_suelo medidos corriendo el guion).
+en 300 x 1922 2
+en 380 y 420 2
+escena res://contenido/salas/raices/raices_3.tscn
+x 752 2
+y 1080 2
+en_suelo true
+valor Jugador transicion 0
+senal /root/Eventos cambio_de_sala 1
+senal /root/Eventos jugador_danado 0

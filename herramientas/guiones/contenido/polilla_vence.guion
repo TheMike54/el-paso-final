@@ -1,0 +1,16 @@
+# La Polilla: el jugador se queda a la vista, ella lo ve, lo persigue por el aire y la golpea hasta vencerla.
+escena res://herramientas/salas/enemigos/sala_polilla.tscn
+habilidad pluma
+60 atacar press
+62 atacar release
+90 atacar press
+92 atacar release
+120 atacar press
+122 atacar release
+150 atacar press
+152 atacar release
+180 atacar press
+182 atacar release
+210 atacar press
+212 atacar release
+fin 300

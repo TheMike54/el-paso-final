@@ -1,0 +1,10 @@
+# Llega por la puerta IZQUIERDA a raices_1, en el piso (y=1080), a la izquierda de su puerta derecha (x=2330): la puerta lo deja a 64 px y sale caminando
+# unos pasos mas (x=2146 medido), sin tocarla. Sin danar en la ruta.
+en 19 x 40 2
+escena res://contenido/salas/raices/raices_1.tscn
+x 2146 2
+y 1080 2
+en_suelo true
+valor Jugador transicion 0
+senal /root/Eventos cambio_de_sala 1
+senal /root/Eventos jugador_danado 0

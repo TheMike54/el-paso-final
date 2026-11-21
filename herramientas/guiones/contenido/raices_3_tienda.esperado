@@ -1,0 +1,9 @@
+# Valores medidos corriendo el guion.
+x 1022
+y 1080
+valor Tienda id tienda_raices_3
+valor /root/Partida monedas 0
+valor /root/Partida utiles_tenidos []
+senal /root/Eventos tienda_abierta 1
+senal /root/Eventos articulo_comprado 0
+senal /root/Eventos jugador_danado 0

@@ -3,14 +3,11 @@
 [ext_resource type="PackedScene" uid="uid://cpuog8152jjfx" path="res://contenido/zonas/raices/sala_raices.tscn" id="0_base"]
 [ext_resource type="Script" uid="uid://dglahbp5ygo3w" path="res://nucleo/aviso_accion.gd" id="1_aviso"]
 [ext_resource type="PackedScene" uid="uid://t0hl58kau0ro" path="res://contenido/objetos/celda/hueco_techo.tscn" id="2_hueco_techo"]
-[ext_resource type="PackedScene" uid="uid://snbg7ufyq4g6" path="res://contenido/objetos/celda/hueco_piso.tscn" id="3_hueco_piso"]
+[ext_resource type="PackedScene" uid="uid://cantrdqq1cwy8" path="res://nucleo/puerta.tscn" id="3_puerta"]
 [ext_resource type="PackedScene" uid="uid://c1mh87shrjl0d" path="res://nucleo/monedas_sueltas.tscn" id="4_monedas"]
 
 [sub_resource type="RectangleShape2D" id="forma_suelo_izq"]
-size = Vector2(2031, 80)
-
-[sub_resource type="RectangleShape2D" id="forma_suelo_der"]
-size = Vector2(131, 80)
+size = Vector2(2400, 80)
 
 [sub_resource type="RectangleShape2D" id="forma_pared_izq"]
 size = Vector2(80, 1240)
@@ -35,29 +32,15 @@ posicion_mapa = Vector2(0, 0)
 position = Vector2(300, 1080)
 
 [node name="SueloIzquierda" type="StaticBody2D" parent="Terreno" index="0"]
-position = Vector2(1015.5, 1120)
+position = Vector2(1200, 1120)
 
 [node name="Forma" type="CollisionShape2D" parent="Terreno/SueloIzquierda" index="0"]
 shape = SubResource("forma_suelo_izq")
 
 [node name="Dibujo" type="ColorRect" parent="Terreno/SueloIzquierda" index="1"]
-offset_left = -1015.5
+offset_left = -1200.0
 offset_top = -40.0
-offset_right = 1015.5
-offset_bottom = 40.0
-mouse_filter = 2
-color = Color(0.3, 0.3, 0.32, 1)
-
-[node name="SueloDerecha" type="StaticBody2D" parent="Terreno" index="1"]
-position = Vector2(2334.5, 1120)
-
-[node name="Forma" type="CollisionShape2D" parent="Terreno/SueloDerecha" index="0"]
-shape = SubResource("forma_suelo_der")
-
-[node name="Dibujo" type="ColorRect" parent="Terreno/SueloDerecha" index="1"]
-offset_left = -65.5
-offset_top = -40.0
-offset_right = 65.5
+offset_right = 1200.0
 offset_bottom = 40.0
 mouse_filter = 2
 color = Color(0.3, 0.3, 0.32, 1)
@@ -77,7 +60,7 @@ mouse_filter = 2
 color = Color(0.3, 0.3, 0.32, 1)
 
 [node name="ParedDerecha" type="StaticBody2D" parent="Terreno" index="3"]
-position = Vector2(2360, 620)
+position = Vector2(2440, 620)
 
 [node name="Forma" type="CollisionShape2D" parent="Terreno/ParedDerecha" index="0"]
 shape = SubResource("forma_pared_der")
@@ -133,12 +116,12 @@ acciones = Array[StringName]([&"curar"])
 id = "aviso_curar"
 nota = "Golpea enemigos para ganar Inspiración"
 
-[node name="PuertaAbajo" parent="." index="10" instance=ExtResource("3_hueco_piso")]
-position = Vector2(2150, 1090)
-id = &"abajo"
-sala_destino = "celda_3"
-puerta_destino = &"derecha"
-llegada = Vector2(-200, -10)
+[node name="PuertaDerecha" parent="." index="10" instance=ExtResource("3_puerta")]
+position = Vector2(2330, 1080)
+id = &"derecha"
+sala_destino = "raices_2"
+puerta_destino = &"izquierda"
+llegada = Vector2(-64, 0)
 
 [node name="Monedas" parent="." index="11" instance=ExtResource("4_monedas")]
 position = Vector2(600, 1080)

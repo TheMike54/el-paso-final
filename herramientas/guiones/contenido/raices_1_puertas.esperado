@@ -1,10 +1,12 @@
-# Llega por el hueco ABAJO de andamio a celda_3, en el piso (y=1080) junto a su boquete derecho.
+# Llega por la puerta DERECHA a raices_2, en el piso (y=560); la puerta lo deja junto a su puerta izquierda (x=134) y sale caminando
+# unos pasos mas (x=254 medido).
 # Antes del pizarron, curar aun no se ensena y la sala lo esconde (botones_por_ensenar); al cruzar queda ensenado.
 en 10 valor /root/Partida botones_ensenados []
 en 10 valor . botones_por_ensenar [&"curar"]
-escena res://contenido/salas/celda/celda_3.tscn
-x 2826 2
-y 1080 2
+en 349 x 2360 4
+escena res://contenido/salas/raices/raices_2.tscn
+x 254 2
+y 560 2
 en_suelo true
 valor Jugador transicion 0
 valor /root/Partida botones_ensenados [&"curar"]

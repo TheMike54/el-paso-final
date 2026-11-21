@@ -46,6 +46,7 @@ const SALAS: Dictionary = {
 	"enemigos/sala_muneco_que_ataca.tscn": ["Muñeco que ataca", "Aviso, golpe y disparo"],
 	"enemigos/sala_cucaracha.tscn": ["Cucaracha", "Entierro y aviso"],
 	"enemigos/sala_hongo_escupidor.tscn": ["Hongo escupidor", "Esporas y cierre"],
+	"enemigos/sala_polilla.tscn": ["Polilla", "Vuela y persigue"],
 	"sala_banco.tscn": ["Banco", "Sentarse y guardar"],
 	"sala_puerta_a.tscn": ["Puerta A", "Cambio de sala"],
 	"sala_puerta_c.tscn": ["Puerta C", "Puertas con interactuar"],
