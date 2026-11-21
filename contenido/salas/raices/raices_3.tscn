@@ -4,6 +4,10 @@
 [ext_resource type="PackedScene" uid="uid://cantrdqq1cwy8" path="res://nucleo/puerta.tscn" id="1_puerta"]
 [ext_resource type="PackedScene" uid="uid://dhac71jk7pqh4" path="res://nucleo/piezas/plataforma_delgada.tscn" id="2_plataforma"]
 [ext_resource type="PackedScene" uid="uid://dljj3hd7ldowx" path="res://nucleo/banco.tscn" id="3_banco"]
+[ext_resource type="PackedScene" uid="uid://b58veekclyq56" path="res://nucleo/npc.tscn" id="4_npc"]
+[ext_resource type="Script" uid="uid://dycfvji2i3yph" path="res://nucleo/ficha_dialogo.gd" id="5_ficha"]
+[ext_resource type="Resource" uid="uid://dp2ygfgygm27x" path="res://contenido/npc/guia_raices/guia_raices_1.tres" id="6_guia_1"]
+[ext_resource type="Resource" uid="uid://cvj8jdxih0n8x" path="res://contenido/npc/guia_raices/guia_raices_2.tres" id="7_guia_2"]
 
 [sub_resource type="RectangleShape2D" id="forma_SueloBajo"]
 size = Vector2(2000, 80)
@@ -116,8 +120,10 @@ position = Vector2(2040, 620)
 [node name="Forma" type="CollisionShape2D" parent="Terreno/ParedDerecha"]
 shape = SubResource("forma_ParedDerecha")
 
-[node name="LugarGuia" type="Marker2D" parent="."]
+[node name="Guia" parent="." instance=ExtResource("4_npc")]
 position = Vector2(350, 1080)
+id = "guia_raices"
+conversaciones = Array[ExtResource("5_ficha")]([ExtResource("6_guia_1"), ExtResource("7_guia_2")])
 
 [node name="Banco" parent="." instance=ExtResource("3_banco")]
 position = Vector2(700, 1080)

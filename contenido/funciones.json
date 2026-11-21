@@ -210,6 +210,12 @@
     "pasa": true
   },
   {
+    "id": "sala-raices-3-guia",
+    "que": "El guia de raices_3 entrega el mapa de Las Raices y la pluma del mapa una sola vez; su segunda conversacion no repite los premios",
+    "comprobacion": "herramientas/guiones/contenido/raices_3_guia.guion",
+    "pasa": true
+  },
+  {
     "id": "sala-raices-3-puertas",
     "que": "La puerta izquierda de raices_3 lleva de vuelta a raices_2, sin dano",
     "comprobacion": "herramientas/guiones/contenido/raices_3_puertas.guion",

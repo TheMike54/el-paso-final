@@ -1,0 +1,27 @@
+# Las Raíces, sala 3: desde la Entrada (x=134) camina al guía (x=350), habla con interactuar y pasa sus tres líneas con
+# saltar (un toque la completa, otro la pasa; en la pregunta queda marcado «Sí»). Al terminar entrega el mapa de Las
+# Raíces y la pluma del mapa. Después habla otra vez: su segunda conversación, de una línea, no repite los premios.
+escena res://contenido/salas/raices/raices_3.tscn
+2 mover_derecha press
+31 mover_derecha release
+36 interactuar press
+37 interactuar release
+41 saltar press
+42 saltar release
+44 saltar press
+45 saltar release
+47 saltar press
+48 saltar release
+50 saltar press
+51 saltar release
+53 saltar press
+54 saltar release
+56 saltar press
+57 saltar release
+70 interactuar press
+71 interactuar release
+75 saltar press
+76 saltar release
+78 saltar press
+79 saltar release
+fin 120
