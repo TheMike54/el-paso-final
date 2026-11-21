@@ -274,5 +274,17 @@
     "que": "En el telefono, dormido en el banco de raices_7 el jugador se ve sentado en la silla con los brazos sobre la mesa",
     "comprobacion": "manual: docs/pruebas.md, «Banco de Las Raíces»",
     "pasa": false
+  },
+  {
+    "id": "sala-raices-4-oculta",
+    "que": "El techo oculto de raices_4 se rompe y la zona oculta da Patas de Cucaracha una sola vez; salir a raices_5 y volver no la da otra vez",
+    "comprobacion": "herramientas/guiones/contenido/raices_4_patas.guion;herramientas/guiones/contenido/raices_4_patas_una_vez.guion",
+    "pasa": true
+  },
+  {
+    "id": "sala-raices-4-oculta-telefono",
+    "que": "En el telefono el techo oculto de raices_4 se rompe con el dedo, la repisa se alcanza saltando y Patas de Cucaracha se da una sola vez",
+    "comprobacion": "manual: docs/pruebas.md, «Zona oculta de raices_4»",
+    "pasa": false
   }
 ]
