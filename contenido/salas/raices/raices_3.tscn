@@ -26,13 +26,13 @@ precio = 30
 recompensa = SubResource("recompensa_brujula")
 
 [sub_resource type="RectangleShape2D" id="forma_SueloBajo"]
-size = Vector2(2000, 80)
+size = Vector2(2300, 80)
 
 [sub_resource type="RectangleShape2D" id="forma_Techo"]
-size = Vector2(2000, 80)
+size = Vector2(2300, 80)
 
 [sub_resource type="RectangleShape2D" id="forma_Cornisa"]
-size = Vector2(200, 80)
+size = Vector2(500, 80)
 
 [sub_resource type="RectangleShape2D" id="forma_ParedTrasPuertaIzquierda"]
 size = Vector2(80, 1240)
@@ -43,50 +43,50 @@ size = Vector2(80, 1240)
 [node name="Raices3" instance=ExtResource("0_base")]
 id = "raices_3"
 botones_ocultos = Array[StringName]([])
-limites = Rect2(0, 0, 2000, 1240)
+limites = Rect2(0, 0, 2300, 1240)
 posicion_mapa = Vector2(6000, 0)
 
 [node name="Entrada" parent="."]
 position = Vector2(134, 1080)
 
 [node name="SueloBajo" type="StaticBody2D" parent="Terreno"]
-position = Vector2(1000, 1120)
+position = Vector2(1150, 1120)
 
 [node name="Forma" type="CollisionShape2D" parent="Terreno/SueloBajo"]
 shape = SubResource("forma_SueloBajo")
 
 [node name="Dibujo" type="ColorRect" parent="Terreno/SueloBajo"]
-offset_left = -1000
+offset_left = -1150
 offset_top = -40
-offset_right = 1000
+offset_right = 1150
 offset_bottom = 40
 mouse_filter = 2
 color = Color(0.3, 0.3, 0.32, 1)
 
 [node name="Techo" type="StaticBody2D" parent="Terreno"]
-position = Vector2(1000, 0)
+position = Vector2(1150, 0)
 
 [node name="Forma" type="CollisionShape2D" parent="Terreno/Techo"]
 shape = SubResource("forma_Techo")
 
 [node name="Dibujo" type="ColorRect" parent="Terreno/Techo"]
-offset_left = -1000
+offset_left = -1150
 offset_top = -40
-offset_right = 1000
+offset_right = 1150
 offset_bottom = 40
 mouse_filter = 2
 color = Color(0.3, 0.3, 0.32, 1)
 
 [node name="Cornisa" type="StaticBody2D" parent="Terreno"]
-position = Vector2(1900, 600)
+position = Vector2(2050, 600)
 
 [node name="Forma" type="CollisionShape2D" parent="Terreno/Cornisa"]
 shape = SubResource("forma_Cornisa")
 
 [node name="Dibujo" type="ColorRect" parent="Terreno/Cornisa"]
-offset_left = -100
+offset_left = -250
 offset_top = -40
-offset_right = 100
+offset_right = 250
 offset_bottom = 40
 mouse_filter = 2
 color = Color(0.3, 0.3, 0.32, 1)
@@ -131,7 +131,7 @@ position = Vector2(-40, 620)
 shape = SubResource("forma_ParedTrasPuertaIzquierda")
 
 [node name="ParedDerecha" type="StaticBody2D" parent="Terreno"]
-position = Vector2(2040, 620)
+position = Vector2(2340, 620)
 
 [node name="Forma" type="CollisionShape2D" parent="Terreno/ParedDerecha"]
 shape = SubResource("forma_ParedDerecha")
@@ -158,3 +158,10 @@ id = &"izquierda"
 sala_destino = "raices_2"
 puerta_destino = &"derecha"
 llegada = Vector2(64, 0)
+
+[node name="PuertaDerecha" parent="." instance=ExtResource("1_puerta")]
+position = Vector2(2230, 560)
+id = &"derecha"
+sala_destino = "raices_4"
+puerta_destino = &"izquierda"
+llegada = Vector2(-64, 0)

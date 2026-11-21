@@ -238,5 +238,17 @@
     "que": "En raices_3 se llega a la tienda tienda_raices_3 y se abre con interactuar; sin PejeCoins no se compra ni se danya al jugador",
     "comprobacion": "herramientas/guiones/contenido/raices_3_tienda.guion",
     "pasa": true
+  },
+  {
+    "id": "sala-raices-3-ruta",
+    "que": "En raices_3 se sube por las tres plataformas a la cornisa, sin dano, y la puerta derecha lleva a raices_4",
+    "comprobacion": "herramientas/guiones/contenido/raices_3_ruta.guion",
+    "pasa": true
+  },
+  {
+    "id": "sala-raices-4-puertas",
+    "que": "La puerta izquierda de raices_4 lleva de vuelta a raices_3, a la cornisa de su puerta derecha, sin dano",
+    "comprobacion": "herramientas/guiones/contenido/raices_4_puertas.guion",
+    "pasa": true
   }
 ]

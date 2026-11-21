@@ -1,0 +1,140 @@
+[gd_scene format=3 uid="uid://r2vwdhca0p5v"]
+
+[ext_resource type="PackedScene" uid="uid://cpuog8152jjfx" path="res://contenido/zonas/raices/sala_raices.tscn" id="0_base"]
+[ext_resource type="PackedScene" uid="uid://cantrdqq1cwy8" path="res://nucleo/puerta.tscn" id="1_puerta"]
+
+[sub_resource type="RectangleShape2D" id="forma_SueloBajo"]
+size = Vector2(1600, 80)
+
+[sub_resource type="RectangleShape2D" id="forma_Techo"]
+size = Vector2(1600, 80)
+
+[sub_resource type="RectangleShape2D" id="forma_Bloque1"]
+size = Vector2(200, 130)
+
+[sub_resource type="RectangleShape2D" id="forma_Bloque2"]
+size = Vector2(200, 260)
+
+[sub_resource type="RectangleShape2D" id="forma_Bloque3"]
+size = Vector2(200, 390)
+
+[sub_resource type="RectangleShape2D" id="forma_Saliente"]
+size = Vector2(500, 520)
+
+[sub_resource type="RectangleShape2D" id="forma_ParedTrasPuertaIzquierda"]
+size = Vector2(80, 1240)
+
+[sub_resource type="RectangleShape2D" id="forma_ParedDerecha"]
+size = Vector2(80, 1240)
+
+[node name="Raices4" instance=ExtResource("0_base")]
+id = "raices_4"
+botones_ocultos = Array[StringName]([])
+limites = Rect2(0, 0, 1600, 1240)
+posicion_mapa = Vector2(9800, -520)
+
+[node name="Entrada" parent="."]
+position = Vector2(134, 1080)
+
+[node name="SueloBajo" type="StaticBody2D" parent="Terreno"]
+position = Vector2(800, 1120)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/SueloBajo"]
+shape = SubResource("forma_SueloBajo")
+
+[node name="Dibujo" type="ColorRect" parent="Terreno/SueloBajo"]
+offset_left = -800
+offset_top = -40
+offset_right = 800
+offset_bottom = 40
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="Techo" type="StaticBody2D" parent="Terreno"]
+position = Vector2(800, 0)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/Techo"]
+shape = SubResource("forma_Techo")
+
+[node name="Dibujo" type="ColorRect" parent="Terreno/Techo"]
+offset_left = -800
+offset_top = -40
+offset_right = 800
+offset_bottom = 40
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="Bloque1" type="StaticBody2D" parent="Terreno"]
+position = Vector2(400, 1015)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/Bloque1"]
+shape = SubResource("forma_Bloque1")
+
+[node name="Dibujo" type="ColorRect" parent="Terreno/Bloque1"]
+offset_left = -100
+offset_top = -65
+offset_right = 100
+offset_bottom = 65
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="Bloque2" type="StaticBody2D" parent="Terreno"]
+position = Vector2(675, 950)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/Bloque2"]
+shape = SubResource("forma_Bloque2")
+
+[node name="Dibujo" type="ColorRect" parent="Terreno/Bloque2"]
+offset_left = -100
+offset_top = -130
+offset_right = 100
+offset_bottom = 130
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="Bloque3" type="StaticBody2D" parent="Terreno"]
+position = Vector2(950, 885)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/Bloque3"]
+shape = SubResource("forma_Bloque3")
+
+[node name="Dibujo" type="ColorRect" parent="Terreno/Bloque3"]
+offset_left = -100
+offset_top = -195
+offset_right = 100
+offset_bottom = 195
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="Saliente" type="StaticBody2D" parent="Terreno"]
+position = Vector2(1350, 820)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/Saliente"]
+shape = SubResource("forma_Saliente")
+
+[node name="Dibujo" type="ColorRect" parent="Terreno/Saliente"]
+offset_left = -250
+offset_top = -260
+offset_right = 250
+offset_bottom = 260
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="ParedTrasPuertaIzquierda" type="StaticBody2D" parent="Terreno"]
+position = Vector2(-40, 620)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/ParedTrasPuertaIzquierda"]
+shape = SubResource("forma_ParedTrasPuertaIzquierda")
+
+[node name="ParedDerecha" type="StaticBody2D" parent="Terreno"]
+position = Vector2(1640, 620)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/ParedDerecha"]
+shape = SubResource("forma_ParedDerecha")
+
+[node name="PuertaIzquierda" parent="." instance=ExtResource("1_puerta")]
+position = Vector2(70, 1080)
+id = &"izquierda"
+sala_destino = "raices_3"
+puerta_destino = &"derecha"
+llegada = Vector2(64, 0)
