@@ -250,5 +250,17 @@
     "que": "La puerta izquierda de raices_4 lleva de vuelta a raices_3, a la cornisa de su puerta derecha, sin dano",
     "comprobacion": "herramientas/guiones/contenido/raices_4_puertas.guion",
     "pasa": true
+  },
+  {
+    "id": "sala-raices-4-ruta",
+    "que": "En raices_4 se sube por los dos bloques al saliente, con la Cucaracha y las Polillas en el camino, y la puerta derecha lleva a raices_5",
+    "comprobacion": "herramientas/guiones/contenido/raices_4_ruta.guion",
+    "pasa": true
+  },
+  {
+    "id": "sala-raices-5-puerta-izquierda",
+    "que": "La puerta izquierda de raices_5 lleva de vuelta a raices_4, al saliente de su puerta derecha, sin dano",
+    "comprobacion": "herramientas/guiones/contenido/raices_5_puerta_izquierda.guion",
+    "pasa": true
   }
 ]

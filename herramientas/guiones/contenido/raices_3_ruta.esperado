@@ -1,6 +1,6 @@
 # Llega por la puerta IZQUIERDA de raices_4, en el piso (valores medidos corriendo el guion).
 escena res://contenido/salas/raices/raices_4.tscn
-x 259.93 2
+x 600 450
 y 1079.93 2
 en_suelo true
 valor Jugador transicion 0

@@ -73,6 +73,17 @@ La tarjeta no fija estas cuatro cosas; se propone lo mínimo para poder armar y 
 - La `posicion_mapa` de `raices_2` a `raices_4` para que `raices_4` quede junto a `raices_5` sin encimar nada: el espacio se
   mide con `generar_mapa`, no a ojo.
 
+## Decisiones tomadas al construir (20-nov-2026)
+Se tomaron sin esperar respuesta y se avisan en un comentario de la tarjeta; si Mike dice otra cosa, se ajusta.
+- `raices_3`: la subida a la puerta derecha usa 3 bloques sólidos (alturas 173, 346 y 520 sobre el piso), no plataformas delgadas, porque
+  `docs/sala.md` prohíbe una plataforma de una vía como única salida. `raices_3_ruta` se remidió con prueba negativa.
+  Mide 2400×1240 (puerta derecha en (2330, 560)) para quedar pegada a `raices_4` en el mapa, sin hueco.
+- Guía: una sola línea, la fijada en el comentario de la tarjeta, con las dos recompensas (mapa `raices` y `pluma_mapa`), una sola vez.
+- `raices_4`: 3000×1240, `posicion_mapa` (8400, -520) y puerta derecha en (2930, 560); sigue terminando en x 11400, junto a `raices_5`.
+  La subida es de 2 bloques y el saliente (3 saltos de unos 173 px).
+- Primeras peleas de `raices_4`: `CucarachaA` en x 600 (piso 1080), `PolillaA` en x 1300 y `PolillaB` en x 2000 (vuelan a y 800). Son
+  valores de partida: se ajustan jugando.
+
 ## Riesgos
 - Quitar el hueco de `raices_1` rompe `raices_1_puertas` y deja a `raices_1` sin salida hasta que exista la puerta de R1.
 - Vic pondrá las polillas en `raices_6` y `raices_8` después de que este PR se fusione: la ficha de la polilla debe

@@ -7,19 +7,7 @@
 [sub_resource type="Resource" id="linea_1"]
 script = ExtResource("2_linea")
 quien = "Guía"
-texto = "Aquí abajo los pasillos se parecen todos. Más vale no perderse."
-
-[sub_resource type="Resource" id="linea_2"]
-script = ExtResource("2_linea")
-quien = "Guía"
-texto = "¿Quieres el mapa de Las Raíces?"
-opciones = Array[String](["Sí", "No"])
-destinos = Array[int]([2, -2])
-
-[sub_resource type="Resource" id="linea_3"]
-script = ExtResource("2_linea")
-quien = "Guía"
-texto = "Toma el mapa y la pluma: con ella se dibuja solo mientras caminas."
+texto = "Ese mapa lo empecé cuando llegué. Con la pluma ya puedes terminarlo tú."
 
 [sub_resource type="Resource" id="recompensa_pluma"]
 script = ExtResource("3_recompensa")
@@ -33,5 +21,5 @@ id = &"raices"
 
 [resource]
 script = ExtResource("1_ficha")
-lineas = Array[ExtResource("2_linea")]([SubResource("linea_1"), SubResource("linea_2"), SubResource("linea_3")])
+lineas = Array[ExtResource("2_linea")]([SubResource("linea_1")])
 recompensas = Array[ExtResource("3_recompensa")]([SubResource("recompensa_pluma"), SubResource("recompensa_mapa")])

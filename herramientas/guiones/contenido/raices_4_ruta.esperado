@@ -1,0 +1,8 @@
+# Llega por la puerta IZQUIERDA de raices_5, en el piso. Con enemigos en el camino se admite daño; la x (medida: 254) tiene tolerancia amplia
+# porque el guion cruza una puerta sin ser la prueba de las puertas.
+escena res://contenido/salas/raices/raices_5.tscn
+x 254 150
+y 559.93 2
+en_suelo true
+valor Jugador transicion 0
+senal /root/Eventos cambio_de_sala 1
