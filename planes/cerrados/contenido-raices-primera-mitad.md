@@ -1,4 +1,4 @@
-ACTIVO (escrito el 17-nov-2026; aprobado por la persona el 17-nov-2026; el diseño propuesto lo confirma Mike al leerlo)
+CERRADO (21-nov-2026, con el PR de `feature/contenido-raices-primera-mitad`. Escrito el 17-nov-2026; aprobado por la persona el 17-nov-2026; el diseño propuesto lo confirma Mike al leerlo)
 
 # Contenido: la primera mitad de Las Raíces (tarjeta #20)
 
