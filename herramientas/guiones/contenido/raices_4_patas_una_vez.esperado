@@ -1,0 +1,9 @@
+# Patas de Cucaracha se da una sola vez: tras salir a raices_5 y volver, el amuleto no se da otra vez (la señal sigue en 1),
+# sigue en el inventario y el jugador queda en la repisa oculta (y=359). A mitad del guion está en raices_5.
+# Valores por medir corriendo el guion.
+en 400 escena res://contenido/salas/raices/raices_5.tscn
+escena res://contenido/salas/raices/raices_4.tscn
+valor /root/Partida amuletos_tenidos [&"patas_cucaracha"]
+senal /root/Eventos amuleto_obtenido 1
+y 359 2
+en_suelo true
