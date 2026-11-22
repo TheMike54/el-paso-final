@@ -3,17 +3,13 @@
 ## Ahora (22-nov-2026)
 
 - `main` en `43d7b5e`: #41, #42 y #43 fusionados; Las Raíces se recorre en caja gris de `raices_1` a la pantalla de
-  cierre. Rama `docs/sprint-4`: este archivo, sin commit.
-- Sprint 4 (23 al 29-nov): #44 a #58 en el tablero. Ian #44 a #47, Vic #48 a #52, Miguel (lo hace Claude) #53 a #58.
+  cierre. Rama `docs/sprint-4` (PR #59, sin fusionar).
+- Sprint 4 (23 al 29-nov): #44 a #58 y #60 a #62 en el tablero. Ian #44 a #47, Vic #48 a #52 y #60, Miguel (lo hace Claude) #53 a #58, #61 y #62. PR #59: este archivo.
 - Workflow `Release` sin corridas (`release-play`); el entorno `play` (fase B) y subir por la API esperan.
 - Google Play: prueba cerrada Alpha desde el 2-nov-2026 (`versionCode` 1, `1e2c94c`); el update (#16) espera; índice: #17.
 
 ## Decidido
 - Las cerradas (27-oct al 3-nov) están en `docs/manual/decisiones.md`; una nueva va aquí y al cerrarse pasa allá.
-- 12-nov, Cucaracha: el punto de salida se lee al aparecer el polvo, no al enterrarse. «hay q hacerlo como dices, por
-  q sino seria muy facil».
-- 13-nov, Cucaracha: quieto sobre ella mientras se recupera, el contacto sigue dañando cada vez que acaba la
-  invulnerabilidad (sin límite por salida). «asi se queda megusto».
 - 15-nov: los cambios de la auditoría entran a `main` con el bypass, sin PR. «va a ser con bypass, no voy a abrir un PR».
 - 17-nov, #27 («y con lo del issue número 27»): Las Raíces lleva arte propio de banco. «3»; la imagen, «vamos a usar esa».
 - 17-nov: la limpieza de riesgo bajo de la auditoría va en el PR del #27; la ejecuta otra sesión. «con el PR del issue número 27».
@@ -23,6 +19,9 @@
 - 22-nov 01:39: Miguel aprueba solo el arte de las capas de Las Raíces; el de los enemigos lo decide quien lo genera. «yo voy a revisar esta vez el arte, pero nada más de las capas».
 - 22-nov 01:39: issues de música para Ian y Vic, que los aprueban ellos. «también asignales issues de música. Ese no lo voy a revisar yo, que los aprueben ellos».
 - 22-nov 01:39: lo asignado a Miguel lo hace Claude. «todo lo que me asignes a mí lo vas a hacer tú».
+- 22-nov, Sprint 4, «adelante, hazlo así»: las piezas jugables y peligros de Las Raíces van a Ian dentro del #44 (pasa a 13 puntos).
+- 22-nov, mismo «adelante»: dormir en los bancos de `raices_3` y `raices_7` se suma al #46.
+- 22-nov, mismo «adelante»: issues nuevos, las 4 pruebas en teléfono (Vic), `Release` en verde y `prueba_sonido` con ventana (Miguel); el manual, tras el #53.
 - 22-nov 01:39: Sprint 4 y guías en la bóveda. «abre el sprint 4 y pásame los comandos para abrir todos los issues y de una vez dejarles todo en la bóveda privada».
 
 ## Pruebas manuales pendientes
