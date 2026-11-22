@@ -85,6 +85,8 @@ Lo que ya se decidió y por qué, para no volver a discutirlo sin una razón nue
 | 2-nov-2026 | `raices_7` se construye antes que `raices_6` y `raices_8` | `raices_7` no se puede recortar |
 | 2-nov-2026 | En La Celda no hay banco donde está el Eterno | Se queda así; el único banco de la zona está en `celda_1` |
 | 3-nov-2026 | Texto de la pantalla de cierre de Las Raíces: «Continuará» y, en chico, «Fin de la primera versión» | Era la decisión abierta 13 |
+| 12-nov-2026 | Cucaracha: el punto de salida se lee al aparecer el polvo, no al enterrarse | Si no, sería muy fácil esquivarla |
+| 13-nov-2026 | Cucaracha: quieto sobre ella mientras se recupera, el contacto sigue dañando cada vez que acaba la invulnerabilidad, sin límite por salida | Decisión de la persona al probarla |
 | 3-nov-2026 | Los peligros no tienen un color fijo | La regla «lo que lastima es cálido» no fue una decisión; el color lo da el arte de cada zona |
 | 3-nov-2026 | Sin máscara en el arranque y sin sesión de arte: se quitan del pendiente | |
 | 3-nov-2026 | Las piezas jugables no llevan un color ni un contorno fijos | Quien hace el arte comprueba que la parte principal no se mezcle con el fondo |
