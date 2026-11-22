@@ -1,17 +1,15 @@
 # Estado (se sobrescribe; ver `CLAUDE.md`)
 
-## Ahora (21-nov-2026)
+## Ahora (22-nov-2026)
 
-- `main` en `677a829`: entraron #41 (`raices_2` a `raices_4`, Polilla, El Eterno en `raices_3`, tienda) y #42 (repisa
-  oculta de `raices_4` con Patas de Cucaracha, más la auditoría del 21-nov). Las Raíces se recorre de `raices_1` a la
-  pantalla de cierre. Rama `docs/cerrar-auditoria-21-nov`: cierra ese plan, sin commit.
+- `main` en `43d7b5e`: #41, #42 y #43 fusionados; Las Raíces se recorre en caja gris de `raices_1` a la pantalla de
+  cierre. Rama `docs/sprint-4`: este archivo, sin commit.
+- Sprint 4 (23 al 29-nov): #44 a #58 en el tablero. Ian #44 a #47, Vic #48 a #52, Miguel (lo hace Claude) #53 a #58.
 - Workflow `Release` sin corridas (`release-play`); el entorno `play` (fase B) y subir por la API esperan.
 - Google Play: prueba cerrada Alpha desde el 2-nov-2026 (`versionCode` 1, `1e2c94c`); el update (#16) espera; índice: #17.
-- Tablero (#12) completo el 21-nov: README con Sprints 1 a 3 (meta, fechas, tareas y resultado); falta cerrar el issue.
 
 ## Decidido
-- Las decisiones cerradas (27-oct al 3-nov) están en `docs/manual/decisiones.md`. Una nueva va al plan activo o aquí;
-  al cerrarse pasa a `decisiones.md`.
+- Las cerradas (27-oct al 3-nov) están en `docs/manual/decisiones.md`; una nueva va aquí y al cerrarse pasa allá.
 - 12-nov, Cucaracha: el punto de salida se lee al aparecer el polvo, no al enterrarse. «hay q hacerlo como dices, por
   q sino seria muy facil».
 - 13-nov, Cucaracha: quieto sobre ella mientras se recupera, el contacto sigue dañando cada vez que acaba la
@@ -21,6 +19,11 @@
 - 17-nov: la limpieza de riesgo bajo de la auditoría va en el PR del #27; la ejecuta otra sesión. «con el PR del issue número 27».
 - 17-nov: poner al día el tablero; #12 queda como borrador. «y también con el tablero», «únicamente un draft».
 - 21-nov 21:00, #12: README del tablero y Sprint 3 con #20, #21, #25 a #27; #28 al Sprint 2 por su fecha. «adelante, y sí abre el Sprint 3».
+- 22-nov 01:39, arte del Sprint 4: cada quien sube todo su arte en un solo PR y Miguel lo integra. «todo el arte que va a generar Ian, todo el arte que va a generar Vic, lo suben en un solo issue, o sea, en un solo pull request», «ellos me van a generar el arte y yo lo integro».
+- 22-nov 01:39: Miguel aprueba solo el arte de las capas de Las Raíces; el de los enemigos lo decide quien lo genera. «yo voy a revisar esta vez el arte, pero nada más de las capas».
+- 22-nov 01:39: issues de música para Ian y Vic, que los aprueban ellos. «también asignales issues de música. Ese no lo voy a revisar yo, que los aprueben ellos».
+- 22-nov 01:39: lo asignado a Miguel lo hace Claude. «todo lo que me asignes a mí lo vas a hacer tú».
+- 22-nov 01:39: Sprint 4 y guías en la bóveda. «abre el sprint 4 y pásame los comandos para abrir todos los issues y de una vez dejarles todo en la bóveda privada».
 
 ## Pruebas manuales pendientes
 - Hechas: `enemigo-cucaracha-telefono` (S21, 13-nov) y `enemigo-hongo-escupidor-telefono` (S20, 15-nov), video en #34 y #35.
