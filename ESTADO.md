@@ -2,10 +2,9 @@
 
 ## Ahora (21-nov-2026)
 
-- `main` en `36ed07d`: entró #41 (`raices_2` a `raices_4`, Polilla, El Eterno en `raices_3`, tienda), con los arreglos de
-  la revisión hechos sobre la rama de Ian. Las Raíces se recorre jugando de `raices_1` a la pantalla de cierre.
-- Rama `feature/contenido-raices-cuarto-oculto` (PR #42, #21): `main` mezclado, arreglos de la revisión y la auditoría
-  del 21-nov (plan `contenido-auditoria-21-nov`), sin commit.
+- `main` en `677a829`: entraron #41 (`raices_2` a `raices_4`, Polilla, El Eterno en `raices_3`, tienda) y #42 (repisa
+  oculta de `raices_4` con Patas de Cucaracha, más la auditoría del 21-nov). Las Raíces se recorre de `raices_1` a la
+  pantalla de cierre. Rama `docs/cerrar-auditoria-21-nov`: cierra ese plan, sin commit.
 - Workflow `Release` sin corridas (`release-play`); el entorno `play` (fase B) y subir por la API esperan.
 - Google Play: prueba cerrada Alpha desde el 2-nov-2026 (`versionCode` 1, `1e2c94c`); el update (#16) espera; índice: #17.
 - Tablero (#12) completo el 21-nov: README con Sprints 1 a 3 (meta, fechas, tareas y resultado); falta cerrar el issue.
@@ -22,8 +21,6 @@
 - 17-nov: la limpieza de riesgo bajo de la auditoría va en el PR del #27; la ejecuta otra sesión. «con el PR del issue número 27».
 - 17-nov: poner al día el tablero; #12 queda como borrador. «y también con el tablero», «únicamente un draft».
 - 21-nov 21:00, #12: README del tablero y Sprint 3 con #20, #21, #25 a #27; #28 al Sprint 2 por su fecha. «adelante, y sí abre el Sprint 3».
-- 21-nov 21:00, #42: los arreglos de su revisión los hace el dueño del repo sobre la rama de Ian, tras mezclar `main`.
-  «ya quedo merge el pr revisa para q comienzes con las correciones del otro pr».
 
 ## Pruebas manuales pendientes
 - Hechas: `enemigo-cucaracha-telefono` (S21, 13-nov) y `enemigo-hongo-escupidor-telefono` (S20, 15-nov), video en #34 y #35.
@@ -39,7 +36,7 @@
 
 ## Planes activos
 - `herramientas-publicar-play`: falta la corrida verde de `Release` y la fase B. `herramientas-utilidad-pruebas`: el paso
-  13 de la auditoría del 17-oct. `contenido-auditoria-21-nov`: hecho y revisado; falta el commit y cerrarlo.
+  13 de la auditoría del 17-oct.
 
 ## Siguiente
 - Medición de base (auditoría de nov-2026, pendiente 11): preguntas de si el APK ya está instalado. Meta: 0. Al 15-nov:
@@ -57,4 +54,4 @@
 
 ## Decisiones abiertas (la persona)
 
-- #21 pide un cuarto tras un muro rompible; el PR #42 hace una repisa tras un techo rompible, como `raices_6`. «lo tengo q revisar».
+- Ninguna. La del #21 (repisa en lugar de cuarto) se cerró al fusionar el #42: `docs/manual/decisiones.md`.

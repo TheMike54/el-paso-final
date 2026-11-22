@@ -1,4 +1,4 @@
-ACTIVO (escrito el 21-nov-2026; aprobado por la persona el 21-nov-2026; va en el PR #42)
+CERRADO (21-nov-2026: entró a `main` con el PR #42, `677a829`. Escrito y aprobado por la persona el 21-nov-2026)
 
 # Auditoría del 21-nov-2026: documentación al día, código muerto y banco de raices_3
 
@@ -82,3 +82,5 @@ sin uso. Este plan los corrige en la rama del PR #42 y, al terminar, pide una au
   - Entradas corregidas de `funciones.json` (aprobadas): `sala-raices-1-ruta` suma `celda_4_tiro`;
     `sala-raices-2-puertas` suma `raices_1_puertas` y deja de hablar del hueco; `sala-raices-6-oculta` suma el guion
     nuevo; `auditoria-final-documentos` apunta a `planes/cerrados/`. Nueva: `validador-banco-con-silla`.
+- 21-nov-2026 22:03: el PR #42 entra a `main` (`677a829`) con la repisa de `raices_4` tras un techo rompible en lugar del
+  cuarto tras un muro que pedía el #21, y el plan se cierra. «ya quedó merge, cierra el plan».
