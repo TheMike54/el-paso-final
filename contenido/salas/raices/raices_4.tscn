@@ -5,6 +5,8 @@
 [ext_resource type="PackedScene" uid="uid://dgy2sncgkvcml" path="res://nucleo/enemigo.tscn" id="2_enemigo"]
 [ext_resource type="Resource" uid="uid://cqhfn8xjqq1p1" path="res://contenido/enemigos/cucaracha/cucaracha.tres" id="3_cucaracha"]
 [ext_resource type="Resource" uid="uid://c8xf7v2ubg8ya" path="res://contenido/enemigos/polilla/polilla.tres" id="4_polilla"]
+[ext_resource type="Script" uid="uid://lsqi1mnvaa8a" path="res://nucleo/muro_rompible.gd" id="5_muro"]
+[ext_resource type="PackedScene" uid="uid://vtnru54hywjh" path="res://nucleo/objeto_amuleto.tscn" id="6_amuleto"]
 
 [sub_resource type="RectangleShape2D" id="forma_SueloBajo"]
 size = Vector2(3000, 80)
@@ -26,6 +28,18 @@ size = Vector2(80, 1240)
 
 [sub_resource type="RectangleShape2D" id="forma_ParedDerecha"]
 size = Vector2(80, 1240)
+
+[sub_resource type="RectangleShape2D" id="forma_ParedOculto"]
+size = Vector2(40, 320)
+
+[sub_resource type="RectangleShape2D" id="forma_LabioOculto"]
+size = Vector2(20, 40)
+
+[sub_resource type="RectangleShape2D" id="forma_SueloOculto"]
+size = Vector2(190, 40)
+
+[sub_resource type="RectangleShape2D" id="forma_techo_oculto"]
+size = Vector2(160, 40)
 
 [node name="Raices4" instance=ExtResource("0_base")]
 id = "raices_4"
@@ -146,3 +160,75 @@ id = &"derecha"
 sala_destino = "raices_5"
 puerta_destino = &"izquierda"
 llegada = Vector2(-64, 0)
+
+[node name="Tapa" type="ColorRect" parent="Encima"]
+offset_left = 2630.0
+offset_top = 40.0
+offset_right = 3000.0
+offset_bottom = 360.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="ParedOculto" type="StaticBody2D" parent="Terreno"]
+position = Vector2(2610, 239)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/ParedOculto"]
+shape = SubResource("forma_ParedOculto")
+
+[node name="Dibujo" type="ColorRect" parent="Terreno/ParedOculto"]
+offset_left = -20
+offset_top = -160
+offset_right = 20
+offset_bottom = 160
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="LabioOculto" type="StaticBody2D" parent="Terreno"]
+position = Vector2(2640, 379)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/LabioOculto"]
+shape = SubResource("forma_LabioOculto")
+
+[node name="Dibujo" type="ColorRect" parent="Terreno/LabioOculto"]
+offset_left = -10
+offset_top = -20
+offset_right = 10
+offset_bottom = 20
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="SueloOculto" type="StaticBody2D" parent="Terreno"]
+position = Vector2(2905, 379)
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/SueloOculto"]
+shape = SubResource("forma_SueloOculto")
+
+[node name="Dibujo" type="ColorRect" parent="Terreno/SueloOculto"]
+offset_left = -95
+offset_top = -20
+offset_right = 95
+offset_bottom = 20
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="TechoOculto" type="StaticBody2D" parent="Terreno" node_paths=PackedStringArray("tapas")]
+position = Vector2(2730, 379)
+script = ExtResource("5_muro")
+id = "techo_oculto"
+tapas = [NodePath("../../Encima/Tapa")]
+
+[node name="Forma" type="CollisionShape2D" parent="Terreno/TechoOculto"]
+shape = SubResource("forma_techo_oculto")
+
+[node name="Dibujo" type="ColorRect" parent="Terreno/TechoOculto"]
+offset_left = -80.0
+offset_top = -20.0
+offset_right = 80.0
+offset_bottom = 20.0
+mouse_filter = 2
+color = Color(0.45, 0.42, 0.4, 1)
+
+[node name="Patas" parent="." instance=ExtResource("6_amuleto")]
+position = Vector2(2900, 359)
+id = "patas_raices_4"
+amuleto = &"patas_cucaracha"

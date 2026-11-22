@@ -1,12 +1,12 @@
 extends "res://herramientas/pruebas/prueba_base.gd"
-# Prueba que los datos por ejemplar del volador prevalezcan sobre la ficha y que sin ellos se use la ficha.
+# Prueba que los datos por ejemplar del volador (la Polilla con la ficha de pruebas) prevalezcan sobre la ficha y que sin ellos se use la ficha.
 # El jugador aparece entre los radios de alerta para distinguirlos sin que una persecucion previa falsee el caso.
 # Comprueba que los recursos compartidos no se modifiquen al correr.
 # Deja casos y fallos para enemigo_datos.guion.
 
 const SALA: String = "res://herramientas/salas/enemigos/sala_volador.tscn"
 const ENEMIGO: String = "res://nucleo/enemigo.tscn"
-const DATOS_VOLADOR: String = "res://herramientas/salas/comportamientos/datos_volador.gd"
+const DATOS_VOLADOR: String = "res://contenido/enemigos/polilla/datos_polilla.gd"
 const FICHA: String = "res://herramientas/salas/fichas/volador.tres"
 
 

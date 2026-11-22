@@ -545,6 +545,17 @@ func _probar_sala() -> void:
 	var banco_de_pieza: Banco = _agregar(con_banco, Banco.new(), "Banco") as Banco
 	banco_de_pieza.id = "banco_otro"
 	_da("sala: banco dentro de una pieza con id ajeno falla", _correr(_revisar_sala.bind(RUTA_SALA, sala)), "el banco banco_otro debe tener id banco_prueba_90")
+	banco_de_pieza.id = "banco_prueba_90"
+	const RUTA_JUEGO: String = "res://contenido/salas/prueba/prueba_90.tscn"
+	_da("sala: banco del juego sin Silla falla", _correr(_revisar_sala.bind(RUTA_JUEGO, sala)), "necesita su hijo Silla")
+	var silla: Sprite2D = _agregar(banco_de_pieza, Sprite2D.new(), "Silla") as Sprite2D
+	silla.texture = PlaceholderTexture2D.new()
+	_da("sala: banco del juego que mira como llega falla", _correr(_revisar_sala.bind(RUTA_JUEGO, sala)), "necesita su hijo Silla")
+	banco_de_pieza.mirando = 1
+	_caso("sala: banco del juego con Silla y mirando no falla", not " ".join(_correr(_revisar_sala.bind(RUTA_JUEGO, sala))).contains("Silla"))
+	banco_de_pieza.mirando = 0
+	silla.free()
+	_sin_fallos("sala: banco de prueba sin Silla no falla", _correr(_revisar_sala.bind(RUTA_SALA, sala)))
 	con_banco.free()
 	_suelo(sala, "SueloSinId", "")
 	_da("sala: suelo fragil sin id falla", _correr(_revisar_sala.bind(RUTA_SALA, sala)), "SueloSinId se recuerda en la partida y necesita id")
@@ -938,10 +949,21 @@ func _probar_enemigos() -> void:
 func _probar_salas_sin_guion() -> void:
 	var antes: Dictionary[String, Dictionary] = _salas.duplicate()
 	_salas = {"celda_99": {"ruta": "res://contenido/salas/celda/celda_99.tscn", "puertas": {}}}
-	_da("guion por sala: una sala de contenido sin guion avisa", _correr_avisos(_avisar_salas_sin_guion), "celda_99.tscn (ningun guion")
+	_da("guion por sala: una sala de contenido sin guion falla", _fallos_sin_guion(), "celda_99.tscn (ningun guion")
 	_salas = {"celda_1": {"ruta": "res://contenido/salas/celda/celda_1.tscn", "puertas": {}}}
-	_sin_fallos("guion por sala: una sala con su guion no avisa", _correr_avisos(_avisar_salas_sin_guion))
+	_sin_fallos("guion por sala: una sala con su guion no falla", _fallos_sin_guion())
 	_salas = antes
+
+
+# Como _correr, pero sin vaciar _salas: la regla de guion por sala las lee.
+func _fallos_sin_guion() -> PackedStringArray:
+	_fallos.clear()
+	_avisos.clear()
+	_revisar_salas_sin_guion()
+	var anotados: PackedStringArray = _fallos.duplicate()
+	_fallos.clear()
+	_avisos.clear()
+	return anotados
 
 
 func _probar_arenas_jefe() -> void:

@@ -1,22 +1,18 @@
 # Estado (se sobrescribe; ver `CLAUDE.md`)
 
-## Ahora (17-nov-2026)
+## Ahora (21-nov-2026)
 
-- `main` en `cc4b163`. Desde el 15-nov entraron #36 (`raices_7`, impulso y pantalla de cierre), #37 (menús de pausa
-  con flechas, útiles y detalle) y #38 (resto de la segunda mitad de Las Raíces). Rama `fix/jugador-dormido-banco` (#27), sin PR.
-- Auditoría de nov-2026: sus cambios van directo a `main`, en 4 commits con el bypass del administrador y sin PR.
-- Siguen: Ian, #20 (`raices_2` a `raices_4`) y #21. Tablero al día el 17-nov; #12 en progreso, como borrador.
-- Workflow `Release`: sin ninguna corrida todavía (`release-play`). El entorno `play` y su cuenta de servicio son la
-  fase B. Sin subir por la API mientras haya una revisión abierta.
-- Google Play: prueba cerrada Alpha desde el 2-nov-2026 (`versionCode` 1, `0.1.0`, `1e2c94c`), solo México; 3 de 12
-  testers al 3-nov. La actualización (#16) lleva `versionCode` 2 o más; el índice de la segunda entrega es #17.
-- Issue #9 cerrada el 15-nov: LB/RB en la zona de pruebas pasa en la tableta de Vic con control Xbox.
-- Ruleset `main`: PR, 1 aprobación, `validar` en verde, Squash and merge; el administrador del repo puede saltárselo.
+- `main` en `36ed07d`: entró #41 (`raices_2` a `raices_4`, Polilla, El Eterno en `raices_3`, tienda), con los arreglos de
+  la revisión hechos sobre la rama de Ian. Las Raíces se recorre jugando de `raices_1` a la pantalla de cierre.
+- Rama `feature/contenido-raices-cuarto-oculto` (PR #42, #21): `main` mezclado, arreglos de la revisión y la auditoría
+  del 21-nov (plan `contenido-auditoria-21-nov`), sin commit.
+- Workflow `Release` sin corridas (`release-play`); el entorno `play` (fase B) y subir por la API esperan.
+- Google Play: prueba cerrada Alpha desde el 2-nov-2026 (`versionCode` 1, `1e2c94c`); el update (#16) espera; índice: #17.
+- Tablero (#12) completo el 21-nov: README con Sprints 1 a 3 (meta, fechas, tareas y resultado); falta cerrar el issue.
 
 ## Decidido
 - Las decisiones cerradas (27-oct al 3-nov) están en `docs/manual/decisiones.md`. Una nueva va al plan activo o aquí;
   al cerrarse pasa a `decisiones.md`.
-- `nucleo-menus-pausa` queda aprobado y se construye después del 9-nov (ver «Planes activos»).
 - 12-nov, Cucaracha: el punto de salida se lee al aparecer el polvo, no al enterrarse. «hay q hacerlo como dices, por
   q sino seria muy facil».
 - 13-nov, Cucaracha: quieto sobre ella mientras se recupera, el contacto sigue dañando cada vez que acaba la
@@ -25,21 +21,25 @@
 - 17-nov, #27 («y con lo del issue número 27»): Las Raíces lleva arte propio de banco. «3»; la imagen, «vamos a usar esa».
 - 17-nov: la limpieza de riesgo bajo de la auditoría va en el PR del #27; la ejecuta otra sesión. «con el PR del issue número 27».
 - 17-nov: poner al día el tablero; #12 queda como borrador. «y también con el tablero», «únicamente un draft».
+- 21-nov 21:00, #12: README del tablero y Sprint 3 con #20, #21, #25 a #27; #28 al Sprint 2 por su fecha. «adelante, y sí abre el Sprint 3».
+- 21-nov 21:00, #42: los arreglos de su revisión los hace el dueño del repo sobre la rama de Ian, tras mezclar `main`.
+  «ya quedo merge el pr revisa para q comienzes con las correciones del otro pr».
 
 ## Pruebas manuales pendientes
-- Hechas: `enemigo-cucaracha-telefono` (S21, 13-nov) y `enemigo-hongo-escupidor-telefono` (S20 como control táctil con
-  la imagen en la PC, 15-nov), con video en #34 y #35.
+- Hechas: `enemigo-cucaracha-telefono` (S21, 13-nov) y `enemigo-hongo-escupidor-telefono` (S20, 15-nov), video en #34 y #35.
 - Falta ver el arranque sin logo en el S50 (`arranque-sin-logo`) y, en el S50, el equipo y la dirección de privacidad
   sin navegador (`creditos-privacidad`).
 - S21: Menús en gis y La Celda en alto (`menus-gis-telefono`, `sala-celda-1-telefono`). Claude, con el S21
   conectado: `video-reproductor` y `recursos-memoria-android`.
-- #27, `banco-raices-7-telefono`: dormir en el banco de `raices_7` (`docs/pruebas.md`, «Banco de Las Raíces»).
+- Dormir en los bancos de `raices_3` y `raices_7` (`docs/pruebas.md`, «Banco de Las Raíces»).
+- Menús de pausa (plan cerrado `nucleo-menus-pausa`): flechas del marco, letra de Amuletos, cupos de la mochila, símbolos
+  del Inventario y botón de vista del mapa. Las Raíces: «primera mitad», tienda, Polilla y zona oculta de `raices_4`.
 - Con control (Ian, Vic): touchpad, íconos, tienda, estaciones, `aviso-accion-telefono`, Puerta C y cerrar menús con B.
 - Claude: `medicion-rendimiento` y 4 entradas por guion. Firma: `paquete-publicacion`, `menu-desarrollo`, `recursos-medicion-publicacion`.
 
 ## Planes activos
-- `herramientas-publicar-play`: falta la corrida verde de `Release` y la fase B. `nucleo-menus-pausa`: aprobado, después
-  del 9-nov. `herramientas-utilidad-pruebas`: el paso 13 de la auditoría del 17-oct, después del 9-nov.
+- `herramientas-publicar-play`: falta la corrida verde de `Release` y la fase B. `herramientas-utilidad-pruebas`: el paso
+  13 de la auditoría del 17-oct. `contenido-auditoria-21-nov`: hecho y revisado; falta el commit y cerrarlo.
 
 ## Siguiente
 - Medición de base (auditoría de nov-2026, pendiente 11): preguntas de si el APK ya está instalado. Meta: 0. Al 15-nov:
@@ -57,4 +57,4 @@
 
 ## Decisiones abiertas (la persona)
 
-- Ninguna.
+- #21 pide un cuarto tras un muro rompible; el PR #42 hace una repisa tras un techo rompible, como `raices_6`. «lo tengo q revisar».

@@ -8,6 +8,8 @@ Parte del contrato (`docs/contrato.md`): lo que revisa `herramientas/validar.gd`
   `comportamiento`, si está asignado, hereda de `ComportamientoEnemigo` (`_revisar_enemigos`).
 - En las salas con id, los ids de objetos recordados no usan el prefijo `botin_`: está reservado para las
   marcas del botín de los enemigos (`_revisar_sala`).
+- Cada sala de `contenido/` tiene un guion de `herramientas/guiones/` con una línea `escena <su ruta>`: sin él, falla
+  (`_revisar_salas_sin_guion`). Fue aviso hasta el 21-nov-2026, cuando todas las salas del juego tuvieron el suyo.
 - Cada sala con id bajo `contenido/` tiene `ficha_zona`; las de `herramientas/` pueden dejarla vacía. Dos salas
   de una misma zona con ficha usan el mismo `resource_path`; fichas con rutas distintas fallan
   (`validador-ficha-zona`).
@@ -16,9 +18,10 @@ Parte del contrato (`docs/contrato.md`): lo que revisa `herramientas/validar.gd`
   de ida y vuelta (si A lleva a la puerta P de B, P lleva de vuelta a la misma puerta de A), salvo una puerta `ABAJO`,
   que es de ida sola: basta que P exista en B (la sala de abajo la usa como llegada). Exigir la vuelta obligaría a poner
   abajo una puerta `ARRIBA` a la que no se llega, con su llegada sobre el hueco, que devolvería al jugador a la caída; y
-  una puerta de caída provisional puede llegar a una puerta que ya existe sin un nodo de más; cada `FondoTapado` deja ver
+  una puerta de caída puede llegar a una puerta que ya existe sin un nodo de más; cada `FondoTapado` deja ver
   algo (`fin_pared`, en coordenadas de la sala: con `lado = IZQUIERDA` queda antes de `limites.end.x`; con `lado = DERECHA`, después de `limites.position.x`); bancos con id
-  `banco_<id>`, también dentro de una pieza; la raíz de cada escena de esas carpetas es una `Sala`; suelos frágiles, muros rompibles, palancas, portones,
+  `banco_<id>`, también dentro de una pieza, y en `contenido/` con su hijo `Silla` (un `Sprite2D` con imagen) y `mirando`
+  distinto de 0 (`docs/sala.md`, «Bancos»); la raíz de cada escena de esas carpetas es una `Sala`; suelos frágiles, muros rompibles, palancas, portones,
   recogibles que se recuerdan por id (`Coleccionable`, `MonedasSueltas`), `Npc`, `RetoPreguntas` y `Tienda` con id (sin él, falla) único en la sala, también
   dentro de una pieza instanciada; en `contenido/`, `habilidades_de_prueba` vacío e `inspiracion_maxima_de_prueba`
   en 0. En cualquier escena, toda ruta de nodo que la escena guarda para una variable de script resuelve (`tapas`, `descubre`,
@@ -97,8 +100,7 @@ resumen; no cuentan en `fallos` ni cambian la línea `VALIDACION` (`validar.ps1`
 Avisa de: una imagen de `contenido/` que ningún `.gd`, `.tscn` ni `.tres` nombra por ruta o por uid (viajaría en el
 APK sin usarse); `queue_redraw(` dentro de `_process` o `_physics_process` sin guarda en `nucleo/` y `contenido/` (cuenta como guarda un
 `return` antes en el mismo `_process` o `_physics_process`, y un script que llama a `set_process(` o
-`set_physics_process(`); una sala de `contenido/` sin un guion de `herramientas/guiones/` con una línea
-`escena <su ruta>` (por ahora solo aviso; pasará a fallo cuando todas las salas de La Celda estén al día); y, en
+`set_physics_process(`); y, en
 `contenido/`, solo en los nodos
 de la escena misma, un nodo oculto, una forma apagada o una escala no uniforme; además, los halos de `LuzSala` que
 pasan el máximo de capas translúcidas (`docs/arte-y-rendimiento.md`, «Recursos»). Un aviso se resuelve o se explica en el plan; no se deja crecer.

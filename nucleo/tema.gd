@@ -77,7 +77,7 @@ const LETRA_TITULO_JUEGO: int = 96
 const TITULO_PAUSA: StringName = &"TituloPausa"
 const LETRA_TITULO_PAUSA: int = 72
 ## Etiquetas (Label): con la letra de los botones (titulo de una ranura, pregunta de la tienda), la pregunta de una
-## confirmacion de las ranuras, el nombre de quien habla en dorado y un nombre tenue (las filas del inventario).
+## confirmacion de las ranuras, el nombre de quien habla en dorado y un texto tenue (rotulos, listas vacias, el motivo del detalle).
 const DESTACADA: StringName = &"Destacada"
 const PREGUNTA: StringName = &"Pregunta"
 const LETRA_PREGUNTA: int = 40

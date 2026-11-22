@@ -17,24 +17,29 @@ Términos del juego y del proyecto. Las piezas de escena (`FondoTapado`, `LuzSal
 | Carga | Cuánto pueden costar juntos los amuletos puestos. Empieza en 3 y su tope es 11 |
 | Carrera | Si al acabar el impulso hay dirección, el jugador sigue corriendo |
 | Coyote | Unos ticks después de dejar una orilla en que todavía se puede saltar |
+| Cucaracha | Enemigo de Las Raíces: camina, se entierra al ver al jugador cerca y sale debajo de él tras un aviso de polvo (`contenido/enemigos/cucaracha/`) |
+| Cupo | Uno de los 4 lugares de útiles puestos, dibujados en la mochila de gis de la página Útiles (`Partida.MAX_UTILES`) |
 | El Eterno | Personaje guía: en `celda_3` entrega la Pluma y en `raices_3`, el mapa de Las Raíces y la pluma del mapa (`contenido/npc/eterno/`) |
 | ESCOM | La escuela donde pasa la historia |
 | Golpe normal | Daño con retroceso e invulnerabilidad; no mueve al jugador de lugar |
+| Hongo escupidor | Enemigo fijo de Las Raíces: lanza esporas en arco y se cierra un rato al recibir un golpe (`contenido/enemigos/hongo_escupidor/`) |
 | Impulso | Lanzamiento horizontal sin gravedad (habilidad `impulso`) |
 | Inspiración | Recurso que se gana golpeando enemigos y se gasta en curar y en los poderes. Se pierde al morir |
 | La Celda | Primera zona, el sótano donde empieza el juego |
-| Las Raíces | Segunda zona, sin construir |
-| Mochila | Lo que queda donde moriste con tus PejeCoins. Hay una sola: morir con monedas borra la anterior (`nucleo/mochila.gd`) |
+| Las Raíces | Segunda zona: ocho salas en caja gris (`raices_1` a `raices_8`), sin arte; cierra con la pantalla de cierre |
+| Mochila | Lo que queda donde moriste con tus PejeCoins; se recupera con el reto de preguntas. Hay una sola: morir con monedas borra la anterior (`nucleo/mochila.gd`). No es la mochila de gis de la página Útiles, donde están los cupos |
 | Modo desarrollador | Configuración, Avanzado: muestra la zona de pruebas y deja saltar cinemáticas |
 | Parry | Parar un ataque enemigo marcado con un ataque propio |
+| Pantalla de cierre | Fin de la primera versión: «Continuará», autoguarda y vuelve al menú. Se llega por la salida de `raices_8` (`contenido/cierre/pantalla_cierre.tscn`) |
 | PejeCoins | La moneda del juego |
 | Peligro | Daño que quita vida aunque seas invulnerable y te devuelve al punto seguro (`peligro` en `nucleo/dano_contacto.gd`) |
 | Pizarrón | Aviso dibujado en una sala que enseña una acción (`nucleo/aviso_accion.gd`) |
 | Pluma, la | El arma. Tiene forma de katana. Sin ella no se ataca (habilidad `pluma`) |
 | Pluma de mapa | Habilidad que dibuja en el mapa lo visitado al descansar (`pluma_mapa`) |
 | Pogo | Rebote al atacar hacia abajo en el aire |
+| Polilla | Enemigo volador de Las Raíces: zumba en su sitio y, al ver al jugador, lo persigue por el aire (`contenido/enemigos/polilla/`) |
 | Punto seguro | Último suelo firme, al que devuelve un peligro |
-| Ranura | Una de las cuatro partidas guardadas. En equipo, también el lugar de un útil puesto |
+| Ranura | Una de las cuatro partidas guardadas |
 | Reto de preguntas | Preguntas de opción múltiple que dan una recompensa (`nucleo/reto_preguntas.gd`) |
 | Salto en cola | Pulsar saltar justo antes de aterrizar y que el salto salga al tocar el suelo |
 | Sinodales | Los tres antagonistas de la historia |

@@ -13,7 +13,7 @@ const COLOR_AVISO: Color = Color(1.7, 1.7, 1.7)
 ## El enemigo que lo lleva; lo fija nucleo/enemigo.gd antes de agregarlo.
 var enemigo: Enemigo = null
 ## Sus numeros: los del ejemplar, si no los de la ficha, si no datos_por_omision(). Los fija nucleo/enemigo.gd antes
-## de agregarlo; cada comportamiento los lee con su clase (datos as DatosVolador). Solo lectura.
+## de agregarlo; cada comportamiento los lee con su clase (datos as DatosPolilla). Solo lectura.
 var datos: DatosComportamiento = null
 
 

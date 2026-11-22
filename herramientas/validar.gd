@@ -40,7 +40,7 @@ const CARPETAS_CON_UID: PackedStringArray = ["res://contenido/", "res://nucleo/"
 const CARPETA_CONTENIDO: String = "res://contenido/"
 ## Scripts del mundo donde se avisa de un queue_redraw() sin guarda en _process (_avisar_redibujo).
 const CARPETAS_REDIBUJO: PackedStringArray = ["res://contenido/", "res://nucleo/"]
-## Carpeta de los guiones de prueba (_avisar_salas_sin_guion).
+## Carpeta de los guiones de prueba (_revisar_salas_sin_guion).
 const CARPETA_GUIONES: String = "res://herramientas/guiones/"
 ## Escena de la unica plataforma de una via (docs/sala.md, «Suelos y plataformas»).
 const ESCENA_DELGADA: String = "res://nucleo/piezas/plataforma_delgada.tscn"
@@ -77,7 +77,7 @@ func _ready() -> void:
 	_revisar_pruebas_aparte()
 	_revisar_tema("res://nucleo/musica.gd", "TEMA_MENU", Musica.TEMA_MENU)
 	_avisar_imagenes_sin_uso()
-	_avisar_salas_sin_guion()
+	_revisar_salas_sin_guion()
 	for aviso: String in _avisos:
 		print("AVISO ", aviso)
 	for fallo: String in _fallos:
@@ -697,6 +697,12 @@ func _revisar_sala(ruta: String, nodo: Node) -> void:
 		var banco: Banco = con_id as Banco
 		if banco.id != "banco_" + sala.id:
 			_fallos.append("%s (el banco %s debe tener id banco_%s)" % [ruta, banco.id, sala.id])
+		# Un banco del juego sin su mesa deja al jugador sentado en el aire (docs/errores/2026-11-17-banco-sin-mesa.md y
+		# 2026-11-21-banco-raices-3-sin-mesa.md): lleva su Silla con imagen y mira a un lado (docs/sala.md, «Bancos»).
+		if ruta.begins_with(CARPETA_CONTENIDO):
+			var silla: Sprite2D = banco.get_node_or_null(^"Silla") as Sprite2D
+			if silla == null or silla.texture == null or banco.mirando == 0:
+				_fallos.append("%s (el banco %s necesita su hijo Silla, un Sprite2D con imagen, y mirando distinto de 0)" % [ruta, banco.id])
 	_salas[sala.id] = {"ruta": ruta, "puertas": puertas}
 
 
@@ -954,9 +960,9 @@ static func _es_return(linea: String) -> bool:
 
 
 # Cada sala de contenido/ debe tener un guion (herramientas/guiones/) con una linea `escena <su ruta>`: el validador solo
-# revisa los guiones que nombra un funciones.json, y una sala sin guion pasaria el CI sin que nada la corra. Aviso por
-# ahora; falla cuando todas las salas de La Celda esten al dia (docs/validador.md, «Avisos del validador»).
-func _avisar_salas_sin_guion() -> void:
+# revisa los guiones que nombra un funciones.json, y una sala sin guion pasaria el CI sin que nada la corra. Fue aviso
+# hasta que todas las salas del juego tuvieron el suyo (21-nov-2026); desde entonces falla (docs/validador.md).
+func _revisar_salas_sin_guion() -> void:
 	var con_guion: Dictionary[String, bool] = {}
 	for guion: String in _guiones_en(CARPETA_GUIONES):
 		for linea: String in FileAccess.get_file_as_string(guion).split("\n"):
@@ -965,7 +971,7 @@ func _avisar_salas_sin_guion() -> void:
 	for id: String in _salas:
 		var ruta: String = _salas[id]["ruta"]
 		if ruta.begins_with(CARPETA_CONTENIDO) and not con_guion.has(ruta):
-			_avisos.append("%s (ningun guion de herramientas/guiones/ tiene `escena %s`: agregar el de la sala)" % [ruta, ruta])
+			_fallos.append("%s (ningun guion de herramientas/guiones/ tiene `escena %s`: agregar el de la sala)" % [ruta, ruta])
 
 
 # Los .guion bajo una carpeta, a cualquier profundidad.

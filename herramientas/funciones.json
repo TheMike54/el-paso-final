@@ -410,7 +410,7 @@
   {
     "id": "auditoria-final-documentos",
     "que": "Auditoria final de la documentacion contra el codigo, con cada hallazgo verificado por otro modelo antes de aplicarse",
-    "comprobacion": "manual: herramientas/revisar-enlaces.ps1 con rotos=0 y validar.ps1 con fallos=0 sobre la documentacion corregida; plan en planes/activos/herramientas-auditoria-arranque.md",
+    "comprobacion": "manual: herramientas/revisar-enlaces.ps1 con rotos=0 y validar.ps1 con fallos=0 sobre la documentacion corregida; plan en planes/cerrados/herramientas-auditoria-arranque.md",
     "pasa": true
   },
   {
@@ -448,5 +448,17 @@
     "que": "Tras compactar, al-compactar.ps1 reinyecta ademas la seccion de decisiones de cada plan activo (## Decidido... o ## Decisiones cerradas..., hasta el siguiente ##) y recorta git status para que la salida quede por debajo de 10000 caracteres; si aun asi se pasa, la primera linea lo avisa",
     "comprobacion": "manual: herramientas/probar-sin-commit.ps1 termina sin fallos con los casos de al-compactar (salida de menos de 10000 caracteres y la seccion de decisiones de cada plan activo que la tenga); tras /compact, Claude cita una decision de un plan activo sin leerlo",
     "pasa": false
+  },
+  {
+    "id": "validador-sala-sin-guion-falla",
+    "que": "Una sala de contenido/ sin un guion de herramientas/guiones/ con su linea escena hace fallar el validador (antes solo avisaba)",
+    "comprobacion": "herramientas/guiones/herramientas/validador.guion",
+    "pasa": true
+  },
+  {
+    "id": "validador-banco-con-silla",
+    "que": "Cada Banco de una sala de contenido/ lleva su hijo Silla (Sprite2D con imagen) y mirando distinto de 0; sin eso el validador falla",
+    "comprobacion": "herramientas/guiones/herramientas/validador.guion",
+    "pasa": true
   }
 ]

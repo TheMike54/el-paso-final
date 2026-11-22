@@ -163,12 +163,8 @@ func _llenar() -> void:
 static func perdido(mochila: Dictionary) -> String:
 	var monto: Variant = mochila.get("monto")
 	var sala: Variant = mochila.get("sala")
-	var cantidad: int = 0
-	if typeof(monto) == TYPE_INT:
-		cantidad = monto
-	elif typeof(monto) == TYPE_FLOAT:
-		var decimal: float = monto
-		cantidad = roundi(decimal)
+	# Como Partida.monto_mochila: un monto con decimales (guardado editado) se trunca.
+	var cantidad: int = Guardado.entero(monto, 0)
 	if cantidad <= 0:
 		return "Nada"
 	if typeof(sala) != TYPE_STRING:

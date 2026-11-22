@@ -91,8 +91,8 @@
   },
   {
     "id": "sala-raices-1-ruta",
-    "que": "La sala 1 de Las Raices recibe la caida desde celda_4 por la puerta arriba con aterrizaje duro y sin dano, ensena a curar con el pizarron antes de la salida y se sale provisionalmente por el hueco abajo hacia celda_3",
-    "comprobacion": "herramientas/guiones/contenido/raices_1_puertas.guion",
+    "que": "La sala 1 de Las Raices recibe la caida desde celda_4 por la puerta arriba con aterrizaje duro y sin dano, ensena a curar con el pizarron antes de la salida y se sale por la puerta derecha a raices_2",
+    "comprobacion": "herramientas/guiones/contenido/celda_4_tiro.guion;herramientas/guiones/contenido/raices_1_puertas.guion",
     "pasa": true
   },
   {
@@ -170,7 +170,7 @@
   {
     "id": "sala-raices-6-oculta",
     "que": "El techo oculto de raices_6 se rompe y la zona oculta da Caparazon de Cucaracha una sola vez y un coleccionable",
-    "comprobacion": "herramientas/guiones/contenido/raices_6_oculta.guion",
+    "comprobacion": "herramientas/guiones/contenido/raices_6_oculta.guion;herramientas/guiones/contenido/raices_6_oculta_una_vez.guion",
     "pasa": true
   },
   {
@@ -217,8 +217,8 @@
   },
   {
     "id": "sala-raices-2-puertas",
-    "que": "La puerta derecha de raices_1 lleva a raices_2 y la puerta izquierda de raices_2 lleva de vuelta a raices_1, sin dano; raices_1 ya no tiene el hueco del piso hacia celda_3",
-    "comprobacion": "herramientas/guiones/contenido/raices_2_puertas.guion",
+    "que": "La puerta derecha de raices_1 lleva a raices_2 y la puerta izquierda de raices_2 lleva de vuelta a raices_1, sin dano; raices_1_puertas cruza el piso de raices_1 sin caer",
+    "comprobacion": "herramientas/guiones/contenido/raices_1_puertas.guion;herramientas/guiones/contenido/raices_2_puertas.guion",
     "pasa": true
   },
   {
@@ -298,5 +298,23 @@
     "que": "En el telefono raices_1 a raices_5 se recorren con controles tactiles: cada subida se hace con el dedo, el Eterno da el mapa y la pluma una vez y cada puerta cruza sin dano",
     "comprobacion": "manual: docs/pruebas.md, «Las Raíces, primera mitad»",
     "pasa": false
+  },
+  {
+    "id": "sala-raices-4-oculta",
+    "que": "El techo oculto de raices_4 se rompe y la zona oculta da Patas de Cucaracha una sola vez; salir a raices_5 y volver no la da otra vez",
+    "comprobacion": "herramientas/guiones/contenido/raices_4_patas.guion;herramientas/guiones/contenido/raices_4_patas_una_vez.guion",
+    "pasa": true
+  },
+  {
+    "id": "sala-raices-4-oculta-telefono",
+    "que": "En el telefono el techo oculto de raices_4 se rompe con el dedo, la repisa se alcanza saltando y Patas de Cucaracha se da una sola vez",
+    "comprobacion": "manual: docs/pruebas.md, «Zona oculta de raices_4»",
+    "pasa": false
+  },
+  {
+    "id": "banco-raices-3-arte",
+    "que": "El banco de raices_3 lleva la mesa con sillas de Las Raices y sienta al jugador mirando a la derecha, como el de raices_7 (auditoria del 21-nov-2026)",
+    "comprobacion": "herramientas/guiones/contenido/raices_3_banco.guion",
+    "pasa": true
   }
 ]

@@ -1,6 +1,6 @@
 # Las Raíces, sala 4, ruta de puertas: desde la Entrada (x=134) camina un poco a la izquierda hasta la puerta
 # IZQUIERDA (x=70) que lleva de vuelta a raices_3 (a su puerta derecha, sobre la cornisa). La puerta derecha de esta
-# sala llega con raices_5.
+# sala la cruza raices_4_ruta.
 escena res://contenido/salas/raices/raices_4.tscn
 2 mover_izquierda press
 10 mover_izquierda release

@@ -4,18 +4,16 @@ extends Interactuable
 # aviso: la salida de raices_8).
 
 const PANTALLA: String = "res://contenido/cierre/pantalla_cierre.tscn"
-## Puerta provisional sin arte (como COLOR_PROVISIONAL de Puerta) y altura del aviso sobre el piso.
+## Tamano de la puerta provisional sin arte; el color y la altura del aviso son los de Puerta.
 const ANCHO: float = 120.0
 const ALTO: float = 200.0
-const COLOR_PROVISIONAL: Color = Color(0.6, 0.45, 0.2, 0.6)
-const ALTURA_AVISO: float = 290.0
 
 var _saliendo: bool = false
 
 
 func _draw() -> void:
-	dibujar_provisional(ANCHO, ALTO, COLOR_PROVISIONAL)
-	dibujar_aviso(ALTURA_AVISO)
+	dibujar_provisional(ANCHO, ALTO, Puerta.COLOR_PROVISIONAL)
+	dibujar_aviso(Puerta.ALTURA_AVISO)
 
 
 func _puede_interactuar() -> bool:

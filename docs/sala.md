@@ -142,7 +142,8 @@ Bancos:
 - El banco de una sala del juego lleva las dos cosas: el dibujo de la mesa con sillas como hijo (`Sprite2D` de
   133 × 82 px en `(-66, -78.72)`, sin centrar, `z_index` -20; en una zona oscura, con `nucleo/arte/sin_luz.tres`) y
   `mirando = 1`. Las poses de sentarse y de dormir están dibujadas sobre esa mesa: sin ella, o mirando al otro lado,
-  el jugador se apoya en el aire. Hoy lo llevan `celda_1` y `raices_7`.
+  el jugador se apoya en el aire. Hoy lo llevan `celda_1`, `raices_3` y `raices_7`; el validador falla con un banco de
+  `contenido/` sin `Silla` o con `mirando` 0 (`docs/validador.md`).
 - `id` es único en todo el juego. Con `ruta_guardado` en `Guardado.RUTA` (por omisión) guarda en
   `Partida.ruta_guardado`; una sala de prueba puede fijar otro archivo.
 - `Sala.llegada_a_banco` (estática): la sala nueva (`Sala.ruta_de(Partida.sala)`) pone al jugador en el banco `Partida.banco`. La usan la

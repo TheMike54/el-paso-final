@@ -1,7 +1,8 @@
 extends ComportamientoEnemigo
 # Polilla: vuela (su ficha va sin gravedad) y zumba alrededor de donde empezo hasta ver al jugador, cerca y sin una
 # pared en medio; entonces lo persigue acelerando por eje con un tope y choca con las paredes. Tras ticks_olvido ticks
-# sin verlo vuelve a zumbar en su sitio. Parte de volador.gd.
+# sin verlo vuelve a zumbar en su sitio. Como el Vengefly de Hollow Knight. La ficha de pruebas volador.tres usa
+# este mismo comportamiento.
 
 const DatosPolilla = preload("datos_polilla.gd")
 

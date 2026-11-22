@@ -1,13 +1,14 @@
 extends DatosComportamiento
-# Ajustes de la polilla, editables por ficha o por ejemplar. Parte de datos_volador.gd.
-# Los valores son los del volador de pruebas; se ajustan jugando en su sala de prueba.
+# Ajustes de la polilla, editables por ficha o por ejemplar; los usa tambien la ficha de pruebas volador.tres.
+# Los valores son de partida; se ajustan jugando en su sala de prueba.
 # El comportamiento solo lee este recurso; no lo modifica durante la ejecucion.
 
-## Distancia a la que despierta, en px.
+## Distancia a la que despierta, en px (7,6 u de Hollow Knight).
 @export var radio_alerta: float = 330.0
-## Aceleracion por eje al perseguir, en px/s^2: llega al tope en 1 s.
+## Aceleracion por eje al perseguir, en px/s^2: llega al tope en 1 s (en Hollow Knight, 2,25 u/s^2 = 98 px/s^2,
+## tardaba 2,2 s y en el telefono se sintio lento).
 @export var aceleracion: float = 217.0
-## Rapidez maxima por eje al perseguir, en px/s.
+## Rapidez maxima por eje al perseguir, en px/s (5 u/s).
 @export var tope: float = 217.0
 ## Ticks sin ver al jugador antes de olvidarlo (10 s).
 @export var ticks_olvido: int = 600

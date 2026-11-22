@@ -99,6 +99,8 @@ func ocultar_de_marco() -> void:
 	_mostrar()
 
 
+## Acerca a la zona actual y rehace el mapa. Publica para la prueba del mapa: el juego no la llama (el boton usa
+## cambiar_vista y el marco, mostrar_en_marco).
 func acercar() -> void:
 	acercado = true
 	_mostrar()

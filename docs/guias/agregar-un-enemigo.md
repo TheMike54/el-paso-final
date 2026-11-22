@@ -15,7 +15,8 @@ el `contenido/CLAUDE.md`. Antes de escribir el `.gd`, las skills `gdscript4` y `
    base (`caer`, `mover`, `pared_delante`, `orilla_delante`, `ve_al_jugador`, `atacar`, `disparar`, `lanzar_en_arco`;
    lista y contrato en `docs/enemigos.md`, «Enemigos»). Sus números de ajuste (radio, esperas) van como `@export` en un
    `datos_<comportamiento>.gd` que el comportamiento lee de `datos` (`docs/guias/comportamiento-de-enemigo.md`). Modelos:
-   `herramientas/salas/comportamientos/caminante.gd` (camina), `volador.gd`, `escupidor.gd`, `muneco_que_ataca.gd`.
+   `herramientas/salas/comportamientos/caminante.gd` (camina), `escupidor.gd`, `muneco_que_ataca.gd` y, para uno que
+   vuela, `contenido/enemigos/polilla/polilla.gd`.
    Si se parte de un modelo, copiar solo su texto a archivos nuevos en `contenido/enemigos/<id>/`, nunca su `.uid`; importar para generar los UID nuevos. Ningún archivo de `contenido/` debe referenciar `herramientas/`.
    Empieza con 3 o 4 líneas de comentario: qué hace y por qué (`CLAUDE.md`, «Cómo se trabaja»). Versión mínima,
    resumida de `caminante.gd`:

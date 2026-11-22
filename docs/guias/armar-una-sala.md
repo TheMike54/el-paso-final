@@ -6,13 +6,15 @@ núcleo, y dejarla validada y probada con un guion.
 **Antes de empezar:** haber hecho `docs/guias/empezar.md` y `docs/guias/como-trabajamos.md`; leer el
 `contenido/CLAUDE.md` y su `funciones.json`, `docs/sala.md` (tabla, viñetas de ids y «Cambio de sala»), `docs/validador.md` (lista de lo que revisa y «uid de escenas
 y recursos») y, en `docs/arte-y-rendimiento.md`, «Arte de zona». Modelo real: las salas de
-`contenido/salas/celda/` y la base `contenido/zonas/celda/sala_celda.tscn`.
+`contenido/salas/celda/` y la base `contenido/zonas/celda/sala_celda.tscn`; de Las Raíces, `contenido/salas/raices/raices_5.tscn` (con
+enemigos) y `contenido/salas/raices/raices_7.tscn` (con el objeto del impulso y su pizarrón), sobre la base
+`contenido/zonas/raices/sala_raices.tscn`.
 
 1. Decidir el id y el archivo de la sala: forma, numeración y ruta en `docs/sala.md`, «Dónde
    vive cada sala», y en `contenido/CLAUDE.md`, «Dónde va cada cosa». La numeración de una zona empieza en 1 y cada
    sala nueva toma el siguiente número libre (`celda_6`; los ids no se renumeran). La zona es una palabra sola, sin
-   guion bajo ni acentos. `raices` ya aparece en el contrato como nombre de zona (la de «Las Raíces»): no se usa para
-   otra cosa.
+   guion bajo ni acentos. `celda` y `raices` ya son zonas reales, con su base en `contenido/zonas/`: una zona nueva
+   toma un nombre que no esté usado.
 2. Zona nueva: crear antes su base en `contenido/zonas/<zona>/sala_<zona>.tscn`, como escena heredada de
    `contenido/zonas/celda/sala_celda.tscn` (no hay base común en el núcleo). Lleva los nodos contenedores de la
    sala (en esta guía `Entrada`, `Terreno` y `Peligros` son nodos del árbol, no grupos de Godot); cuáles son y qué
@@ -89,7 +91,9 @@ y recursos») y, en `docs/arte-y-rendimiento.md`, «Arte de zona». Modelo real:
     `celda_3` (`limites` de 3040 × 1240) cada pared tiene una forma de 80 × 1240: la izquierda en
     `position = Vector2(-40, 620)` y la derecha en `Vector2(3080, 620)`.
 11. Banco, si la sala tiene uno: instancia de `nucleo/banco.tscn`, hija de la raíz o dentro de una pieza, con `id` igual a
-    `banco_<id de la sala>` (ejemplo: nodo `Banco` de `celda_1.tscn`). El `id` es único en todo el juego.
+    `banco_<id de la sala>` (ejemplo: nodo `Banco` de `celda_1.tscn`). El `id` es único en todo el juego. En una sala del
+    juego lleva además su hijo `Silla` (la mesa con sillas) y `mirando = 1`, colocados como en `raices_7.tscn`
+    (`docs/sala.md`, «Bancos»): sin eso el validador falla.
 12. Muro que se rompe: `nucleo/muro_rompible.gd` en un `StaticBody2D` con `id` único en la sala, `golpes`, `tapas`
     y `descubre` (ejemplo: `Plafon` en `celda_3.tscn`). Romperlo exige atacar y atacar exige la habilidad `pluma`
     (`docs/jugador.md`, tabla de habilidades). La sala no puede darla (el validador exige `habilidades_de_prueba`

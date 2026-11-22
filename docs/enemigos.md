@@ -38,8 +38,8 @@ ataca es un script que la ficha referencia (`comportamiento`), en `contenido/ene
   dibujo; la sala la instancia y solo pone el `id` (modelo: `herramientas/salas/fichas/enemigo_debil_arte.tscn`).
 - **Datos del comportamiento**: los números que se ajustan (radios, tiempos, rapideces) no son
   `const` del comportamiento sino `@export` de un recurso que hereda de `DatosComportamiento`
-  (`nucleo/datos_comportamiento.gd`), uno por comportamiento (`datos_volador.gd` junto a `volador.gd`, sin
-  `class_name` en `herramientas/`). El comportamiento lo devuelve vacío en `datos_por_omision()` y lo lee de su var
+  (`nucleo/datos_comportamiento.gd`), uno por comportamiento (`datos_polilla.gd` junto a `polilla.gd`, cargado con
+  `preload` y sin `class_name`). El comportamiento lo devuelve vacío en `datos_por_omision()` y lo lee de su var
   `datos`, que el `Enemigo` fija antes de agregarlo: los del ejemplar (`Enemigo.datos`, recurso propio en la escena de
   la sala), si no los de la ficha (`FichaEnemigo.datos`), si no los por omisión. Se elige el recurso entero, no cada
   número: unos datos del ejemplar con solo el radio cambiado traen los demás números por omisión, no los de la
@@ -49,7 +49,7 @@ ataca es un script que la ficha referencia (`comportamiento`), en `contenido/ene
   comportamiento se descartan con un `ERROR` y se usa el siguiente. Son de solo lectura en ejecución: la misma copia
   la comparten todos los que la nombran (`tutorials/scripting/resources.rst:30`), así que no hace falta
   `resource_local_to_scene`. El estado que cambia al correr (contadores, a quién persigue) sigue en variables del
-  comportamiento. Modelo: `herramientas/salas/comportamientos/volador.gd`; guion `enemigo_datos`.
+  comportamiento. Modelo: `contenido/enemigos/polilla/polilla.gd`; guion `enemigo_datos`.
 
 - El enemigo lleva un `Golpeable` (recibe los golpes; público como `golpeable`) y un `DanoContacto` (su cuerpo, que
   daña al jugador y nunca se para). A vida 0 emite `Eventos.enemigo_vencido(ficha.id)`, pide el congelado común,
@@ -109,6 +109,19 @@ ataca es un script que la ficha referencia (`comportamiento`), en `contenido/ene
 - Enemigos nuevos: con estas mismas piezas (`Golpeable`, `DanoContacto`, comportamiento en
   la ficha); sus estados, con un `enum` mientras sean pocos; las zonas de golpe, formas invisibles aparte del dibujo;
   la animación, con `AnimatedSprite2D`.
+- **Enemigos de la campaña** (`contenido/enemigos/`, todos en caja gris y con reaparición `AL_VOLVER_A_ENTRAR`):
+  - Cucaracha (`contenido/enemigos/cucaracha/cucaracha.tres`): vida 2, daño 1, 100×70 px, camina a 100 px/s con
+    gravedad, botín 1. Camina como el caminante; a 280 px del jugador se entierra (`flotar`, invisible, sin dañar ni
+    recibir golpes) 30 ticks, avisa con polvo bajo el jugador 60 ticks, sale ahí y descansa 120 ticks. Si en ese punto
+    no hay suelo o espacio, sale donde se enterró (`contenido/enemigos/cucaracha/datos_cucaracha.gd`).
+  - Hongo escupidor (`contenido/enemigos/hongo_escupidor/hongo_escupidor.tres`): vida 3, 90×120 px, fijo, botín 2. Ve
+    al jugador a 900 px con vista libre, avisa con un destello 30 ticks y le lanza una espora en arco (`lanzar_en_arco`,
+    50°, daño 1, se puede desviar) cada 1,25 s. Un golpe que cuenta lo cierra 90 ticks: cerrado no dispara y
+    `bloquea_golpe` rebota los golpes (`contenido/enemigos/hongo_escupidor/datos_hongo_escupidor.gd`).
+  - Polilla (`contenido/enemigos/polilla/polilla.tres`): vida 2, daño 1, 80×70 px, sin gravedad (vuela), sin botín.
+    Zumba alrededor de donde empezó (60 px/s, a 24 px) hasta ver al jugador a 330 px sin pared en medio; entonces lo
+    persigue acelerando por eje (217 px/s², tope 217 px/s) y choca con las paredes. Tras 600 ticks sin verlo vuelve a
+    zumbar (`contenido/enemigos/polilla/datos_polilla.gd`).
 
 ## Jefes
 

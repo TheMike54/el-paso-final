@@ -1,4 +1,5 @@
-ACTIVO (escrito el 1-nov-2026; aprobado por la persona el 3-nov-2026; se empieza después de la entrega del 9-nov-2026)
+CERRADO (21-nov-2026: las partes 1 a 8 entraron a `main` con el PR #37 el 16-nov-2026; las pruebas en el teléfono que
+quedan pendientes están en `ESTADO.md`. Escrito el 1-nov-2026; aprobado por la persona el 3-nov-2026)
 
 # Menús de pausa según los mockups aprobados
 

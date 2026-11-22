@@ -2,7 +2,7 @@
 
 > Contiene la historia completa del juego, incluido el final.
 
-Qué juego se quiere construir. Este texto se escribió de nuevo para el manual a partir del diseño original y se cotejó con el código el 2-nov-2026. Cada apartado separa lo hecho de lo previsto. Lo pendiente lleva el número de la tabla de decisiones abiertas de [decisiones.md](decisiones.md).
+Qué juego se quiere construir. Este texto se escribió de nuevo para el manual a partir del diseño original y se cotejó con el código el 2-nov-2026; Las Raíces, los menús de pausa y la mochila se volvieron a cotejar el 21-nov-2026. Cada apartado separa lo hecho de lo previsto. Lo pendiente lleva el número de la tabla de decisiones abiertas de [decisiones.md](decisiones.md).
 
 ## Premisa
 
@@ -28,7 +28,7 @@ Cada ataque se anuncia con una pregunta en gis en el pizarrón. Orden: La Rúbri
 
 **Otros.** El vagonero atiende las estaciones. Sin definir: la vendedora del Barrio, el de la papelería, los Irregulares de la Ciudad Perdida y los compañeros de la llamada final.
 
-**Estado.** Hecho: el Eterno en `celda_3`, con su tira de animación y dos conversaciones. Previsto: todo lo demás. El arte de la protagonista mujer no existe.
+**Estado.** Hecho: el Eterno en `celda_3`, con su tira de animación y dos conversaciones, y en `raices_3`, donde da la pluma del mapa y el mapa de Las Raíces. Previsto: todo lo demás. El arte de la protagonista mujer no existe.
 
 ## El mundo
 
@@ -37,7 +37,7 @@ El juego va de abajo hacia arriba. La Celda baja una vez a Las Raíces, el punto
 | # | Zona | Qué es | Peligros y enemigos | Jefe y premio | Estado |
 |---|---|---|---|---|---|
 | 0 | La Celda | Sótano donde te encierran. Tutorial de movimiento | Varillas, cables, aspas | Sin jefe. La Pluma | Hecho |
-| 1 | Las Raíces | Cavernas con raíces, hongos que brillan y cosas caídas hace décadas | Cucaracha, Polilla, Hongo escupidor, raíces con espinas | Sin jefe. Impulso, con un objeto | Previsto |
+| 1 | Las Raíces | Cavernas con raíces, hongos que brillan y cosas caídas hace décadas | Cucaracha, Polilla, Hongo escupidor, raíces con espinas | Sin jefe. Impulso, con un objeto | Hecho en caja gris, sin arte |
 | 2 | Los Drenajes | Túneles inundados, luz por rejillas | Ajolote, Caracol de tubería, enjambre de moscos, aguas negras, vapor | Ajolote Gigante. Salto en pared | Previsto |
 | 3 | El Barrio Otaku | Mercado subterráneo de neón, pueblo central, con centro seguro y Callejones peligrosos | Gato de la suerte, máquina de cápsulas con patas, figura de colección, cables de neón | La Idol del Barrio, al ritmo de la música. Doble salto | Previsto |
 | 4 | La Ciudad Perdida | Ciudad melancólica de quienes no se titularon; prototipos abandonados | Robot seguidor de línea, dron casero, brazo robótico, Desvelado, engranes, pozo del olvido | Mini jefe: Ventanilla de Control Escolar. Jefe: El Perdido. Caída en picada | Previsto |
@@ -80,8 +80,8 @@ Las zonas usan enemigos con referencia real reconocible, para que el arte salga 
 | Arma | La pluma con que el Eterno nunca firmó se vuelve katana al sostenerla; al final vuelve a ser pluma | Hecho el arma. Mejoras en la papelería, por PejeCoins y cartuchos: previsto |
 | Vidas | 4 al empezar; más con fragmentos | Hecho el valor y la recompensa `VIDA_MAXIMA`; sin fragmentos en la primera versión |
 | Inspiración | Cada golpe llena un bloque; curar 1 vida cuesta 3 bloques; capacidad de 3 a 9 con módulos de RAM | Hecho: 11 puntos por bloque, 33 por curación, tope 99 |
-| Amuletos | 10, comprados o encontrados; carga de 3 a 11; cuestan de 1 a 3 | Hecho el sistema, con 4 efectos. En el catálogo, Patas y Caparazón de Cucaracha. Se ponen sentado en un banco. En la primera versión hay 2: Patas y Caparazón de Cucaracha |
-| Útiles | 5, en 4 cupos, sin gastar carga: siempre sobra uno | Hechos los 4 cupos, las fichas de los 5 con ícono y sus 5 efectos; solo la sala «Equipo» de la zona de pruebas los da |
+| Amuletos | 10, comprados o encontrados; carga de 3 a 11; cuestan de 1 a 3 | Hecho el sistema, con 4 efectos. Se ponen sentado en un banco. En el catálogo y en la primera versión hay 2: Patas de Cucaracha, en la repisa oculta de `raices_4`, y Caparazón de Cucaracha, en la de `raices_6` |
+| Útiles | 5, en 4 cupos, sin gastar carga: siempre sobra uno | Hechos los 4 cupos, las fichas de los 5 con ícono y sus 5 efectos. La Brújula se compra en la tienda de `raices_3`; los otros cuatro solo los da la sala «Equipo» de la zona de pruebas |
 | Muerte | Sin pantalla de muerte. Reapareces en el banco; tus PejeCoins quedan en una mochila | Hecho. La mochila queda en el último punto seguro |
 | Reto de la mochila | Una pregunta con examen | Hecho: una sola oportunidad; sin la meta, lo perdido se va. La bolsa tiene 12 preguntas (`contenido/preguntas_mochila.tres`) |
 | Enemigos que vuelven | Débiles al volver a entrar; fuertes al descansar | Hecho (`reaparicion` de `nucleo/ficha_enemigo.gd`) |
@@ -93,9 +93,9 @@ Las zonas usan enemigos con referencia real reconocible, para que el arte salga 
 | Mapa | Se descubre al andar; el Eterno da o vende los mapas | Hecho el sistema; el Eterno regala el de Las Raíces en `raices_3`, los demás sin colocar |
 | Jefes | 12 peleas con fases, aviso y cierre de arena | Hecho `nucleo/arena_jefe.gd` y fases; sin jefes en la campaña |
 
-**Amuletos previstos.** Patas de Cucaracha (más rapidez), Caparazón de Cucaracha (más invulnerabilidad), Pase Preferente (ataque más rápido), Corriendo a Clase (impulso mejor), Caché (Inspiración extra), Compilación rápida (curar en la mitad de tiempo), Compilación incremental (curar más barato), Poder de la Amistad (más daño con 1 vida), Tinta Extra (más alcance) y Camión-kun (revives una vez por descanso). Sus íconos entran como PNG sueltos; cada ficha llega con su efecto. Caché queda fuera de la primera versión y su ícono no se pinta.
+**Amuletos.** Hechos y colocados: Patas de Cucaracha (más rapidez) y Caparazón de Cucaracha (más invulnerabilidad). Previstos: Pase Preferente (ataque más rápido), Corriendo a Clase (impulso mejor), Caché (Inspiración extra), Compilación rápida (curar en la mitad de tiempo), Compilación incremental (curar más barato), Poder de la Amistad (más daño con 1 vida), Tinta Extra (más alcance) y Camión-kun (revives una vez por descanso). Sus íconos entran como PNG sueltos; cada ficha llega con su efecto. Caché queda fuera de la primera versión y su ícono no se pinta.
 
-**Útiles previstos.** Brújula, Gato de la Suerte (×1,5 PejeCoins), Log de Errores (Inspiración al recibir golpes), Cartera de Emergencia (conservas la mitad al morir) y Suela Antiderrapante (la mitad de empuje). Log, Cartera y Suela no se consiguen en la primera versión: se definen después de publicar.
+**Útiles.** Los cinco tienen ficha y efecto: Brújula, Gato de la Suerte (×1,5 PejeCoins), Log de Errores (Inspiración al recibir golpes), Cartera de Emergencia (conservas la mitad al morir) y Suela Antiderrapante (la mitad de empuje). En la campaña solo se consigue la Brújula, en la tienda de `raices_3`. Log, Cartera y Suela no se consiguen en la primera versión: se definen después de publicar.
 
 ## Controles
 
