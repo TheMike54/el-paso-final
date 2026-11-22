@@ -17,7 +17,7 @@ Términos del juego y del proyecto. Las piezas de escena (`FondoTapado`, `LuzSal
 | Carga | Cuánto pueden costar juntos los amuletos puestos. Empieza en 3 y su tope es 11 |
 | Carrera | Si al acabar el impulso hay dirección, el jugador sigue corriendo |
 | Coyote | Unos ticks después de dejar una orilla en que todavía se puede saltar |
-| El Eterno | Personaje guía de La Celda; entrega la Pluma (`contenido/npc/eterno/`) |
+| El Eterno | Personaje guía: en `celda_3` entrega la Pluma y en `raices_3`, el mapa de Las Raíces y la pluma del mapa (`contenido/npc/eterno/`) |
 | ESCOM | La escuela donde pasa la historia |
 | Golpe normal | Daño con retroceso e invulnerabilidad; no mueve al jugador de lugar |
 | Impulso | Lanzamiento horizontal sin gravedad (habilidad `impulso`) |

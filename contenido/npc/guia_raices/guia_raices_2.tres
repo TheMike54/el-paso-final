@@ -5,7 +5,7 @@
 
 [sub_resource type="Resource" id="linea_1"]
 script = ExtResource("2_linea")
-quien = "Guía"
+quien = "El Eterno"
 texto = "Sigue adelante. El banco está más allá, para descansar."
 
 [resource]

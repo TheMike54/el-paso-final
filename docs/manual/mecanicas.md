@@ -36,6 +36,6 @@ Estos elementos figuran en el alcance como aplazados; no se presenta como termin
 
 | Mecánica o contenido | Estado | Archivo principal | Guía o referencia |
 |---|---|---|---|
-| Primera versión de las zonas | El alcance pide dos zonas completas con tres enemigos; en `contenido/salas/` se identificaron escenas de La Celda. Falta construir y comprobar el resto del alcance. | `contenido/salas/celda/` | `docs/idea.md`, `docs/guias/armar-una-sala.md` |
+| Primera versión de las zonas | El alcance pide dos zonas completas con tres enemigos. La Celda (`celda_1` a `celda_5`) y Las Raíces (`raices_1` a `raices_8`, en caja gris, con la Cucaracha, la Polilla y el Hongo escupidor) existen y se recorren seguidas. Falta el arte de Las Raíces y comprobarlas en el teléfono. | `contenido/salas/` | `docs/idea.md`, `docs/guias/armar-una-sala.md` |
 | Habilidades de la campaña | Hay lógica y pruebas, pero la incorporación de las habilidades posteriores se aplaza en el alcance. | `nucleo/habilidades.gd` | `docs/idea.md`, `docs/jugador.md` |
 | Viaje rápido en las zonas iniciales | Sistema construido; sin estaciones en la primera versión. | `nucleo/estacion.gd` | `docs/idea.md`, `docs/componentes.md` |
