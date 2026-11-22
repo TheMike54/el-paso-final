@@ -90,6 +90,7 @@ Lo que ya se decidió y por qué, para no volver a discutirlo sin una razón nue
 | 3-nov-2026 | Las piezas jugables no llevan un color ni un contorno fijos | Quien hace el arte comprueba que la parte principal no se mezcle con el fondo |
 | 3-nov-2026 | Línea del Eterno en `raices_3`: «Ese mapa lo empecé cuando llegué. Con la pluma ya puedes terminarlo tú.» | Era la decisión abierta 10; la ficha entrega el mapa `raices` y `pluma_mapa` |
 | 3-nov-2026 | Plan de los menús de pausa aprobado; se construye después de la entrega del 9-nov | Toca el núcleo; no se mezcla con la actualización en Play |
+| 21-nov-2026 | La Polilla de la primera versión zumba en su sitio y persigue por el aire, como el volador de pruebas; no se queda quieta ni embiste como dice el diseño | Lo decidió la persona al revisar el PR de la primera mitad de Las Raíces; la Polilla ya está hecha y la cubre un guion. Plan: `planes/cerrados/contenido-raices-primera-mitad.md` |
 
 Planes cerrados con decisiones: `planes/cerrados/nucleo-piezas-celda.md` y `contenido-celda-salas.md` (27-oct); `nucleo-cierre-auditoria.md`, apartado «Tras las pruebas en el S50» (30-oct); `nucleo-auditoria-final.md` (1-nov).
 

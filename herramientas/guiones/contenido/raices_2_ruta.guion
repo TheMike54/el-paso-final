@@ -1,0 +1,11 @@
+# Las Raices, sala 2, ruta de la puerta derecha: desde la Entrada (x=134) camina a la derecha (6 px por tick), pasa
+# la Cucaracha A (x=700), salta el foso (x 1500 a 1690) desde x=1470 y salta al bloque (x 2150 a 2450, tope y=420)
+# desde x=2090, manteniendo cada salto 30 ticks; baja del bloque, pasa la Cucaracha B (x=2700) y cruza la puerta
+# derecha (x=3530) a raices_3.
+escena res://contenido/salas/raices/raices_2.tscn
+2 mover_derecha press
+225 saltar press
+255 saltar release
+328 saltar press
+358 saltar release
+fin 700

@@ -1,0 +1,9 @@
+# Llega por la puerta IZQUIERDA a raices_2, junto a su puerta derecha (valores medidos corriendo el guion).
+en 19 x 40 2
+escena res://contenido/salas/raices/raices_2.tscn
+x 3346 2
+y 560 2
+en_suelo true
+valor Jugador transicion 0
+senal /root/Eventos cambio_de_sala 1
+senal /root/Eventos jugador_danado 0

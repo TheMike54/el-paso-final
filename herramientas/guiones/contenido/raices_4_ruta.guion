@@ -1,0 +1,17 @@
+# Las Raíces, sala 4, ruta de la puerta derecha: desde la Entrada (x=134) camina a la derecha, sube por los dos bloques
+# al saliente y cruza la puerta DERECHA (x=2930) que lleva a raices_5. La Cucaracha y las Polillas pueden dañarlo en el
+# camino: este guion comprueba que se cruza la puerta, no que se esquiven. Cuadros medidos corriendo el guion.
+escena res://contenido/salas/raices/raices_4.tscn
+2 mover_derecha press
+259 saltar press
+279 saltar release
+305 saltar press
+325 saltar release
+351 saltar press
+371 saltar release
+397 saltar press
+417 saltar release
+443 saltar press
+463 saltar release
+560 mover_derecha release
+fin 600

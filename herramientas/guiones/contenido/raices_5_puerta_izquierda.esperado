@@ -1,0 +1,8 @@
+# Llega por la puerta DERECHA de raices_4, sobre el saliente (valores medidos corriendo el guion).
+escena res://contenido/salas/raices/raices_4.tscn
+x 2746 2
+y 559.93 2
+en_suelo true
+valor Jugador transicion 0
+senal /root/Eventos cambio_de_sala 1
+senal /root/Eventos jugador_danado 0

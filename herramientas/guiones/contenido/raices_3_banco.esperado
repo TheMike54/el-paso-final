@@ -1,0 +1,8 @@
+# Llega al banco y descansa (x medida corriendo el guion).
+x 700 2
+en_suelo true
+valor /root/Partida sala raices_3
+valor /root/Partida banco banco_raices_3
+valor Jugador descansando true
+senal /root/Eventos descanso_en_banco 1
+senal /root/Eventos partida_guardada 1

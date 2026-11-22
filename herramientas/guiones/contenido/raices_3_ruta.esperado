@@ -1,0 +1,9 @@
+# Llega por la puerta IZQUIERDA de raices_4, en el piso (valores medidos corriendo el guion). La x (medida: 752) tiene
+# tolerancia amplia porque el guion cruza una puerta sin ser la prueba de las puertas (docs/guiones.md).
+escena res://contenido/salas/raices/raices_4.tscn
+x 752 150
+y 1079.93 2
+en_suelo true
+valor Jugador transicion 0
+senal /root/Eventos cambio_de_sala 1
+senal /root/Eventos jugador_danado 0
