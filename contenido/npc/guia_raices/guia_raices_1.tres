@@ -6,7 +6,7 @@
 
 [sub_resource type="Resource" id="linea_1"]
 script = ExtResource("2_linea")
-quien = "Guía"
+quien = "El Eterno"
 texto = "Ese mapa lo empecé cuando llegué. Con la pluma ya puedes terminarlo tú."
 
 [sub_resource type="Resource" id="recompensa_pluma"]

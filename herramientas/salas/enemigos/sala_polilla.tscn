@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://k7a08bqsbqd0" path="res://nucleo/sala.gd" id="1_sala"]
 [ext_resource type="PackedScene" uid="uid://dgy2sncgkvcml" path="res://nucleo/enemigo.tscn" id="2_enemigo"]
-[ext_resource type="Resource" path="res://contenido/enemigos/polilla/polilla.tres" id="3_ficha"]
+[ext_resource type="Resource" uid="uid://c8xf7v2ubg8ya" path="res://contenido/enemigos/polilla/polilla.tres" id="3_ficha"]
 
 [sub_resource type="RectangleShape2D" id="forma_Suelo"]
 size = Vector2(1600, 40)

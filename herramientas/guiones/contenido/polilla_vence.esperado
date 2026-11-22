@@ -1,2 +1,3 @@
-# La Polilla persigue al jugador quieto y los golpes la vencen.
+# La Polilla ve al jugador quieto y lo persigue antes del primer golpe; dos de los seis golpes la vencen (vida 2).
+en 55 valor Enemigo/Comportamiento persiguiendo true
 senal /root/Eventos enemigo_vencido 1

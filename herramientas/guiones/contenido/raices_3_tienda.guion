@@ -1,5 +1,6 @@
-# Las Raíces, sala 3: desde la Entrada (x=134) camina a la derecha, pasa al guía y al banco hasta la tienda (x=1050) y
-# la abre con interactuar. Sin PejeCoins no compra la brújula: la compra con monedas la cubre nucleo/tienda.guion.
+# Las Raíces, sala 3: desde la Entrada (x=134) camina a la derecha, pasa al Eterno y al banco hasta la tienda (x=1050) y
+# la abre con interactuar, sin PejeCoins y sin daño. No intenta comprar: un guion no pulsa los botones del menú, y que
+# sin monedas no se compra lo cubre nucleo/tienda.guion.
 escena res://contenido/salas/raices/raices_3.tscn
 2 mover_derecha press
 150 mover_derecha release

@@ -1,4 +1,4 @@
-# Llega por la puerta IZQUIERDA a raices_2 (valor adrede incorrecto: la corrida imprime el real).
+# Llega por la puerta IZQUIERDA a raices_2, junto a su puerta derecha (valores medidos corriendo el guion).
 en 19 x 40 2
 escena res://contenido/salas/raices/raices_2.tscn
 x 3346 2

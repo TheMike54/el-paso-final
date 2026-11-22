@@ -1,5 +1,5 @@
 # Las Raíces, sala 3, ruta de la puerta derecha: desde la Entrada (x=134) camina a la derecha por el piso, sube por los
-# tres bloques sólidos (A, B, C) a la cornisa y cruza la puerta DERECHA (x=2230) que lleva a raices_4.
+# tres bloques sólidos (A, B, C) a la cornisa y cruza la puerta DERECHA (x=2330) que lleva a raices_4.
 escena res://contenido/salas/raices/raices_3.tscn
 2 mover_derecha press
 126 saltar press

@@ -2,11 +2,11 @@
 
 > Contiene la historia completa del juego, incluido el final.
 
-El juego de principio a fin tal como está el 2-nov-2026, y lo previsto por separado. Lo hecho se leyó en las escenas, en `contenido/funciones.json` y en sus guiones; para esta revisión no se jugó. Los términos están en [glosario.md](glosario.md).
+El juego de principio a fin tal como está el 2-nov-2026 (Las Raíces, el 21-nov-2026), y lo previsto por separado. Lo hecho se leyó en las escenas, en `contenido/funciones.json` y en sus guiones; para esta revisión no se jugó. Los términos están en [glosario.md](glosario.md).
 
 ## Hecho: lo que se juega hoy
 
-Hoy la campaña es una sola zona, La Celda, con cinco salas y sin enemigos. No tiene final: la última salida devuelve a una sala anterior.
+Hoy la campaña tiene dos zonas: La Celda, con cinco salas y sin enemigos, y Las Raíces, con ocho salas en caja gris (puesto al día el 21-nov-2026). Termina en la salida de `raices_8`, que lleva a la pantalla de cierre.
 
 ### Entrada
 
@@ -31,7 +31,11 @@ El orden natural es 1, 2, 3 y 4; la sala 5 es opcional y cuelga de la 2.
 | `celda_5` | Pasillo de arriba: foso de varillas y aspas, que golpean con retroceso y no devuelven a un punto seguro. PejeCoins en repisa y un Azulito junto a la pared izquierda | Premio por explorar | Hueco del piso, cae sobre el elevador de la 2 |
 | `celda_3` | El Eterno, pilas y raíces que se cortan, aviso de atacar. Nicho escondido con un Azulito: se sube por caja, estante, lámpara y ducto, y el plafón se rompe desde abajo con la Pluma | Atacar | Izquierda a la 2, boquete derecho a la 4 |
 | `celda_4` | Tiro hacia abajo junto a una raíz móvil sólida, cuyo aplastamiento quita una vida y devuelve al último punto seguro; cornisa con PejeCoins | La bajada | Boquete izquierdo a la 3, hueco del piso a raices_1 |
-| `raices_1` | Primera sala de Las Raíces: caída libre desde celda_4, PejeCoins sueltas y pizarrón que enseña la curación. Al final, hueco provisional de andamio en el piso que regresa a celda_3 | Enseña a curar | Hueco del techo desde celda_4, hueco del piso a celda_3 |
+| `raices_1` | Primera sala de Las Raíces: caída libre desde celda_4, PejeCoins sueltas y pizarrón que enseña la curación | Enseña a curar | Hueco del techo desde celda_4, puerta derecha a raices_2 |
+| `raices_2` | Primeras peleas: dos Cucarachas, un foso y un bloque que se saltan | El primer combate | Izquierda a raices_1, derecha a raices_3 |
+| `raices_3` | Sala vertical con el Eterno, que da el mapa de Las Raíces y la pluma del mapa; banco `banco_raices_3` y una tienda que vende la Brújula en 30 PejeCoins. Se sube por tres bloques sólidos a la cornisa | Guardar, el mapa y la tienda | Izquierda a raices_2, derecha (en la cornisa) a raices_4 |
+| `raices_4` | Sala vertical con una Cucaracha y dos Polillas; se sube por dos bloques al saliente | Pelear con la Polilla | Izquierda a raices_3, derecha (en el saliente) a raices_5 |
+| `raices_5` a `raices_8` | Segunda mitad de la zona: Hongos escupidores, raíces con espinas y plataforma de vaivén; Caparazón de Cucaracha oculto en `raices_6`; el impulso y un banco en `raices_7`, y dos huecos que lo exigen | Usar el impulso | Encadenadas por sus puertas; la salida de `raices_8` lleva a `contenido/cierre/pantalla_cierre.tscn` |
 
 ### El Eterno y la Pluma
 
@@ -41,7 +45,7 @@ Hablar con él no parece obligatorio: en la escena no hay nada que cierre el pas
 
 ### Dónde termina hoy
 
-El hueco del piso de `celda_4` baja a `raices_1`. La campaña termina provisionalmente en el hueco del piso de `raices_1`, que lleva de vuelta a `celda_3` por su boquete derecho mediante un andamio. Lo cubren los guiones `herramientas/guiones/contenido/celda_4_tiro.guion` y `herramientas/guiones/contenido/raices_1_puertas.guion`.
+El hueco del piso de `celda_4` baja a `raices_1`; de ahí las puertas encadenan `raices_1` a `raices_8`, y la salida de `raices_8` lleva a la pantalla de cierre («Continuará»). No hay vuelta a La Celda: el hueco provisional de `raices_1` se quitó. Lo cubren `herramientas/guiones/contenido/celda_4_tiro.guion` y los guiones de ruta y de puertas de cada sala de Las Raíces (`herramientas/guiones/contenido/raices_*`).
 
 ### Reglas que se viven en este tramo
 
@@ -55,15 +59,13 @@ El hueco del piso de `celda_4` baja a `raices_1`. La campaña termina provisiona
 
 Viven en el núcleo y se prueban en la zona de pruebas, pero ninguna sala de `contenido/` los usa hoy:
 
-- Enemigos: la carpeta `contenido/enemigos/` trae la Cucaracha y el Hongo escupidor, sin arte; solo `raices_5` y `raices_6` los colocan, y a esas salas todavía no se llega jugando. Sin enemigos en la campaña no se gana Inspiración, porque cortar pilas y raíces no da.
-- Curación, bola, doble salto, salto en pared y caída en picada: no se obtienen. El impulso lo da `raices_7`, a la que todavía no se llega jugando.
-- Amuletos y útiles: el catálogo trae Patas de Cucaracha, Caparazón de Cucaracha y los cinco útiles. Solo `raices_6` entrega uno (Caparazón, en su zona oculta), y a esa sala todavía no se llega jugando; los útiles solo los da la sala «Equipo» de la zona de pruebas.
-- Mapa: sin el objeto de mapa y sin `pluma_mapa`, no se dibuja nada.
-- Tienda, estaciones, retos de preguntas y jefes. Las PejeCoins se juntan, pero hoy no hay en qué gastarlas.
+- Curación, bola, doble salto, salto en pared y caída en picada: no se obtienen.
+- Útiles: el catálogo trae los cinco, y solo los da la sala «Equipo» de la zona de pruebas.
+- Estaciones, retos de preguntas y jefes.
 
 ## Previsto: el resto del camino
 
-Nada de esta parte está construido.
+Nada de esta parte está construido, salvo Las Raíces y su pantalla de cierre, que ya se juegan en caja gris (arriba); de Las Raíces falta el arte.
 
 | Tramo | Qué se espera |
 |---|---|

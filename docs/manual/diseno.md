@@ -47,7 +47,7 @@ El juego va de abajo hacia arriba. La Celda baja una vez a Las Raíces, el punto
 
 Las zonas usan enemigos con referencia real reconocible, para que el arte salga consistente. Cada una trae 3 enemigos comunes y un peligro; el jefe da habilidad y el mini jefe, amuleto.
 
-**Las Raíces.** La Cucaracha camina, se entierra y sale debajo de ti, con polvo de aviso. La Polilla revolotea, se queda quieta y embiste. El Hongo escupidor es fijo, lanza esporas en arco y se cierra al golpearlo. La zona enseña el combate y la curación.
+**Las Raíces.** La Cucaracha camina, se entierra y sale debajo de ti, con polvo de aviso. La Polilla revolotea, se queda quieta y embiste; la de la primera versión zumba en su sitio y persigue al jugador por el aire, sin quedarse quieta ni embestir (decidido el 21-nov-2026). El Hongo escupidor es fijo, lanza esporas en arco y se cierra al golpearlo. La zona enseña el combate y la curación.
 
 **Los jefes tardíos.** Ajolote Gigante: salta desde la fosa; luego se le arrancan las branquias, que vuelven a crecer si tardas; al final inunda la arena. El Perdido: pilota un robot hecho con trabajos abandonados, suelta drones y termina a pie. El Último Tren: embiste, azota el andén y te persigue por el túnel hasta que escapas rompiendo una rejilla.
 
@@ -56,14 +56,14 @@ Las zonas usan enemigos con referencia real reconocible, para que el arte salga 
 | Habilidad | Se obtiene en | Estado en código |
 |---|---|---|
 | La Pluma (arma) | La Celda | Hecho, en la campaña |
-| Impulso | Las Raíces | Hecho en el núcleo; lo da `raices_7`, a la que todavía no se llega jugando |
+| Impulso | Las Raíces | Hecho, en la campaña (`raices_7`) |
 | Salto en pared | Los Drenajes | Hecho en el núcleo; sin colocar |
 | Doble salto | El Barrio Otaku | Hecho en el núcleo; sin colocar |
 | Caída en picada | La Ciudad Perdida | Hecho en el núcleo; sin colocar |
 | Impulso fantasma | El Metro | Previsto; no está en `nucleo/habilidades.gd` |
 | Nadar en aguas negras | El Metro | Previsto; no está en `nucleo/habilidades.gd` |
 | La bola (proyectil) | Por decidir | Hecho en el núcleo; lugar y sentido por decidir |
-| Pluma de mapa | El Eterno en raices_3, junto con el mapa raices | Hecho en el núcleo; entrega sin colocar |
+| Pluma de mapa | El Eterno en raices_3, junto con el mapa raices | Hecho, en la campaña |
 
 **Uso obligado.** El tramo donde se obtiene una habilidad no tiene salida que no la requiera: la geometría enseña, sin texto. Es el espejo de los secretos visibles e inalcanzables del inicio.
 
@@ -90,7 +90,7 @@ Las zonas usan enemigos con referencia real reconocible, para que el arte salga 
 | Viaje rápido | La Línea Fantasma: una estación por zona, atendida por el vagonero, con fundido a negro | Hecho el sistema, con pago único opcional; sin estación en la primera versión |
 | Tienda | La vendedora del Barrio: fragmentos, mejora de carga, coleccionable | Hecho el sistema; sin colocar. En la primera versión, la tienda de `raices_3` vende la brújula |
 | Pachislot | Tragamonedas de PejeCoins, sin dinero real, con límite por descanso | Previsto; no hay código |
-| Mapa | Se descubre al andar; el Eterno da o vende los mapas | Hecho el sistema; sin colocar |
+| Mapa | Se descubre al andar; el Eterno da o vende los mapas | Hecho el sistema; el Eterno regala el de Las Raíces en `raices_3`, los demás sin colocar |
 | Jefes | 12 peleas con fases, aviso y cierre de arena | Hecho `nucleo/arena_jefe.gd` y fases; sin jefes en la campaña |
 
 **Amuletos previstos.** Patas de Cucaracha (más rapidez), Caparazón de Cucaracha (más invulnerabilidad), Pase Preferente (ataque más rápido), Corriendo a Clase (impulso mejor), Caché (Inspiración extra), Compilación rápida (curar en la mitad de tiempo), Compilación incremental (curar más barato), Poder de la Amistad (más daño con 1 vida), Tinta Extra (más alcance) y Camión-kun (revives una vez por descanso). Sus íconos entran como PNG sueltos; cada ficha llega con su efecto. Caché queda fuera de la primera versión y su ícono no se pinta.

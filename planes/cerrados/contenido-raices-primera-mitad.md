@@ -90,3 +90,23 @@ Se tomaron sin esperar respuesta y se avisan en un comentario de la tarjeta; si 
   quedar lista para instanciarse en otra sala sin tocar la ficha.
 - Choca con #26 y #25 de Vic en `mapa/indice_salas.tres` y en las tablas de docs: el segundo PR en fusionarse rebasea y
   regenera.
+
+## Decidido
+- 17-nov-2026: plan aprobado por la persona, como dice la primera línea; la frase literal no quedó registrada.
+- 21-nov-2026 19:30: los cambios pedidos en la revisión del PR los hace el dueño del repo sobre esta misma rama, en vez de
+  pedírselos al autor. «nosotros hay q hacer todos esos cambios se puede? hacer comits en los pr de ian?» y «ya le avise
+  adelante con todo».
+- 21-nov-2026 19:30: la Polilla se queda como está (zumba y persigue, como el volador); pasa a `docs/manual/decisiones.md`.
+  «1 asi se queda».
+- 21-nov-2026 19:30, decisiones de Claude al aplicar la revisión, con su porqué y lo medido:
+  - El guía de `raices_3` es El Eterno (`docs/manual/decisiones.md`, 3-nov-2026): el nodo instancia
+    `contenido/npc/eterno/eterno.tscn`, se llama `Eterno` y su id pasa a `eterno_raices`; las dos fichas dicen
+    `quien = "El Eterno"`. Las fichas se quedan en `contenido/npc/guia_raices/`: moverlas se hace desde el editor.
+  - `raices_3_tienda` no intenta comprar: un guion no pulsa los botones del menú (`Input.action_press` no genera eventos,
+    `docs/guiones.md`). La entrada `sala-raices-3-tienda` deja de afirmarlo y remite a `nucleo/tienda.guion`, cuyo caso
+    «con lo caro no alcanza aunque se pida» lo cubre.
+  - `raices_3_ruta`: la x de llegada medida es 752; la tolerancia baja de 450 a 150, como en `raices_4_ruta`.
+  - `polilla_vence`: agrega `en 55 valor Enemigo/Comportamiento persiguiendo true`; con `false` el guion falla
+    (`obtenido=true`), así que la línea sí se evalúa.
+  - Las entradas de este PR en `contenido/funciones.json` pasan al final, después de las que llegaron de `main`, y se
+    agregan `polilla-vence` y las tres pruebas manuales (Polilla, tienda y primera mitad) con `"pasa": false`.
