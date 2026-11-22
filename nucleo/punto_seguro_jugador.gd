@@ -50,6 +50,9 @@ func llegada_con_suelo() -> Vector2:
 	return punto_llegada
 
 
+
+# El primer solido de ESCENARIO que no se mueve entre desde y hasta: repite el rayo excluyendo cada pieza que
+# Vaiven.movil_de da por movil (classes/class_physicsdirectspacestate2d.rst, el rid del choque). Vacio si no hay.
 func suelo_fijo_bajo(desde: Vector2, hasta: Vector2) -> Dictionary:
 	var excluir: Array[RID] = []
 	for _intento: int in Jugador.RAYO_SUELO_MOVILES_MAX:
@@ -65,6 +68,12 @@ func volver_al_punto_seguro() -> void:
 	jugador.ticks_desde_peligro = 0
 
 
+# Si bajo el punto (los pies) hay un solido de ESCENARIO a menos de Jugador.RAYO_SUELO_ABAJO px que no se mueve.
+# Un rayo en el centro y uno en cada orilla del cuerpo: parado en una orilla con el centro sobre el vacio sigue en el
+# suelo, como para is_on_floor(). Solo cuenta el primer choque de cada rayo, sin atravesar lo que se mueve (a
+# diferencia de suelo_fijo_bajo): una plataforma sobre los pinchos tiene suelo a menos de
+# Jugador.RAYO_SUELO_ABAJO px bajo ella, y ese punto quedaria sobre los pinchos. A cambio, un punto con un elevador
+# posado en el suelo se descarta y se usa otro.
 func hay_suelo_fijo(punto: Vector2) -> bool:
 	for lado: float in Jugador.RAYOS_SUELO_X:
 		var pie: Vector2 = punto + Vector2(lado, 0.0)

@@ -1,5 +1,5 @@
 # El techo rompible cae, la zona oculta da Patas de Cucaracha una sola vez y el jugador queda en la repisa oculta (y=359).
-# Valores por medir corriendo el guion.
+# Valores medidos corriendo el guion.
 escena res://contenido/salas/raices/raices_4.tscn
 valor /root/Partida amuletos_tenidos [&"patas_cucaracha"]
 senal /root/Eventos amuleto_obtenido 1

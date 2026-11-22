@@ -1,0 +1,16 @@
+# Caparazon de Cucaracha y el coleccionable se dan una sola vez: tras salir a raices_7 y volver, el jugador sube otra
+# vez a la repisa oculta (y=360) y camina hasta su orilla (x=2360, medido) pasando por el amuleto (x=2310) y el
+# coleccionable (x=2370, su area lo alcanza) sin recibirlos otra vez: las senales siguen en 1. Si el coleccionable
+# volviera a aparecer, su senal llegaria a 2 (comprobado); el amuleto, aunque reapareciera, Partida.obtener_amuleto no
+# lo da dos veces. A mitad del guion esta en raices_7; antes del segundo salto, de vuelta en raices_6 bajo el hueco
+# (x=2216, medido).
+en 400 escena res://contenido/salas/raices/raices_7.tscn
+en 528 escena res://contenido/salas/raices/raices_6.tscn
+en 528 x 2216 2
+escena res://contenido/salas/raices/raices_6.tscn
+valor /root/Partida amuletos_tenidos [&"caparazon_cucaracha"]
+senal /root/Eventos amuleto_obtenido 1
+senal /root/Eventos coleccionable_obtenido 1
+x 2360 2
+y 360 2
+en_suelo true

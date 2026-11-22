@@ -2,7 +2,7 @@
 
 > Contiene la historia completa del juego, incluido el final.
 
-El juego de principio a fin tal como está el 2-nov-2026 (Las Raíces, el 21-nov-2026), y lo previsto por separado. Lo hecho se leyó en las escenas, en `contenido/funciones.json` y en sus guiones; para esta revisión no se jugó. Los términos están en [glosario.md](glosario.md).
+El juego de principio a fin tal como está el 2-nov-2026 (Las Raíces, la pausa con sus menús y la mochila, revisados el 21-nov-2026), y lo previsto por separado. Lo hecho se leyó en las escenas, en `contenido/funciones.json` y en sus guiones; para esta revisión no se jugó. Los términos están en [glosario.md](glosario.md).
 
 ## Hecho: lo que se juega hoy
 
@@ -34,7 +34,7 @@ El orden natural es 1, 2, 3 y 4; la sala 5 es opcional y cuelga de la 2.
 | `raices_1` | Primera sala de Las Raíces: caída libre desde celda_4, PejeCoins sueltas y pizarrón que enseña la curación | Enseña a curar | Hueco del techo desde celda_4, puerta derecha a raices_2 |
 | `raices_2` | Primeras peleas: dos Cucarachas, un foso y un bloque que se saltan | El primer combate | Izquierda a raices_1, derecha a raices_3 |
 | `raices_3` | Sala vertical con el Eterno, que da el mapa de Las Raíces y la pluma del mapa; banco `banco_raices_3` y una tienda que vende la Brújula en 30 PejeCoins. Se sube por tres bloques sólidos a la cornisa | Guardar, el mapa y la tienda | Izquierda a raices_2, derecha (en la cornisa) a raices_4 |
-| `raices_4` | Sala vertical con una Cucaracha y dos Polillas; se sube por dos bloques al saliente | Pelear con la Polilla | Izquierda a raices_3, derecha (en el saliente) a raices_5 |
+| `raices_4` | Sala vertical con una Cucaracha y dos Polillas; se sube por dos bloques al saliente. Sobre el saliente, un techo que se rompe con golpes hacia arriba esconde una repisa con Patas de Cucaracha | Pelear con la Polilla | Izquierda a raices_3, derecha (en el saliente) a raices_5 |
 | `raices_5` a `raices_8` | Segunda mitad de la zona: Hongos escupidores, raíces con espinas y plataforma de vaivén; Caparazón de Cucaracha oculto en `raices_6`; el impulso y un banco en `raices_7`, y dos huecos que lo exigen | Usar el impulso | Encadenadas por sus puertas; la salida de `raices_8` lleva a `contenido/cierre/pantalla_cierre.tscn` |
 
 ### El Eterno y la Pluma
@@ -43,25 +43,33 @@ En `celda_3`, la primera conversación son cinco líneas y entrega la habilidad 
 
 Hablar con él no parece obligatorio: en la escena no hay nada que cierre el paso hacia `celda_4`. Sin comprobar jugando.
 
+### Pausa y menús
+
+- La pausa (botón de pausa o Atrás) detiene el juego y ofrece Continuar, la configuración con el editor de botones y salir al menú; pausar no guarda (`nucleo/pausa.gd`).
+- El marco de menús muestra cuatro páginas en ciclo, Inventario, Amuletos, Útiles y Mapa, con una barra arriba que nombra la actual y sus vecinas y una flecha a cada lado (`nucleo/marco_menus.gd`). El botón del mapa lo abre en Mapa; el de inventario, en Amuletos si el jugador está sentado en un banco y en Inventario si no.
+- Inventario solo se lee: vida, Inspiración, PejeCoins, el arma, lo perdido al morir, las habilidades y los mapas (`nucleo/pagina_inventario.gd`).
+- Amuletos y Útiles se eligen en cualquier lugar, pero se ponen o se quitan solo sentado en un banco; los útiles van en los 4 cupos de una mochila de gis (`nucleo/pantalla_amuletos.gd`, `nucleo/pantalla_utiles.gd`).
+- Mapa tiene un botón de vista que alterna entre la zona acercada y el mapa completo (`mapa/pantalla_mapa.gd`).
+
 ### Dónde termina hoy
 
-El hueco del piso de `celda_4` baja a `raices_1`; de ahí las puertas encadenan `raices_1` a `raices_8`, y la salida de `raices_8` lleva a la pantalla de cierre («Continuará»). No hay vuelta a La Celda: el hueco provisional de `raices_1` se quitó. Lo cubren `herramientas/guiones/contenido/celda_4_tiro.guion` y los guiones de ruta y de puertas de cada sala de Las Raíces (`herramientas/guiones/contenido/raices_*`).
+El hueco del piso de `celda_4` baja a `raices_1`; de ahí las puertas encadenan `raices_1` a `raices_8`, y la salida de `raices_8` lleva a la pantalla de cierre («Continuará»). No hay vuelta a La Celda: el hueco provisional de `raices_1` se quitó. Lo cubren `herramientas/guiones/contenido/celda_4_tiro.guion` y un guion de recorrido por sala de Las Raíces (de ruta o de puertas, según la sala) (`herramientas/guiones/contenido/raices_*`).
 
 ### Reglas que se viven en este tramo
 
 - Empiezas con 4 vidas. Un peligro quita una y devuelve al último suelo firme; un golpe normal empuja y da invulnerabilidad.
-- Al morir reapareces en el banco. Tus PejeCoins quedan en una mochila en el último punto seguro. Interactúas con ella y recuperas las monedas enseguida, porque el juego todavía no tiene preguntas para ella.
+- Al morir reapareces en el banco. Tus PejeCoins quedan en una mochila en el último punto seguro. Interactúas con ella y abre un reto de 3 preguntas al azar de `contenido/preguntas_mochila.tres` (12 en total): con 2 aciertos recuperas las monedas; si no, se pierden. Es una sola oportunidad y la mochila desaparece en los dos casos (`nucleo/mochila.gd`).
 - El banco guarda; también autoguardan determinados progresos, la muerte y el paso a segundo plano. Recoger PejeCoins no autoguarda.
 - La Celda no tiene música, a propósito, salvo el tramo del banco.
-- El botón de curar está oculto en toda la zona (`botones_ocultos` de `contenido/zonas/celda/sala_celda.tscn`).
+- El botón de curar está oculto en toda La Celda (`botones_ocultos` de `contenido/zonas/celda/sala_celda.tscn`). En Las Raíces se ve: `raices_1` lo enseña con un pizarrón (`botones_por_ensenar` de `contenido/salas/raices/raices_1.tscn`).
 
 ### Lo que existe en código y no aparece en la campaña
 
 Viven en el núcleo y se prueban en la zona de pruebas, pero ninguna sala de `contenido/` los usa hoy:
 
-- Curación, bola, doble salto, salto en pared y caída en picada: no se obtienen.
-- Útiles: el catálogo trae los cinco, y solo los da la sala «Equipo» de la zona de pruebas.
-- Estaciones, retos de preguntas y jefes.
+- Bola, doble salto, salto en pared y caída en picada: no se obtienen. Curar no es una habilidad: está desde el principio y solo La Celda oculta su botón.
+- Útiles: la Brújula se compra en la tienda de `raices_3`; los otros cuatro solo los da la sala «Equipo» de la zona de pruebas.
+- Estaciones, retos de preguntas colocados en una sala (el de la mochila sí corre al morir) y jefes.
 
 ## Previsto: el resto del camino
 
@@ -69,7 +77,7 @@ Nada de esta parte está construido, salvo Las Raíces y su pantalla de cierre, 
 
 | Tramo | Qué se espera |
 |---|---|
-| Las Raíces | La Celda baja a esta zona, el punto más bajo del mundo. Plan de ocho salas, tres enemigos, raíces con espinas, pizarrón de curar antes del primer enemigo, sin jefe. Dos amuletos: Patas de Cucaracha en `raices_4` y Caparazón de Cucaracha, oculto en `raices_6` junto a un coleccionable. Tienda en `raices_3`, que vende la brújula. El impulso se obtiene con un objeto cerca del final, y un hueco obliga a usarlo |
+| Las Raíces | Ya se juega en caja gris (tabla de salas, arriba); falta el arte de sus salas (solo el banco tiene dibujo) y el de sus tres enemigos |
 | Salir de Las Raíces | La primera versión cierra con una pantalla propia: «Continuará» y, en chico, «Fin de la primera versión» |
 | Zonas 2 a 5 | Los Drenajes, El Barrio Otaku, La Ciudad Perdida y El Metro: cada una da una habilidad al vencer a su jefe |
 | El Estacionamiento | Sin enemigos: suena el teléfono, tus compañeros te esperan |

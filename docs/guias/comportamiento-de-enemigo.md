@@ -28,7 +28,7 @@ Además:
   devuelve en `datos_por_omision()` y los lee de `datos`. Así un ejemplar o una ficha pueden traer los suyos. Los del
   ejemplar reemplazan **todos** los de la ficha: para cambiar un solo número en una sala, se copia el `.tres` de datos
   de la ficha (*Make Unique*) y se cambia solo ese
-  (`docs/enemigos.md`, «Datos del comportamiento»; modelo: `volador.gd` y `datos_volador.gd`).
+  (`docs/enemigos.md`, «Datos del comportamiento»; modelo: `polilla.gd` y `datos_polilla.gd`).
 - El arte se dibuja **mirando a la derecha**: el núcleo lo refleja cuando el enemigo mira a la izquierda. Un dibujo
   hecho mirando a la izquierda se ve caminando de espaldas, y ningún guion lo detecta.
 - Lo que un guion necesita leer (cuántas veces giró, cuántos disparos) va en una variable pública, como `giros` en
@@ -36,27 +36,27 @@ Además:
 
 ## Ejemplo: datos por omisión y acceso tipado
 
-En `herramientas/salas/comportamientos/volador.gd`, el script de datos se precarga y `_ready()` convierte
+En `contenido/enemigos/polilla/polilla.gd`, el script de datos se precarga y `_ready()` convierte
 `datos` al tipo propio. El núcleo ya eligió y asignó ese recurso antes de agregar el comportamiento.
 Si ni el ejemplar ni la ficha aportan datos, `datos_por_omision()` devuelve una instancia con los valores
-por omisión de `datos_volador.gd` (extracto: se omiten las demás variables y el resto de `actuar()`):
+por omisión de `datos_polilla.gd` (extracto: se omiten las demás variables y el resto de `actuar()`):
 
 ```gdscript
 extends ComportamientoEnemigo
 
-const DatosVolador = preload("datos_volador.gd")
+const DatosPolilla = preload("datos_polilla.gd")
 
 var persiguiendo: bool = false
 
-var _d: DatosVolador = null
+var _d: DatosPolilla = null
 
 
 func _ready() -> void:
-	_d = datos as DatosVolador
+	_d = datos as DatosPolilla
 
 
 func datos_por_omision() -> DatosComportamiento:
-	return DatosVolador.new()
+	return DatosPolilla.new()
 
 
 func actuar() -> void:

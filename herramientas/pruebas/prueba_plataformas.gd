@@ -187,7 +187,7 @@ func _punto_seguro_en_la_pausa() -> void:
 	var en_pausa: bool = is_equal_approx(elevador.global_position.y, ELEVADOR_ARRIBA)
 	# Ultimo eslabon de la cadena con una llegada sobre el elevador: el rayo largo lo atraviesa hasta el suelo fijo.
 	var arriba: Vector2 = Vector2(elevador.global_position.x, ELEVADOR_ARRIBA - Jugador.RAYO_SUELO_ARRIBA)
-	var abajo: Dictionary = jugador._suelo_fijo_bajo(arriba, Vector2(arriba.x, 720.0))
+	var abajo: Dictionary = jugador._punto_seguro.suelo_fijo_bajo(arriba, Vector2(arriba.x, 720.0))
 	_caso("punto seguro: bajo una llegada sobre el elevador, el rayo largo da el suelo fijo y no el elevador",
 		en_pausa and not abajo.is_empty() and absf((abajo["position"] as Vector2).y - SUELO_Y) < 1.0)
 	jugador.recibir_dano(1, jugador.global_position.x, true)

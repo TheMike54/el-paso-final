@@ -7,7 +7,7 @@ extends "res://herramientas/pruebas/prueba_base.gd"
 const ESCENA: PackedScene = preload("res://herramientas/salas/sala_equipo.tscn")
 const AMULETOS: Array[StringName] = [
 	&"amuleto_prueba", &"amuleto_velocidad", &"amuleto_escudo",
-	&"amuleto_inspiracion",
+	&"amuleto_inspiracion", &"patas_cucaracha",
 ]
 
 

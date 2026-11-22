@@ -1,6 +1,6 @@
 # Las Raíces, sala 4, zona oculta: Patas de Cucaracha se da una sola vez. Primero igual que raices_4_patas (rompe el techo,
 # sube a la repisa y toma Patas). Luego baja por el hueco, sale por la puerta derecha a raices_5, vuelve por su puerta
-# izquierda y sube otra vez a la repisa: el amuleto ya no está y la señal sigue en 1. Los cuadros se miden.
+# izquierda y sube otra vez a la repisa: el amuleto ya no está y la señal sigue en 1. Cuadros medidos corriendo el guion.
 escena res://contenido/salas/raices/raices_5.tscn
 habilidad pluma
 2 mover_izquierda press

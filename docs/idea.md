@@ -12,7 +12,7 @@ tiene que subir, zona por zona, hasta su salón y vencer a los tres sinodales qu
 | Problema observable | En esos ratos buscan algo para entretenerse desde el teléfono |
 | Alternativa actual | Redes sociales u otros juegos |
 | Tarea principal | Avanzar y descubrir zonas, guardando en bancos para continuar en otro momento |
-| Criterio de éxito | Una persona que nunca lo ha jugado entiende los controles sin que nadie le explique y cruza la primera zona hasta obtener el impulso |
+| Criterio de éxito | Una persona que nunca lo ha jugado entiende los controles sin que nadie le explique y cruza La Celda y Las Raíces hasta obtener el impulso, que está en la segunda zona |
 | Hipótesis sin validar | Los alumnos de ESCOM jugarían El Paso Final para entretenerse en sus ratos libres |
 
 ## Historia de usuario y criterio de aceptación
@@ -29,10 +29,10 @@ ese mismo banco con las mismas vidas y las mismas habilidades.
 |---|---|
 | Inicio | Escribir su nombre (el personaje es el hombre; la elección de mujer u hombre existe pero está oculta hasta tener el arte de la mujer); menú con cuatro ranuras de partida (nueva o continuar), con estados vacío, dañado y de otra versión |
 | Historia | Intro en video (la cinemática antes de La Celda) y escena de los sinodales |
-| Zonas | Las dos primeras, completas: tres enemigos y raíces con espinas, sin jefe: la primera zona todavía enseña a jugar |
+| Zonas | Las dos primeras, completas: tres enemigos y raíces con espinas, sin jefe: la primera zona todavía enseña a jugar. La salida de Las Raíces lleva a la pantalla de cierre de la versión |
 | Progresión | La habilidad de impulso, el arma base y dos amuletos en Las Raíces: Patas de Cucaracha y Caparazón de Cucaracha |
 | Sistemas | Cuatro vidas, curación, bancos y guardado, lo perdido al morir (mochila), y un reto de preguntas para recuperar lo perdido al morir; una tienda de PejeCoins, que vende la brújula |
-| Personajes | Un personaje guía que entrega el arma y el mapa de la primera zona |
+| Personajes | Un personaje guía que entrega el arma en La Celda y, en Las Raíces, el mapa de esa zona y la pluma del mapa |
 | Teléfono | Controles táctiles personalizables y modo de bajo detalle para gama baja |
 | Idioma | Solo español |
 | Desarrollo | Zona de pruebas básica: pasillo de mecánicas, arena de jefes y panel de trucos. Viaja también en la versión publicada y aparece con el modo desarrollador (`docs/contrato.md`, «Paquete de publicación») |

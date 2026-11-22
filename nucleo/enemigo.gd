@@ -1,7 +1,8 @@
 class_name Enemigo
 extends CharacterBody2D
 # Enemigo definido por ficha; agrega su ComportamientoEnemigo sin conocer el tipo y queda quieto si no tiene script.
-# Choca con el escenario, no con el jugador; el volador flota. Golpeable recibe golpes y el contacto dana al jugador.
+# Choca con el escenario, no con el jugador; una ficha sin gravedad flota. Golpeable recibe golpes y el contacto
+# dana al jugador.
 # Al vencerlo emite enemigo_vencido y desaparece; Partida recuerda los fuertes hasta descansar o morir.
 # El arte reemplaza la caja gris con un AnimatedSprite2D en una escena heredada de enemigo.tscn, como el Npc.
 
@@ -18,7 +19,7 @@ const PREFIJO_BOTIN: String = "botin_"
 const SALTO_BOTIN: float = 60.0
 const SUBIDA_BOTIN: float = 0.2
 const CAIDA_BOTIN: float = 0.35
-## Hasta donde busca suelo bajo un enemigo que vuela; sin suelo, el botin cae donde estaba.
+## Hasta donde busca suelo bajo el enemigo vencido para el botin; sin suelo, el botin cae donde estaba.
 const ALCANCE_SUELO: float = 2000.0
 
 ## Vida, dano, tamano y reaparicion del enemigo: los datos, en una ficha .tres.

@@ -1,6 +1,6 @@
 # Manual de El Paso Final
 
-Para quien llega de fuera y va a continuar el juego sin haber participado en él. Revisado el 2-nov-2026 contra el código de la rama de cierre de auditoría.
+Para quien llega de fuera y va a continuar el juego sin haber participado en él. Revisado el 2-nov-2026 contra el código de la rama de cierre de auditoría; Las Raíces, los menús de pausa y la mochila, el 21-nov-2026.
 
 ## Por dónde empezar
 

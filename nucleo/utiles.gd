@@ -20,5 +20,6 @@ const FACTOR_BOTIN_GATO: float = 1.5
 ## Suela Antiderrapante: multiplica el retroceso de un golpe recibido (Jugador.recibir_dano).
 const FACTOR_EMPUJE_SUELA: float = 0.5
 
-## Todos, en el orden de la pagina Utiles.
+## Todos, en el orden del catalogo del juego (contenido/equipo.tres). La pagina Utiles lista en el orden en que se
+## obtuvieron (Partida.utiles_tenidos); esta lista la usan las pruebas y la guia de amuletos y utiles.
 const TODOS: Array[StringName] = [BRUJULA, GATO_SUERTE, LOG_ERRORES, CARTERA_EMERGENCIA, SUELA_ANTIDERRAPANTE]

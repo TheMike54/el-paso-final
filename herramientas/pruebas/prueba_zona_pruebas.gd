@@ -116,7 +116,7 @@ func _revisar_enemigos(zona: Control, lista: GridContainer) -> void:
 	for comportamiento: String in ["caminante", "volador", "escupidor", "muneco_que_ataca"]:
 		var sala: String = "enemigos/sala_%s.tscn" % comportamiento
 		presentes = presentes and nuevas.has(sala) and not originales.has(sala) and actuales.has(carpeta + sala)
-	_caso("los cuatro comportamientos aparecen sin anotarlos en GRUPOS", presentes)
+	_caso("las cuatro salas de enemigos de prueba aparecen sin anotarlos en GRUPOS", presentes)
 	var botones_bien: bool = lista.get_child_count() == esperadas.size()
 	for j: int in range(mini(lista.get_child_count(), esperadas.size())):
 		var boton: Button = lista.get_child(j) as Button

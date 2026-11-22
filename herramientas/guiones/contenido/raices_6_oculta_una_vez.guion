@@ -1,0 +1,35 @@
+# Las Raices, sala 6, zona oculta: Caparazon de Cucaracha y el coleccionable se dan una sola vez. Primero igual que
+# raices_6_oculta (entra desde raices_7, rompe el techo, sube a la repisa y los toma). Luego baja por el hueco, sale por
+# la puerta derecha a raices_7, vuelve y sube otra vez a la repisa (salta desde x=2216, igual que la primera vez):
+# ya no hay amuleto ni coleccionable y las senales siguen en 1. Cuadros medidos corriendo el guion.
+escena res://contenido/salas/raices/raices_7.tscn
+habilidad pluma
+2 mover_izquierda press
+44 mover_izquierda release
+50 mover_arriba press
+56 atacar press
+58 atacar release
+80 atacar press
+82 atacar release
+104 atacar press
+106 atacar release
+128 atacar press
+130 atacar release
+152 atacar press
+154 atacar release
+158 mover_arriba release
+162 saltar press
+178 mover_derecha press
+186 saltar release
+220 mover_derecha release
+224 mover_izquierda press
+260 mover_izquierda release
+290 mover_derecha press
+330 mover_derecha release
+400 mover_izquierda press
+440 mover_izquierda release
+530 saltar press
+546 mover_derecha press
+554 saltar release
+588 mover_derecha release
+fin 630

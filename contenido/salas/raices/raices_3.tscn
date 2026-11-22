@@ -10,6 +10,8 @@
 [ext_resource type="Script" uid="uid://c3lhvqqfjbyds" path="res://nucleo/tienda.gd" id="8_tienda"]
 [ext_resource type="Script" uid="uid://c60eotphujpye" path="res://nucleo/articulo_tienda.gd" id="9_articulo"]
 [ext_resource type="Script" uid="uid://cltshx6hm4a3b" path="res://nucleo/recompensa.gd" id="10_recompensa"]
+[ext_resource type="CanvasItemMaterial" uid="uid://cbonitpbsi8a6" path="res://nucleo/arte/sin_luz.tres" id="11_sin_luz"]
+[ext_resource type="Texture2D" uid="uid://dnprxwwqeirhx" path="res://contenido/salas/raices/arte/banco.png" id="12_banco_arte"]
 
 [sub_resource type="Resource" id="recompensa_brujula"]
 script = ExtResource("10_recompensa")
@@ -161,6 +163,14 @@ conversaciones = Array[ExtResource("5_ficha")]([ExtResource("6_guia_1"), ExtReso
 [node name="Banco" parent="." instance=ExtResource("3_banco")]
 position = Vector2(700, 1080)
 id = "banco_raices_3"
+mirando = 1
+
+[node name="Silla" type="Sprite2D" parent="Banco"]
+z_index = -20
+material = ExtResource("11_sin_luz")
+position = Vector2(-66, -78.72)
+texture = ExtResource("12_banco_arte")
+centered = false
 
 [node name="Tienda" type="Area2D" parent="."]
 position = Vector2(1050, 1080)

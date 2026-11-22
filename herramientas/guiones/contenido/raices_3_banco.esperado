@@ -1,4 +1,8 @@
 # Llega al banco y descansa (x medida corriendo el guion).
+# El banco lleva su mesa con sillas y sienta al jugador mirando a la derecha: la pose de dormir se apoya en la mesa
+# (docs/errores/2026-11-21-banco-raices-3-sin-mesa.md).
+valor Banco/Silla visible true
+valor Banco mirando 1 0
 x 700 2
 en_suelo true
 valor /root/Partida sala raices_3

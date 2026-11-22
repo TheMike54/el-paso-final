@@ -1,6 +1,6 @@
 # Continuar el juego
 
-Qué no viene en el repositorio y cómo suplirlo, qué límites ya se conocen y cómo publicar desde cero. Comprobado el 2-nov-2026 leyendo el repositorio; lo que no se ejecutó dice «sin comprobar».
+Qué no viene en el repositorio y cómo suplirlo, qué límites ya se conocen y cómo publicar desde cero. Comprobado el 2-nov-2026 leyendo el repositorio; Las Raíces, los menús de pausa y la mochila, el 21-nov-2026; lo que no se ejecutó dice «sin comprobar».
 
 ## Lo que no está en el repositorio
 
@@ -51,10 +51,12 @@ Alternativa sin empacador: abrir el `SpriteFrames` en el editor y sumar cuadros 
 
 **Del juego**
 
-- Las Raíces está en caja gris: de `raices_1` a `raices_8` se llega jugando, con la Cucaracha, la Polilla y el Hongo escupidor, todos sin arte. `raices_3` tiene al Eterno (mapa y pluma del mapa), el banco y la tienda; `raices_6` esconde Caparazón de Cucaracha, `raices_7` da el impulso y la salida de `raices_8` lleva a la pantalla de cierre (`contenido/cierre/pantalla_cierre.tscn`). `raices_6` y `raices_8` van todavía sin Polilla.
+- Las Raíces está en caja gris: de `raices_1` a `raices_8` se llega jugando, con la Cucaracha, la Polilla y el Hongo escupidor, todos sin arte. `raices_3` tiene al Eterno (mapa y pluma del mapa), el banco y la tienda; `raices_4` esconde Patas de Cucaracha y `raices_6`, Caparazón de Cucaracha; `raices_7` da el impulso y la salida de `raices_8` lleva a la pantalla de cierre (`contenido/cierre/pantalla_cierre.tscn`). La Polilla solo está en `raices_4`; `raices_5` y `raices_6` tienen Cucarachas y Hongos escupidores, y `raices_7` y `raices_8` no tienen enemigos.
 - Solo español y solo Android; la PC sirve para desarrollar.
 - Un banco sin su mesa con sillas deja al jugador dormido con los brazos en el aire: todo banco de una sala del juego
-  lleva el dibujo como hijo y `mirando = 1` (`docs/errores/2026-11-17-banco-sin-mesa.md`). Los de las salas de prueba no.
+  lleva el dibujo como hijo y `mirando = 1` (`docs/errores/2026-11-17-banco-sin-mesa.md` y
+  `docs/errores/2026-11-21-banco-raices-3-sin-mesa.md`); desde el 21-nov-2026 el validador lo exige. Los de las salas de
+  prueba no.
 - En la PC, Espacio es `ui_accept` y `atacar`: cerrar un menú con Espacio también ataca.
 - Corazones y barra del HUD siguen en gris, sin arte final.
 - Hasta terminar el juego las partidas viejas no se conservan al cambiar la versión de guardado.

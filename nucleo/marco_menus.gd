@@ -222,8 +222,8 @@ func _ver(id: StringName) -> void:
 	for una: PaginaMarco in _paginas:
 		if una.id_pagina() != id:
 			una.ocultar_de_marco()
-	_paginas[_indice_de(id)].mostrar_en_marco()
 	var i: int = _indice_de(id)
+	_paginas[i].mostrar_en_marco()
 	var n: int = _paginas.size()
 	_titulo.text = _paginas[i].titulo_pagina()
 	_anterior.visible = n > 1

@@ -12,9 +12,6 @@ enum Estado { CAMINANDO, ENTERRADA, AVISANDO, RECUPERANDO }
 
 ## Estado actual; publico para los guiones (0 camina, 1 enterrada, 2 avisa, 3 se recupera).
 var estado: Estado = Estado.CAMINANDO
-## Veces que se enterro y veces que se volteo; publicos para los guiones.
-var entierros: int = 0
-var giros: int = 0
 
 var _ticks: int = 0
 var _ticks_quieto: int = 0
@@ -69,7 +66,6 @@ func _caminar() -> void:
 		_ticks_quieto -= 1
 		if _ticks_quieto == 0:
 			girar()
-			giros += 1
 	elif pared_delante(enemigo.mirando) or orilla_delante(enemigo.mirando):
 		enemigo.velocity.x = 0.0
 		_ticks_quieto = _d.ticks_giro
@@ -80,7 +76,6 @@ func _caminar() -> void:
 
 # Se queda quieta y desaparece; el punto de salida se decide despues, al empezar el aviso.
 func _enterrarse() -> void:
-	entierros += 1
 	_ticks_quieto = 0
 	enemigo.velocity = Vector2.ZERO
 	flotar(true)

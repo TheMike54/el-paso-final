@@ -57,7 +57,7 @@ const RAYO_SUELO_ARRIBA: float = 8.0
 const RAYO_SUELO_ABAJO: float = 40.0
 # Donde baja ese rayo, en x desde los pies: el centro y 1 px dentro de cada orilla del cuerpo (TAMANO).
 const RAYOS_SUELO_X: PackedFloat32Array = [0.0, -(TAMANO.x / 2.0 - 1.0), TAMANO.x / 2.0 - 1.0]
-# Cuantas piezas que se mueven atraviesa como mucho el rayo largo de _suelo_fijo_bajo antes de rendirse.
+# Cuantas piezas que se mueven atraviesa como mucho el rayo largo de PuntoSeguroJugador.suelo_fijo_bajo antes de rendirse.
 const RAYO_SUELO_MOVILES_MAX: int = 8
 ## Ticks que entra caminando solo al llegar por una puerta LADO: 20 = 0,33 s (Hollow Knight, EnterScene a RUN_SPEED).
 const TICKS_LLEGAR_CAMINANDO: int = 20
@@ -1467,23 +1467,8 @@ func _llegada_con_suelo() -> Vector2:
 	return _punto_seguro.llegada_con_suelo()
 
 
-# El primer solido de ESCENARIO que no se mueve entre desde y hasta: repite el rayo excluyendo cada pieza que
-# Vaiven.movil_de da por movil (classes/class_physicsdirectspacestate2d.rst, el rid del choque). Vacio si no hay.
-func _suelo_fijo_bajo(desde: Vector2, hasta: Vector2) -> Dictionary:
-	return _punto_seguro.suelo_fijo_bajo(desde, hasta)
-
-
 func _volver_al_punto_seguro() -> void:
 	_punto_seguro.volver_al_punto_seguro()
-
-
-# Si bajo el punto (los pies) hay un solido de ESCENARIO a menos de RAYO_SUELO_ABAJO px que no se mueve. Un rayo en el
-# centro y uno en cada orilla del cuerpo: parado en una orilla con el centro sobre el vacio sigue en el suelo, como
-# para is_on_floor(). Solo cuenta el primer choque de cada rayo, sin atravesar lo que se mueve (a diferencia de
-# _suelo_fijo_bajo): una plataforma sobre los pinchos tiene suelo a menos de RAYO_SUELO_ABAJO px bajo ella, y ese
-# punto quedaria sobre los pinchos. A cambio, un punto con un elevador posado en el suelo se descarta y se usa otro.
-func _hay_suelo_fijo(punto: Vector2) -> bool:
-	return _punto_seguro.hay_suelo_fijo(punto)
 
 
 # Tras un peligro (como Hollow Knight): quieto donde lo toco mientras la pantalla funde a negro
