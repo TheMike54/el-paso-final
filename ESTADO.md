@@ -1,11 +1,11 @@
 # Estado (se sobrescribe; ver `CLAUDE.md`)
 
-## Ahora (22-nov-2026)
+## Ahora (23-nov-2026)
 
-- `main` en `45e906c`: #41 a #43 y #59 fusionados; Las Raíces se recorre en caja gris de `raices_1` a la pantalla de
-  cierre. Rama `fix/sprint-4-miguel`: issues de Miguel del Sprint 4 (#54 a #58 y #62), sin PR todavía. #57: calentador
-  medido en S50 y S20 (`docs/arte-y-rendimiento.md`, «Mediciones») y probado por Miguel en `raices_2` (S50).
-- Sprint 4 (23 al 29-nov): #44 a #58 y #60 a #62 en el tablero. Ian #44 a #47, Vic #48 a #52 y #60, Miguel (lo hace Claude) #53 a #58 y #61 a #63.
+- `main` en `2a466b0`: PR #64 fusionado (cierra #54, #55, #57, #58 y #62); Las Raíces se recorre en caja gris de
+  `raices_1` a la pantalla de cierre. Rama `docs/calentar-en-menu`: la skill `rendimiento-gama-baja` dice calentar en el
+  menú, como se hizo en el #57. De Miguel quedan #53 (espera arte), #56, #61 y #63 (mapa sin La Celda, solución por decidir).
+- Sprint 4 (23 al 29-nov): #44 a #58 y #60 a #63 en el tablero. Ian #44 a #47, Vic #48 a #52 y #60, Miguel (lo hace Claude) #53 a #58 y #61 a #63.
 - Workflow `Release` sin corridas (`release-play`); el entorno `play` (fase B) y subir por la API esperan.
 - Google Play: prueba cerrada Alpha desde el 2-nov-2026 (`versionCode` 1, `1e2c94c`); el update (#16) espera; índice: #17.
 
@@ -27,6 +27,7 @@
 - 22-nov, tanda autónoma en `fix/sprint-4-miguel` (#54, #55, #62, #56, #58, #57; sin #53 ni #61): «otra sesión va a ser la que va a ejecutar mis issues... que avance todo lo que pueda». Corre en bypassPermissions por excepción: «Sigue en bypass, arranca».
 - 22-nov, #57 en la misma tanda, medido en S20 y S50 por adb: «s20 conectado, haz las pruebas q necesites», «s50 conectado tambien».
 - 22-nov, issue nuevo para Miguel (#63, Sprint 4): el mapa no muestra La Celda (nadie da su mapa); la solución, después. «sí eso es, la solucion ya la vere despues d emoemnto solo asigana el issue».
+- 23-nov, antes de las 10:00, «sí, aplica las dos propuestas»: (1) la skill `rendimiento-gama-baja` dice calentar shaders en el menú, no en el fundido de entrada; (2) el serial del S20 va al `CLAUDE.md` global de Miguel (fuera del repo).
 
 ## Pruebas manuales pendientes
 - Hechas: `enemigo-cucaracha-telefono` (S21, 13-nov) y `enemigo-hongo-escupidor-telefono` (S20, 15-nov), video en #34 y #35.
