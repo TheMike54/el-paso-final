@@ -1288,5 +1288,11 @@
     "que": "En la PC, cerrar un menú (pausa, marco) con Espacio, que es ui_accept y atacar, no ataca ni levanta al jugador del banco; la pulsación siguiente sí ataca (#54)",
     "comprobacion": "herramientas/guiones/nucleo/salto_tras_menu.guion",
     "pasa": true
+  },
+  {
+    "id": "curar-repulsar",
+    "que": "Curar soltado y vuelto a pulsar entre dos ticks corta la curación en curso (devuelve lo gastado si va pronto) y no emite otra curacion_empezada encima; la pulsación nueva cura con su costo (#55)",
+    "comprobacion": "herramientas/guiones/nucleo/curar_repulsar.guion",
+    "pasa": true
   }
 ]

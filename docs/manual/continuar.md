@@ -63,7 +63,6 @@ Alternativa sin empacador: abrir el `SpriteFrames` en el editor y sumar cuadros 
 
 **Del proyecto**
 
-- Doble `curacion_empezada` si `curar` se suelta y se pulsa entre dos ticks: leído, sin reproducir.
 - Guiones intermitentes: `habilidad_caida_en_picada_desde_suelo` y `sala_puerta_b_pared`. Si fallan, se repiten antes de investigar.
 - `prueba_sonido` con ventana falla en «un paso suena por play_stream»; sin ventana y en el CI pasa.
 - El código de salida de Godot no sirve: hay que usar `.\herramientas\validar.ps1` y `.\herramientas\correr-guiones.ps1`.

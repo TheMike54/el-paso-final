@@ -991,6 +991,11 @@ func _impulsar(eje: float) -> void:
 func _boton_poderes(en_suelo: bool) -> bool:
 	var mantiene: bool = Input.is_action_pressed(&"curar")
 	if Input.is_action_just_pressed(&"curar"):
+		# Recien pulsado curando: se solto y se volvio a pulsar entre dos ticks y el tick no vio la soltada. La
+		# curacion en curso se suelta como si la hubiera visto (corta y, si va pronto, devuelve lo gastado); la
+		# pulsacion nueva cuenta desde aqui y no emite otra curacion_empezada encima de la que seguia (#55).
+		if curando:
+			_seguir_curando(en_suelo, false)
 		_ticks_poder = 0 if _ticks_retrocediendo == 0 and _ticks_impulsando == 0 else SIN_PULSACION
 		# Con abajo, la caida en picada sale en el tick de la pulsacion, sin esperar al toque: en el
 		# aire baja enseguida; en el suelo, primero un saltito.
