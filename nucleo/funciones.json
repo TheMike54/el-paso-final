@@ -1294,5 +1294,11 @@
     "que": "Curar soltado y vuelto a pulsar entre dos ticks corta la curación en curso (devuelve lo gastado si va pronto) y no emite otra curacion_empezada encima; la pulsación nueva cura con su costo (#55)",
     "comprobacion": "herramientas/guiones/nucleo/curar_repulsar.guion",
     "pasa": true
+  },
+  {
+    "id": "prueba-sonido-con-ventana",
+    "que": "El guion nucleo/sonido pasa con ventana y sin ella con los mismos 36 casos: lo anterior a _con_pantalla corre mudo y no ocupa voces del reproductor real (#62)",
+    "comprobacion": "herramientas/guiones/nucleo/sonido.guion",
+    "pasa": true
   }
 ]

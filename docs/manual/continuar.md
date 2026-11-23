@@ -64,7 +64,6 @@ Alternativa sin empacador: abrir el `SpriteFrames` en el editor y sumar cuadros 
 **Del proyecto**
 
 - Guiones intermitentes: `habilidad_caida_en_picada_desde_suelo` y `sala_puerta_b_pared`. Si fallan, se repiten antes de investigar.
-- `prueba_sonido` con ventana falla en «un paso suena por play_stream»; sin ventana y en el CI pasa.
 - El código de salida de Godot no sirve: hay que usar `.\herramientas\validar.ps1` y `.\herramientas\correr-guiones.ps1`.
 - Mover o renombrar una escena fuera del editor rompe rutas (`CLAUDE.md`, «Entorno y trampas»).
 - Las pruebas de sensación, táctil y FPS son manuales: ver `docs/pruebas.md`. Varias filas siguen sin marcar en los `funciones.json`.
