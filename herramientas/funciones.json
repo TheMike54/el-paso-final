@@ -460,5 +460,11 @@
     "que": "Cada Banco de una sala de contenido/ lleva su hijo Silla (Sprite2D con imagen) y mirando distinto de 0; sin eso el validador falla",
     "comprobacion": "herramientas/guiones/herramientas/validador.guion",
     "pasa": true
+  },
+  {
+    "id": "correr-guiones-log-fallido",
+    "que": "correr-guiones.ps1 guarda el log completo de cada guion que falla en .godot/guiones-fallidos/<bloque>_<nombre>-<fecha>.log e imprime su ruta, para investigar un fallo intermitente (#56); igual en powershell.exe 5.1 y pwsh 7",
+    "comprobacion": "manual: mutar.ps1 -Archivo herramientas/guiones/nucleo/sala_puerta_b_pared.esperado -Buscar 'x 1200 2' -Poner 'x 1100 2' -Guiones nucleo/sala_puerta_b_pared da MATADA restaurado=SI arbol=IGUAL en pwsh 7 y en powershell.exe 5.1, y cada corrida deja su archivo en .godot/guiones-fallidos/",
+    "pasa": true
   }
 ]

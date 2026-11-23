@@ -50,7 +50,8 @@
 - Tirón la primera vez: en el S21, recién instalado (13-nov), los FPS cayeron a 13-35 durante los primeros minutos con la
   Cucaracha; después, 40 s con la Cucaracha saliendo dieron 120 FPS sin un cuadro de más de 9,5 ms. Probable compilación
   de shaders al primer uso (polvo, destellos): sin medir en el S50.
-- Guiones intermitentes: `habilidad_caida_en_picada_desde_suelo` y `sala_puerta_b_pared`.
+- Guiones intermitentes: `habilidad_caida_en_picada_desde_suelo` y `sala_puerta_b_pared` (#56, atorado). 22-nov: 20 de 20
+  solos, 20 de 20 con la CPU cargada y 241 de 241 en la batería; sin causa. Si fallan, el log queda en `.godot/guiones-fallidos/`.
 
 ## Decisiones abiertas (la persona)
 
