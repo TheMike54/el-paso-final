@@ -115,6 +115,20 @@ func _ready() -> void:
 	jugador.descansando = false
 	await _esperar(AvisoAccion.TICKS_APARECER + 2)
 	_caso("al pararse el aviso vuelve", sentarse.alfa == 1.0)
+	# Hablando o muerto tampoco atiende: se va y vuelve igual que sentado (solo el estado del jugador, sin caja ni muerte
+	# de verdad, para no mover la partida).
+	jugador.hablando = true
+	await _esperar(AvisoAccion.TICKS_APARECER + 2)
+	var con_caja: float = sentarse.alfa
+	jugador.hablando = false
+	await _esperar(AvisoAccion.TICKS_APARECER + 2)
+	_caso("hablando el aviso se va y al terminar vuelve", con_caja == 0.0 and sentarse.alfa == 1.0)
+	jugador.muerto = true
+	await _esperar(AvisoAccion.TICKS_APARECER + 2)
+	var de_muerto: float = sentarse.alfa
+	jugador.muerto = false
+	await _esperar(AvisoAccion.TICKS_APARECER + 2)
+	_caso("muerto el aviso se va y al volver vuelve", de_muerto == 0.0 and sentarse.alfa == 1.0)
 
 	# ControlesTactiles: un boton sin su habilidad (impulso) no late, ni hablando.
 	ControlesTactiles.resaltada = &"impulso"

@@ -987,4 +987,11 @@ func _probar_arenas_jefe() -> void:
 	_da("arena: forma apagada falla", _correr(_revisar_arenas_jefe.bind(RUTA, arena)), "no tiene una CollisionShape2D hija")
 	forma.disabled = false
 	_sin_fallos("arena: id, jefe y forma hija no fallan", _correr(_revisar_arenas_jefe.bind(RUTA, arena)))
+	# La recompensa de la arena pasa por la misma revision de ids que las demas (_revisar_habilidades).
+	arena.recompensa = Recompensa.new()
+	arena.recompensa.tipo = Recompensa.Tipo.HABILIDAD
+	arena.recompensa.id = &"vuelo_falso"
+	_da("arena: recompensa con una habilidad que no existe falla", _correr(_revisar_habilidades.bind(RUTA, arena)), "'vuelo_falso' no es una habilidad")
+	arena.recompensa.id = Habilidades.IMPULSO
+	_sin_fallos("arena: recompensa con una habilidad de TODAS no falla", _correr(_revisar_habilidades.bind(RUTA, arena)))
 	arena.free()

@@ -1017,7 +1017,7 @@
     "id": "aviso-accion-modo",
     "que": "AvisoAccion.modo: UNA_VEZ (con id, hecha no vuelve en la partida), POR_VISITA (sin id, vuelve en cada visita aunque haya marca) y SIEMPRE (sale cada vez que el jugador entra aunque este hecha y el boton deja de latir al hacerla); con el jugador sentado, hablando o muerto no sale, y al pararse vuelve",
     "comprobacion": "herramientas/guiones/nucleo/aviso_accion.guion",
-    "pasa": false
+    "pasa": true
   },
   {
     "id": "npc-animado",
@@ -1035,13 +1035,13 @@
     "id": "sonidos-jugador",
     "que": "Pasos (jugador_paso, en los cuadros de pasos del SpriteFrames del personaje, en el suelo y fuera de un cruce de puerta), aterrizaje (si es duro o cae a velocidad_aterrizaje_min o mas: bajar un escalon no suena), picada (por el argumento picada de jugador_aterrizo) e impulso (jugador_impulso) suenan con los WAV elegidos de nucleo/sonidos/jugador/; paso, aterrizaje y golpe varian el tono con un AudioStreamRandomizer. En el CI (sin pantalla Sonido esta mudo) los guiones comprueban cada senal a su evento, el umbral del aterrizaje y los pasos y aterrizajes en una sala. Solo con ventana (comando de la fila de sonido.guion en docs/pruebas.md) se comprueba el sonido real del unico AudioStreamPlayer con AudioStreamPolyphonic: un efecto nuevo no corta a uno que suena y, con las voces llenas, se descarta el nuevo",
     "comprobacion": "herramientas/guiones/nucleo/sonido.guion;herramientas/guiones/nucleo/habilidad_impulso.guion;herramientas/guiones/nucleo/vibracion_aterrizaje.guion",
-    "pasa": false
+    "pasa": true
   },
   {
     "id": "musica-por-sala",
     "que": "Musica (hija de Arranque, Arranque.musica) toca un tema a la vez en el bus Musica: cada pedido (tema, volumen de region y segundos) se aplica en el tick siguiente y gana el ultimo; un tema que ya suena, o que se esta yendo, no se reasigna ni vuelve a empezar; tema vacio no toca la musica y Musica.SILENCIO la calla. Cada Sala pide su tema_musica y volumen_musica_db al entrar (el mismo recurso en las salas de una zona, en su base; La Celda, SILENCIO), RegionMusica cambia tema o volumen dentro de una sala, el menu pone su tema, la cinematica y la zona de pruebas callan, y el panel de audio, si al abrirlo no se oye nada, pide a Musica el tema del menu y al cerrarlo devuelve lo que habia. Reaparecer o cargar en el banco dentro de una region no reinicia el tema",
     "comprobacion": "herramientas/guiones/nucleo/musica.guion",
-    "pasa": false
+    "pasa": true
   },
   {
     "id": "musica-telefono",

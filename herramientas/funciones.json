@@ -363,7 +363,7 @@
     "id": "validador-arena-jefe",
     "que": "El validador exige id_jefe, jefe y CollisionShape2D hija con forma y encendida en cada ArenaJefe; tambien revisa los ids de su recompensa",
     "comprobacion": "herramientas/guiones/herramientas/validador.guion",
-    "pasa": false
+    "pasa": true
   },
   {
     "id": "validador-ficha-zona",
@@ -429,19 +429,19 @@
     "id": "reemplazar-local",
     "que": "reemplazar.ps1 hace reemplazos literales o con -Regex en varios archivos: sin -Aplicar muestra lineas y conteo por pareja; con -Aplicar -Esperado N respalda en .godot/reemplazar-respaldo, escribe, relee cada archivo e imprime REEMPLAZO archivos=A cambios=N aplicado=SI verificado=SI; si una escritura falla (aun a medias) o la relectura no coincide, devuelve todos los archivos tocados y sale 1 con aplicado=NO, o 3 con aplicado=PARCIAL si alguno no volvio; una pareja sin coincidencias o un conteo distinto de -Esperado cancela la escritura y sale con 1; igual en powershell.exe 5.1 y pwsh 7",
     "comprobacion": "manual: reemplazar.ps1 sobre una copia de docs/ en vista previa no cambia git status; con -Aplicar -Esperado distinto del conteo no escribe y sale 1; con el conteo correcto imprime verificado=SI",
-    "pasa": false
+    "pasa": true
   },
   {
     "id": "validar-tope-estado",
     "que": "validar.ps1 falla con una linea FALLO si ESTADO.md tiene mas de 60 lineas y sale con 1",
     "comprobacion": "manual: copiar ESTADO.md a una copia del repo con 61 lineas, correr validar.ps1 -SinImportar y ver FALLO ESTADO.md tiene 61 lineas y salida 1; con 60 lineas, salida 0",
-    "pasa": false
+    "pasa": true
   },
   {
     "id": "correr-guiones-candado",
     "que": "correr-guiones.ps1 se niega con salida 3 si otra corrida tiene el candado, y lo libera al terminar o al morir",
     "comprobacion": "manual: lanzar dos correr-guiones.ps1; la segunda imprime que hay otra corrida y sale con 3; al terminar la primera no queda .godot/correr-guiones.lock",
-    "pasa": false
+    "pasa": true
   },
   {
     "id": "hook-al-compactar-decisiones",

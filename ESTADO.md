@@ -35,7 +35,8 @@
 - Menús de pausa (plan cerrado `nucleo-menus-pausa`): flechas del marco, letra de Amuletos, cupos de la mochila, símbolos
   del Inventario y botón de vista del mapa. Las Raíces: «primera mitad», tienda, Polilla y zona oculta de `raices_4`.
 - Con control (Ian, Vic): touchpad, íconos, tienda, estaciones, `aviso-accion-telefono`, Puerta C y cerrar menús con B.
-- Claude: `medicion-rendimiento` y 4 entradas por guion. Firma: `paquete-publicacion`, `menu-desarrollo`, `recursos-medicion-publicacion`.
+- Claude: `medicion-rendimiento`. `mutar-local` sigue en false: su comprobación nombra `nucleo/sala_equipo`, que no cubre
+  `entregar()` (con `nucleo/estado_sala` da MATADA); cambiar el texto lo decide Miguel (#58). Firma: `paquete-publicacion`, `menu-desarrollo`, `recursos-medicion-publicacion`.
 
 ## Planes activos
 - `herramientas-publicar-play`: falta la corrida verde de `Release` y la fase B. `herramientas-utilidad-pruebas`: el paso
@@ -49,7 +50,7 @@
 
 - Tirón la primera vez: en el S21, recién instalado (13-nov), los FPS cayeron a 13-35 durante los primeros minutos con la
   Cucaracha; después, 40 s con la Cucaracha saliendo dieron 120 FPS sin un cuadro de más de 9,5 ms. Probable compilación
-  de shaders al primer uso (polvo, destellos): sin medir en el S50.
+  de shaders al primer uso (polvo, destellos): sin medir en el S50. #57 fuera del PR de la tanda: sin teléfono conectado.
 - Guiones intermitentes: `habilidad_caida_en_picada_desde_suelo` y `sala_puerta_b_pared` (#56, atorado). 22-nov: 20 de 20
   solos, 20 de 20 con la CPU cargada y 241 de 241 en la batería; sin causa. Si fallan, el log queda en `.godot/guiones-fallidos/`.
 
