@@ -2,6 +2,7 @@
 # Sin parametros corre todos; con -Guiones nucleo/tienda,mapa/mapa_cuentas, solo esos (sin extension).
 # Un guion esta bien si su salida tiene una linea "GUION OK" y ninguna "SCRIPT ERROR" ni "ERROR:". Sale con 0 solo si MALOS=0.
 # Una sola corrida a la vez: un candado en .godot\correr-guiones.lock; si otra corrida lo tiene, sale con 3.
+# El log completo de cada guion que falla queda en .godot\guiones-fallidos\<bloque>_<nombre>-<fecha>.log.
 # Solo ASCII: powershell.exe 5.1 lee los .ps1 sin BOM como ANSI. En serie: los guiones comparten archivos de user://.
 param([string[]]$Guiones)
 
@@ -64,6 +65,13 @@ try {
         $relevantes = @($lineas | Where-Object { $_ -cmatch 'FALLO|GUION FALLA|SCRIPT ERROR|ERROR:|^\s+at: ' })
         if ($relevantes.Count -eq 0) { $relevantes = @('sin GUION OK ni lineas de error: no termino antes de --quit-after') }
         $relevantes | Select-Object -First 12 | ForEach-Object { Write-Output ('    > ' + $_.Trim()) }
+        # El log se pisa con el guion siguiente: el de un fallo se guarda entero para poder investigar uno
+        # intermitente (#56, docs/errores/2026-11-22-guiones-intermitentes.md).
+        $fallidos = Join-Path $raiz '.godot\guiones-fallidos'
+        New-Item -ItemType Directory -Force -Path $fallidos | Out-Null
+        $copia = Join-Path $fallidos ('{0}-{1}.log' -f ($rel -replace '^herramientas/guiones/', '' -replace '[/\\]', '_' -replace '\.guion$', ''), (Get-Date -Format 'yyyyMMdd-HHmmss'))
+        Copy-Item -LiteralPath $log -Destination $copia -Force
+        Write-Output ('    > log completo: ' + $copia)
     }
 
     Write-Output ('RESUMEN total={0} OK={1} MALOS={2}' -f $rutas.Count, $ok, $malos)

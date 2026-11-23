@@ -1,0 +1,5 @@
+# Corre herramientas/pruebas/prueba_curar_repulsar.gd: con la Inspiracion maxima en 66, curar soltado y vuelto a pulsar
+# entre dos ticks corta la curacion en curso y devuelve lo gastado, ninguna curacion_empezada sale con otra en curso y
+# la pulsacion nueva cura una vida (#55). Sin entradas propias: la prueba las manda.
+escena res://herramientas/pruebas/sala_curar_repulsar.tscn
+fin 260

@@ -57,16 +57,13 @@ Alternativa sin empacador: abrir el `SpriteFrames` en el editor y sumar cuadros 
   lleva el dibujo como hijo y `mirando = 1` (`docs/errores/2026-11-17-banco-sin-mesa.md` y
   `docs/errores/2026-11-21-banco-raices-3-sin-mesa.md`); desde el 21-nov-2026 el validador lo exige. Los de las salas de
   prueba no.
-- En la PC, Espacio es `ui_accept` y `atacar`: cerrar un menú con Espacio también ataca.
 - Corazones y barra del HUD siguen en gris, sin arte final.
 - Hasta terminar el juego las partidas viejas no se conservan al cambiar la versión de guardado.
 - Si se cambia un ID ya guardado, las partidas existentes pierden esa referencia.
 
 **Del proyecto**
 
-- Doble `curacion_empezada` si `curar` se suelta y se pulsa entre dos ticks: leído, sin reproducir.
-- Guiones intermitentes: `habilidad_caida_en_picada_desde_suelo` y `sala_puerta_b_pared`. Si fallan, se repiten antes de investigar.
-- `prueba_sonido` con ventana falla en «un paso suena por play_stream»; sin ventana y en el CI pasa.
+- Guiones intermitentes: `habilidad_caida_en_picada_desde_suelo` y `sala_puerta_b_pared`. Si fallan, se repiten antes de investigar; el log completo del fallo queda en `.godot/guiones-fallidos/` (`docs/errores/2026-11-22-guiones-intermitentes.md`).
 - El código de salida de Godot no sirve: hay que usar `.\herramientas\validar.ps1` y `.\herramientas\correr-guiones.ps1`.
 - Mover o renombrar una escena fuera del editor rompe rutas (`CLAUDE.md`, «Entorno y trampas»).
 - Las pruebas de sensación, táctil y FPS son manuales: ver `docs/pruebas.md`. Varias filas siguen sin marcar en los `funciones.json`.

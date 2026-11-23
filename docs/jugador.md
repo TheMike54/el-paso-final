@@ -163,6 +163,8 @@ Combate:
   de la pausa o No del cobro, y A también es `saltar`), el jugador recibe `NOTIFICATION_UNPAUSED` y en su tick
   siguiente esa pulsación no cuenta como `saltar`: no salta, no queda en la cola
   del salto, no usa el coyote y no lo levanta del banco. Solo ese tick: una pulsación nueva en el siguiente sí salta.
+  Lo mismo con `atacar`: en la PC Espacio es `ui_accept` y `atacar`, y cerrar un menú con Espacio no ataca, no deja el
+  ataque en cola y no lo levanta del banco (`docs/errores/2026-11-22-espacio-cierra-menu-y-ataca.md`).
   Un menú que se cierra leyendo una acción en su `_physics_process` ya va después del jugador («Marco de menús» en `docs/interfaz.md`) y no pasa por aquí.
 - Temblor pedido desde fuera: `temblar(ticks, px)` (lo llaman `MuroRompible` y `Palanca`) arranca un temblor con la
   misma forma que el del aterrizaje. Si ya hay uno que en ese tick es más fuerte que `px`, se queda el que hay; el
@@ -189,7 +191,9 @@ Curar y sensación del golpe:
   cola), se queda quieto y gasta la Inspiración
   poco a poco mientras mantiene `curar`. Al empezar emite `curacion_empezada`, si no termina `curacion_cortada`. A los `ticks_curacion` ticks recupera una vida y emite `jugador_curado`. Soltar, dejar el suelo o recibir daño antes lo
   corta y lo gastado se pierde, salvo al soltar antes de `ticks_devolver_curacion`: la Inspiración vuelve al valor
-  de antes de empezar, nunca a más. Cada golpe a un `Golpeable` con `es_enemigo` da `inspiracion_por_golpe` (hasta `Partida.inspiracion_maxima`, que va de 33 a 99); a un muro o una palanca, nada.
+  de antes de empezar, nunca a más. Si `curar` se suelta y se vuelve a pulsar entre dos ticks, el tick lo ve como
+  recién pulsado curando: corta la curación como una soltada y la pulsación nueva cuenta desde ahí
+  (`docs/errores/2026-11-22-doble-inicio-de-curacion.md`). Cada golpe a un `Golpeable` con `es_enemigo` da `inspiracion_por_golpe` (hasta `Partida.inspiracion_maxima`, que va de 33 a 99); a un muro o una palanca, nada.
 - Sensación: al golpear, el jugador sale empujado hacia atrás y lo golpeado hacia el otro lado
   (`Golpeable.velocidad_retroceso`, `ticks_retroceso`). Al recibir daño (no de un peligro), el jugador se detiene
   `ticks_hit_stop` ticks antes del retroceso.

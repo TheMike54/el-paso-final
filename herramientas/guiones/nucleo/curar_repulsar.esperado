@@ -1,0 +1,4 @@
+# Los 5 casos de herramientas/pruebas/prueba_curar_repulsar.gd corrieron y ninguno fallo. Cada caso que falla imprime
+# una linea "FALLO curar_repulsar: <caso>".
+valor . casos 5
+valor . fallos 0

@@ -374,9 +374,9 @@ var _ticks_hasta_bola: int = 0
 var _recien_sentado: bool = false
 # Tick despues de cerrar una conversacion: la pulsacion que la cerro (saltar, atacar) no salta ni ataca.
 var _recien_hablado: bool = false
-# La pausa se quito fuera del tick: fue un boton de un menu (Continuar, No, Volver), y si lo acepto A esa pulsacion no
-# cuenta como saltar en el tick siguiente. Lo pone _notification; dura un tick.
-var _saltar_del_menu: bool = false
+# La pausa se quito fuera del tick: fue un boton de un menu (Continuar, No, Volver), y si lo acepto A (saltar) o Espacio
+# (atacar) esa pulsacion no cuenta en el tick siguiente. Lo pone _notification; dura un tick.
+var _pulsacion_del_menu: bool = false
 # Picada desde el suelo: el saltito y los ticks de carga en su cima.
 var _preparando_picada: bool = false
 var _ticks_carga: int = 0
@@ -460,7 +460,7 @@ func _physics_process(delta: float) -> void:
 	if _ticks_destello > 0:
 		_ticks_destello -= 1
 	_mover(delta)
-	_saltar_del_menu = false
+	_pulsacion_del_menu = false
 	# Siempre, tambien congelado, muerto o sentado.
 	_camara.seguir(delta, global_position, _mirando)
 	_animar()
@@ -472,18 +472,23 @@ func _exit_tree() -> void:
 
 
 # Un Button se pulsa con ui_accept al despachar el evento, antes del tick y fuera de la fisica: si ese boton quita la
-# pausa, la prioridad de fisica de los menus no alcanza y el jugador leeria en su tick el mismo A como saltar. Un menu
-# que se cierra leyendo una accion en su _physics_process lo hace dentro del tick y no pasa por aqui. No se mira si
-# saltar esta recien pulsado aqui: a 120 FPS A puede bajar un cuadro y subir el siguiente sin tick entre medio, y aqui
-# ya no cuenta como recien pulsado aunque el tick siguiente si lo lea asi.
+# pausa, la prioridad de fisica de los menus no alcanza y el jugador leeria en su tick el mismo A como saltar (o, en la
+# PC, el mismo Espacio como atacar). Un menu que se cierra leyendo una accion en su _physics_process lo hace dentro del
+# tick y no pasa por aqui. No se mira si la accion esta recien pulsada aqui: a 120 FPS la tecla puede bajar un cuadro y
+# subir el siguiente sin tick entre medio, y aqui ya no cuenta como recien pulsada aunque el tick siguiente si la lea asi.
 func _notification(que: int) -> void:
 	if que == NOTIFICATION_UNPAUSED and not Engine.is_in_physics_frame():
-		_saltar_del_menu = true
+		_pulsacion_del_menu = true
 
 
 # saltar recien pulsado, salvo la pulsacion que acepto el boton que cerro un menu.
 func _saltar_pulsado() -> bool:
-	return Input.is_action_just_pressed(&"saltar") and not _saltar_del_menu
+	return Input.is_action_just_pressed(&"saltar") and not _pulsacion_del_menu
+
+
+# atacar recien pulsado, salvo la pulsacion que acepto el boton que cerro un menu (Espacio es ui_accept y atacar).
+func _atacar_pulsado() -> bool:
+	return Input.is_action_just_pressed(&"atacar") and not _pulsacion_del_menu
 
 
 # Al final del tick, ya movido, y solo leyendo: llena la foto del estado, elige la animacion (AnimacionJugador) y
@@ -639,7 +644,7 @@ func _mover(delta: float) -> void:
 	if Congelado.activo():
 		if _saltar_pulsado():
 			_ticks_desde_pulsar = 0
-		if Input.is_action_just_pressed(&"atacar"):
+		if _atacar_pulsado():
 			_ticks_desde_atacar = 0
 		if Input.is_action_just_pressed(&"impulso"):
 			_impulso_en_cola = true
@@ -708,7 +713,7 @@ func _avanzar_contadores(en_suelo: bool) -> void:
 	else:
 		_ticks_desde_pulsar = _envejecer(_ticks_desde_pulsar)
 	# La cola del ataque envejece cada tick con control, se ataque o no en este tick.
-	if Input.is_action_just_pressed(&"atacar"):
+	if _atacar_pulsado():
 		_ticks_desde_atacar = 0
 	else:
 		_ticks_desde_atacar = _envejecer(_ticks_desde_atacar)
@@ -986,6 +991,11 @@ func _impulsar(eje: float) -> void:
 func _boton_poderes(en_suelo: bool) -> bool:
 	var mantiene: bool = Input.is_action_pressed(&"curar")
 	if Input.is_action_just_pressed(&"curar"):
+		# Recien pulsado curando: se solto y se volvio a pulsar entre dos ticks y el tick no vio la soltada. La
+		# curacion en curso se suelta como si la hubiera visto (corta y, si va pronto, devuelve lo gastado); la
+		# pulsacion nueva cuenta desde aqui y no emite otra curacion_empezada encima de la que seguia (#55).
+		if curando:
+			_seguir_curando(en_suelo, false)
 		_ticks_poder = 0 if _ticks_retrocediendo == 0 and _ticks_impulsando == 0 else SIN_PULSACION
 		# Con abajo, la caida en picada sale en el tick de la pulsacion, sin esperar al toque: en el
 		# aire baja enseguida; en el suelo, primero un saltito.
@@ -1593,7 +1603,7 @@ func _seguir_descansando() -> void:
 		move_and_slide()
 		return
 	for accion: StringName in ACCIONES_LEVANTARSE:
-		if Input.is_action_just_pressed(accion) and not (accion == &"saltar" and _saltar_del_menu):
+		if Input.is_action_just_pressed(accion) and not ((accion == &"saltar" or accion == &"atacar") and _pulsacion_del_menu):
 			descansando = false
 	if descansando:
 		velocity.x = 0.0

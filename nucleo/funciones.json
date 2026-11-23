@@ -1017,7 +1017,7 @@
     "id": "aviso-accion-modo",
     "que": "AvisoAccion.modo: UNA_VEZ (con id, hecha no vuelve en la partida), POR_VISITA (sin id, vuelve en cada visita aunque haya marca) y SIEMPRE (sale cada vez que el jugador entra aunque este hecha y el boton deja de latir al hacerla); con el jugador sentado, hablando o muerto no sale, y al pararse vuelve",
     "comprobacion": "herramientas/guiones/nucleo/aviso_accion.guion",
-    "pasa": false
+    "pasa": true
   },
   {
     "id": "npc-animado",
@@ -1035,13 +1035,13 @@
     "id": "sonidos-jugador",
     "que": "Pasos (jugador_paso, en los cuadros de pasos del SpriteFrames del personaje, en el suelo y fuera de un cruce de puerta), aterrizaje (si es duro o cae a velocidad_aterrizaje_min o mas: bajar un escalon no suena), picada (por el argumento picada de jugador_aterrizo) e impulso (jugador_impulso) suenan con los WAV elegidos de nucleo/sonidos/jugador/; paso, aterrizaje y golpe varian el tono con un AudioStreamRandomizer. En el CI (sin pantalla Sonido esta mudo) los guiones comprueban cada senal a su evento, el umbral del aterrizaje y los pasos y aterrizajes en una sala. Solo con ventana (comando de la fila de sonido.guion en docs/pruebas.md) se comprueba el sonido real del unico AudioStreamPlayer con AudioStreamPolyphonic: un efecto nuevo no corta a uno que suena y, con las voces llenas, se descarta el nuevo",
     "comprobacion": "herramientas/guiones/nucleo/sonido.guion;herramientas/guiones/nucleo/habilidad_impulso.guion;herramientas/guiones/nucleo/vibracion_aterrizaje.guion",
-    "pasa": false
+    "pasa": true
   },
   {
     "id": "musica-por-sala",
     "que": "Musica (hija de Arranque, Arranque.musica) toca un tema a la vez en el bus Musica: cada pedido (tema, volumen de region y segundos) se aplica en el tick siguiente y gana el ultimo; un tema que ya suena, o que se esta yendo, no se reasigna ni vuelve a empezar; tema vacio no toca la musica y Musica.SILENCIO la calla. Cada Sala pide su tema_musica y volumen_musica_db al entrar (el mismo recurso en las salas de una zona, en su base; La Celda, SILENCIO), RegionMusica cambia tema o volumen dentro de una sala, el menu pone su tema, la cinematica y la zona de pruebas callan, y el panel de audio, si al abrirlo no se oye nada, pide a Musica el tema del menu y al cerrarlo devuelve lo que habia. Reaparecer o cargar en el banco dentro de una region no reinicia el tema",
     "comprobacion": "herramientas/guiones/nucleo/musica.guion",
-    "pasa": false
+    "pasa": true
   },
   {
     "id": "musica-telefono",
@@ -1281,6 +1281,36 @@
     "id": "pagina-inventario-d",
     "que": "Página Inventario según el mockup aprobado: vida, Inspiración con número y bloques y PejeCoins arriba; carta del arma La Pluma, lo perdido con el nombre de la zona, habilidades con símbolo de gis y detalle del elegido, mapas por zona; solo lo que se toca lleva marco",
     "comprobacion": "herramientas/guiones/nucleo/inventario.guion",
+    "pasa": true
+  },
+  {
+    "id": "atacar-tras-menu",
+    "que": "En la PC, cerrar un menú (pausa, marco) con Espacio, que es ui_accept y atacar, no ataca ni levanta al jugador del banco; la pulsación siguiente sí ataca (#54)",
+    "comprobacion": "herramientas/guiones/nucleo/salto_tras_menu.guion",
+    "pasa": true
+  },
+  {
+    "id": "curar-repulsar",
+    "que": "Curar soltado y vuelto a pulsar entre dos ticks corta la curación en curso (devuelve lo gastado si va pronto) y no emite otra curacion_empezada encima; la pulsación nueva cura con su costo (#55)",
+    "comprobacion": "herramientas/guiones/nucleo/curar_repulsar.guion",
+    "pasa": true
+  },
+  {
+    "id": "prueba-sonido-con-ventana",
+    "que": "El guion nucleo/sonido pasa con ventana y sin ella con los mismos 36 casos: lo anterior a _con_pantalla corre mudo y no ocupa voces del reproductor real (#62)",
+    "comprobacion": "herramientas/guiones/nucleo/sonido.guion",
+    "pasa": true
+  },
+  {
+    "id": "calentar-shaders-particulas",
+    "que": "El menu dibuja, bajo su Fondo, una CPUParticles2D por variante de shader de los efectos (sin material y sin luz) y se quita: con la cache de shaders vacia, el primer escombro o polvo ya no paga la compilacion (#57)",
+    "comprobacion": "manual: docs/pruebas.md, Medicion del primer uso, en el S50 y el S20 con pm clear: sin calentador el primer uso pasa de 140 ms en el S50; con el, ningun primer uso pasa de 25,3 ms en el S50 ni de 21,6 en el S20 (22-nov-2026, dos vueltas A/B)",
+    "pasa": true
+  },
+  {
+    "id": "calentar-shaders-raices-telefono",
+    "que": "En el S50 recien instalado, el primer minuto de raices_2 con la Cucaracha no tiene cuadros de mas de 33 ms (criterio del #57)",
+    "comprobacion": "manual: APK de desarrollo instalado con -BorrarPartidas, partida nueva hasta raices_2 y medicion como en #29; la persona confirma que no hay tiron al primer polvo de la Cucaracha",
     "pasa": true
   }
 ]

@@ -25,6 +25,11 @@ func _ready() -> void:
 			sonido.ficha.paso is AudioStreamRandomizer and sonido.ficha.aterrizaje is AudioStreamRandomizer
 			and sonido.ficha.golpe is AudioStreamRandomizer)
 
+	# Hasta _con_pantalla todo mira contadores: muda, para que con ventana esos efectos (los de la ficha completa son WAV
+	# vacios) no ocupen voces del reproductor real cuando _con_pantalla las cuenta
+	# (docs/errores/2026-11-22-prueba-sonido-con-ventana.md).
+	var con_pantalla: bool = not sonido.mudo
+	sonido.mudo = true
 	await get_tree().physics_frame
 	var tocados: int = sonido.tocados
 	Eventos.enemigo_golpeado.emit(null)
@@ -43,8 +48,9 @@ func _ready() -> void:
 	await _senales_a_eventos(sonido)
 	_sin_efecto(sonido)
 	_fichas_y_enemigo(sonido)
+	sonido.mudo = not con_pantalla
 	if sonido.mudo:
-		_caso("sin pantalla cuenta pero no toca", sonido.tocar(&"porton") == AudioStreamPlaybackPolyphonic.INVALID_ID)
+		await _sin_pantalla(sonido)
 	else:
 		await _con_pantalla(sonido)
 
@@ -224,6 +230,28 @@ func _con_pantalla(sonido: Sonido) -> void:
 	Eventos.curacion_cortada.emit()
 	await _esperar(3)
 	_caso("la curacion suena al empezar y se calla al cortarse", sonaba and not sonido.sonando(voz))
+
+
+# Sin pantalla (headless, el CI): cuenta pero no toca. Tantos casos como _con_pantalla, para que el guion pida el mismo
+# numero con ventana y sin ella.
+func _sin_pantalla(sonido: Sonido) -> void:
+	var espera: int = sonido.ticks_entre_iguales
+	sonido.ticks_entre_iguales = 0
+	var tocados: int = sonido.tocados
+	var porton: int = sonido.tocar(&"porton")
+	_caso("sin pantalla el porton cuenta pero no toca", porton == AudioStreamPlaybackPolyphonic.INVALID_ID and sonido.tocados == tocados + 1)
+	var paso: int = sonido.tocar(&"paso")
+	_caso("sin pantalla un paso cuenta pero no toca", paso == AudioStreamPlaybackPolyphonic.INVALID_ID and sonido.tocados == tocados + 2)
+	var descartados: int = sonido.descartados
+	for i: int in range(sonido.voces + 1):
+		sonido.tocar(&"dano")
+	_caso("sin pantalla no hay voces que llenar: nada se descarta", sonido.descartados == descartados)
+	sonido.ticks_entre_iguales = espera
+	Eventos.curacion_empezada.emit()
+	await _esperar(1)
+	var voz: int = sonido.voz_curar
+	Eventos.curacion_cortada.emit()
+	_caso("sin pantalla la curacion no guarda voz", voz == AudioStreamPlaybackPolyphonic.INVALID_ID and not sonido.sonando(voz))
 
 
 # En una sala con suelo: aparecer no es aterrizar, saltar pide el salto, caer avisa un aterrizaje que no vibra

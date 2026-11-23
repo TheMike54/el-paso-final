@@ -1,7 +1,9 @@
 extends "res://herramientas/pruebas/prueba_base.gd"
 # Prueba de la musica: Musica vive en Arranque, el pedido se aplica en el tick siguiente y gana el ultimo, un tema que
 # ya suena (o que se esta yendo) no vuelve a empezar, SILENCIO calla sin reproducir nada y el panel de audio pide su
-# tema. Con la sala Musica: reaparecer en el banco dentro de su RegionMusica no reinicia el tema de la region.
+# tema; el menu pone el suyo, la cinematica y la zona de pruebas callan, una sala sin region pide su tema al entrar y
+# La Celda calla. Con la sala Musica: reaparecer en el banco
+# dentro de su RegionMusica no reinicia el tema de la region.
 
 const ESCENA_SALA: PackedScene = preload("res://herramientas/salas/sala_musica.tscn")
 const BANCO: String = "banco_musica"
@@ -27,6 +29,7 @@ func _ready() -> void:
 	await _sin_picos(musica)
 	await _silencio_y_volumen(musica)
 	await _panel(musica)
+	await _escenas(musica)
 	musica.mudo = mudo
 	await _region(musica)
 	_resumen()
@@ -53,6 +56,50 @@ func _pedidos(musica: Musica) -> void:
 	musica.poner(null, Musica.DB_NORMAL, 0.01)
 	await _esperar(TICKS_APLICAR + 2)
 	_caso("sin tema solo cambia el volumen de region", musica.actual == b and is_equal_approx(_volumen_de(musica, b), 0.0))
+
+
+# El menu pone su tema; la cinematica (el video trae su audio) y la zona de pruebas callan. Antes de cada una suena
+# otro tema, para que el caso no pase por lo que ya sonaba. La escena se libera a los pocos ticks: la cinematica sin
+# ventana termina a los 0,5 s y cambiaria de escena; la zona de pruebas no se toca.
+func _escenas(musica: Musica) -> void:
+	var casos: Array[Array] = [
+		["el menu pone su tema", "res://nucleo/menu.tscn", Musica.TEMA_MENU],
+		["la cinematica calla la musica", "res://contenido/cinematicas/cinematica_celda.tscn", Musica.SILENCIO],
+		["la zona de pruebas calla la musica", "res://herramientas/salas/zona_pruebas.tscn", Musica.SILENCIO],
+	]
+	for caso: Array in casos:
+		var otro: AudioStream = AudioStreamWAV.new()
+		musica.poner(otro, Musica.DB_NORMAL, 0.01)
+		await _esperar(TICKS_APLICAR)
+		var escena: Node = (load(caso[1] as String) as PackedScene).instantiate()
+		add_child(escena)
+		await _esperar(TICKS_APLICAR)
+		var actual: AudioStream = musica.actual
+		var esperado: AudioStream = caso[2] as AudioStream
+		escena.free()
+		_caso(caso[0] as String, actual == esperado and actual != otro)
+	# Una sala sin RegionMusica pide su tema_musica al entrar, y La Celda (tema de su zona) pide SILENCIO. Entrar a una
+	# sala la marca como visitada: la partida se aparta.
+	_aislar_partida()
+	var propio: AudioStream = AudioStreamWAV.new()
+	musica.poner(AudioStreamWAV.new(), Musica.DB_NORMAL, 0.01)
+	await _esperar(TICKS_APLICAR)
+	var sala: Sala = (load("res://herramientas/salas/sala_curar.tscn") as PackedScene).instantiate() as Sala
+	sala.tema_musica = propio
+	add_child(sala)
+	await _esperar(TICKS_APLICAR)
+	var de_sala: AudioStream = musica.actual
+	sala.free()
+	_caso("una sala sin region pide su tema al entrar", de_sala == propio)
+	musica.poner(AudioStreamWAV.new(), Musica.DB_NORMAL, 0.01)
+	await _esperar(TICKS_APLICAR)
+	var celda: Node = (load("res://contenido/salas/celda/celda_1.tscn") as PackedScene).instantiate()
+	add_child(celda)
+	await _esperar(TICKS_APLICAR)
+	var de_celda: AudioStream = musica.actual
+	celda.free()
+	_restaurar_partida()
+	_caso("La Celda calla la musica al entrar", de_celda == Musica.SILENCIO)
 
 
 func _sin_reiniciar(musica: Musica) -> void:

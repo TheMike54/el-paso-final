@@ -1,6 +1,7 @@
 extends "res://herramientas/pruebas/prueba_base.gd"
 # A cierra Continuar, No del CobroEstacion y Volver del marco sin salto en cola, coyote ni levantarse del banco.
 # Cubre pulsar y soltar en uno o dos cuadros sin tick de fisica entre ellos, como a 120 FPS; en el tick siguiente salta.
+# Espacio (ui_accept y atacar en la PC) cierra la pausa y el marco sin atacar ni levantarse; despues atacar si ataca.
 # Usa Input.parse_input_event porque los botones necesitan eventos reales para pulsarse.
 # El guion comprueba el resultado leyendo "valor . casos" y "valor . fallos".
 const SALA: String = "res://herramientas/salas/zonas/prueba/prueba_4.tscn"
@@ -12,6 +13,7 @@ const SUBIDA_SALTO: float = 4.0
 const TICKS_LENTOS: int = 30
 
 var _jugador: Jugador = null
+var _ataques: int = 0
 
 
 func _ready() -> void:
@@ -97,6 +99,46 @@ func _ready() -> void:
 	minima = await _minima_y(TICKS_MIRAR)
 	_caso("A apretado y soltado en dos cuadros sin tick entre medio cierra la pausa sin saltar (subio %.1f px)" % (y - minima), sin_tick and not get_tree().paused and y - minima < SUBIDA_SALTO)
 
+	# En la PC, Espacio es ui_accept y atacar: cerrar un menu con Espacio no ataca; la pulsacion siguiente si (#54).
+	if not Partida.tiene(Habilidades.PLUMA):
+		Partida.habilidades.append(Habilidades.PLUMA)
+	Eventos.jugador_ataco.connect(_contar_ataque)
+	await _parar_en(punto)
+	pausa.abrir()
+	await _esperar(2)
+	_ataques = 0
+	await _espacio()
+	await _esperar(TICKS_MIRAR)
+	_caso("Espacio en Continuar cierra la pausa sin atacar (%d ataques)" % _ataques, not get_tree().paused and _ataques == 0)
+	_ataques = 0
+	Input.action_press(&"atacar")
+	await _esperar(2)
+	Input.action_release(&"atacar")
+	await _esperar(TICKS_MIRAR)
+	_caso("atacar pulsado despues del cierre si ataca (%d ataques)" % _ataques, _ataques == 1)
+
+	await _parar_en(punto)
+	marco.abrir(&"inventario")
+	await _esperar(2)
+	volver = marco.find_child("Volver", true, false) as Button
+	if volver != null:
+		Tema.dar_foco(volver)
+	_ataques = 0
+	await _espacio()
+	await _esperar(TICKS_MIRAR)
+	_caso("Espacio en Volver del marco lo cierra sin atacar (%d ataques)" % _ataques, volver != null and not marco.abierta and not get_tree().paused and _ataques == 0)
+
+	await _parar_en(punto)
+	_jugador.descansando = true
+	pausa.abrir()
+	await _esperar(2)
+	await _espacio()
+	await _esperar(3)
+	sentado = _jugador.descansando
+	_jugador.descansando = false
+	_caso("Espacio al cerrar la pausa sentado no lo levanta", not get_tree().paused and sentado)
+	Eventos.jugador_ataco.disconnect(_contar_ataque)
+
 	await _esperar(30)
 	sala.free()
 	get_tree().paused = false
@@ -140,6 +182,21 @@ func _aceptar_en_dos_cuadros() -> bool:
 	var en_pausa: bool = get_tree().paused
 	_enviar_aceptar(false)
 	return al_subir == al_bajar and en_pausa
+
+
+# Espacio del teclado (ui_accept por keycode y atacar por physical_keycode), apretado y soltado en el mismo cuadro.
+func _espacio() -> void:
+	await get_tree().process_frame
+	for apretado: bool in [true, false]:
+		var evento: InputEventKey = InputEventKey.new()
+		evento.keycode = KEY_SPACE
+		evento.physical_keycode = KEY_SPACE
+		evento.pressed = apretado
+		Input.parse_input_event(evento)
+
+
+func _contar_ataque() -> void:
+	_ataques += 1
 
 
 func _enviar_aceptar(apretado: bool) -> void:

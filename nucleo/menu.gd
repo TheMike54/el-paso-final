@@ -41,6 +41,10 @@ var _video: ReproductorVideo = null
 
 func _ready() -> void:
 	theme = Tema.crear()
+	# Primer hijo, bajo el Fondo opaco: compila los shaders de las particulas aqui y no en el primer efecto del juego.
+	var calentador: CalentadorShaders = CalentadorShaders.new()
+	add_child(calentador)
+	move_child(calentador, 0)
 	var contador: ContadorFps = ContadorFps.new()
 	contador.siempre_en_menu = true
 	add_child(contador)
