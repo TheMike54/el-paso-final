@@ -1282,5 +1282,11 @@
     "que": "Página Inventario según el mockup aprobado: vida, Inspiración con número y bloques y PejeCoins arriba; carta del arma La Pluma, lo perdido con el nombre de la zona, habilidades con símbolo de gis y detalle del elegido, mapas por zona; solo lo que se toca lleva marco",
     "comprobacion": "herramientas/guiones/nucleo/inventario.guion",
     "pasa": true
+  },
+  {
+    "id": "atacar-tras-menu",
+    "que": "En la PC, cerrar un menú (pausa, marco) con Espacio, que es ui_accept y atacar, no ataca ni levanta al jugador del banco; la pulsación siguiente sí ataca (#54)",
+    "comprobacion": "herramientas/guiones/nucleo/salto_tras_menu.guion",
+    "pasa": true
   }
 ]

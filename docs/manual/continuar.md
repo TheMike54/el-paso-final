@@ -57,7 +57,6 @@ Alternativa sin empacador: abrir el `SpriteFrames` en el editor y sumar cuadros 
   lleva el dibujo como hijo y `mirando = 1` (`docs/errores/2026-11-17-banco-sin-mesa.md` y
   `docs/errores/2026-11-21-banco-raices-3-sin-mesa.md`); desde el 21-nov-2026 el validador lo exige. Los de las salas de
   prueba no.
-- En la PC, Espacio es `ui_accept` y `atacar`: cerrar un menú con Espacio también ataca.
 - Corazones y barra del HUD siguen en gris, sin arte final.
 - Hasta terminar el juego las partidas viejas no se conservan al cambiar la versión de guardado.
 - Si se cambia un ID ya guardado, las partidas existentes pierden esa referencia.

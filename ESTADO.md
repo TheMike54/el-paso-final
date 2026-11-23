@@ -2,9 +2,9 @@
 
 ## Ahora (22-nov-2026)
 
-- `main` en `43d7b5e`: #41, #42 y #43 fusionados; Las Raíces se recorre en caja gris de `raices_1` a la pantalla de
-  cierre. Rama `docs/sprint-4` (PR #59, sin fusionar).
-- Sprint 4 (23 al 29-nov): #44 a #58 y #60 a #62 en el tablero. Ian #44 a #47, Vic #48 a #52 y #60, Miguel (lo hace Claude) #53 a #58, #61 y #62. PR #59: este archivo.
+- `main` en `45e906c`: #41 a #43 y #59 fusionados; Las Raíces se recorre en caja gris de `raices_1` a la pantalla de
+  cierre. Rama `fix/sprint-4-miguel`: issues de Miguel del Sprint 4 (#54 a #58 y #62), sin PR todavía.
+- Sprint 4 (23 al 29-nov): #44 a #58 y #60 a #62 en el tablero. Ian #44 a #47, Vic #48 a #52 y #60, Miguel (lo hace Claude) #53 a #58, #61 y #62.
 - Workflow `Release` sin corridas (`release-play`); el entorno `play` (fase B) y subir por la API esperan.
 - Google Play: prueba cerrada Alpha desde el 2-nov-2026 (`versionCode` 1, `1e2c94c`); el update (#16) espera; índice: #17.
 
@@ -23,6 +23,7 @@
 - 22-nov, mismo «adelante»: dormir en los bancos de `raices_3` y `raices_7` se suma al #46.
 - 22-nov, mismo «adelante»: issues nuevos, las 4 pruebas en teléfono (Vic), `Release` en verde y `prueba_sonido` con ventana (Miguel); el manual, tras el #53.
 - 22-nov 01:39: Sprint 4 y guías en la bóveda. «abre el sprint 4 y pásame los comandos para abrir todos los issues y de una vez dejarles todo en la bóveda privada».
+- 22-nov, tanda autónoma en `fix/sprint-4-miguel` (#54, #55, #62, #56, #58, #57; sin #53 ni #61): «otra sesión va a ser la que va a ejecutar mis issues... que avance todo lo que pueda». Corre en bypassPermissions por excepción: «Sigue en bypass, arranca».
 
 ## Pruebas manuales pendientes
 - Hechas: `enemigo-cucaracha-telefono` (S21, 13-nov) y `enemigo-hongo-escupidor-telefono` (S20, 15-nov), video en #34 y #35.
@@ -50,7 +51,6 @@
   Cucaracha; después, 40 s con la Cucaracha saliendo dieron 120 FPS sin un cuadro de más de 9,5 ms. Probable compilación
   de shaders al primer uso (polvo, destellos): sin medir en el S50.
 - Doble `curacion_empezada` si `curar` se suelta y se pulsa entre dos ticks: leído, sin reproducir.
-- En la PC, Espacio es `ui_accept` y `atacar`: cerrar un menú con Espacio también ataca.
 - Guiones intermitentes: `habilidad_caida_en_picada_desde_suelo` y `sala_puerta_b_pared`.
 - `prueba_sonido` con ventana falla en «un paso suena por play_stream», también en `e4378ca`; sin ventana y en el CI pasa.
 
