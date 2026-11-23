@@ -2,7 +2,8 @@ extends "res://herramientas/pruebas/prueba_base.gd"
 # Prueba del mapa: las cuentas de DatosMapa (que salas se dibujan, el rectangulo que abarcan, como se encaja en la
 # pantalla) y la pantalla sobre la sala mapa_1 de la zona de prueba: sin la pluma_mapa no hay nada, el banco dibuja
 # lo visitado de las zonas cuyo mapa se tiene, acercado y alejado, la brujula, y que el mapa, como pagina del marco
-# de menus, detenga el juego y se quede la pulsacion de pausa. Deja casos y fallos para mapa_cuentas.guion.
+# de menus, detenga el juego y se quede la pulsacion de pausa; y que el Eterno de raices_3 deje ver La Celda y Las
+# Raices. Deja casos y fallos para mapa_cuentas.guion.
 
 const SALA: String = "res://herramientas/salas/zonas/mapa/mapa_1.tscn"
 const RUTA: String = "user://prueba_mapa.json"
@@ -98,6 +99,8 @@ func _ready() -> void:
 	_caso("con la pausa abierta el mapa no se abre", not mapa.abierta)
 	pausa.cerrar()
 
+	_mapas_del_eterno(marco, mapa)
+
 	sala.queue_free()
 	_restaurar_partida()
 	_resumen()
@@ -160,6 +163,24 @@ func _fichas_zona() -> void:
 	indice.rectangulos = {"otra_1": Rect2(0.0, -100.0, 20.0, 20.0)}
 	_caso("la franja tambien considera mapas enteramente negativos", is_equal_approx(indice.franja_libre(), -80.0))
 	sala.free()
+
+
+# El Eterno de raices_3 da la pluma y los mapas de La Celda y de Las Raices (#63): con sus recompensas, el banco
+# marca lo visitado de las dos zonas y el mapa, sin nada de la zona actual (mapa), se ve alejado con las dos.
+func _mapas_del_eterno(marco: MarcoMenus, mapa: PantallaMapa) -> void:
+	Partida.mapas.clear()
+	Partida.salas_mapeadas.clear()
+	var ficha: FichaDialogo = load("res://contenido/npc/guia_raices/guia_raices_1.tres") as FichaDialogo
+	for recompensa: Recompensa in ficha.recompensas:
+		Partida.dar_recompensa(recompensa)
+	Partida.visitar("celda_1")
+	Partida.visitar("raices_3")
+	Eventos.descanso_en_banco.emit(&"banco_raices_3")
+	_caso("el Eterno da los mapas de La Celda y Las Raices y el banco marca lo visitado de las dos", Partida.salas_mapeadas.has("celda_1") and Partida.salas_mapeadas.has("raices_3"))
+	marco.abrir(&"mapa")
+	var nombres: PackedStringArray = mapa.lienzo.get(&"_nombres_zona")
+	_caso("alejado se ven La Celda y Las Raices con su nombre", not mapa.lienzo.quedo_acercado and mapa.lienzo.zonas_dibujadas == 2 and nombres.has("La Celda") and nombres.has("Las Raíces"))
+	marco.cerrar()
 
 
 # Un indice propio desplaza la sala sin cambiar el recurso cargado del juego. El centro de la sala debe quedar

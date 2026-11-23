@@ -316,5 +316,11 @@
     "que": "El banco de raices_3 lleva la mesa con sillas de Las Raices y sienta al jugador mirando a la derecha, como el de raices_7 (auditoria del 21-nov-2026)",
     "comprobacion": "herramientas/guiones/contenido/raices_3_banco.guion",
     "pasa": true
+  },
+  {
+    "id": "eterno-raices-mapa-celda",
+    "que": "El Eterno de raices_3 da tambien el mapa de La Celda: tras descansar en un banco, el mapa muestra lo visitado de La Celda y de Las Raices, alejado con las dos zonas y su nombre (#63)",
+    "comprobacion": "herramientas/guiones/contenido/raices_3_guia.guion;herramientas/guiones/mapa/mapa_cuentas.guion",
+    "pasa": true
   }
 ]

@@ -24,11 +24,11 @@ El nombre juega con tres sentidos: el último paso antes de titularse, subir pas
 
 Cada ataque se anuncia con una pregunta en gis en el pizarrón. Orden: La Rúbrica, El Algoritmo, El Ausente y los tres a la vez. Arena: el salón, con tu primera diapositiva proyectada.
 
-**El Eterno.** Alumno que llegó en 2009 y nunca se tituló. Guía sin nombre, junto al primer banco de cada zona, con pocas líneas; en La Celda no: él está en `celda_3` y el único banco, en `celda_1`. Da la Pluma, regala el mapa de Las Raíces y vende los de las zonas 2 a 5; la brújula se vende en la tienda de `raices_3`. Su protocolo sellado «NO APROBADO» está en un archivo que solo se alcanza al regresar con el impulso fantasma. Al final se ve a alguien con su ropa caminar hacia la salida de ESCOM; nunca se explica.
+**El Eterno.** Alumno que llegó en 2009 y nunca se tituló. Guía sin nombre, junto al primer banco de cada zona, con pocas líneas; en La Celda no: él está en `celda_3` y el único banco, en `celda_1`. Da la Pluma, regala los mapas de La Celda y de Las Raíces y vende los de las zonas 2 a 5; la brújula se vende en la tienda de `raices_3`. Su protocolo sellado «NO APROBADO» está en un archivo que solo se alcanza al regresar con el impulso fantasma. Al final se ve a alguien con su ropa caminar hacia la salida de ESCOM; nunca se explica.
 
 **Otros.** El vagonero atiende las estaciones. Sin definir: la vendedora del Barrio, el de la papelería, los Irregulares de la Ciudad Perdida y los compañeros de la llamada final.
 
-**Estado.** Hecho: el Eterno en `celda_3`, con su tira de animación y dos conversaciones, y en `raices_3`, donde da la pluma del mapa y el mapa de Las Raíces. Previsto: todo lo demás. El arte de la protagonista mujer no existe.
+**Estado.** Hecho: el Eterno en `celda_3`, con su tira de animación y dos conversaciones, y en `raices_3`, donde da la pluma del mapa y los mapas de Las Raíces y de La Celda. Previsto: todo lo demás. El arte de la protagonista mujer no existe.
 
 ## El mundo
 
@@ -63,7 +63,7 @@ Las zonas usan enemigos con referencia real reconocible, para que el arte salga 
 | Impulso fantasma | El Metro | Previsto; no está en `nucleo/habilidades.gd` |
 | Nadar en aguas negras | El Metro | Previsto; no está en `nucleo/habilidades.gd` |
 | La bola (proyectil) | Por decidir | Hecho en el núcleo; lugar y sentido por decidir |
-| Pluma de mapa | El Eterno en raices_3, junto con el mapa raices | Hecho, en la campaña |
+| Pluma de mapa | El Eterno en raices_3, junto con los mapas raices y celda | Hecho, en la campaña |
 
 **Uso obligado.** El tramo donde se obtiene una habilidad no tiene salida que no la requiera: la geometría enseña, sin texto. Es el espejo de los secretos visibles e inalcanzables del inicio.
 
@@ -90,7 +90,7 @@ Las zonas usan enemigos con referencia real reconocible, para que el arte salga 
 | Viaje rápido | La Línea Fantasma: una estación por zona, atendida por el vagonero, con fundido a negro | Hecho el sistema, con pago único opcional; sin estación en la primera versión |
 | Tienda | La vendedora del Barrio: fragmentos, mejora de carga, coleccionable | Hecho el sistema; sin colocar. En la primera versión, la tienda de `raices_3` vende la brújula |
 | Pachislot | Tragamonedas de PejeCoins, sin dinero real, con límite por descanso | Previsto; no hay código |
-| Mapa | Se descubre al andar; el Eterno da o vende los mapas | Hecho el sistema; el Eterno regala el de Las Raíces en `raices_3`, los demás sin colocar |
+| Mapa | Se descubre al andar; el Eterno da o vende los mapas | Hecho el sistema; el Eterno regala los de La Celda y Las Raíces en `raices_3`, los demás sin colocar |
 | Jefes | 12 peleas con fases, aviso y cierre de arena | Hecho `nucleo/arena_jefe.gd` y fases; sin jefes en la campaña |
 
 **Amuletos.** Hechos y colocados: Patas de Cucaracha (más rapidez) y Caparazón de Cucaracha (más invulnerabilidad). Previstos: Pase Preferente (ataque más rápido), Corriendo a Clase (impulso mejor), Caché (Inspiración extra), Compilación rápida (curar en la mitad de tiempo), Compilación incremental (curar más barato), Poder de la Amistad (más daño con 1 vida), Tinta Extra (más alcance) y Camión-kun (revives una vez por descanso). Sus íconos entran como PNG sueltos; cada ficha llega con su efecto. Caché queda fuera de la primera versión y su ícono no se pinta.

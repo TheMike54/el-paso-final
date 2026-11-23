@@ -1,6 +1,6 @@
 # Las Raíces, sala 3: desde la Entrada (x=134) camina al Eterno (x=350), habla con interactuar y pasa su línea con
-# saltar (un toque la completa, otro la pasa). Al terminar entrega el mapa de Las
-# Raíces y la pluma del mapa. Después habla otra vez: su segunda conversación, de una línea, no repite los premios.
+# saltar (un toque la completa, otro la pasa). Al terminar entrega los mapas de Las
+# Raíces y de La Celda y la pluma del mapa. Después habla otra vez: su segunda conversación, de una línea, no repite los premios.
 escena res://contenido/salas/raices/raices_3.tscn
 2 mover_derecha press
 31 mover_derecha release

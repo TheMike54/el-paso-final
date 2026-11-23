@@ -1,14 +1,14 @@
-# La primera conversación termina contando (etapa 1) y entrega el mapa de Las Raíces y la pluma del mapa; la segunda,
-# de una línea, sube la etapa a 2 sin repetir los premios (cada señal cuenta 1). Sin daño.
+# La primera conversación termina contando (etapa 1) y entrega los mapas de Las Raíces y de La Celda y la pluma del
+# mapa; la segunda, de una línea, sube la etapa a 2 sin repetir los premios (la pluma cuenta 1 y los mapas 2). Sin daño.
+# Qué mapas son no se compara aquí (`valor` no lee listas de dos con espacios): lo prueba `mapa/mapa_cuentas`.
 en 65 valor Eterno etapa 1
-en 65 senal /root/Eventos mapa_obtenido 1
+en 65 senal /root/Eventos mapa_obtenido 2
 x 308 2
 y 1080 2
 en_suelo true
 valor Eterno etapa 2
 valor Jugador hablando false
 valor /root/Partida habilidades [&"pluma_mapa"]
-valor /root/Partida mapas ["raices"]
 senal /root/Eventos habilidad_obtenida 1
-senal /root/Eventos mapa_obtenido 1
+senal /root/Eventos mapa_obtenido 2
 senal /root/Eventos jugador_danado 0
