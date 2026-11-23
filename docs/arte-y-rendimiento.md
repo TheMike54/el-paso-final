@@ -146,3 +146,11 @@ Cifras medidas en el Senwa S50 (y en el equipo indicado) que sostienen las regla
 - Hojas de efectos del núcleo (28-oct-2026): suman 8,9 MB de RGBA sin comprimir (cálculo de sus medidas) y los mipmaps agregarían unos 3 MB.
 - Atlas del jugador (21-oct-2026; rehecho el 24-oct con el ataque vertical a su escala y la muerte apoyada en el suelo): una página de 2020 × 668 con los 61 cuadros. Medido en el S50 (APK de desarrollo, 60 s por escena tras 5 s): sin mipmaps, 59,6 FPS de media en la sala de recursos, en la zona de pruebas y en la de movimiento (mínimo 58-59), con 146,7, 141,9 y 146,0 MB de PSS; con mipmaps, las mismas medias y mínimos, con 146,9, 141,2 y 147,0 MB, y el APK +0,27 MB. Antes del cambio (18-oct-2026), recursos y zona daban 59,6 con 144,0 y 142,1 MB.
 - Proceso en reposo, con 300 nodos en el S50: `Golpeable` 8,9 µs por nodo y tick, `Cortable` 14,8 µs, `LuzSala` con `DESTELLO` apagado 50,9 µs. Con lo que hay en una sala (unos pocos) queda muy por debajo del umbral de 0,5 ms por cuadro, así que siguen con su proceso activo.
+- Primer uso de las partículas (22-nov-2026, `medicion_primer_uso.tscn` con la caché de shaders vacía, dos vueltas A/B):
+  sin calentar, el primer cuadro con partículas sin material costó 190 y 145 ms en el S50 (39 en el S20) y el primero con
+  partículas sin luz (`sin_luz.tres`, `aditivo.tres`), 264 y 252 ms (55 y 58 en el S20); la segunda vez, 18-21 ms.
+  Con el `CalentadorShaders` puesto antes, el primer uso de cada efecto no pasó de 25,3 ms en el S50 ni de 21,6 en el
+  S20; el calentador cuesta una vez 342 y 371 ms en el S50 (88 y 89 en el S20). Sin calentador y con la caché llena
+  (solo S50), el peor cuadro fue 38,8 ms, en una segunda aparición, no en una primera. Solo se midieron estas dos
+  variantes y en la escena de medición, no en una sala; con `luces_avanzadas` (Light2D) puede haber otra variante. En
+  el juego, la persona jugó de La Celda a `raices_2` en el S50 con la caché vacía y no vio tirones (a ojo, sin medir).

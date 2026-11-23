@@ -303,6 +303,22 @@ En el teléfono, con un APK de medición armado en una copia del repo fuera de �
    encendido (lo dice la línea de inicio): los FPS se topan en el refresco, que basta para la meta de 60.
 4. Al terminar, desinstalar `com.themike54.elpasofinal.medicion`.
 
+### Medición del primer uso
+
+`herramientas/pruebas/medicion_primer_uso.tscn` mide el tirón de la primera vez que se dibuja un efecto con
+partículas: sin sala y con la cámara fija, hace aparecer cada efecto (escombros, polvo de la Cucaracha, polvo del tubo,
+corte) dos veces y escribe `PRIMER_USO efecto=<nombre> vez=<1|2> peor_ms=<n> media_ms=<n>`. Antes pone el
+`CalentadorShaders` del menú y escribe `PRIMER_USO calentador peor_ms=<n>`; con `var calentar: bool = false` en la
+copia se mide sin él (la variante A).
+
+Godot guarda los shaders compilados en disco (`rendering/shader_compiler/shader_cache/enabled`,
+`classes/class_projectsettings.rst:13577`): el tirón solo sale con la caché vacía. Cada vuelta, por eso, va con
+`adb -s <serie> shell pm clear com.themike54.elpasofinal.medicion` antes de abrir. El APK se arma como el de
+«Medición de rendimiento», con `run/main_scene.medicion="res://herramientas/pruebas/medicion_primer_uso.tscn"`; se
+abre con `adb -s <serie> shell monkey -p com.themike54.elpasofinal.medicion -c android.intent.category.LAUNCHER 1` y
+se leen las líneas `PRIMER_USO` de `adb logcat -s godot` hasta `PRIMER_USO FIN`. Resultado del 22-nov-2026 en
+`docs/arte-y-rendimiento.md`, «Mediciones».
+
 ## Revisión de un PR
 
 Quien revisa reproduce la validación en su equipo y deja al menos un comentario con la salida:
@@ -323,6 +339,7 @@ que ya está, y desinstalar borra las partidas y los ajustes (`user://`).
 
 | Caso | Pasos | Resultado esperado | Última ejecución |
 |---|---|---|---|
+| Primer uso en `raices_2` (`calentar-shaders-raices-telefono`, #57) | S50 con el APK de desarrollo recién instalado (`instalar-apk.ps1 -BorrarPartidas`) y la caché de shaders vacía: `install -r` la conserva, así que antes se borra `files/shader_cache` con `adb -s <serie> shell run-as com.themike54.elpasofinal rm -r files/shader_cache` (no toca partidas ni ajustes). Abrir el juego, partida nueva y llegar a `raices_2`; jugar el primer minuto con la Cucaracha y esperar a que se entierre (sale su polvo) | El menú se congela un instante una sola vez al abrir; en `raices_2` no hay tirón cuando sale el primer polvo ni al romper algo | 2026-11-22, la persona en el Senwa S50, caché vacía, de La Celda a `raices_2`, a ojo sin medir cuadros: pasa (la primera apertura tardó; el calentador mide ~0,35 s, el resto no se midió) |
 | Sensación del salto | `& $env:GODOT_PATH --path . res://herramientas/salas/sala_movimiento.tscn`; caminar con A y D, saltar con W: un toque corto, una pulsación larga, saltar justo después de salir de la orilla y presionar W un instante antes de aterrizar | El toque corto da un salto bajo y la pulsación larga uno alto (unos 5 cuadros); el salto tras la orilla y el presionado antes de aterrizar salen sin sentirse tarde. Si algo se siente lento o flotante, anotar cuál de las propiedades de `docs/jugador.md` se cambiaría | 2026-10-07, Galaxy S20, pasa: saltar y subir escaleras en la sala de movimiento, igual que antes con la cámara nueva |
 | Cámara y límites de la sala | `& $env:GODOT_PATH --path . res://herramientas/salas/sala_camara.tscn`; caminar hasta la pared izquierda y hasta la derecha; subir al pedestal de la derecha y por la escalera hacia la izquierda hasta el escalón más alto | La cámara sigue al jugador con un suavizado corto. En los cuatro bordes se detiene: nunca se ve el gris de fuera de la sala, solo el fondo azul oscuro, las paredes, el suelo y el techo. Al subir, la cámara sube con el jugador y en el escalón más alto el techo queda pegado al borde superior de la pantalla | 2026-10-07, Windows 11, pasa: sigue al jugador y se frena en los bordes |
 | Capas de fondo y de frente | `& $env:GODOT_PATH --path . res://herramientas/salas/sala_capas.tscn`; caminar de pared a pared y subir la escalera hasta arriba | Las franjas azul oscuro del fondo lejano se mueven más lento que las plataformas; las del fondo cercano, algo más rápido que las lejanas; las franjas negras semitransparentes del frente, más rápido que el jugador. En ningún borde de la sala aparece un hueco gris sin capa. Probar también maximizando la ventana | 2026-10-07, Windows 11, pasa: se cumplen las velocidades relativas; también se ve bien en el Galaxy S20 |

@@ -1300,5 +1300,17 @@
     "que": "El guion nucleo/sonido pasa con ventana y sin ella con los mismos 36 casos: lo anterior a _con_pantalla corre mudo y no ocupa voces del reproductor real (#62)",
     "comprobacion": "herramientas/guiones/nucleo/sonido.guion",
     "pasa": true
+  },
+  {
+    "id": "calentar-shaders-particulas",
+    "que": "El menu dibuja, bajo su Fondo, una CPUParticles2D por variante de shader de los efectos (sin material y sin luz) y se quita: con la cache de shaders vacia, el primer escombro o polvo ya no paga la compilacion (#57)",
+    "comprobacion": "manual: docs/pruebas.md, Medicion del primer uso, en el S50 y el S20 con pm clear: sin calentador el primer uso pasa de 140 ms en el S50; con el, ningun primer uso pasa de 25,3 ms en el S50 ni de 21,6 en el S20 (22-nov-2026, dos vueltas A/B)",
+    "pasa": true
+  },
+  {
+    "id": "calentar-shaders-raices-telefono",
+    "que": "En el S50 recien instalado, el primer minuto de raices_2 con la Cucaracha no tiene cuadros de mas de 33 ms (criterio del #57)",
+    "comprobacion": "manual: APK de desarrollo instalado con -BorrarPartidas, partida nueva hasta raices_2 y medicion como en #29; la persona confirma que no hay tiron al primer polvo de la Cucaracha",
+    "pasa": true
   }
 ]

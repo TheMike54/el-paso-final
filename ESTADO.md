@@ -3,8 +3,9 @@
 ## Ahora (22-nov-2026)
 
 - `main` en `45e906c`: #41 a #43 y #59 fusionados; Las Raíces se recorre en caja gris de `raices_1` a la pantalla de
-  cierre. Rama `fix/sprint-4-miguel`: issues de Miguel del Sprint 4 (#54 a #58 y #62), sin PR todavía.
-- Sprint 4 (23 al 29-nov): #44 a #58 y #60 a #62 en el tablero. Ian #44 a #47, Vic #48 a #52 y #60, Miguel (lo hace Claude) #53 a #58, #61 y #62.
+  cierre. Rama `fix/sprint-4-miguel`: issues de Miguel del Sprint 4 (#54 a #58 y #62), sin PR todavía. #57: calentador
+  medido en S50 y S20 (`docs/arte-y-rendimiento.md`, «Mediciones») y probado por Miguel en `raices_2` (S50).
+- Sprint 4 (23 al 29-nov): #44 a #58 y #60 a #62 en el tablero. Ian #44 a #47, Vic #48 a #52 y #60, Miguel (lo hace Claude) #53 a #58 y #61 a #63.
 - Workflow `Release` sin corridas (`release-play`); el entorno `play` (fase B) y subir por la API esperan.
 - Google Play: prueba cerrada Alpha desde el 2-nov-2026 (`versionCode` 1, `1e2c94c`); el update (#16) espera; índice: #17.
 
@@ -24,6 +25,8 @@
 - 22-nov, mismo «adelante»: issues nuevos, las 4 pruebas en teléfono (Vic), `Release` en verde y `prueba_sonido` con ventana (Miguel); el manual, tras el #53.
 - 22-nov 01:39: Sprint 4 y guías en la bóveda. «abre el sprint 4 y pásame los comandos para abrir todos los issues y de una vez dejarles todo en la bóveda privada».
 - 22-nov, tanda autónoma en `fix/sprint-4-miguel` (#54, #55, #62, #56, #58, #57; sin #53 ni #61): «otra sesión va a ser la que va a ejecutar mis issues... que avance todo lo que pueda». Corre en bypassPermissions por excepción: «Sigue en bypass, arranca».
+- 22-nov, #57 en la misma tanda, medido en S20 y S50 por adb: «s20 conectado, haz las pruebas q necesites», «s50 conectado tambien».
+- 22-nov, issue nuevo para Miguel (#63, Sprint 4): el mapa no muestra La Celda (nadie da su mapa); la solución, después. «sí eso es, la solucion ya la vere despues d emoemnto solo asigana el issue».
 
 ## Pruebas manuales pendientes
 - Hechas: `enemigo-cucaracha-telefono` (S21, 13-nov) y `enemigo-hongo-escupidor-telefono` (S20, 15-nov), video en #34 y #35.
@@ -48,9 +51,6 @@
 
 ## Conocido, sin arreglar
 
-- Tirón la primera vez: en el S21, recién instalado (13-nov), los FPS cayeron a 13-35 durante los primeros minutos con la
-  Cucaracha; después, 40 s con la Cucaracha saliendo dieron 120 FPS sin un cuadro de más de 9,5 ms. Probable compilación
-  de shaders al primer uso (polvo, destellos): sin medir en el S50. #57 fuera del PR de la tanda: sin teléfono conectado.
 - Guiones intermitentes: `habilidad_caida_en_picada_desde_suelo` y `sala_puerta_b_pared` (#56, atorado). 22-nov: 20 de 20
   solos, 20 de 20 con la CPU cargada y 241 de 241 en la batería; sin causa. Si fallan, el log queda en `.godot/guiones-fallidos/`.
 

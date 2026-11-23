@@ -466,5 +466,11 @@
     "que": "correr-guiones.ps1 guarda el log completo de cada guion que falla en .godot/guiones-fallidos/<bloque>_<nombre>-<fecha>.log e imprime su ruta, para investigar un fallo intermitente (#56); igual en powershell.exe 5.1 y pwsh 7",
     "comprobacion": "manual: mutar.ps1 -Archivo herramientas/guiones/nucleo/sala_puerta_b_pared.esperado -Buscar 'x 1200 2' -Poner 'x 1100 2' -Guiones nucleo/sala_puerta_b_pared da MATADA restaurado=SI arbol=IGUAL en pwsh 7 y en powershell.exe 5.1, y cada corrida deja su archivo en .godot/guiones-fallidos/",
     "pasa": true
+  },
+  {
+    "id": "medicion-primer-uso",
+    "que": "medicion_primer_uso.tscn hace aparecer cada efecto con particulas dos veces, con el CalentadorShaders o sin el (calentar), y escribe PRIMER_USO con el peor cuadro de cada aparicion (#57)",
+    "comprobacion": "manual: APK de medicion armado en una copia del repo segun docs/pruebas.md, Medicion del primer uso; en el S50 y el S20 escribe las lineas PRIMER_USO hasta PRIMER_USO FIN con calentar=si y calentar=no (22-nov-2026)",
+    "pasa": true
   }
 ]
