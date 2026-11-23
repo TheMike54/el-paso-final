@@ -19,7 +19,7 @@ Términos del juego y del proyecto. Las piezas de escena (`FondoTapado`, `LuzSal
 | Coyote | Unos ticks después de dejar una orilla en que todavía se puede saltar |
 | Cucaracha | Enemigo de Las Raíces: camina, se entierra al ver al jugador cerca y sale debajo de él tras un aviso de polvo (`contenido/enemigos/cucaracha/`) |
 | Cupo | Uno de los 4 lugares de útiles puestos, dibujados en la mochila de gis de la página Útiles (`Partida.MAX_UTILES`) |
-| El Eterno | Personaje guía: en `celda_3` entrega la Pluma y en `raices_3`, el mapa de Las Raíces y la pluma del mapa (`contenido/npc/eterno/`) |
+| El Eterno | Personaje guía: en `celda_3` entrega la Pluma y en `raices_3`, los mapas de Las Raíces y de La Celda y la pluma del mapa (`contenido/npc/eterno/`) |
 | ESCOM | La escuela donde pasa la historia |
 | Golpe normal | Daño con retroceso e invulnerabilidad; no mueve al jugador de lugar |
 | Hongo escupidor | Enemigo fijo de Las Raíces: lanza esporas en arco y se cierra un rato al recibir un golpe (`contenido/enemigos/hongo_escupidor/`) |

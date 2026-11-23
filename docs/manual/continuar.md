@@ -51,7 +51,7 @@ Alternativa sin empacador: abrir el `SpriteFrames` en el editor y sumar cuadros 
 
 **Del juego**
 
-- Las Raíces está en caja gris: de `raices_1` a `raices_8` se llega jugando, con la Cucaracha, la Polilla y el Hongo escupidor, todos sin arte. `raices_3` tiene al Eterno (mapa y pluma del mapa), el banco y la tienda; `raices_4` esconde Patas de Cucaracha y `raices_6`, Caparazón de Cucaracha; `raices_7` da el impulso y la salida de `raices_8` lleva a la pantalla de cierre (`contenido/cierre/pantalla_cierre.tscn`). La Polilla solo está en `raices_4`; `raices_5` y `raices_6` tienen Cucarachas y Hongos escupidores, y `raices_7` y `raices_8` no tienen enemigos.
+- Las Raíces está en caja gris: de `raices_1` a `raices_8` se llega jugando, con la Cucaracha, la Polilla y el Hongo escupidor, todos sin arte. `raices_3` tiene al Eterno (mapas de La Celda y de Las Raíces y pluma del mapa), el banco y la tienda; `raices_4` esconde Patas de Cucaracha y `raices_6`, Caparazón de Cucaracha; `raices_7` da el impulso y la salida de `raices_8` lleva a la pantalla de cierre (`contenido/cierre/pantalla_cierre.tscn`). La Polilla solo está en `raices_4`; `raices_5` y `raices_6` tienen Cucarachas y Hongos escupidores, y `raices_7` y `raices_8` no tienen enemigos.
 - Solo español y solo Android; la PC sirve para desarrollar.
 - Un banco sin su mesa con sillas deja al jugador dormido con los brazos en el aire: todo banco de una sala del juego
   lleva el dibujo como hijo y `mirando = 1` (`docs/errores/2026-11-17-banco-sin-mesa.md` y
@@ -60,6 +60,8 @@ Alternativa sin empacador: abrir el `SpriteFrames` en el editor y sumar cuadros 
 - Corazones y barra del HUD siguen en gris, sin arte final.
 - Hasta terminar el juego las partidas viejas no se conservan al cambiar la versión de guardado.
 - Si se cambia un ID ya guardado, las partidas existentes pierden esa referencia.
+- Una partida que ya habló con el Eterno de `raices_3` antes del 23-nov-2026 no tiene el mapa de La Celda: el Eterno no
+  repite sus premios y no hay migración (`docs/errores/2026-11-23-mapa-sin-la-celda.md`).
 
 **Del proyecto**
 
