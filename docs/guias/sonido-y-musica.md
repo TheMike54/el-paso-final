@@ -20,8 +20,10 @@ declarado.
 ## Música de sala o de región
 1. Producir el tema en Ogg Vorbis. La herramienta con que se hace la música consta en `docs/uso-de-ia.md`, fila
    «Música».
-2. Guardarlo junto al tema existente (`nucleo/sonidos/musica_menu.ogg`) e importar. En el panel Import, encender el bucle (`loop` en un Ogg o MP3;
-   `loop_mode` en un WAV). Dónde lo exige el validador y qué tipos de audio acepta: `docs/validador.md` (el tema de cada sala y de cada `RegionMusica`).
+2. Guardarlo donde vive lo que lo usa e importar: el de una zona, en `contenido/zonas/<zona>/` (como
+   `musica_raices.ogg`); el de una pantalla de `contenido/`, junto a ella (como el de la pantalla de cierre);
+   `nucleo/sonidos/` solo para los del núcleo (`musica_menu.ogg`). En el panel Import, encender el bucle (`loop` en un Ogg o MP3;
+   `loop_mode` en un WAV). Dónde lo exige el validador y qué tipos de audio acepta: `docs/validador.md` (el tema de cada sala, el de cada `RegionMusica` y el `TEMA` de la pantalla de cierre).
 3. Música de toda una zona: asignar el mismo recurso a `tema_musica` en la base de la zona
    (`contenido/zonas/<zona>/sala_<zona>.tscn`, `docs/arte-y-rendimiento.md`, «Arte de zona», viñeta «Base de la zona»), para que no reinicie al
    cruzar una puerta. Una sala sin música propia deja `tema_musica` vacío (sigue la que suena) o le asigna

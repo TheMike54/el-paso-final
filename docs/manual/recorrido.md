@@ -60,7 +60,8 @@ El hueco del piso de `celda_4` baja a `raices_1`; de ahí las puertas encadenan 
 - Empiezas con 4 vidas. Un peligro quita una y devuelve al último suelo firme; un golpe normal empuja y da invulnerabilidad.
 - Al morir reapareces en el banco. Tus PejeCoins quedan en una mochila en el último punto seguro. Interactúas con ella y abre un reto de 3 preguntas al azar de `contenido/preguntas_mochila.tres` (12 en total): con 2 aciertos recuperas las monedas; si no, se pierden. Es una sola oportunidad y la mochila desaparece en los dos casos (`nucleo/mochila.gd`).
 - El banco guarda; también autoguardan determinados progresos, la muerte y el paso a segundo plano. Recoger PejeCoins no autoguarda.
-- La Celda no tiene música, a propósito, salvo el tramo del banco.
+- La Celda no tiene música, a propósito, salvo el tramo del banco. Al entrar a Las Raíces empieza su tema, que sigue sin
+  cortarse de una sala a otra.
 - El botón de curar está oculto en toda La Celda (`botones_ocultos` de `contenido/zonas/celda/sala_celda.tscn`). En Las Raíces se ve: `raices_1` lo enseña con un pizarrón (`botones_por_ensenar` de `contenido/salas/raices/raices_1.tscn`).
 
 ### Lo que existe en código y no aparece en la campaña

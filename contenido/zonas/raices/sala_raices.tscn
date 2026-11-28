@@ -2,6 +2,9 @@
 
 [ext_resource type="PackedScene" uid="uid://dkg1tgmycc1sr" path="res://contenido/zonas/celda/sala_celda.tscn" id="1_base"]
 [ext_resource type="Resource" uid="uid://beie45uxalhc4" path="res://contenido/zonas/raices/zona_raices.tres" id="2_zona"]
+[ext_resource type="AudioStream" uid="uid://dnh6pgw7stwfy" path="res://contenido/zonas/raices/musica_raices.ogg" id="3_musica"]
 
 [node name="SalaRaices" instance=ExtResource("1_base")]
 ficha_zona = ExtResource("2_zona")
+tema_musica = ExtResource("3_musica")
+volumen_musica_db = -10.0
