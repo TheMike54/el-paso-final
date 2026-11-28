@@ -17,7 +17,7 @@ Qué no viene en el repositorio y cómo suplirlo, qué límites ya se conocen y 
 | Plantilla Gradle (`android/`) y caché `.godot/` | Se regeneran | Paso 3 de «Publicar desde cero» y `--import` |
 | `contenido/preguntas_mochila.tres` | Existe: 12 preguntas, 3 por intento, meta 2 | Es opcional: sin él la mochila se recupera enseguida |
 | `contenido/estaciones.tres` | No existe todavía | Opcional hasta colocar estaciones |
-| Música de sala | Solo existe el tema del menú | `docs/guias/sonido-y-musica.md` |
+| Música de sala | Hay temas del menú, de la pantalla de cierre y de Las Raíces; La Celda va sin tema a propósito, salvo el tramo del banco | `docs/guias/sonido-y-musica.md` |
 
 Las herramientas que sí vienen: `herramientas/generar_efectos.gd` (hojas de efectos, niebla y monedas), `herramientas/generar_trazo.gd` (trazo del ataque), `herramientas/generar_mapa.gd` (índice del mapa) y `herramientas/generar_sprites.gd` (animaciones del jugador).
 

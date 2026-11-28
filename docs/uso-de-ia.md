@@ -23,7 +23,7 @@ Se registra cada herramienta y para qué se usa, no cada archivo. Herramienta nu
 | Video | Google Flow (Veo 3.1 Lite) y Veo 3.1 Quality (Google) | La cinemática de La Celda y la de la Pluma (`contenido/cinematicas/`) y el fondo animado del menú (`nucleo/video/`), a partir de cuadros hechos con las herramientas de «Imágenes»; el montaje y los efectos de sonido, con programas escritos con Claude Code |
 | Escalado de video | Real-ESRGAN, modelo `realesr-animevideov3`, en la computadora local | Los dos videos, de 720p a 1080p, antes de convertirlos a H.264 y Theora |
 | Voces | edge-tts (Microsoft) | El coro de los sinodales en la cinemática de La Celda |
-| Música | Google Flow Music (modelo Lyria 3.5) | El tema del menú (`nucleo/sonidos/`) y el tema de Las Raíces (`contenido/zonas/raices/`); el corte del silencio y la conversión a Ogg, con scripts y `ffmpeg` |
+| Música | Google Flow Music (modelo Lyria 3.5) | El tema del menú (`nucleo/sonidos/`); el corte del silencio final y la conversión a Ogg, con un script escrito con Claude Code. El tema de la pantalla de cierre (`contenido/cierre/`), igual, con el corte y la conversión escritos con Claude (Anthropic) en el chat de claude.ai. El tema de Las Raíces (`contenido/zonas/raices/`), con el corte del silencio y la conversión a Ogg hechos con `ffmpeg` |
 | Sonidos | Script escrito con Claude Code | Los efectos del jugador y de lo que toca (`nucleo/sonidos/jugador/`: pasos, aterrizaje, picada, impulso, golpe, daño, curar, banco, muro roto y portón), sintetizados con numpy (ruido filtrado, barridos, parciales y reverb corta), sin muestras ajenas; el equipo eligió entre varias propuestas |
 
 ## De terceros

@@ -1,8 +1,13 @@
-# Llega a raices_7 por su puerta derecha, en el suelo del otro lado del hueco (y=560).
+# Llega a raices_7 por su puerta derecha, en el suelo del otro lado del hueco (y=560). Suena el tema de Las Raices y
+# cruzar la puerta no lo reinicia: los arranques de Musica (2 al cargar el guion, medido) siguen igual que antes de
+# la puerta (cuadro 20).
 escena res://contenido/salas/raices/raices_7.tscn
 x 2200 80
 y 560 2
 en_suelo true
 valor Jugador transicion 0
 senal /root/Eventos cambio_de_sala 1
+valor /root/Arranque/Musica actual:resource_path res://contenido/zonas/raices/musica_raices.ogg
+en 20 valor /root/Arranque/Musica arranques 2
+valor /root/Arranque/Musica arranques 2
 senal /root/Eventos jugador_danado 0
