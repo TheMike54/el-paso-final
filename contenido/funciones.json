@@ -324,6 +324,12 @@
     "pasa": true
   },
   {
+    "id": "musica-pantalla-cierre",
+    "que": "La pantalla de cierre pide su tema (contenido/cierre/musica_cierre.ogg, Google Flow Music, con loop) al abrir, y al volver al menu vuelve el tema del menu (#49)",
+    "comprobacion": "herramientas/guiones/contenido/raices_8_ruta.guion",
+    "pasa": true
+  },
+  {
     "id": "musica-raices",
     "que": "Las Raices tiene su tema (contenido/zonas/raices/musica_raices.ogg, Google Flow Music, con loop) en la base de la zona, a -10 dB: suena en sus salas y no vuelve a empezar al cruzar una puerta (#45)",
     "comprobacion": "herramientas/guiones/contenido/raices_8_puertas.guion",

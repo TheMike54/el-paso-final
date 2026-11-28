@@ -2,11 +2,13 @@ extends Control
 # Pantalla de cierre de la primera version: «Continuara» y, en chico, «Fin de la primera version», con un boton para
 # volver al menu. Antes de salir autoguarda lo obtenido, como Salir al menu de la pausa: al continuar se aparece en
 # el ultimo banco. Se arma en codigo con el tema de los menus; B del control (volver), Esc (pausa) y Atras de
-# Android tambien regresan.
+# Android tambien regresan. Al abrir pide su tema a Musica; al volver, el menu pide el suyo.
 
 const TEXTO: String = "Continuará"
 const TEXTO_CHICO: String = "Fin de la primera versión"
 const TEXTO_BOTON: String = "Volver al menú"
+## Tema de la pantalla (Ogg con loop en su .import).
+const TEMA: AudioStream = preload("res://contenido/cierre/musica_cierre.ogg")
 ## Separacion vertical entre las lineas y el boton.
 const SEPARACION: int = 24
 
@@ -20,6 +22,7 @@ func _ready() -> void:
 	# La salida cambia de escena diferida: si en ese tick se abrio la pausa, el arbol llegaria detenido y la
 	# pantalla no responderia.
 	get_tree().paused = false
+	Arranque.musica.poner(TEMA, Musica.DB_NORMAL, Musica.FUNDIDO_CORTO)
 	var fondo: ColorRect = Tema.fondo_menu(1.0)
 	add_child(fondo)
 	var centro: CenterContainer = CenterContainer.new()

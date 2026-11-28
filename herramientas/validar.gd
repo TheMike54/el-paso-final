@@ -76,6 +76,7 @@ func _ready() -> void:
 	_revisar_zona_pruebas()
 	_revisar_pruebas_aparte()
 	_revisar_tema("res://nucleo/musica.gd", "TEMA_MENU", Musica.TEMA_MENU)
+	_revisar_tema_pantalla("res://contenido/cierre/pantalla_cierre.gd")
 	_avisar_imagenes_sin_uso()
 	_revisar_salas_sin_guion()
 	for aviso: String in _avisos:
@@ -855,6 +856,18 @@ func _revisar_tema(ruta: String, quien: String, tema: AudioStream) -> void:
 		return
 	if not bucle:
 		_fallos.append("%s (%s: el tema %s no se repite: activar Loop al importarlo)" % [ruta, quien, tema.resource_path])
+
+
+# El tema de una pantalla que no es sala (la de cierre) es la constante TEMA de su script: se lee del script sin
+# instanciarlo y se revisa como el de una sala.
+func _revisar_tema_pantalla(ruta: String) -> void:
+	var guion: GDScript = load(ruta) as GDScript
+	var constantes: Dictionary = guion.get_script_constant_map() if guion != null else {}
+	var tema: AudioStream = constantes.get("TEMA") as AudioStream
+	if tema == null:
+		_fallos.append("%s (no tiene la constante TEMA con su tema de musica)" % ruta)
+		return
+	_revisar_tema(ruta, "TEMA", tema)
 
 
 # Un FondoTapado se ve en algun punto de la sala: la vista nunca pasa de limites.end.x y lo de atras solo se ve a la

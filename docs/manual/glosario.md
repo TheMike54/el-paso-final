@@ -30,7 +30,7 @@ Términos del juego y del proyecto. Las piezas de escena (`FondoTapado`, `LuzSal
 | Mochila | Lo que queda donde moriste con tus PejeCoins; se recupera con el reto de preguntas. Hay una sola: morir con monedas borra la anterior (`nucleo/mochila.gd`). No es la mochila de gis de la página Útiles, donde están los cupos |
 | Modo desarrollador | Configuración, Avanzado: muestra la zona de pruebas y deja saltar cinemáticas |
 | Parry | Parar un ataque enemigo marcado con un ataque propio |
-| Pantalla de cierre | Fin de la primera versión: «Continuará», autoguarda y vuelve al menú. Se llega por la salida de `raices_8` (`contenido/cierre/pantalla_cierre.tscn`) |
+| Pantalla de cierre | Fin de la primera versión: «Continuará», con su tema de música; autoguarda y vuelve al menú. Se llega por la salida de `raices_8` (`contenido/cierre/pantalla_cierre.tscn`) |
 | PejeCoins | La moneda del juego |
 | Peligro | Daño que quita vida aunque seas invulnerable y te devuelve al punto seguro (`peligro` en `nucleo/dano_contacto.gd`) |
 | Pizarrón | Aviso dibujado en una sala que enseña una acción (`nucleo/aviso_accion.gd`) |
