@@ -49,7 +49,8 @@ Parte del contrato (`docs/contrato.md`): lo que revisa `herramientas/validar.gd`
   ningún cuerpo de física dentro de un `Vaiven` o un `Giro` salvo el nodo mismo, y ningún `DanoContacto` con `peligro`
   dentro de algo que se mueve (`docs/componentes.md`, «Componentes»); cada `ZonaCamara` y cada `RegionMusica` llevan su forma como
   `CollisionShape2D` hija directa, con forma y encendida, y una `ZonaCamara` en una sala tiene `limites` con área dentro
-  de los de la sala; el tema de cada sala (`tema_musica`), el de cada `RegionMusica` y `Musica.TEMA_MENU` se repiten
+  de los de la sala; el tema de cada sala (`tema_musica`), el de cada `RegionMusica`, `Musica.TEMA_MENU` y el `TEMA` de la pantalla de cierre
+  (`contenido/cierre/pantalla_cierre.gd`; si falta la constante, falla) se repiten
   (Ogg o MP3 con `loop`, WAV con `loop_mode`; otro tipo falla; vacío y `Musica.SILENCIO` no se revisan): un tema que
   se apaga deja la sala callada sin que nadie lo pida. Esta es la lista completa de lo que revisa en las
   salas (`herramientas/validar.gd`); lo de recursos, presupuesto e importación está en `docs/arte-y-rendimiento.md`, «Recursos», y el mapa, en

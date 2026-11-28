@@ -17,7 +17,8 @@ const DB_NORMAL: float = 0.0
 const DB_SILENCIO: float = -60.0
 ## Segundos del fundido de un tema a otro al entrar a una sala.
 const FUNDIDO: float = 2.0
-## Fundido del menu, de la cinematica y del panel de audio: responden a un toque y no deben tardar.
+## Fundido del menu, de la cinematica, de la pantalla de cierre y del panel de audio: responden a un toque y no deben
+## tardar.
 const FUNDIDO_CORTO: float = 1.0
 
 ## Tema aplicado (SILENCIO si se pidio callar); null si nunca se pidio ninguno. Publico para los guiones.
