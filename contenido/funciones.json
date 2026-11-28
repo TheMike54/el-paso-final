@@ -322,5 +322,11 @@
     "que": "El Eterno de raices_3 da tambien el mapa de La Celda: tras descansar en un banco, el mapa muestra lo visitado de La Celda y de Las Raices, alejado con las dos zonas y su nombre (#63)",
     "comprobacion": "herramientas/guiones/contenido/raices_3_guia.guion;herramientas/guiones/mapa/mapa_cuentas.guion",
     "pasa": true
+  },
+  {
+    "id": "musica-pantalla-cierre",
+    "que": "La pantalla de cierre pide su tema (contenido/cierre/musica_cierre.ogg, Google Flow Music, con loop) al abrir, y al volver al menu vuelve el tema del menu (#49)",
+    "comprobacion": "herramientas/guiones/contenido/raices_8_ruta.guion",
+    "pasa": true
   }
 ]

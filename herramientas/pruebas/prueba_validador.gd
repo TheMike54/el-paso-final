@@ -854,6 +854,10 @@ func _probar_musica() -> void:
 	region.tema = Musica.TEMA_MENU
 	_sin_fallos("musica: una region con forma y el tema del menu (en bucle) no falla", _correr(_revisar_musica.bind(RUTA, sala)))
 	sala.free()
+	_sin_fallos("musica: el TEMA de la pantalla de cierre (en bucle) no falla",
+		_correr(_revisar_tema_pantalla.bind("res://contenido/cierre/pantalla_cierre.gd")))
+	_da("musica: una pantalla sin la constante TEMA falla",
+		_correr(_revisar_tema_pantalla.bind("res://nucleo/musica.gd")), "no tiene la constante TEMA")
 
 
 # Halos de LuzSala en el presupuesto de capas translucidas: aviso, no fallo, cuando pasan el maximo.

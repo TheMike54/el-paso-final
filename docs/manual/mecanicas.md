@@ -22,7 +22,7 @@
 | Muerte y mochila | Al morir se registra una mochila con monedas; al interactuar abre un reto de 3 preguntas de la bolsa del juego: con 2 aciertos se recuperan y, si no, se pierden. Se autoguarda el cambio. | `nucleo/partida.gd`, `nucleo/mochila.gd`, `nucleo/bolsa_preguntas.gd` | `docs/componentes.md`, `docs/contrato.md` |
 | Viaje entre estaciones | Hay lógica de estaciones y menú de destinos; la primera versión no coloca ninguna en sus zonas. | `nucleo/estacion.gd`, `nucleo/menu_estaciones.gd` | `docs/componentes.md`, `docs/interfaz.md` |
 | Menús de pausa | Pausa con continuar, configuración y salir; marco de páginas en ciclo con flechas: Inventario (solo lectura), Amuletos, Útiles (mochila de 4 cupos) y Mapa (con botón de vista). Poner o quitar equipo, solo en un banco. | `nucleo/pausa.gd`, `nucleo/marco_menus.gd`, `nucleo/pagina_inventario.gd`, `nucleo/pantalla_amuletos.gd`, `nucleo/pantalla_utiles.gd` | `docs/interfaz.md` |
-| Pantalla de cierre | Fin de la primera versión tras la salida de `raices_8`: «Continuará», autoguardado y vuelta al menú. | `contenido/cierre/pantalla_cierre.tscn`, `contenido/objetos/raices/salida_cierre.gd` | `docs/componentes.md` |
+| Pantalla de cierre | Fin de la primera versión tras la salida de `raices_8`: «Continuará» con su tema de música, autoguardado y vuelta al menú. | `contenido/cierre/pantalla_cierre.tscn`, `contenido/objetos/raices/salida_cierre.gd` | `docs/componentes.md` |
 
 ## Diseñado sin construir
 
